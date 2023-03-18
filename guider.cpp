@@ -1628,7 +1628,7 @@ void Guider::UpdateLockPosShiftCameraCoords()
                 // account for scope declination
                 if (pPointingSource)
                 {
-                    double dec = pPointingSource->GetDeclination();
+                    double dec = pPointingSource->GetDeclinationRadians();
                     if (dec != UNKNOWN_DECLINATION)
                     {
                         radec_rates.X *= cos(dec);

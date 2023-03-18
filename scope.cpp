@@ -1675,7 +1675,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 GetLastCalibration(&m_prevCalibration);
                 LoadCalibrationDetails(&m_prevCalibrationDetails);
                 Calibration cal(m_calibration);
-                cal.declination = pPointingSource->GetDeclination();
+                cal.declination = pPointingSource->GetDeclinationRadians();
                 cal.pierSide = pPointingSource->SideOfPier();
                 cal.rotatorAngle = Rotator::RotatorPosition();
                 cal.binning = pCamera->Binning;
@@ -1707,7 +1707,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
 // Get a value of declination, in radians, that can be used for adjusting the RA guide rate,
 // or UNKNOWN_DECLINATION if the declination is not known.
-double Scope::GetDeclination()
+double Scope::GetDeclinationRadians()
 {
     return UNKNOWN_DECLINATION;
 }

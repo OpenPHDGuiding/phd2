@@ -241,7 +241,7 @@ bool ScopeManualPointing::Connect()
     return Scope::Connect();
 }
 
-double ScopeManualPointing::GetDeclination()
+double ScopeManualPointing::GetDeclinationRadians()
 {
     return IsConnected() ? m_dec : UNKNOWN_DECLINATION;
 }

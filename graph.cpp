@@ -1503,7 +1503,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             // show polar alignment error
             if (m_mode == MODE_RADEC && sampling != 1.0 && pMount && pMount->IsDecDrifting())
             {
-                double declination = pPointingSource->GetDeclination();
+                double declination = pPointingSource->GetDeclinationRadians();
                 if (declination == UNKNOWN_DECLINATION) // assume declination 0
                     declination = 0.0;
 

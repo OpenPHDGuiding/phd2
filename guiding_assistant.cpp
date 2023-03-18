@@ -1910,7 +1910,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
         // Update the running estimate of polar alignment error using linear-fit dec drift rate
         double pxscale = pFrame->GetCameraPixelScale();
-        double declination = pPointingSource->GetDeclination();
+        double declination = pPointingSource->GetDeclinationRadians();
         double cosdec;
         if (declination == UNKNOWN_DECLINATION)
             cosdec = 1.0; // assume declination 0

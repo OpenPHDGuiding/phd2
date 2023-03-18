@@ -1418,7 +1418,7 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
     // simulate RA motion scaling according to declination
     if (direction == WEST || direction == EAST)
     {
-        double dec = pPointingSource->GetDeclination();
+        double dec = pPointingSource->GetDeclinationRadians();
         if (dec == UNKNOWN_DECLINATION)
             dec = radians(25.0); // some arbitrary declination
         d *= cos(dec);

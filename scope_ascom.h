@@ -98,7 +98,7 @@ public:
 
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
-    double GetDeclination() override;
+    double GetDeclinationRadians() override;
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
     bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
     bool GetSiteLatLong(double *latitude, double *longitude) override;

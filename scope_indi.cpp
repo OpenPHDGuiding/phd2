@@ -131,7 +131,7 @@ public:
     bool   CanSlewAsync() override;
     bool   CanCheckSlewing() override { return coord_prop ? true : false; }
 
-    double GetDeclination() override;
+    double GetDeclinationRadians() override;
     bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
     bool   GetCoordinates(double *ra, double *dec, double *siderealTime) override;
     bool   GetSiteLatLong(double *latitude, double *longitude) override;
@@ -752,7 +752,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration)
     }
 }
 
-double ScopeINDI::GetDeclination()
+double ScopeINDI::GetDeclinationRadians()
 {
     if (coord_prop)
     {
