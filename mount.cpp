@@ -1238,7 +1238,7 @@ bool Mount::DecCompensationEnabled() const
  */
 void Mount::AdjustCalibrationForScopePointing()
 {
-    double newDeclination = pPointingSource->GetDeclination();
+    double newDeclination = pPointingSource->GetDeclinationRadians();
     PierSide newPierSide = pPointingSource->SideOfPier();
     double newRotatorAngle = Rotator::RotatorPosition();
     unsigned short binning = pCamera->Binning;

@@ -47,7 +47,7 @@ public:
     static wxString GetDisplayName();
     bool Connect() override;
     MOVE_RESULT Guide(GUIDE_DIRECTION, int) override;
-    double GetDeclination() override;
+    double GetDeclinationRadians() override;
     bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
     bool GetSiteLatLong(double *latitude, double *longitude) override;
     PierSide SideOfPier() override;
