@@ -313,7 +313,7 @@ void StatsWindow::UpdateScopePointing()
 {
     if (pPointingSource)
     {
-        double declination = pPointingSource->GetDeclination();
+        double declination = pPointingSource->GetDeclinationRadians();
         PierSide pierSide = pPointingSource->SideOfPier();
 
         m_grid2->BeginBatch();

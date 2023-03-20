@@ -92,7 +92,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             cal.yRate  = pMount->yRate();
             cal.xAngle = pMount->xAngle();
             cal.yAngle = pMount->yAngle();
-            cal.declination = pPointingSource->GetDeclination();
+            cal.declination = pPointingSource->GetDeclinationRadians();
             cal.pierSide = pPointingSource->SideOfPier();
             cal.raGuideParity = cal.decGuideParity = GUIDE_PARITY_UNCHANGED;
             cal.rotatorAngle = Rotator::RotatorPosition();

@@ -794,7 +794,7 @@ bool ScopeASCOM::HasNonGuiMove()
 }
 
 // return the declination in radians, or UNKNOWN_DECLINATION
-double ScopeASCOM::GetDeclination()
+double ScopeASCOM::GetDeclinationRadians()
 {
     double dReturn = UNKNOWN_DECLINATION;
 
@@ -815,7 +815,7 @@ double ScopeASCOM::GetDeclination()
         Variant vRes;
         if (!scope.GetProp(&vRes, dispid_declination))
         {
-            throw ERROR_INFO("GetDeclination() fails: " + ExcepMsg(scope.Excep()));
+            throw ERROR_INFO("GetDeclinationRadians() fails: " + ExcepMsg(scope.Excep()));
         }
 
         dReturn = radians(vRes.dblVal);
@@ -826,7 +826,7 @@ double ScopeASCOM::GetDeclination()
         m_canGetCoordinates = false;
     }
 
-    Debug.Write(wxString::Format("ScopeASCOM::GetDeclination() returns %s\n", DeclinationStr(dReturn)));
+    Debug.Write(wxString::Format("ScopeASCOM::GetDeclinationRadians() returns %s\n", DeclinationStr(dReturn)));
 
     return dReturn;
 }

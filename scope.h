@@ -249,7 +249,7 @@ public:
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
     bool ValidGuideRates(double RAGuideRate, double DecGuideRate);
 
-    virtual double GetDeclination(); // declination in radians, or UNKNOWN_DECLINATION
+    virtual double GetDeclinationRadians(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
