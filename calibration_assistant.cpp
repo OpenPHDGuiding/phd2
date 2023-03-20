@@ -534,7 +534,7 @@ void CalibrationAssistant::ShowExplanationMsg(double dec)
             + " " + slewCond;
     }
     else if (fabs(dec) > 20.)
-        explanation = _("Calibration will be more accurate with the scope pointing closer to celestial equator.") + " " + slewCond;
+        explanation = _("Calibration will be more accurate with the scope pointing closer to the celestial equator.") + " " + slewCond;
     m_pExplanation->SetLabelText(explanation);
     m_pExplanation->Wrap(textWrapPoint);
 }

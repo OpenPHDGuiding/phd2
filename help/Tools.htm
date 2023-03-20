@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Tools and Utilities</title></head>
 <body>
-  <h2>Tools and Utilities</h2><a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;">Polar Alignment Tools</span></a><br><a href="Tools.htm#Auto-Select_Star">Auto-select Stars</a><br><a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a><br><a href="Tools.htm#Calibration_Details">Calibration &nbsp;Review and Modification</a><br><a href="#Manual_Guide">Manual Guide</a><br>
+  <h2>Tools and Utilities</h2><a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;">Polar Alignment Tools</span></a><br><a href="Tools.htm#Auto-Select_Star">Auto-select Stars</a><br><a href="Tools.htm#Calibration_Assistant">Calibration_Assistant</a><br><a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a><br><a href="Tools.htm#Calibration_Details">Calibration &nbsp;Review and Modification</a><br><a href="#Manual_Guide">Manual Guide</a><br>
   <a href="Tools.htm#Star_cross_tool">Star Cross Tool</a><br><a href="Tools.htm#pierflip_cal_tool">Meridian Flip Calibration Tool</a><br>
   <a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;"></span></a><a href="Tools.htm#Comet_Tracking">Comet Tracking</a><br>
   <a href="#Lock_Positions">Lock Positions</a><br>
@@ -113,7 +113,100 @@ of the internal electronics of the camera (e.g. 12 or 14-bit ADCs).<br><br>To
 de-select the star and continue looping exposures, just shift-click on
 the 'Auto-Select Star' icon or shift-click anywhere in the image
 display window. &nbsp;This can be useful if you're using sub-frames and
-want to return to a full-frame view of the guider images.<br><br><h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
+want to return to a full-frame view of the guider images.<br><h3><a name="Calibration_Assistant"></a>Calibration Assistant</h3>The
+Calibration Assistant (CA) is the best approach for
+completing an
+accurate calibration. &nbsp;It does this by helping you
+avoid&nbsp;operational problems that can interfere with the calibration
+process. &nbsp;This is particularly important for beginners who
+often struggle with both operational and mount-related problems and
+then can't understand what went wrong. &nbsp;The CA is also useful to
+experienced&nbsp;imagers who want to complete a calibration as quickly
+as
+possible without having to remember the procedural details. &nbsp;There
+are three
+basic phases of a calibration assistant session: 1) slewing the
+telescope to an optimum sky position and pre-clearing any Dec
+backlash,, 2) starting the calibration and waiting for its completion,
+and 3) evaluating the results and providing an overall quality
+assessment. &nbsp;If the quality is judged to be less than "good",
+additional explanations are offered that are specific to
+whatever problems arose.<br><br>The CA is only usable in interactive
+mode, it doesn't come into play when guiding is being controlled by a
+separate imaging application. &nbsp;The CA can be explicitly started
+using the 'Calibration Assistant...' entry under the 'Tools' menu.
+The CA will handle any necessary steps of starting/stopping camera
+exposures and doing an auto-find for guide stars so you can start it
+whenever you want.&nbsp; If calibration is started by doing a
+shift-click on the guiding
+icon, you may see a new dialog if the scope isn't pointing in a
+suitable area of the sky:<br><br><img style="width: 598px; height: 145px;" alt="" src="Calibration_Assistant_Confirm.png"><br><br>This
+dialog shows the button to start the Calibration Assistant, the
+option&nbsp;you should generally choose. &nbsp;If you click, instead,
+on 'Calibrate
+here', the CA will not run and calibration will proceed as it has in
+the past. &nbsp;Once the CA is active, you will see a non-modal dialog
+window like this:<br><br><img style="width: 697px; height: 558px;" alt="" src="Calibration_Assistant_Main.png"><br><br>The explanatory text at the top of the window will change depending on where the scope is currently pointed.<br><br><h4>Slewing Operations</h4>The
+CA will always propose to slew the telescope to a location near Dec=0
+(the celestial equator)
+and 5 degrees east or west of the central meridian. The choice of
+'east' or 'west' is based on where the mount is currently pointing in
+order to avoid triggering a meridian flip. &nbsp;Users of fork mounts
+aren't affected by meridian flips,&nbsp;and any flip-related messages
+in the user interface can be
+ignored. If you are
+like most users, the recommended calibration location will be the one
+to use and you should simply&nbsp;click on the 'Slew' button to move
+the telescope to that location.
+&nbsp;Obviously, you must insure that the scope can perform the slew
+safely. &nbsp;If you have obstructions at your site, you can adjust the
+calibration location by changing the values in the 'Calibration
+Location' group of controls. &nbsp;You should be conservative about
+doing this or you will defeat the purpose of using the CA. &nbsp;If you
+regularly have the same&nbsp;visibility limitations, you can save your
+modifications using the 'Save custom values...' button and then re-use
+those values on other nights by clicking on the 'Load custom values'
+button. &nbsp;Clicking on the 'Slew' button will result in two
+successive slews of the scope: the first to roughly position it
+slightly south of Dec=0, and the second to move it north by one
+degree&nbsp;in order to clear any Dec backlash. &nbsp;This action,
+alone, will eliminate the most common source of problems that people
+have with calibration. &nbsp;At the completion of the slew operations,
+the existing calibration is still valid - it won't be cleared until you
+click on the 'Calibrate' button. &nbsp;This means the CA can also be
+used as a convenient means for slewing the telescope to a location that
+also works best for Guiding Assistant diagnostics or for measuring the
+performance of your mount. &nbsp;The CA dialog will remain open until
+you
+click on the 'Cancel' button so its functions can be used iteratively.<h4>Calibration</h4>When
+you click on the
+'Calibrate' button, the CA will first sanity-check
+settings such as mount guide speed and the calibration step-size value.
+&nbsp;If these values don't look right, you will see another dialog
+warning you of the specific problem. &nbsp;If the calibration step-size
+is wrong, the CA will offer to adjust it for you. &nbsp;If the mount
+guide speed is too low, it will advise you to increase it in the mount
+controller. The CA sanity-checking dialogs look this this:<br><br><img style="width: 620px; height: 155px;" alt="" src="Calibration_Assistant_Sanity_1.png"><br><br><img style="width: 619px; height: 135px;" alt="" src="Calibration_Assistant_Sanity_2.png"><br><br>As with the other CA messages, you are strongly encouraged to follow the recommendations.<br><br>After this sanity-checking is complete, the CA will
+trigger the normal calibration process. &nbsp;You can move the CA
+window out of the way if you want to watch how the calibration
+proceeds. &nbsp;When the calibration completes, the CA will use various
+metrics to judge the results and will display an overall assessment of
+'poor', 'acceptable', or 'good'. &nbsp;In some situations with poor
+site visibility or mechanical problems with the mount, it may not be
+feasbible to achieve a 'good' result. &nbsp;'Acceptable' results are
+just that - good enough to continue guiding, not something to obsess
+over, but something to keep in mind if you want to later improve your
+guiding results. 'Poor' results can still be used in most cases but you
+should expect that guiding results will never be great. &nbsp;If the
+calibration fails altogether - too little movement, lost stars, etc -
+you should remedy the problem and repeat the calibration.<br><br>If
+the calibration result is less than 'good', you can click on the
+'Explain' button to see a description of what problems were present and
+what things you can do to get a better result. &nbsp;If you have
+followed all the CA instructions, the explanations are likely to help
+you better understand issues like 'orthogonality error', 'unexpected
+rates', and other&nbsp;situations that usually trigger calibration
+alerts.<h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
 Guiding Assistant (GA) is an instructional tool to help you measure
 current seeing conditions and the general behavior of your mount and
 guiding
