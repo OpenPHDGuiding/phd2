@@ -244,9 +244,9 @@ CalibrationAssistant::CalibrationAssistant()
     pCancelBtn->SetToolTip(_("Close the Calibration Assistant window.  Any calibration currently underway will continue."));
     pCancelBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalibrationAssistant::OnCancel, this);
 
-    btnSizer->Add(m_pSlewBtn, wxSizerFlags().Border(wxALL, 20));
-    btnSizer->Add(m_pCalibrateBtn, wxSizerFlags().Border(wxALL, 20));
-    btnSizer->Add(pCancelBtn, wxSizerFlags().Border(wxALL, 20));
+    btnSizer->Add(m_pSlewBtn, wxSizerFlags().Border(wxALL, 10));
+    btnSizer->Add(m_pCalibrateBtn, wxSizerFlags().Border(wxALL, 10));
+    btnSizer->Add(pCancelBtn, wxSizerFlags().Border(wxALL, 10));
 
     m_pExplainBtn = new wxButton(this, wxID_ANY, _("Explain"));
     m_pExplainBtn->SetToolTip(_("Show additional information about any calibration result that is less than 'good'"));
@@ -256,10 +256,11 @@ CalibrationAssistant::CalibrationAssistant()
     vSizer->Add(currSizer, wxSizerFlags().Center().Border(wxALL, 20));
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
     vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
-    vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
+    //vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(m_pExplainBtn, wxSizerFlags().Center().Border(wxALL, 10));
-    vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 15));
-    vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 15));
+    vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 10));
+    vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
+    vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
 
     m_pTimer = new wxTimer(this, wxID_ANY);     // asynch updates to current position fields
     m_pTimer->SetOwner(this);
