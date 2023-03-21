@@ -104,7 +104,7 @@ public:
     unsigned int missCount;
     unsigned int zeroCount;
     unsigned int lostCount;
-    PHD_Point offsetFromPrimary;
+    PHD_Point offsetFromPrimary;        // X,y offset from primary star location, set in AutoFind, used for dither recovery
 
     GuideStar()
         :
