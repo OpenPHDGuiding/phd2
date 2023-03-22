@@ -142,6 +142,7 @@ public:
 
 private:
     bool IsValidLockPosition(const PHD_Point& pt) final;
+    bool IsValidSecondaryStarPosition(const PHD_Point& pt) final;
     void InvalidateCurrentPosition(bool fullReset = false) final;
     bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) final;
     bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) final;

@@ -754,11 +754,17 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         {
                             m_lockPositionMoved = false;
                             Debug.Write("MultiStar: updating star positions after lock position change\n");
-
                             for (auto pGS = m_guideStars.begin() + 1; pGS != m_guideStars.end();)
                             {
-                                if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                                    GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
+                                PHD_Point expectedLoc = m_primaryStar + pGS->offsetFromPrimary;
+                                bool found;
+                                if (IsValidSecondaryStarPosition (expectedLoc))
+                                    found = pGS->Find(pImage, m_searchRegion, expectedLoc.X, expectedLoc.Y, pFrame->GetStarFindMode(),
+                                        GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
+                                else
+                                    found = pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
+                                        GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
+                                if (found)
                                 {
                                     pGS->referencePoint.X = pGS->X;
                                     pGS->referencePoint.Y = pGS->Y;
@@ -776,7 +782,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                             {
                                 Debug.Write("MultiStar: no secondary stars found after lock position change\n");
                             }
-                            return false;                 // All the secondary stars are now at new reference points with zero offsets
+                            return false;                 // All the secondary stars reference points reflect current positions
                         }
                     }
                 }
@@ -1066,6 +1072,18 @@ bool GuiderMultiStar::IsValidLockPosition(const PHD_Point& pt)
         pt.X + 1 + m_searchRegion < pImage->Size.GetX() &&
         pt.Y >= 1 + m_searchRegion &&
         pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
+}
+
+bool GuiderMultiStar::IsValidSecondaryStarPosition(const PHD_Point& pt)
+{
+    const usImage *pImage = CurrentImage();
+    if (!pImage)
+        return false;
+    // As above, tightly coupled to Star::Find but with somewhat relaxed constraints. Find handles cases where search region is only partly within image
+    return pt.X >= 5 &&
+        pt.X + 5 < pImage->Size.GetX() &&
+        pt.Y >= 5 &&
+        pt.Y + 5 < pImage->Size.GetY();
 }
 
 void GuiderMultiStar::OnLClick(wxMouseEvent &mevent)

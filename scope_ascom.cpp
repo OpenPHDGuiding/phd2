@@ -367,10 +367,11 @@ bool ScopeASCOM::Connect()
 
         if (m_Name.Find(_T("AstroPhysicsV2")) != wxNOT_FOUND)
         {
-            // The Astro-Physics ASCOM driver can hang intermittently if its
-            // synchronous pulseguide option is enabled.  We will attempt to
-            // detect synchronous guide pulses and display an alert if sync
-            // pulses are enabled.
+            // The Astro-Physics VB6 driver apparently uses timing functions that fire its COM message pump at inappropriate times.
+            // This can cause unpredictable delays in the execution of pulse-guide commands when running on low-end dual-core
+            // PCs with other clients also connected to the driver. The problem is exacerbated if the user has switched to "synchronous
+            // pulse guiding" (not the default driver setting).  Since the problems can occur regardless of this setting, it just confuses
+            // users if we fire an alert - so we will simply log the situation for support purposes.  Fortunately, it happens pretty rarely.
             Debug.Write("ASCOM scope: enabling sync pulse guide check\n");
             m_checkForSyncPulseGuide = true;
         }
@@ -600,15 +601,9 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             // than the pulse duration
             if (duration >= 250 && elapsed >= duration - 30)
             {
-                Debug.Write(wxString::Format("SyncPulseGuide checking: sync pulse detected. "
+                Debug.Write(wxString::Format("SyncPulseGuide alert: sync pulseguide or slow thread dispatch detected. "
                                              "Duration = %d Elapsed = %ld\n", duration, elapsed));
-
-                pFrame->SuppressableAlert(SyncPulseGuideAlertEnabledKey(),
-                    _("Please disable the Synchronous PulseGuide option in the mount's ASCOM driver "
-                      "settings. Enabling the setting can cause unpredictable results."),
-                    SuppressSyncPulseGuideAlert, 0);
-
-                // only show the Alert once
+                // only log the event once
                 m_checkForSyncPulseGuide = false;
             }
         }
