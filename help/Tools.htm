@@ -114,8 +114,7 @@ de-select the star and continue looping exposures, just shift-click on
 the 'Auto-Select Star' icon or shift-click anywhere in the image
 display window. &nbsp;This can be useful if you're using sub-frames and
 want to return to a full-frame view of the guider images.<br><h3><a name="Calibration_Assistant"></a>Calibration Assistant</h3>The
-Calibration Assistant (CA) is the best approach for
-completing an
+Calibration Assistant (CA) provides the best means for completing an
 accurate calibration. &nbsp;It does this by helping you
 avoid&nbsp;operational problems that can interfere with the calibration
 process. &nbsp;This is particularly important for beginners who
@@ -123,7 +122,8 @@ often struggle with both operational and mount-related problems and
 then can't understand what went wrong. &nbsp;The CA is also useful to
 experienced&nbsp;imagers who want to complete a calibration as quickly
 as
-possible without having to remember the procedural details. &nbsp;There
+possible without having to think about the procedural details.
+&nbsp;There
 are three
 basic phases of a calibration assistant session: 1) slewing the
 telescope to an optimum sky position and pre-clearing any Dec
@@ -131,7 +131,13 @@ backlash,, 2) starting the calibration and waiting for its completion,
 and 3) evaluating the results and providing an overall quality
 assessment. &nbsp;If the quality is judged to be less than "good",
 additional explanations are offered that are specific to
-whatever problems arose.<br><br>The CA is only usable in interactive
+whatever problems arose. &nbsp;In order to use the CA, you need to be
+using a 'mount' or 'aux-mount' connection that can provide pointing
+information to PHD2 - typically an ASCOM or INDI driver but possibly
+the "Ask for coordinates" tool for very basic mounts. &nbsp;If the
+mount can't be slewed through one of these connections, you can still
+use the CA as a guide for how to point the telescope and then let it
+start the calibration and assess the results.<br><br>The CA is only usable in interactive
 mode, it doesn't come into play when guiding is being controlled by a
 separate imaging application. &nbsp;The CA can be explicitly started
 using the 'Calibration Assistant...' entry under the 'Tools' menu.
@@ -155,11 +161,12 @@ order to avoid triggering a meridian flip. &nbsp;Users of fork mounts
 aren't affected by meridian flips,&nbsp;and any flip-related messages
 in the user interface can be
 ignored. If you are
-like most users, the recommended calibration location will be the one
-to use and you should simply&nbsp;click on the 'Slew' button to move
+like most users, the recommended calibration location will be the best
+choice and you should simply&nbsp;click on the 'Slew' button to move
 the telescope to that location.
 &nbsp;Obviously, you must insure that the scope can perform the slew
-safely. &nbsp;If you have obstructions at your site, you can adjust the
+safely. &nbsp;If you have obstructed views of the sky at your site, you
+can adjust the
 calibration location by changing the values in the 'Calibration
 Location' group of controls. &nbsp;You should be conservative about
 doing this or you will defeat the purpose of using the CA. &nbsp;If you
@@ -168,14 +175,16 @@ modifications using the 'Save custom values...' button and then re-use
 those values on other nights by clicking on the 'Load custom values'
 button. &nbsp;Clicking on the 'Slew' button will result in two
 successive slews of the scope: the first to roughly position it
-slightly south of Dec=0, and the second to move it north by one
+slightly south of the calibration location, and the second to move it
+north by one
 degree&nbsp;in order to clear any Dec backlash. &nbsp;This action,
 alone, will eliminate the most common source of problems that people
-have with calibration. &nbsp;At the completion of the slew operations,
+have with calibration. &nbsp;When the slewing is completed,
 the existing calibration is still valid - it won't be cleared until you
 click on the 'Calibrate' button. &nbsp;This means the CA can also be
-used as a convenient means for slewing the telescope to a location that
-also works best for Guiding Assistant diagnostics or for measuring the
+used as a convenient means for slewing the telescope to a location
+that&nbsp;works best for Guiding Assistant diagnostics or for measuring
+the
 performance of your mount. &nbsp;The CA dialog will remain open until
 you
 click on the 'Cancel' button so its functions can be used iteratively.<h4>Calibration</h4>When
@@ -184,9 +193,12 @@ you click on the
 settings such as mount guide speed and the calibration step-size value.
 &nbsp;If these values don't look right, you will see another dialog
 warning you of the specific problem. &nbsp;If the calibration step-size
-is wrong, the CA will offer to adjust it for you. &nbsp;If the mount
-guide speed is too low, it will advise you to increase it in the mount
-controller. The CA sanity-checking dialogs look this this:<br><br><img style="width: 620px; height: 155px;" alt="" src="Calibration_Assistant_Sanity_1.png"><br><br><img style="width: 619px; height: 135px;" alt="" src="Calibration_Assistant_Sanity_2.png"><br><br>As with the other CA messages, you are strongly encouraged to follow the recommendations.<br><br>After this sanity-checking is complete, the CA will
+is wrong, the CA will offer to recalculate ('Recal') it for you.
+&nbsp;If the mount
+guide speed is too low, it will advise you to increase it to at least
+0.5x sidereal. &nbsp;This isn't done through PHD2, you will need to
+adjust it in the mount driver or via the mount hand-controller. The CA
+sanity-checking dialogs look this this:<br><br><img style="width: 620px; height: 155px;" alt="" src="Calibration_Assistant_Sanity_1.png"><br><br><img style="width: 619px; height: 135px;" alt="" src="Calibration_Assistant_Sanity_2.png"><br><br>As with the other CA messages, you are strongly encouraged to follow the recommendations.<br><br>After this sanity-checking is complete, the CA will
 trigger the normal calibration process. &nbsp;You can move the CA
 window out of the way if you want to watch how the calibration
 proceeds. &nbsp;When the calibration completes, the CA will use various
@@ -197,7 +209,7 @@ feasbible to achieve a 'good' result. &nbsp;'Acceptable' results are
 just that - good enough to continue guiding, not something to obsess
 over, but something to keep in mind if you want to later improve your
 guiding results. 'Poor' results can still be used in most cases but you
-should expect that guiding results will never be great. &nbsp;If the
+should expect that guiding results will never be very good. &nbsp;If the
 calibration fails altogether - too little movement, lost stars, etc -
 you should remedy the problem and repeat the calibration.<br><br>If
 the calibration result is less than 'good', you can click on the
@@ -205,7 +217,7 @@ the calibration result is less than 'good', you can click on the
 what things you can do to get a better result. &nbsp;If you have
 followed all the CA instructions, the explanations are likely to help
 you better understand issues like 'orthogonality error', 'unexpected
-rates', and other&nbsp;situations that usually trigger calibration
+rates', and other&nbsp;situations that&nbsp;trigger calibration
 alerts.<br><br>Clicking
 on the 'Cancel' button only closes the CA window, it doesn't cancel or
 stop any operations that are happening in the PHD2 main window.<h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
