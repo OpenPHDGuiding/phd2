@@ -807,8 +807,8 @@ void CalibrationAssistant::EvaluateCalibration(void)
     static const double CAL_ALERT_DECRATE_DIFFERENCE = 0.20;                    // Ratio tolerance
     static const double CAL_ALERT_AXISRATES_TOLERANCE = 0.20;                   // Ratio tolerance
     bool ratesMeaningful = false;
-    boolean goodRslt = true;
-    boolean acceptableRslt;
+    bool goodRslt = true;
+    bool acceptableRslt;
     wxString evalWhy = wxEmptyString;
     std::vector<wxString> reasons;
     wxString debugVals = "CalAsst: ";
