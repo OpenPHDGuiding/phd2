@@ -256,7 +256,6 @@ CalibrationAssistant::CalibrationAssistant()
     vSizer->Add(currSizer, wxSizerFlags().Center().Border(wxALL, 20));
     vSizer->Add(tgtSizer, wxSizerFlags().Center());
     vSizer->Add(midBtnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
-    //vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(m_pExplainBtn, wxSizerFlags().Center().Border(wxALL, 10));
     vSizer->Add(m_pWarning, wxSizerFlags().Center().Border(wxTOP, 10));
     vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
