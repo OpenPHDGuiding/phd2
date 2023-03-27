@@ -461,11 +461,10 @@ and will have to disable declination guiding to even complete a
 calibration. &nbsp;There are&nbsp; many other permutations of bad
 results, each suggesting a particular problem in the mount, the guide
 cable, or much less likely, the ASCOM driver for the mount. &nbsp;You
-can safely assume it has nothing to do with PHD2.<br><br>Here are the steps for running the test: <br>
+can safely assume it has nothing to do with PHD2.<br><br>Here are the steps for running the test manually: <br>
 
 <ol><li>Set the mount guide speed to 1X sidereal.&nbsp; Bring up
-the 'Manual Guide' tool in PHD2 and choose an initial pulse size - start with,
-say, 5 seconds.</li><li>Start a 60 second exposure on the main camera.</li><li>Send
+the 'Manual Guide' tool in PHD2 and choose an initial value for 'Guide Pulse Duration' - start with, for example, 5 seconds.</li><li>Start a 60 second exposure on the main camera.</li><li>Send
 a 5-second pulse west, then two 5-second pulses east, then a final
 5-second pulse west. &nbsp;This should return the star to its
 approximate starting position. &nbsp;You should&nbsp;wait about 5
@@ -480,7 +479,7 @@ total&nbsp; of guide durations plus a margin for error. On most mounts,
 the star will not return to its exact center because of some
 declination backlash - you can see that in the first example&nbsp;image. &nbsp;But
 it should be fairly close or you'll need to look more carefully at how
-much declination backlash you have in the mount. &nbsp;PHD2 also has a star-cross test tool, described here: <a href="Tools.htm#Star_cross_tool">Star-cross Tool</a>. &nbsp;You can use that to automatically perform the test steps described in 1-5 above.<br><br>One benefit to
+much declination backlash you have in the mount. &nbsp;PHD2 also has a&nbsp;<a href="Tools.htm#Star_cross_tool">Star-cross Tool</a> that will automate these steps for you.<br><br>One benefit to
 using this test is that it reduces things to the absolute basics: will
 the mount move as directed or not. &nbsp;It has nothing to do with PHD2
 guide settings because they aren't involved in the test. &nbsp;You may
@@ -862,23 +861,30 @@ background</li><li><span style="font-family: Symbol;"><span style=""><span style
 the image scale as it is known by PHD2, and that can be used to scale the pixel
 distance values into units of arc-seconds if desired.</p><h3><a name="Problem_Reporting"></a>Problem Reporting</h3>If
 you encounter application problems that&nbsp;are specific to <span style="font-style: italic;">PHD2</span>, you
-are encouraged to report them to the open-phd-guiding Google group: <span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.
-&nbsp;Obviously, the more information you can provide, the more likely
-we will be able to resolve the problem. &nbsp;Using the following
+are encouraged to report them to the open-phd-guiding Google group:&nbsp;<span style="font-weight: bold;"></span><a href="https://groups.google.com/g/open-phd-guiding">OpenPHDGuiding Group</a>
+&nbsp;You need to first establish a membership in the group&nbsp;in
+order to get help. Obviously, the more information you can provide
+about your problem, the more likely
+we will be able to resolve it. &nbsp;Using the following
 guidelines will help in that regard: <br><ol><li>Try to reproduce the
 problem - if we have a clear set of steps to follow, we are more likely
 to find a solution quickly. &nbsp;If you can reproduce it, try to
 reduce things to the minimum number of steps. &nbsp;Remember, we won't
 have your hardware or computer environment when we try to reproduce it
-ourselves.</li><li>Try to be complete about describing your configuration - operating system, equipment types, <span style="font-style: italic;">PHD2</span> version, etc.</li><li>Attach
-the <span style="font-style: italic;">PHD2</span>
-debug log from the session in which you encountered the
-problem. &nbsp;You can find the debug log in the PHD2 folder in your
-Documents folder.&nbsp;If you can't reproduce the problem, try to
+ourselves.</li><li>Try to be complete about describing your configuration - operating system, equipment types, <span style="font-style: italic;">PHD2</span> version, etc.</li><li>Upload&nbsp; the <span style="font-style: italic;">PHD2</span> log files&nbsp; from the session in which you encountered the
+problem - this is a critical step. &nbsp;Use
+the 'Upload log files' function on the 'Help' menu to do this -- it
+gives you an easy way to select the relevant log files and then uploads
+them to our server without&nbsp;constraints on file size. Attaching log
+files to forum messages is discouraged and will often not work at all
+because of the file sizes.&nbsp; If you can't reproduce the problem,
+try to
 estimate the
 time of day when you first saw it - this could help us find evidence in
 the debug log without having to sift through hundreds of lines of
-output. &nbsp;The 'Upload log files' function on the 'Help' menu can help you find and upload the log files.</li></ol>
+output. &nbsp;If you request help on the forum without uploading your
+log files, you will usually be asked to do so, thus adding an
+unnecessary delay in getting help.</li></ol>
 <br>
 &nbsp;&nbsp;
 </body></html>
