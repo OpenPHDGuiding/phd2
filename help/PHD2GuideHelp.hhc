@@ -179,6 +179,10 @@
 			<param name="Local" value="Tools.htm#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Calibration Assistant">
+			<param name="Local" value="Tools.htm#Calibration_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Guiding Assistant">
 			<param name="Local" value="Tools.htm#Guiding_Assistant">
 			</OBJECT>

@@ -268,7 +268,15 @@ choose the specific one you want. &nbsp;PHD2 will remember the choice and save
 it as part of your equipment profile, so you should only need to do
 this once. &nbsp;An alternative is to simply connect one of the
 cameras, the intended guide camera, at the time you build your
-equipment profile.
+equipment profile.<br><br>Some
+camera manufacturers don't do a good job of staying connected to the
+right camera and may switch from the guide camera to the imaging camera
+without any notification. &nbsp;If you see PHD2 alert messages warning
+you that the camera sensor geometry has changed and you need to
+re-build your dark library, the likely source of the problem is that
+PHD2 has been connected to the imaging camera. &nbsp;These problems are
+caused by the camera drivers, there's nothing PHD2 can do to prevent
+them.
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -588,7 +596,9 @@ degrees of Dec = 0 (near the celestial equator) and at least 60 degrees
 above the nearest east/west horizon (i.e. within 2 hours of the
 celestial meridian). &nbsp;Calibrations can be done in other pointing
 positions if required by conditions at your site but they will be
-subject to somewhat more measurement uncertainty. &nbsp;You&nbsp;<span style="font-weight: bold;">cannot</span> do calibrations pointing very close to the north or south celestial poles, and the mount must be tracking at the sidereal rate.<br><br>Although
+subject to somewhat more measurement uncertainty. &nbsp;You&nbsp;<span style="font-weight: bold;">cannot</span>
+do calibrations pointing very close to the north or south celestial
+poles, and the mount must be tracking at the sidereal rate. &nbsp;<span style="font-weight: bold;">If you</span> <span style="font-weight: bold;">encounter difficulties completing a calibration, you should immediately retry using the</span> <a href="Tools.htm#Calibration_Assistant">Calibration Assistant</a> .<br><br>Although
 PHD2 moves the guide star in all four directions, only the west and
 north movements are actually used to compute the guide rates and camera
 angles. The east and south moves are used only to restore the star
@@ -599,35 +609,22 @@ this backlash, watching for a clear
 pattern of movement in a single direction with no reversals. &nbsp;If
 your mount has a large amount of Dec backlash or you're guiding at a
 long focal length in poor seeing conditions, this phase of calibration
-may not remove all the backlash. &nbsp;Your best option for avoiding
-this problem is to manually clear the backlash.
-&nbsp; You can accomplish this with a short 'north' slew or by using the
-hand-controller to get the mount moving north (the 'up' button on the hand-controller) as confirmed by obvious
-movement of the stars in the PHD2 display. &nbsp; If the backlash
-is not cleared adequately, the computed declination
-rate may be too
-low, a situation that is discussed further in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a>
-section. &nbsp;You may also see that the south pulses leave the guide
+may not remove all the backlash. &nbsp;Your best option to avoid this
+problem is to use the Calibration Assistant. You may also see that the
+south pulses leave the guide
 star well-short of its starting position - this is another visual clue
-that you have significant declination backlash in your mount but it does not invalidate the calibration. &nbsp;If
+that you have significant declination backlash in your mount but it
+does not invalidate the calibration. &nbsp;If
 you see evidence of sizable backlash, you can run the Guiding Assistant
 tool and measure it directly.<br>
 <br>
 In
 most cases, calibration will complete automatically without any user
-involvement. &nbsp;If the mount doesn't move sufficiently in the west
+involvement, particularly if you are using the Calibration Assistant. &nbsp;If the mount doesn't move sufficiently in the west
 or north directions, you will get an alert saying the calibration has&nbsp;<span style="font-weight: bold;">failed</span>.
-&nbsp;Failures of this type are pretty uncommon but they can occur if
+Failures of this type are pretty uncommon but they can occur if
 some part of the hardware is simply not working (e.g. a bad guide
-cable) or if you are using an overly small guide speed setting in the
-mount or have otherwise fouled up the PHD2 calibration parameters.
-&nbsp;Unless you see a "failed" message, the calibration
-actually completed. &nbsp;You may see other alert messages advising you
-that the calibration results look suspicious or show mount behavior that
-is likely to cause problems during guiding. &nbsp;These are advisory
-messages only, they don't mean that the calibration itself failed.
-&nbsp;If you get frequent messages like this during calibration, you
-should consult the&nbsp;<a href="Trouble_shooting.htm#Problems-_Mount_Control">trouble-shooting section of the manual</a>. &nbsp;The bottom line is that you can't get good guiding results using a bad calibration.<br><br>If
+cable) or if you haven't followed all the recommendations in the Calibration Assistant.<br><br>If
 you're using an ASCOM (or Indi) connection for either the 'mount' or
 'aux-mount', a good calibration can be re-used for a long&nbsp;time,
 and that is the preferred way to operate. &nbsp;These &nbsp;connection
