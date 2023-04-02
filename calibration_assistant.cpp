@@ -37,6 +37,8 @@
 #include "calibration_assistant.h"
 #include "calstep_dialog.h"
 
+#include <algorithm>
+
 enum {defBestDec = 0, defBestOffset = 5, textWrapPoint = 500};
 double const siderealSecsPerSec = 0.9973;
 #define RateX(spd)  (spd * 3600.0 / (15.0 * siderealSecsPerSec))
