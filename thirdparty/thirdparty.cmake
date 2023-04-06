@@ -682,9 +682,9 @@ else()
     endif()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
 
-    set(indi_zip ${thirdparty_dir}/indi-1.8.7.tar.gz)
+    set(indi_zip ${thirdparty_dir}/indi-1.8.3.tar.gz)
     message(STATUS "Using project provided libindi '${indi_zip}'")
-    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.7")
+    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.3")
 
     # this does not work because of the configure_file commands below
     # that want to run at camke time, but this woudl extract the
