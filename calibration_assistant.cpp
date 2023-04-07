@@ -36,10 +36,9 @@
 #include "phd.h"
 #include "calibration_assistant.h"
 #include "calstep_dialog.h"
-
 #include <algorithm>
 
-enum {defBestDec = 0, defBestOffset = 5, textWrapPoint = 500};
+enum {defBestDec = 0, defBestOffset = 5, textWrapPoint = 500, slewSettleTime = 2000};
 double const siderealSecsPerSec = 0.9973;
 #define RateX(spd)  (spd * 3600.0 / (15.0 * siderealSecsPerSec))
 
@@ -698,6 +697,8 @@ bool CalibrationAssistant::PerformSlew(double ra, double dec)
         };
         SlewInBg bg(this, ra, dec);
         m_isSlewing = true;
+        // Additional 2-sec delays are used here because some mount controllers report slew-completions before the mount has completely stopped moving - for example with behind-the-scenes clearing of RA backlash
+        // Starting a calibration before everything has settled will produce a bad result.  The forced delays are simply an extra safety margin to reduce the likelihood of this happening.
         if (bg.Run())
         {
             m_isSlewing = false;
@@ -706,6 +707,8 @@ bool CalibrationAssistant::PerformSlew(double ra, double dec)
         else
         {
             m_isSlewing = false;
+            ShowStatus(_("Pausing..."));
+            wxMilliSleep(slewSettleTime);
             UpdateCurrentPosition(false);
             ShowExplanationMsg(dec);
             completed = true;
@@ -718,8 +721,10 @@ bool CalibrationAssistant::PerformSlew(double ra, double dec)
         if (!pPointingSource->SlewToCoordinates(ra, dec))
         {
             m_isSlewing = false;
+            ShowStatus(_("Pausing..."));
+            wxMilliSleep(slewSettleTime);
             ShowExplanationMsg(dec);
-            ShowStatus(_("Click 'Calibrate' to start calibration or 'Cancel' to exit"));
+            ShowStatus(_("Wait for tracking to stabilize, then click 'Calibrate' to start calibration or 'Cancel' to exit"));
             completed = true;
         }
         else
@@ -764,18 +769,16 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
         ShowStatus(_("Initial slew to approximate position"));
         if (!PerformSlew(slew_ra, decSlew - 1.0))
         {
-            ShowStatus("Pausing");
-            wxMilliSleep(1000);
             ShowStatus(_("Final slew north to pre-clear Dec backlash"));
             if (!PerformSlew(slew_ra, decSlew))
-                ShowStatus(_("Click 'Calibrate' to start calibration or 'Cancel' to exit"));
+                ShowStatus(_("Wait for tracking to stabilize, then click 'Calibrate' to start calibration or 'Cancel' to exit"));
         }
     }
     else
     {
         ShowStatus(_("Slewing to calibration location"));
         if (!PerformSlew(slew_ra, decSlew))
-            ShowStatus(_("Click 'Calibrate' to start calibration or 'Cancel' to exit"));
+            ShowStatus(_("Wait for tracking to stabilize, then Click 'Calibrate' to start calibration or 'Cancel' to exit"));
     }
     m_pSlewBtn->Enable(true);
     if (TheScope())
@@ -943,21 +946,20 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
     }
     if (!m_justSlewed && pPointingSource->CanSlew())
     {
-        m_justSlewed = true;
         if (pFrame->CaptureActive)
             pFrame->StopCapturing();
         ShowStatus(_("Pre-clearing backlash"));
-        if (PerformSlew(m_currentRA, m_currentDec + 1.0 / 60.))        // Status messages generated are handled by PerformSlew
+        if (PerformSlew(m_currentRA, m_currentDec + 2.0 / 60.))        // Status messages generated are handled by PerformSlew
             return;
     }
     m_pSlewBtn->Enable(false);
     m_pCalibrateBtn->Enable(false);
-    if (!pFrame->CaptureActive)
-        pFrame->StartCapturing();
+    // Looping left inactive will force another auto-find which we need because the guide star will have moved
     if (PhdController::Guide(GUIDEOPT_FORCE_RECAL, settle, wxRect(), &msg))
     {
         ShowStatus(_("Waiting for calibration to complete"));
         m_monitoringCalibration = true;
+        m_justSlewed = false;
     }
     else
     {
