@@ -2,6 +2,7 @@
 #ifndef __QHYCCDERR_H__
 #define __QHYCCDERR_H__
 
+// This is used by old CCD or A series cameras, if you exp 5 sec, you need to read just after you begin exp, not 5 sec after start exp
 #define QHYCCD_READ_DIRECTLY            0x2001
 
 #define QHYCCD_DELAY_200MS              0x2000

@@ -12,7 +12,7 @@
 
 
 #if defined (_WIN32)
-#include "cyapi.h"
+//#include "cyapi.h"
 #endif
 
 #ifndef __QHYCCD_H__
@@ -20,6 +20,7 @@
 
 typedef void qhyccd_handle;
 
+EXPORTC void STDCALL OutputQHYCCDDebug(char *strOutput);
 
 EXPORTC void STDCALL SetQHYCCDAutoDetectCamera(bool enable);
 
@@ -33,7 +34,18 @@ EXPORTC void STDCALL SetQHYCCDBufferNumber(uint32_t BufNumber);
 #endif
 
 EXPORTC void STDCALL EnableQHYCCDMessage(bool enable);
+EXPORTC void STDCALL set_histogram_equalization(bool enable);
 EXPORTC void STDCALL EnableQHYCCDLogFile(bool enable);
+
+
+/** \fn uint32_t SetQHYCCDSingleFrameTimeOut(qhyccd_handle *h,uint32_t time)
+      \brief set single frame time out 
+      \param time Timeout . unit is ms. In SDK default is 60,000ms. 0 is unlimit time. Must add some spare value in order to consider the readout time
+      \return
+	  on success,return QHYCCD_SUCCESS \n
+	  QHYCCD_ERROR_INITRESOURCE if the initialize failed \n
+	  another QHYCCD_ERROR code on other failures
+  */
 
 EXPORTC uint32_t STDCALL SetQHYCCDSingleFrameTimeOut(qhyccd_handle *h,uint32_t time);  
 
@@ -44,7 +56,6 @@ EXPORTC const char* STDCALL GetTimeStamp();
       \brief initialize QHYCCD SDK resource
       \return
 	  on success,return QHYCCD_SUCCESS \n
-	  QHYCCD_ERROR_INITRESOURCE if the initialize failed \n
 	  another QHYCCD_ERROR code on other failures
   */
 EXPORTC uint32_t STDCALL InitQHYCCDResource(void);
@@ -139,6 +150,18 @@ EXPORTC uint32_t STDCALL InitQHYCCD(qhyccd_handle *handle);
   */
 EXPORTC uint32_t STDCALL IsQHYCCDControlAvailable(qhyccd_handle *handle,CONTROL_ID controlId);
 
+/** @fn uint32_t GetQHYCCDControlName(qhyccd_handle *handle,CONTROL_ID controlId,char *IDname)
+    @brief get the specified ControlName from camera
+    @param handle camera control handle
+    @param controlId function type
+	@param IDname the name of current controlId
+    @return
+	  on have,return QHYCCD_SUCCESS \n
+	  on do not have,return QHYCCD_ERROR_NOTSUPPORT \n
+	  another QHYCCD_ERROR code on other failures
+  */
+EXPORTC uint32_t STDCALL GetQHYCCDControlName(qhyccd_handle *handle,CONTROL_ID controlId,char *IDname);
+
 /** \fn uint32_t SetQHYCCDParam(qhyccd_handle *handle,CONTROL_ID controlId,double value)
       \brief set params to camera
       \param handle camera control handle
@@ -150,6 +173,7 @@ EXPORTC uint32_t STDCALL IsQHYCCDControlAvailable(qhyccd_handle *handle,CONTROL_
 	  QHYCCD_ERROR_SETPARAMS,if set params to camera failed \n
 	  another QHYCCD_ERROR code on other failures
   */
+
 EXPORTC uint32_t STDCALL SetQHYCCDParam(qhyccd_handle *handle,CONTROL_ID controlId, double value);
 
 /** \fn double GetQHYCCDParam(qhyccd_handle *handle,CONTROL_ID controlId)
@@ -292,6 +316,15 @@ EXPORTC uint32_t STDCALL StopQHYCCDLive(qhyccd_handle *handle);
   on success,return QHYCCD_SUCCESS \n
   another QHYCCD_ERROR code on other failures
 */
+
+
+
+
+EXPORTFUNC uint32_t STDCALL QHYCCDPcieRecv(qhyccd_handle *handle, void * data, int len,uint64_t timeout);
+EXPORTFUNC uint32_t STDCALL GetQHYCCDPcieDDRNum(qhyccd_handle *handle);
+
+
+
 EXPORTC uint32_t STDCALL SetQHYCCDBinMode(qhyccd_handle *handle,uint32_t wbin,uint32_t hbin);
 
 /**
@@ -364,6 +397,14 @@ EXPORTC	uint32_t STDCALL GetQHYCCDCFWStatus(qhyccd_handle *handle,char *status);
   */
 EXPORTC	uint32_t STDCALL IsQHYCCDCFWPlugged(qhyccd_handle *handle);
 
+//Get the number of triger mode for camera
+EXPORTC uint32_t STDCALL GetQHYCCDTrigerInterfaceNumber(qhyccd_handle *handle, uint32_t *modeNumber);
+//Get the name of for every triger mode 
+EXPORTC uint32_t STDCALL GetQHYCCDTrigerInterfaceName(qhyccd_handle *handle, uint32_t modeNumber, char *name);
+//Setup triger interface
+EXPORTC uint32_t STDCALL SetQHYCCDTrigerInterface(qhyccd_handle *handle, uint32_t trigerMode);
+//Setup triger-in mode on/off
+EXPORTC uint32_t STDCALL SetQHYCCDTrigerFunction(qhyccd_handle *h,bool value);
 /**
  \fn   uint32_t SetQHYCCDTrigerMode(qhyccd_handle *handle,uint32_t trigerMode)
  \brief set camera triger mode
@@ -373,7 +414,18 @@ EXPORTC	uint32_t STDCALL IsQHYCCDCFWPlugged(qhyccd_handle *handle);
 on success,return QHYCCD_SUCCESS \n
 another QHYCCD_ERROR code on other failures
 */
+//Setup triger mode for camera
 EXPORTC uint32_t STDCALL SetQHYCCDTrigerMode(qhyccd_handle *handle,uint32_t trigerMode);
+//Setup triger-out mode on/off
+EXPORTC uint32_t STDCALL EnableQHYCCDTrigerOut(qhyccd_handle *handle);
+EXPORTC uint32_t STDCALL EnableQHYCCDTrigerOutA(qhyccd_handle *handle);
+//Send software triger-in signal to camera
+EXPORTC uint32_t STDCALL SendSoftTriger2QHYCCDCam(qhyccd_handle *handle);
+
+EXPORTC uint32_t STDCALL SetQHYCCDTrigerFilterOnOff(qhyccd_handle *handle, bool onoff);
+
+EXPORTC uint32_t STDCALL SetQHYCCDTrigerFilterTime(qhyccd_handle *handle, uint32_t time);
+
 
 /** \fn void Bits16ToBits8(qhyccd_handle *h,uint8_t *InputData16,uint8_t *OutputData8,uint32_t imageX,uint32_t imageY,uint16_t B,uint16_t W)
       \brief turn 16bits data into 8bits
@@ -459,6 +511,7 @@ EXPORTC uint32_t STDCALL GetQHYCCDEffectiveArea(qhyccd_handle *h,uint32_t *start
   */
 EXPORTC uint32_t STDCALL GetQHYCCDOverScanArea(qhyccd_handle *h,uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY);
 
+EXPORTC uint32_t STDCALL GetQHYCCDCurrentROI(qhyccd_handle *handle, uint32_t *startX, uint32_t *startY, uint32_t *sizeX, uint32_t *sizeY);
 
 /** @fn uint32_t SetQHYCCDFocusSetting(qhyccd_handle *h,uint32_t focusCenterX, uint32_t focusCenterY)
       @brief Set the camera on focus mode
@@ -692,8 +745,6 @@ EXPORTC double STDCALL GetQHYCCDReadingProgress(qhyccd_handle *handle);
 */
 EXPORTC uint32_t STDCALL TestQHYCCDPIDParas(qhyccd_handle *h, double p, double i, double d);
 
-EXPORTC uint32_t STDCALL SetQHYCCDTrigerFunction(qhyccd_handle *h,bool value);
-
 EXPORTC uint32_t STDCALL DownloadFX3FirmWare(uint16_t vid,uint16_t pid,char *imgpath);
 
 EXPORTC uint32_t STDCALL GetQHYCCDType(qhyccd_handle *h);
@@ -718,7 +769,8 @@ EXPORTC void STDCALL SetQHYCCDGPSSlaveModeParameter(qhyccd_handle *handle,uint32
 
 EXPORTC void STDCALL SetQHYCCDQuit();
 
-EXPORTC uint32_t STDCALL QHYCCDVendRequestWrite(qhyccd_handle *h,uint8_t req,uint16_t value,uint16_t index1,uint32_t length,uint8_t *data);
+EXPORTC uint32_t STDCALL QHYCCDVendRequestWrite(qhyccd_handle *h, uint8_t req, uint16_t value, uint16_t index1, uint32_t length, uint8_t *data);
+EXPORTC uint32_t STDCALL QHYCCDVendRequestRead(qhyccd_handle *h, uint8_t req, uint16_t value, uint16_t index1, uint32_t length, uint8_t *data);
 
 EXPORTC uint32_t STDCALL QHYCCDReadUSB_SYNC(qhyccd_handle *pDevHandle, uint8_t endpoint, uint32_t length, uint8_t *data, uint32_t timeout);
 
@@ -798,6 +850,27 @@ EXPORTC uint32_t STDCALL SetQHYCCDTwoChannelCombineParameter(qhyccd_handle *hand
 
 EXPORTC uint32_t STDCALL EnableQHYCCDImageOSD(qhyccd_handle *h,uint32_t i);
 
+/**
+  @fn uint32_t GetQHYCCDPreciseExposureInfo(qhyccd_handle *h,
+                                            uint32_t *PixelPeriod_ps,
+                                            uint32_t *LinePeriod_ns,
+                                            uint32_t *FramePeriod_us,
+                                            uint32_t *ClocksPerLine,
+                                            uint32_t *LinesPerFrame,
+                                            uint32_t *ActualExposureTime,
+                                            uint8_t  *isLongExposureMode);
+  @brief get the sensor precise timing data from camera. These data can be used for high precise GPS time calculation 
+  @param h camera control handle
+  @param PixelPeriod_ps return pixel period, unit is ps \n
+  @param LinePeriod_ns return row period, unit is ns \n
+  @param FramePeriod_us return frame period, unit is us \n 
+  @param ClocksPerLine return how many clocks per line \n 
+  @param LinesPerFrame return how many rows per frame. Please note this maybe not the picture y size. \n   
+  @param ActualExposureTime return actual exposure time. most cmos exposure is row based. So the exposure time is n*row period. It maybe has a little difference with the set value. \n   
+  @param isLongExposureMode return if camera works in long exposure mode. For cmos camera. When exposure time > frame period. It will add the verical blanking rows. in this case it is long exposure mode \n     
+  @return QHYCCD_SUCCESS or QHYCCD_ERROR. If the camera does not support this function, it will return QHYCCD_ERROR \n
+
+*/
 EXPORTC uint32_t STDCALL GetQHYCCDPreciseExposureInfo(qhyccd_handle *h,
                                                          uint32_t *PixelPeriod_ps,
                                                          uint32_t *LinePeriod_ns,
@@ -808,10 +881,62 @@ EXPORTC uint32_t STDCALL GetQHYCCDPreciseExposureInfo(qhyccd_handle *h,
                                                          uint8_t  *isLongExposureMode);
 
 
+
+
+/**
+  @fn uint32_t GetQHYCCDRollingShutterEndOffset(qhyccd_handle *h,uint32_t row,uint32_t *offset);   
+  @brief for rolling shutter camera with GPS meassurement signal output or with GPSBOX connection. it will output the meassurement pulse. But the pulse is not at the exactly time of the \n
+         the exposure time. This api will return the calibrated data of the offset value from GPS meassurement pulse to the end of exposure time of certain row. 
+  @param h camera control handle \n
+  @param row the shutter status \n
+  @param offset the shutter offset value from shutter meassure signal falling edge (gps messured end exposure) . unit us \n
+  @return QHYCCD_SUCCESS or QHYCCD_ERROR. If the camera does not support this function, it will return QHYCCD_ERROR \n
+*/
+EXPORTFUNC uint32_t STDCALL GetQHYCCDRollingShutterEndOffset(qhyccd_handle *h,uint32_t row,double *offset);                                                        
+
+
 EXPORTC void STDCALL QHYCCDQuit();
 
 EXPORTC QHYDWORD STDCALL SetQHYCCDCallBack(QHYCCDProcCallBack ProcCallBack,
     int32_t Flag);
+
+EXPORTFUNC void RegisterPnpEventIn( void (*in_pnp_event_in_func)(char *id));
+
+EXPORTFUNC void RegisterPnpEventOut( void (*in_pnp_event_out_func)(char *id));
+
+
+EXPORTFUNC uint32_t STDCALL resetDev(char *deviceID, uint32_t readModeIndex, uint8_t streamMode,qhyccd_handle* devHandle, uint32_t* imageWidth, uint32_t* imageHigh, uint32_t bitDepth);
+
+EXPORTFUNC void RegisterDataEventSingle( void (*in_data_event_single_func)(char *id, uint8_t *imgdata));
+
+EXPORTFUNC void RegisterDataEventLive( void (*in_data_event_live_func)(char *id, uint8_t *imgdata));
+
+EXPORTFUNC void RegisterTransferEventError( void (*transfer_event_error_func)());
+
+EXPORTFUNC uint32_t STDCALL PCIEClearDDR(qhyccd_handle *handle);
+EXPORTFUNC uint32_t STDCALL GetReadModesNumber(char* deviceID,uint32_t* numModes);
+
+EXPORTFUNC uint32_t STDCALL GetReadModeName(char* deviceID, uint32_t modeIndex, char* modeName);
+
+EXPORTFUNC void STDCALL QHYCCDSensorPhaseReTrain(qhyccd_handle *handle);
+EXPORTFUNC void STDCALL QHYCCDReadInitConfigFlash(qhyccd_handle *handle, char* configString_raw64);
+EXPORTFUNC void STDCALL QHYCCDEraseInitConfigFlash(qhyccd_handle *handle);
+EXPORTFUNC void STDCALL QHYCCDResetFlashULVOError(qhyccd_handle *handle);
+EXPORTFUNC void STDCALL QHYCCDTestFlashULVOError(qhyccd_handle *handle);
+EXPORTFUNC void STDCALL QHYCCDSetFlashInitPWM(qhyccd_handle *handle,uint8_t pwm);
+EXPORTFUNC void STDCALL QHYCCDGetDebugDataD3(qhyccd_handle *handle, char* debugData_raw64);
+EXPORTFUNC uint32_t STDCALL QHYCCDSolve(int timeout_s, float scale_l, float  scale_h,float center_ra, float center_dec,float center_r, float& s_ra, float& s_dec,float& s_size_x,float& s_size_y, float& s_rotation);
+EXPORTFUNC void STDCALL QHYCCDEqualizeHistogram(uint8_t * pdata, int width, int height, int bpp);
+void  QHYCCDGetDebugControlID(CONTROL_ID controlId, bool hasValue, bool isSetValue, double value);
+
+
+EXPORTFUNC int STDCALL QHYCCD_fpga_list(struct fpga_info_list &list);
+EXPORTFUNC uint32_t STDCALL QHYCCD_fpga_open(int id);
+EXPORTFUNC void STDCALL QHYCCD_fpga_close();
+EXPORTFUNC int STDCALL QHYCCD_fpga_send(int chnl, void * data, int len, int destoff, int last, uint64_t timeout);
+EXPORTFUNC int STDCALL QHYCCD_fpga_recv(int chnl, void * data, int len, uint64_t timeout);
+EXPORTFUNC void STDCALL QHYCCD_fpga_reset();
+
 
 #if 0//PCIE_MODE_TEST
 
@@ -885,3 +1010,9 @@ EXPORTC void STDCALL QHYCCD_fpga_reset();
 void call_pnp_event();
 void call_data_event_live(char *id, uint8_t *imgdata);
 void call_transfer_event_error();
+void call_critical_event_error(qhyccd_handle *h);
+EXPORTFUNC void RegisterPnpEventIn( void (*in_pnp_event_in_func)(char *id));
+EXPORTFUNC void RegisterPnpEventOut( void (*in_pnp_event_out_func)(char *id));
+EXPORTFUNC void RegisterTransferEventError( void (*transfer_event_error_func)());
+EXPORTFUNC uint32_t STDCALL PCIEClearDDR(qhyccd_handle *handle);
+EXPORTFUNC uint32_t STDCALL PCIEWriteCameraRegister2(qhyccd_handle *handle, unsigned char idx, unsigned char val);
