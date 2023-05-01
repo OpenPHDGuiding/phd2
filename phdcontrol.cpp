@@ -127,8 +127,8 @@ bool PhdController::Guide(unsigned int options, const SettleParams& settle, cons
     }
 
     Debug.AddLine("PhdController::Guide begins");
-    ctrl.forceCalibration = options & GUIDEOPT_FORCE_RECAL;
-    ctrl.useStickyLock = options & GUIDEOPT_USE_STICKY_LOCK;
+    ctrl.forceCalibration = (options & GUIDEOPT_FORCE_RECAL) != 0;
+    ctrl.useStickyLock = (options & GUIDEOPT_USE_STICKY_LOCK) != 0;
     ctrl.settleOp = OP_GUIDE;
     ctrl.settle = settle;
     ctrl.roi = roi;
