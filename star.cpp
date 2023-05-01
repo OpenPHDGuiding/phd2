@@ -1000,7 +1000,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
             bool duplicate = std::find_if(foundStars.begin(), foundStars.end(),
-                std::bind(std::ptr_fun(CloseToReference), tmp, std::placeholders::_1)) != foundStars.end();
+                [&tmp](const GuideStar& other) { return CloseToReference(tmp, other); }) != foundStars.end();
 
             if (!duplicate)
             {
