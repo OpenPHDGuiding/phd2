@@ -396,6 +396,8 @@ void CalibrationAssistant::TrackCalibration(GUIDER_STATE state)
         m_pCalibrateBtn->Enable(true);
         break;
     }
+    case STATE_STOP:
+        break;
 
     }
 }
