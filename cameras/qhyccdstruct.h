@@ -163,8 +163,8 @@ enum CONTROL_ID
 {
 /*0*/  CONTROL_BRIGHTNESS = 0, //!< image brightness
 /*1*/  CONTROL_CONTRAST,       //!< image contrast
-/*2*/  CONTROL_WBR,            //!< red of white balance
-/*3*/  CONTROL_WBB,            //!< blue of white balance
+/*2*/  CONTROL_WBR,            //!< the red of white balance
+/*3*/  CONTROL_WBB,            //!< the blue of white balance
 /*4*/  CONTROL_WBG,            //!< the green of white balance
 /*5*/  CONTROL_GAMMA,          //!< screen gamma
 /*6*/  CONTROL_GAIN,           //!< camera gain
@@ -181,13 +181,13 @@ enum CONTROL_ID
 /*17*/  CONTROL_CFWPORT,        //!< control camera color filter wheel port
 /*18*/  CONTROL_COOLER,         //!< check if camera has cooler
 /*19*/  CONTROL_ST4PORT,        //!< check if camera has st4port
-/*20*/  CAM_COLOR,
+/*20*/  CAM_COLOR,              /// FIXME!  CAM_IS_COLOR CAM_COLOR conflict
 /*21*/  CAM_BIN1X1MODE,         //!< check if camera has bin1x1 mode
 /*22*/  CAM_BIN2X2MODE,         //!< check if camera has bin2x2 mode
 /*23*/  CAM_BIN3X3MODE,         //!< check if camera has bin3x3 mode
 /*24*/  CAM_BIN4X4MODE,         //!< check if camera has bin4x4 mode
 /*25*/  CAM_MECHANICALSHUTTER,                   //!< mechanical shutter
-/*26*/  CAM_TRIGER_INTERFACE,                    //!< triger
+/*26*/  CAM_TRIGER_INTERFACE,                    //!< check if camera has triger interface
 /*27*/  CAM_TECOVERPROTECT_INTERFACE,            //!< tec overprotect
 /*28*/  CAM_SINGNALCLAMP_INTERFACE,              //!< singnal clamp
 /*29*/  CAM_FINETONE_INTERFACE,                  //!< fine tone
@@ -202,8 +202,8 @@ enum CONTROL_ID
 
 /*37*/  CAM_IGNOREOVERSCAN_INTERFACE,            //!< ignore overscan area
 
-/*38*/  QHYCCD_3A_AUTOBALANCE,
-/*39*/  QHYCCD_3A_AUTOEXPOSURE,
+/*38*/  //QHYCCD_3A_AUTOBALANCE,					 //!< auto white balance//lyl move to 1024
+/*39*/  QHYCCD_3A_AUTOEXPOSURE=39,					 //!< auto exposure
 /*40*/  QHYCCD_3A_AUTOFOCUS,
 /*41*/  CONTROL_AMPV,                            //!< ccd or cmos ampv
 /*42*/  CONTROL_VCAM,                            //!< Virtual Camera on off
@@ -232,11 +232,32 @@ enum CONTROL_ID
 /*62*/  CAM_HUMIDITY,			//!<check if camera has	 humidity sensor  20191021 LYL Unified humidity function
 /*63*/  CAM_PRESSURE,             //check if camera has pressure sensor
 /*64*/  CONTROL_VACUUM_PUMP,        /// if camera has VACUUM PUMP
-/*65*/  CONTROL_SensorChamberCycle_PUMP,
+/*65*/  CONTROL_SensorChamberCycle_PUMP, ///air cycle pump for sensor drying
+/*66*/  CAM_32BITS,
+/*67*/  CAM_Sensor_ULVO_Status, /// Sensor working status [0:init  1:good  2:checkErr  3:monitorErr 8:good 9:powerChipErr]  410 461 411 600 268 [Eris board]
+/*68*/  CAM_SensorPhaseReTrain, /// 2020,4040/PRO，6060,42PRO
+/*69*/  CAM_InitConfigFromFlash, /// 2410 461 411 600 268 for now
+/*70*/  CAM_TRIGER_MODE, //check if camera has multiple triger mode
+/*71*/  CAM_TRIGER_OUT, //check if camera support triger out function
+/*72*/  CAM_BURST_MODE, //check if camera support burst mode
+/*73*/  CAM_SPEAKER_LED_ALARM, // for OEM-600
+/*74*/  CAM_WATCH_DOG_FPGA, // for _QHY5III178C Celestron, SDK have to feed this dog or it go reset
+
+/*75*/  CAM_BIN6X6MODE,         //!< check if camera has bin6x6 mode
+/*76*/  CAM_BIN8X8MODE,         //!< check if camera has bin8x8 mode
+/*77*/  CAM_GlobalSensorGPSLED,         ///Show GPS LED tab on sharpCap
+/*78*/  CONTROL_ImgProc,   /// Process image
+/*79*/  CONTROL_RemoveRBI,   /// Remove single RBI
 
 
 /* Do not Put Item after  CONTROL_MAX_ID !! This should be the max index of the list */
-/*Last One */  CONTROL_MAX_ID
+/*Last One */  CONTROL_MAX_ID,
+
+//TEST id name list
+/*1024*/ CONTROL_AUTOWHITEBALANCE=1024, //!<auto white balance  eg.CONTROL_TEST=1024
+/*1025*/ CONTROL_AUTOEXPOSURE,			//!<auto exposure
+/*1026*/ CONTROL_ImageStabilization,		//!<image stabilization
+/*1027*/ CONTROL_GlobalReset		//!<image stabilization
 };
 
 /**
@@ -253,6 +274,16 @@ enum CodecID
 {
   NONE_CODEC,
   H261_CODEC
+};
+
+enum ImgProc
+{
+  NOPROC = 0,
+  ROTATION180,
+  ROTATION90L,
+  ROTATION90R,
+  MIRRORH,
+  MIRRORV
 };
 
 
