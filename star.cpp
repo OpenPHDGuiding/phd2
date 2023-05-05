@@ -689,7 +689,7 @@ static void RemoveItems(std::set<Peak>& stars, const std::set<int>& to_erase)
 static bool CloseToReference(const GuideStar& referencePoint, const GuideStar& other)
 {
     // test whether star is close to the reference star for purposes of detecting duplicates and improving spacial sampling
-    const int minSeparation = 25;
+    const double minSeparation = 25.0;
     return other.Distance(referencePoint) < minSeparation;
 }
 
