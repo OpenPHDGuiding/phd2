@@ -101,6 +101,67 @@ unpack_linux () {
     cp usr/local/lib/libqhyccd.a "$SRC"/cameras/qhyccdlibs/linux/$arch/
 }
 
+unpack_qxx () (
+    # QinXiaoXu's qhyccd_lib_header_*.zip packaging 4/2023
+
+    set -e
+    set -o pipefail
+
+    unzip "$1"
+    cd qhyccd_lib_header_*
+
+    # headers
+    (
+        cd headers
+        sed -E 's/^#define QHYCCD_PCIE_SUPPORT[[:space:]]+1[[:space:]]*$/#define QHYCCD_PCIE_SUPPORT 0/' \
+            <config.h >qhyccd_config.h
+        for f in qhyccd.h qhyccd_config.h qhyccdcamdef.h qhyccderr.h qhyccdstruct.h; do
+            sed -E \
+                -e 's/config\.h/qhyccd_config\.h/' \
+                -e 's,^[[:space:]]*#[[:space:]]*include[[:space:]]+"cyapi.h",//#include "cyapi.h",' \
+                "$f" > "$SRC"/cameras/"$f"
+        done
+    )
+
+    # libqhyccd20230510_arm32.tar::libqhyccd.a => cameras/qhyccdlibs/linux/armv7/libqhyccd.a
+    mkdir linux-arm32
+    (
+        cd linux-arm32
+        tar xf ../libqhyccd20*_arm32.tar
+        install -m 0644 libqhyccd.a "$SRC"/cameras/qhyccdlibs/linux/armv7/
+    )
+
+    # libqhyccd20*_linux64.tar::libqhyccd.a => cameras/qhyccdlibs/linux/x86_64/libqhyccd.a
+    mkdir linux-x86_64
+    (
+        cd linux-x86_64
+        tar xf ../libqhyccd20*_linux64.tar
+        install -m 0644 libqhyccd.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
+    )
+
+    # libqhyccd20230510_mac64.zip::libqhyccd.23.5.10.17.dylib => cameras/qhyccdlibs/mac/x86_64/libqhyccd.dylib
+    mkdir mac-x86_64
+    (
+        cd mac-x86_64
+        unzip ../libqhyccd20*_mac64.zip
+        find . -type l | xargs rm
+        if (($(ls *.dylib | wc -l) != 1)); then
+            echo "too many dylib files!" >&2
+            exit 1
+        fi
+        install -m 0755 *.dylib "$SRC"/cameras/qhyccdlibs/mac/x86_64/libqhyccd.dylib
+    )
+
+    # windows
+    mkdir win32
+    (
+        cd win32
+        unzip ../libqhyccd20*_windows.zip
+        install -m 0755 x86/qhyccd.dll "$SRC"/WinLibs/
+        install -m 0644 x86/qhyccd.lib "$SRC"/cameras/
+    )
+)
+
 # === main ===
 
 for f in "$@"; do
@@ -113,6 +174,7 @@ for f in "$@"; do
         exit 1
     fi
     case $(basename "$f") in
+        qhyccd_lib_header_*.zip) unpack_qxx "$f" ;;
         MAC*64*tgz)        unpack_mac   "$f" x86_64 ;;
         MAC*tgz)           unpack_mac   "$f" x86_32 ;;
         *zip)              unpack_win   "$f" ;;
