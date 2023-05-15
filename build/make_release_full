@@ -7,6 +7,11 @@ usage () {
     exit 1
 }
 
+die () {
+    echo "Error: $*" >&2
+    exit 1
+}
+
 PAUSE () {
     if [ -n "$INTERACTIVE" ]; then
         read -p "Hit Enter to continue"
@@ -160,8 +165,6 @@ fi
 
 if [[ $do_build ]]; then
 
-    macpids=
-
     #
     # start OSX builds
     #
@@ -170,10 +173,10 @@ if [[ $do_build ]]; then
     fi
     scp "$D"/build.cfg ${MAC_HOST32}:${MAC_DIR32}/build/
     ssh $MAC_HOST32 "cd $MAC_DIR32 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 32" &
-    macpids="$macpids $!"
+    macpid_32=$!
     scp "$D"/build.cfg ${MAC_HOST64}:${MAC_DIR64}/build/
     ssh $MAC_HOST64 "cd $MAC_DIR64 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 64" &
-    macpids="$macpids $!"
+    macpid_64=$!
 
     #
     # start win build
@@ -181,9 +184,13 @@ if [[ $do_build ]]; then
     if [[ $do_upload ]]; then
         WIN_UPLOAD="-u"
     fi
-    ./build/publish_win $WIN_UPLOAD
+    ./build/publish_win $WIN_UPLOAD \
+        || die "Windows build failed!"
 
-    wait $macpids
+    wait $macpid_32 \
+        || die "MacOS-32 build failed!"
+    wait $macpid_64 \
+        || die "MacOS-64 build failed!"
 fi
 
 #
@@ -244,3 +251,5 @@ if [[ $need_static_update ]]; then
     PAUSE
     ssh $WWW_HOST "./bin/phd2_generate_static_site"
 fi
+
+echo "Success."
