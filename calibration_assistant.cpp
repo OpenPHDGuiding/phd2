@@ -319,11 +319,11 @@ void CalibrationAssistant::PerformSanityChecks(void)
         if (sidRate <= 0.2)
             msg = _("Your mount guide speed is too slow for effective calibration and guiding."
                 " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sidereal."
-                " Then click the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+                " Then click the 'Recalc' button so PHD2 can compute a correct calibration step-size.");
         else
             msg = _("Your mount guide speed is below the minimum recommended value of 0.5x sidereal."
             " Use the hand-controller or mount driver to increase the guide speed to at least 0.5x sidereal."
-            " Then click the 'Recal' button so PHD2 can compute a correct calibration step-size.");
+            " Then click the 'Recalc' button so PHD2 can compute a correct calibration step-size.");
     }
     else
     {
@@ -335,7 +335,7 @@ void CalibrationAssistant::PerformSanityChecks(void)
         if (fabs(1.0 - (double)currStepSize / (double)recStepSize) > 0.3)           // Within 30% is good enough
         {
             msg = _("Your current calibration parameters can be adjusted for more accurate results."
-                " Click the 'Recal' button to restore them to the default values.");
+                " Click the 'Recalc' button to restore them to the default values.");
         }
     }
     if (!msg.empty())
@@ -1127,7 +1127,7 @@ CalAssistSanityDialog::CalAssistSanityDialog(CalibrationAssistant* Parent, const
     MakeBold(pMessage);
 
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxButton* pRecalBtn = new wxButton(this, wxID_ANY, _("Recal"));
+    wxButton* pRecalBtn = new wxButton(this, wxID_ANY, _("Recalc"));
     pRecalBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalAssistSanityDialog::OnRecal, this);
     wxButton* cancelBtn = new wxButton(this, wxID_ANY, _("Cancel"));
     cancelBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalAssistSanityDialog::OnCancel, this);
