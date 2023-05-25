@@ -186,6 +186,8 @@ typedef enum SVB_CONTROL_TYPE{ //Control type//
 	SVB_TARGET_TEMPERATURE,  //unit is 0.1C
 	SVB_CURRENT_TEMPERATURE, //unit is 0.1C
 	SVB_COOLER_POWER,  //range: 0-100
+
+	SVB_BAD_PIXEL_CORRECTION_ENABLE,
 }SVB_CONTROL_TYPE;
 
 typedef struct _SVB_CONTROL_CAPS
@@ -796,6 +798,23 @@ SVB_ERROR_CAMERA_CLOSED : camera didn't open
 SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
 ***************************************************************************/
 SVBCAMERA_API SVB_ERROR_CODE SVBIsCameraNeedToUpgrade(int iCameraID, SVB_BOOL *pIsNeedToUpgrade, char *pNeedToUpgradeMinVersion);
+
+/***************************************************************************
+Descriptions:
+Restore default parameters
+
+Paras:
+int CameraID: this is get from the camera property use the API SVBGetCameraInfo
+
+return:
+SVB_SUCCESS : Operation is successful
+SVB_ERROR_CAMERA_CLOSED : camera didn't open
+SVB_ERROR_INVALID_ID  :no camera of this ID is connected or ID value is out of boundary
+SVB_ERROR_GENERAL_ERROR : other error
+***************************************************************************/
+SVBCAMERA_API SVB_ERROR_CODE SVBRestoreDefaultParam(int iCameraID);
+
+
 
 #ifdef __cplusplus
 }
