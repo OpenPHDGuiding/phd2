@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD_2_6_11dev4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-15 03:59+0100\n"
+"POT-Creation-Date: 2023-05-30 03:18+0100\n"
 "PO-Revision-Date: 2023-04-01 19:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: Stanislav Holub\n"
@@ -455,7 +455,7 @@ msgstr ""
 msgid ""
 "Your mount guide speed is too slow for effective calibration and guiding. "
 "Use the hand-controller or mount driver to increase the guide speed to at "
-"least 0.5x sidereal. Then click the 'Recal' button so PHD2 can compute a "
+"least 0.5x sidereal. Then click the 'Recalc' button so PHD2 can compute a "
 "correct calibration step-size."
 msgstr ""
 
@@ -463,14 +463,14 @@ msgstr ""
 msgid ""
 "Your mount guide speed is below the minimum recommended value of 0.5x "
 "sidereal. Use the hand-controller or mount driver to increase the guide "
-"speed to at least 0.5x sidereal. Then click the 'Recal' button so PHD2 can "
+"speed to at least 0.5x sidereal. Then click the 'Recalc' button so PHD2 can "
 "compute a correct calibration step-size."
 msgstr ""
 
 #: calibration_assistant.cpp:337
 msgid ""
 "Your current calibration parameters can be adjusted for more accurate "
-"results. Click the 'Recal' button to restore them to the default values."
+"results. Click the 'Recalc' button to restore them to the default values."
 msgstr ""
 
 #: calibration_assistant.cpp:377
@@ -693,7 +693,7 @@ msgid "Calibration Parameters Check"
 msgstr ""
 
 #: calibration_assistant.cpp:1130
-msgid "Recal"
+msgid "Recalc"
 msgstr ""
 
 #: calibration_assistant.cpp:1179
