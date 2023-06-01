@@ -1408,7 +1408,6 @@ struct B64Encode
                 << '=';
             break;
         }
-        os << std::ends;
         return os.str();
     }
 };
