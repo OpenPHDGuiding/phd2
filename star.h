@@ -103,16 +103,16 @@ public:
     PHD_Point referencePoint;
     unsigned int missCount;
     unsigned int zeroCount;
-    unsigned int lostCount;
     PHD_Point offsetFromPrimary;        // X,y offset from primary star location, set in AutoFind, used for dither recovery
+    bool wasLost;
 
     GuideStar()
         :
         referencePoint(0., 0.),
         missCount(0),
         zeroCount(0),
-        lostCount(0),
-        offsetFromPrimary(0., 0.)
+        offsetFromPrimary(0., 0.),
+        wasLost(0)
     {
     }
 
@@ -122,8 +122,8 @@ public:
         referencePoint(star),
         missCount(0),
         zeroCount(0),
-        lostCount(0),
-        offsetFromPrimary(0.,0.)
+        offsetFromPrimary(0.,0.),
+        wasLost(0)
     {
     }
 

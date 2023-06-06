@@ -768,19 +768,14 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                                 {
                                     pGS->referencePoint.X = pGS->X;
                                     pGS->referencePoint.Y = pGS->Y;
+                                    pGS->wasLost = false;
                                     ++pGS;
                                 }
                                 else
                                 {
-                                    Debug.Write(wxString::Format("MultiStar: #%d removed after lock position change\n", Iter_Inx(pGS)));
-                                    pGS = m_guideStars.erase(pGS);
+                                    // Don't need to update reference point, lost star will continue to use the offsetFromPrimary location for possible recovery
+                                    pGS->wasLost = true;
                                 }
-                            }
-                            if (m_guideStars.size() > 1)
-                                Debug.Write(wxString::Format("MultiStar: %d stars in list after lock position change\n", m_guideStars.size()));
-                            else
-                            {
-                                Debug.Write("MultiStar: no secondary stars found after lock position change\n");
                             }
                             return false;                 // All the secondary stars reference points reflect current positions
                         }
@@ -798,14 +793,24 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                     if (m_starsUsed >= m_maxStars || m_guideStars.size() == 1)
                         break;
                     m_starsUsed++;              // "used" means "considered" for purposes of UI
-                    if (pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                        GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL))
+                    bool found = false;
+                    if (pGS->wasLost)
+                    {
+                        // Look for it based on its original offset from the primary star
+                        PHD_Point expectedLoc = m_primaryStar + pGS->offsetFromPrimary;
+                        found = pGS->Find(pImage, m_searchRegion, expectedLoc.X, expectedLoc.Y, pFrame->GetStarFindMode(),
+                            GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL);
+                    }
+                    else
+                        // Look for it where we last found it
+                        found = pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
+                            GetMinStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL);
+                    if (found)
                     {
                         double dX = pGS->X - pGS->referencePoint.X;
                         double dY = pGS->Y - pGS->referencePoint.Y;
 
-                        if (pGS->lostCount > 0)
-                            --pGS->lostCount;
+                        pGS->wasLost = false;
 
                         if (dX != 0. || dY != 0.)
                         {
@@ -865,14 +870,8 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                     else
                     {
                         // star not found in its search region
-                        if (++pGS->lostCount < 3)
-                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "NF" + std::to_string(pGS->lostCount));
-                        else
-                        {
-                            AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DNF");
-                            pGS = m_guideStars.erase(pGS);
-                            erasures = true;
-                        }
+                        AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "L");
+                        pGS->wasLost = true;
                     }
                     if (!erasures)
                         ++pGS;
