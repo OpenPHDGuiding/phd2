@@ -775,6 +775,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                                 {
                                     // Don't need to update reference point, lost star will continue to use the offsetFromPrimary location for possible recovery
                                     pGS->wasLost = true;
+                                    ++pGS;
                                 }
                             }
                             return false;                 // All the secondary stars reference points reflect current positions
@@ -792,7 +793,6 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                 {
                     if (m_starsUsed >= m_maxStars || m_guideStars.size() == 1)
                         break;
-                    m_starsUsed++;              // "used" means "considered" for purposes of UI
                     bool found = false;
                     if (pGS->wasLost)
                     {
@@ -811,6 +811,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         double dY = pGS->Y - pGS->referencePoint.Y;
 
                         pGS->wasLost = false;
+                        m_starsUsed++;
 
                         if (dX != 0. || dY != 0.)
                         {
@@ -1215,24 +1216,19 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
                 dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             unsigned int starsPlotted = 1;
-            unsigned int limit;
             if (m_stabilizing)
             {
                 if (m_lastStarsUsed == 0)
                     m_lastStarsUsed = wxMin(m_guideStars.size(), (size_t) DEFAULT_MAX_STAR_COUNT);
-                limit = m_lastStarsUsed;
             }
-            else
-            {
-                limit = m_starsUsed;
-            }
+
             for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1;
                  it != m_guideStars.end(); ++it)
             {
                 wxPoint pt((int)(it->referencePoint.X * m_scaleFactor), (int)(it->referencePoint.Y * m_scaleFactor));
                 dc.DrawCircle(pt, 6);
                 starsPlotted++;
-                if (starsPlotted == limit)
+                if (starsPlotted == m_maxStars)
                     break;
             }
             if (!m_stabilizing)
