@@ -112,7 +112,7 @@ public:
         missCount(0),
         zeroCount(0),
         offsetFromPrimary(0., 0.),
-        wasLost(0)
+        wasLost(false)
     {
     }
 
@@ -122,8 +122,8 @@ public:
         referencePoint(star),
         missCount(0),
         zeroCount(0),
-        offsetFromPrimary(0.,0.),
-        wasLost(0)
+        offsetFromPrimary(0., 0.),
+        wasLost(false)
     {
     }
 
