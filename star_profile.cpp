@@ -301,7 +301,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(lkx - sz, lky - sz, sz * 2, sz * 2));
         wxImage subDImg = subDBmp.ConvertToImage();
         // scale by 2
-        wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH));
+        wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_NEAREST));
         wxMemoryDC tmpMdc;
         tmpMdc.SelectObject(zoomedDBmp);
         // blit into profile DC
