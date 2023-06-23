@@ -47,6 +47,8 @@ public:
     void OnLClick(wxMouseEvent& evt);
 private:
     int mode; // 0= 2D profile of mid-row, 1=2D of avg_row, 2=2D of avg_col
+    bool rawMode;
+    int imageLeftMargin;
     bool visible;
     unsigned short *data;
     int horiz_profile[21], vert_profile[21], midrow_profile[21];

@@ -53,6 +53,7 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
 
     this->visible = false;
     this->mode = 0; // 2D profile
+    rawMode = false;
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
 }
@@ -62,10 +63,16 @@ ProfileWindow::~ProfileWindow()
     delete[] data;
 }
 
-void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent))
+void ProfileWindow::OnLClick(wxMouseEvent& mevent)
 {
-    this->mode = this->mode + 1;
-    if (this->mode > 2) this->mode = 0;
+    int xPos = mevent.GetX();
+    if (xPos > imageLeftMargin)
+        rawMode = !rawMode;
+    else
+    {
+        this->mode = this->mode + 1;
+        if (this->mode > 2) this->mode = 0;
+    }
     Refresh();
 }
 
@@ -237,7 +244,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     float hfd = star.HFD;
-    int imageLeftMargin = (xsize - 15) / 2;
+    imageLeftMargin = (xsize - 15) / 2;
     if (hfd != 0.f)
     {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
@@ -301,19 +308,26 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(lkx - sz, lky - sz, sz * 2, sz * 2));
         wxImage subDImg = subDBmp.ConvertToImage();
         // scale by 2
-        wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH));
+        //wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_NEAREST));
         wxMemoryDC tmpMdc;
-        tmpMdc.SelectObject(zoomedDBmp);
+        if (!rawMode)
+            tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH)));
+        else
+            tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, wxIMAGE_QUALITY_NEAREST)));
+        //tmpMdc.SelectObject(zoomedDBmp);
         // blit into profile DC
-        dc.Blit(imageLeftMargin, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
+        int imgTop = 30;
+        dc.SetFont(smallFont);
+        dc.DrawText(_("Click image to change view"), imageLeftMargin, imgTop - smallFontHeight);
+        dc.Blit(imageLeftMargin, imgTop, width, width, &tmpMdc, 0, 0, wxCOPY, false);
         // lines for the lock pos + red dot at star centroid
         dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxPENSTYLE_DOT));
-        dc.DrawLine(imageLeftMargin, midwidth, imageLeftMargin + width, midwidth);
-        dc.DrawLine(imageLeftMargin + midwidth, 0, imageLeftMargin + midwidth, width);
+        dc.DrawLine(imageLeftMargin, midwidth + imgTop, imageLeftMargin + width, midwidth + imgTop);
+        dc.DrawLine(imageLeftMargin + midwidth, imgTop, imageLeftMargin + midwidth, width + imgTop);
         if (sz > 0)
         {
             // and a small cross at the centroid
-            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1;
+            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1 + imgTop;
             if (starX >= imageLeftMargin)
             {
                 dc.SetPen(RedPen);
