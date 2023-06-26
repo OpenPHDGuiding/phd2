@@ -53,7 +53,7 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
 
     this->visible = false;
     this->mode = 0; // 2D profile
-    rawMode = false;
+    rawMode = pConfig->Global.GetBoolean("/ProfileRawMode", false);
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
 }
@@ -65,9 +65,11 @@ ProfileWindow::~ProfileWindow()
 
 void ProfileWindow::OnLClick(wxMouseEvent& mevent)
 {
-    int xPos = mevent.GetX();
-    if (xPos > imageLeftMargin)
+    if (mevent.GetX() > imageLeftMargin && mevent.GetY() <= imageBottom)
+    {
         rawMode = !rawMode;
+        pConfig->Global.SetBoolean("/ProfileRawMode", rawMode);
+    }
     else
     {
         this->mode = this->mode + 1;
@@ -306,18 +308,21 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         wxImage subDImg = subDBmp.ConvertToImage();
         wxMemoryDC tmpMdc;
         wxString toggleMsg;
+        wxImageResizeQuality resizeQuality;
         // Build the temp DC with one of two scaling options
         if (!rawMode)
         {
-            tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH)));
-            toggleMsg = _("Click image for 'raw' view");
+            resizeQuality = wxIMAGE_QUALITY_HIGH;
+            toggleMsg = _("Click image for raw view");
         }
         else
         {
-            tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, wxIMAGE_QUALITY_NEAREST)));
-            toggleMsg = _("Click image for 'interpolated' view");
+            resizeQuality = wxIMAGE_QUALITY_NEAREST;
+            toggleMsg = _("Click image for interpolated view");
         }
+        tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, resizeQuality)));
         int imgTop = 30;
+        imageBottom = imgTop + width;
         // blit into profile DC
         dc.Blit(imageLeftMargin, imgTop, width, width, &tmpMdc, 0, 0, wxCOPY, false);
         // add text cue to allow switching between 'high quality' and 'nearest neighhbor' scaling
