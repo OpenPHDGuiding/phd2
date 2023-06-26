@@ -53,6 +53,7 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
 
     this->visible = false;
     this->mode = 0; // 2D profile
+    rawMode = pConfig->Global.GetBoolean("/ProfileRawMode", false);
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
 }
@@ -62,10 +63,18 @@ ProfileWindow::~ProfileWindow()
     delete[] data;
 }
 
-void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent))
+void ProfileWindow::OnLClick(wxMouseEvent& mevent)
 {
-    this->mode = this->mode + 1;
-    if (this->mode > 2) this->mode = 0;
+    if (mevent.GetX() > imageLeftMargin && mevent.GetY() <= imageBottom)
+    {
+        rawMode = !rawMode;
+        pConfig->Global.SetBoolean("/ProfileRawMode", rawMode);
+    }
+    else
+    {
+        this->mode = this->mode + 1;
+        if (this->mode > 2) this->mode = 0;
+    }
     Refresh();
 }
 
@@ -149,8 +158,6 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     wxPen RedPen(wxColour(255,0,0));
-    //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
-    //  BluePen = wxPen(wxColour(100,100,255));
 
     int i;
     int *profptr;
@@ -226,7 +233,6 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawLines(FULLW, Prof);
     }
 
-    //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 
     const Star& star = pFrame->pGuider->PrimaryStar();
@@ -237,7 +243,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     float hfd = star.HFD;
-    int imageLeftMargin = (xsize - 15) / 2;
+    imageLeftMargin = (xsize - 15) / 2;
     if (hfd != 0.f)
     {
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
@@ -297,23 +303,40 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         int b = std::min(dBmp.GetHeight() - 1, lky + 15);
         int h = std::min(lky - t, b - lky);
         int sz = std::min(w, h);
-
+        // scale by 2
         wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(lkx - sz, lky - sz, sz * 2, sz * 2));
         wxImage subDImg = subDBmp.ConvertToImage();
-        // scale by 2
-        wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH));
         wxMemoryDC tmpMdc;
-        tmpMdc.SelectObject(zoomedDBmp);
+        wxString toggleMsg;
+        wxImageResizeQuality resizeQuality;
+        // Build the temp DC with one of two scaling options
+        if (!rawMode)
+        {
+            resizeQuality = wxIMAGE_QUALITY_HIGH;
+            toggleMsg = _("Click image for raw view");
+        }
+        else
+        {
+            resizeQuality = wxIMAGE_QUALITY_NEAREST;
+            toggleMsg = _("Click image for interpolated view");
+        }
+        tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, resizeQuality)));
+        int imgTop = 30;
+        imageBottom = imgTop + width;
         // blit into profile DC
-        dc.Blit(imageLeftMargin, 0, width, width, &tmpMdc, 0, 0, wxCOPY, false);
+        dc.Blit(imageLeftMargin, imgTop, width, width, &tmpMdc, 0, 0, wxCOPY, false);
+        // add text cue to allow switching between 'high quality' and 'nearest neighhbor' scaling
+        dc.SetFont(smallFont);
+        dc.DrawText(toggleMsg, imageLeftMargin, imgTop - smallFontHeight);
+
         // lines for the lock pos + red dot at star centroid
         dc.SetPen(wxPen(wxColor(0, 200, 0), 1, wxPENSTYLE_DOT));
-        dc.DrawLine(imageLeftMargin, midwidth, imageLeftMargin + width, midwidth);
-        dc.DrawLine(imageLeftMargin + midwidth, 0, imageLeftMargin + midwidth, width);
+        dc.DrawLine(imageLeftMargin, midwidth + imgTop, imageLeftMargin + width, midwidth + imgTop);
+        dc.DrawLine(imageLeftMargin + midwidth, imgTop, imageLeftMargin + midwidth, width + imgTop);
         if (sz > 0)
         {
             // and a small cross at the centroid
-            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1;
+            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1 + imgTop;
             if (starX >= imageLeftMargin)
             {
                 dc.SetPen(RedPen);
