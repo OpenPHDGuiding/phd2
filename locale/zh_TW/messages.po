@@ -35,15 +35,15 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-30 03:18+0100\n"
-"PO-Revision-Date: 2023-02-22 09:54+0800\n"
+"PO-Revision-Date: 2023-06-29 14:18+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.8.7\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: about_dialog.cpp:45 myframe.cpp:577
@@ -312,20 +312,20 @@ msgstr "曝光時間"
 
 #: calibration_assistant.cpp:168
 msgid "Calibration Assistant"
-msgstr ""
+msgstr "校準小幫手"
 
 #: calibration_assistant.cpp:177
 msgid "Current Pointing Location"
-msgstr ""
+msgstr "目前指向位置"
 
 #: calibration_assistant.cpp:178
 msgid "Calibration Location"
-msgstr ""
+msgstr "校準地點"
 
 #: calibration_assistant.cpp:187 calibration_assistant.cpp:206
 #: calibration_assistant.cpp:1047
 msgid "Pointing"
-msgstr ""
+msgstr "指向"
 
 #: calibration_assistant.cpp:188 calibration_assistant.cpp:207
 #: calibration_assistant.cpp:1048 calreview_dialog.cpp:299
@@ -351,57 +351,63 @@ msgstr "赤緯"
 #: calibration_assistant.cpp:194 calibration_assistant.cpp:204
 #: calibration_assistant.cpp:1045
 msgid "Meridian offset (degrees)"
-msgstr ""
+msgstr "中天偏移量 (度)"
 
 #: calibration_assistant.cpp:201
 msgid ""
 "Target declination for slew, as close to Dec = 0 as possible for your "
 "location (>=-20 and <= 20) recommended"
 msgstr ""
+"轉動赤道儀盡可能讓望遠鏡指到赤緯貼近您所在位置容許的 Dec = 0 附近正負二十度以"
+"內的範圍"
 
 #: calibration_assistant.cpp:203
 msgid ""
 "Target offset from central meridian, in degrees; east or west based on "
 "'Pointing' buttons (less than 15 degrees recommended)"
 msgstr ""
+"根據 “指向” 按鈕東或西向 (低於建議值 15 度), 目標與中央子午線的偏移量，以度為"
+"單位；"
 
 #: calibration_assistant.cpp:208 calibration_assistant.cpp:1049
 msgid "Scope on the east side of pier, pointing west"
-msgstr ""
+msgstr "望遠鏡位於赤道儀東側，指向西側"
 
 #: calibration_assistant.cpp:211
 msgid "Scope on west side of pier, pointing east"
-msgstr ""
+msgstr "望遠鏡位於赤道儀西側，指向東側"
 
 #: calibration_assistant.cpp:219
 msgid "Save custom values..."
-msgstr ""
+msgstr "儲存自訂數值。"
 
 #: calibration_assistant.cpp:220
 msgid ""
 "Save a custom sky location if your site has restricted sky visibility and "
 "you can't calibrate at the recommended location"
 msgstr ""
+"如果您所在地點天空可見範圍有限並且您無法在建議的位置進行校準，請儲存自定的天"
+"空位置"
 
 #: calibration_assistant.cpp:222
 msgid "Load custom values"
-msgstr ""
+msgstr "載入自訂數值"
 
 #: calibration_assistant.cpp:223
 msgid ""
 "Reload a previously saved custom location and displays its values in the "
 "'Calibration Location' fields"
-msgstr ""
+msgstr "重新載入之前保存的自定位置並在 “校準位置” 欄位中顯示其數值"
 
 #: calibration_assistant.cpp:225
 msgid "Restore defaults"
-msgstr ""
+msgstr "回復預設值"
 
 #: calibration_assistant.cpp:226
 msgid ""
 "Restore the 'Calibration Location' fields to show the recommended pointing "
 "location"
-msgstr ""
+msgstr "恢復 “校準位置” 欄位以顯示建議的指向位置"
 
 #: calibration_assistant.cpp:238 calibration_assistant.cpp:675
 #: drift_tool.cpp:204 drift_tool.cpp:555
@@ -412,7 +418,7 @@ msgstr "轉向"
 msgid ""
 "Start a slew to the calibration location. BE SURE the scope can be safely "
 "slewed"
-msgstr ""
+msgstr "開始轉到校準位置。 確保赤道儀可以安全轉動"
 
 #: calibration_assistant.cpp:241 pierflip_tool.cpp:126 pierflip_tool.cpp:251
 msgid "Calibrate"
@@ -422,7 +428,7 @@ msgstr "校準"
 msgid ""
 "Start the PHD2 calibration.  The Calibration Assistant window will remain "
 "open to monitor and assess results"
-msgstr ""
+msgstr "開始 PHD2 校準。 校準小幫手視窗將保持打開狀態以監控和評估校準結果"
 
 #: calibration_assistant.cpp:244 calibration_assistant.cpp:1078
 #: calibration_assistant.cpp:1132 camcal_import_dialog.cpp:124
@@ -435,17 +441,17 @@ msgstr "取消"
 msgid ""
 "Close the Calibration Assistant window.  Any calibration currently underway "
 "will continue."
-msgstr ""
+msgstr "關閉校準小幫手視窗。 目前進行中的校準都會持續進行。"
 
 #: calibration_assistant.cpp:252
 msgid "Explain"
-msgstr ""
+msgstr "說明"
 
 #: calibration_assistant.cpp:253
 msgid ""
 "Show additional information about any calibration result that is less than "
 "'good'"
-msgstr ""
+msgstr "顯示有關任何低於 “良好” 的校準結果的額外信息"
 
 #: calibration_assistant.cpp:320
 msgid ""
@@ -454,6 +460,9 @@ msgid ""
 "least 0.5x sidereal. Then click the 'Recalc' button so PHD2 can compute a "
 "correct calibration step-size."
 msgstr ""
+"您的赤道儀導星速度太慢低, 無法進行有效的校準和導星。 使用手動控制器或赤道儀驅"
+"動程式將導星速度提高到至少 0.5 倍恆星時。 然後點擊 “重新計算” 按鈕，以便 "
+"PHD2 可以計算正確的校準步長。"
 
 #: calibration_assistant.cpp:324
 msgid ""
@@ -462,73 +471,83 @@ msgid ""
 "speed to at least 0.5x sidereal. Then click the 'Recalc' button so PHD2 can "
 "compute a correct calibration step-size."
 msgstr ""
+"您的赤道儀導星速率低於最低要求的 0.5 倍恆星時。 使用手動控制器或赤道儀驅動程"
+"式將導星速度提高到至少 0.5 倍恆星時。 然後點擊 “重新計算” 按鈕，以便 PHD2 可"
+"以計算正確的校準步長。"
 
 #: calibration_assistant.cpp:337
 msgid ""
 "Your current calibration parameters can be adjusted for more accurate "
 "results. Click the 'Recalc' button to restore them to the default values."
 msgstr ""
+"您可以調整目前的校準參數以獲得更準確的結果。 單擊 “重新計算” 按鈕將其恢復為預"
+"設值。"
 
 #: calibration_assistant.cpp:377
 msgid "Calibration failed or was cancelled"
-msgstr ""
+msgstr "校準失敗或被中斷"
 
 #: calibration_assistant.cpp:423 calibration_assistant.cpp:552
 #: calibration_assistant.cpp:569 calibration_assistant.cpp:622
 msgid "Mount can't report its pointing position"
-msgstr ""
+msgstr "赤道儀無法回報其指向的位置"
 
 #: calibration_assistant.cpp:439 calibration_assistant.cpp:632
 #: calibration_assistant.cpp:984
 msgid "MERIDIAN FLIP!"
-msgstr ""
+msgstr "過中天翻轉！"
 
 #: calibration_assistant.cpp:444
 msgid "WATCH SCOPE DURING SLEWING TO INSURE SAFETY"
-msgstr ""
+msgstr "迴轉期間請注意觀察範圍以確保安全"
 
 #: calibration_assistant.cpp:527
 msgid ""
 "Use the 'slew' button to move the scope to within 20 degrees of Dec = 0 or "
 "as close to that as your site will allow."
 msgstr ""
+"使用 “轉向” 按鈕將望遠鏡移動到 Dec = 0 的 20 度範圍內，或者盡可能接近您的站點"
+"允許的範圍。"
 
 #: calibration_assistant.cpp:529
 msgid ""
 "Slew the scope to within 20 degrees of Dec = 0 or as close to that as your "
 "site will allow."
 msgstr ""
+"轉動赤道儀讓望遠鏡指到赤緯 = 0附近二十度以內或你所處地方所容許最接近的位置。"
 
 #: calibration_assistant.cpp:532
 msgid "Calibration is likely to fail this close to the pole."
-msgstr ""
+msgstr "太接近極點，校準很可能會失敗。"
 
 #: calibration_assistant.cpp:536
 msgid ""
 "If you calibrate within 30 degrees of the pole, you will need to recalibrate "
 "when you slew to a different target."
 msgstr ""
+"如果您在極點的 30 度範圍內進行校準，那麼當您轉向不同的目標時，您需要重新校"
+"準。"
 
 #: calibration_assistant.cpp:540
 msgid ""
 "Calibration will be more accurate with the scope pointing closer to the "
 "celestial equator."
-msgstr ""
+msgstr "當望遠鏡指向接近天球赤道時，校準會更加準確。"
 
 #: calibration_assistant.cpp:550
 msgid "Mount is not connected"
-msgstr ""
+msgstr "沒有連接赤道儀"
 
 #: calibration_assistant.cpp:639
 msgid ""
 "Adjust 'Calibration Location' values if needed for your site, then click "
 "'Slew'"
-msgstr ""
+msgstr "如果您所在地點需的話，調整“校準位置”值，然後單擊“轉向”"
 
 #: calibration_assistant.cpp:641
 #, c-format
 msgid "Manually move the telescope to a Dec location near %d"
-msgstr ""
+msgstr "手動將望遠鏡轉到接近赤緯 %d 的位置"
 
 #: calibration_assistant.cpp:675 drift_tool.cpp:555
 msgid "Slewing..."
@@ -536,47 +555,47 @@ msgstr "轉向中..."
 
 #: calibration_assistant.cpp:684 calibration_assistant.cpp:735
 msgid "Slew failed! Make sure scope is tracking at sidereal rate"
-msgstr ""
+msgstr "轉向失敗！ 請確定赤道儀的追蹤速率為恆星時"
 
 #: calibration_assistant.cpp:693
 msgid "Slew was cancelled"
-msgstr ""
+msgstr "轉向動作已取消"
 
 #: calibration_assistant.cpp:712 calibration_assistant.cpp:726
 msgid "Pausing..."
-msgstr ""
+msgstr "暫停中..."
 
 #: calibration_assistant.cpp:729 calibration_assistant.cpp:776
 msgid ""
 "Wait for tracking to stabilize, then click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
-msgstr ""
+msgstr "待追蹤穩定後, 點擊 “校準” 開始校準或 “取消” 退出"
 
 #: calibration_assistant.cpp:771
 msgid "Initial slew to approximate position"
-msgstr ""
+msgstr "初始轉向到接近的位置"
 
 #: calibration_assistant.cpp:774
 msgid "Final slew north to pre-clear Dec backlash"
-msgstr ""
+msgstr "最後轉向北方以預清除赤緯回差"
 
 #: calibration_assistant.cpp:781
 msgid "Slewing to calibration location"
-msgstr ""
+msgstr "轉向校準位置中"
 
 #: calibration_assistant.cpp:783
 msgid ""
 "Wait for tracking to stabilize, then Click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
-msgstr ""
+msgstr "待追蹤穩定後, 點擊 “校準” 開始校準或 “取消” 退出"
 
 #: calibration_assistant.cpp:855
 msgid "Steps"
-msgstr ""
+msgstr "步數"
 
 #: calibration_assistant.cpp:862 calibration_assistant.cpp:1219
 msgid "Orthogonality"
-msgstr ""
+msgstr "正交誤差"
 
 #: calibration_assistant.cpp:871 comet_tool.cpp:138
 msgid "Rates"
@@ -584,101 +603,102 @@ msgstr "追蹤速率"
 
 #: calibration_assistant.cpp:880
 msgid "Sky location (Dec comp disabled)"
-msgstr ""
+msgstr "天空位置 (赤緯補償被關閉)"
 
 #: calibration_assistant.cpp:885
 msgid "Sky location"
-msgstr ""
+msgstr "天空位置"
 
 #: calibration_assistant.cpp:889
 #, c-format
 msgid "(%s)"
-msgstr ""
+msgstr "(%s)"
 
 #: calibration_assistant.cpp:895
 msgid ""
 "Calibration result was good, guiding is active using the new calibration"
-msgstr ""
+msgstr "校準結果很好，導星正使用新校準結果"
 
 #: calibration_assistant.cpp:901
 msgid ""
 "Calibration result was acceptable, guiding is active using the new "
 "calibration"
-msgstr ""
+msgstr "校準結果可被接受，導星正使用新校準結果"
 
 #: calibration_assistant.cpp:907
 msgid ""
 "Calibration result was poor, consider re-doing it while following all "
 "recommendations"
-msgstr ""
+msgstr "校準結果不佳，請考慮在依循所有建議的情況下重新進行校準"
 
 #: calibration_assistant.cpp:913
 msgid "Calibration failed - probably because the mount didn't move at all"
-msgstr ""
+msgstr "校準失敗 - 可能是因為赤道儀根本沒有就沒有動作"
 
 #: calibration_assistant.cpp:935
 msgid "Scope isn't reporting current position"
-msgstr ""
+msgstr "望遠鏡未回報目前所指向的位置"
 
 #: calibration_assistant.cpp:946
 msgid "Slew the scope closer to Dec = 0"
-msgstr ""
+msgstr "轉動赤道儀讓望遠鏡指到赤緯 = 0附近"
 
 #: calibration_assistant.cpp:953
 msgid "Pre-clearing backlash"
-msgstr ""
+msgstr "預清除回差"
 
 #: calibration_assistant.cpp:962
 msgid "Waiting for calibration to complete"
-msgstr ""
+msgstr "等待校準結束"
 
 #: calibration_assistant.cpp:968
 msgid "Calibration could not start - suspend any imaging automation apps"
-msgstr ""
+msgstr "無法啟動校準 - 暫停任何拍攝自動化應用程式"
 
 #: calibration_assistant.cpp:1034
 msgid "Save Customized Calibration Position"
-msgstr ""
+msgstr "儲存自訂校準位置"
 
 #: calibration_assistant.cpp:1038
 msgid "Target Position"
-msgstr ""
+msgstr "指向目標"
 
 #: calibration_assistant.cpp:1042
 msgid ""
 "Target declination for slew, as close to Dec = 0 as possible for your "
 "location"
-msgstr ""
+msgstr "轉動赤道儀盡可能讓望遠鏡指到赤緯貼近您所在位置容許的 Dec = 0 附近"
 
 #: calibration_assistant.cpp:1044
 msgid ""
 "Target offset from central meridian, in degrees; east or west based on "
 "'Pointing' buttons"
-msgstr ""
+msgstr "根據 “指向” 按鈕東或西向, 目標與中央子午線的偏移量，以度為單位"
 
 #: calibration_assistant.cpp:1052
 msgid "Scope on the west side of pier, pointing east"
-msgstr ""
+msgstr "望遠鏡位於赤道儀西側，指向東側"
 
 #: calibration_assistant.cpp:1064
 msgid ""
 "Check this if calibration can only be done on a particular side of the "
 "meridian because of nearby obstructions"
 msgstr ""
+"如果由於附近有障礙物而只能在子午線（中天) 的特定一側進行校準的話，請核選此項"
 
 #: calibration_assistant.cpp:1066 calibration_assistant.cpp:1113
 msgid "Western sky only"
-msgstr ""
+msgstr "僅適用於西方天空"
 
 #: calibration_assistant.cpp:1068 calibration_assistant.cpp:1117
 msgid "Eastern sky only"
-msgstr ""
+msgstr "僅適用於東方天空"
 
 #: calibration_assistant.cpp:1071
 msgid ""
 "If your site location requires a unique sky position for calibration, you "
 "can specify it here."
-msgstr ""
+msgstr "如果您所在地點需要指定某特定的天空位置進行校準，您可以在此處指定。"
 
 #: calibration_assistant.cpp:1076 calibration_assistant.cpp:1258
 msgid "Ok"
@@ -686,15 +706,15 @@ msgstr "OK"
 
 #: calibration_assistant.cpp:1121
 msgid "Calibration Parameters Check"
-msgstr ""
+msgstr "檢查校準參數"
 
 #: calibration_assistant.cpp:1130
 msgid "Recalc"
-msgstr ""
+msgstr "重計算"
 
 #: calibration_assistant.cpp:1179
 msgid "Explanation of Results"
-msgstr ""
+msgstr "結果說明"
 
 #: calibration_assistant.cpp:1186
 msgid ""
@@ -702,10 +722,11 @@ msgid ""
 "Assistant, the information below can help you identify any remaining "
 "problems."
 msgstr ""
+"假設您已遵循校準小幫手的所有建議，以下資訊可幫您判別其他可能存在的問題。"
 
 #: calibration_assistant.cpp:1192
 msgid "Too Few Steps"
-msgstr ""
+msgstr "步數太少"
 
 #: calibration_assistant.cpp:1195
 msgid ""
@@ -714,10 +735,13 @@ msgid ""
 "without using the new-profile-wizard. Run the wizard to restore the correct "
 "calibration parameters."
 msgstr ""
+"校準已完成，步數少於所需的步數。 這通常是由於在不使用新組態檔精靈 (new-"
+"profile-wizard) 的情況下手動去修改了併合、焦距或赤道儀導星速率所造成的。 請執"
+"行設定精靈以恢復正確的校準參數。"
 
 #: calibration_assistant.cpp:1206
 msgid "Unexpected Rates"
-msgstr ""
+msgstr "預期外的速率"
 
 #: calibration_assistant.cpp:1209
 msgid ""
@@ -726,6 +750,8 @@ msgid ""
 "imbalance in Dec or physical resistance to movement because of cables or "
 "over-tight gear mesh."
 msgstr ""
+"相機感測器上測得的 RA 和 Dec 位移與預期比率 (cos(dec)) 無關。 這可能是由於赤"
+"緯軸的重量不平衡或由於纜線或齒輪嚙合過緊而導致的物理運動阻力造成的。"
 
 #: calibration_assistant.cpp:1222
 msgid ""
@@ -734,10 +760,13 @@ msgid ""
 "or polar alignment > 10 arc-min. If the orthogonality error is very large, "
 "the mount is probably not guiding correctly."
 msgstr ""
+"當 PHD2 正在測量赤經或赤緯軸的運動時，另一個軸有偏離目標的現象。 這可能是由於"
+"赤經軸有較大周期性誤差或極軸有大於 10 弧分的偏差所造成。 如果正交誤差非常大，"
+"則赤道儀可能無法正確進行導星。"
 
 #: calibration_assistant.cpp:1233
 msgid "Sky Location"
-msgstr ""
+msgstr "天空位置"
 
 #: calibration_assistant.cpp:1236
 msgid ""
@@ -746,10 +775,12 @@ msgid ""
 "outside the range of -60 to +60, declination compensation will not work "
 "correctly."
 msgstr ""
+"未使用 -20 至 20 範圍內的赤緯值進行校準。超出該範圍，測量誤差可能會降低校準精"
+"度。 如果赤緯值超出 -60 到 60 的範圍，赤緯補償將無法正常工作。"
 
 #: calibration_assistant.cpp:1246
 msgid "Not Enough Movement"
-msgstr ""
+msgstr "移動量不足"
 
 #: calibration_assistant.cpp:1249
 msgid ""
@@ -758,6 +789,9 @@ msgid ""
 "cable, try replacing it. Otherwise, use the Star-Cross and Manual Guide "
 "tools in PHD2 to help isolate the mechanical problem."
 msgstr ""
+"如果您看到引導星星體移動量不足的告警訊息，你所使用的赤道儀可能無法接收或處理"
+"導星命令。 如果您使用的是 ST-4 導星線，請更換一條再試。 否則，請使用 PHD2 中"
+"的星十字和手動導星工具來協幫助隔離機械方面的問題。"
 
 #: calreview_dialog.cpp:47 statswindow.cpp:304 statswindow.cpp:324
 msgid "N/A"
@@ -959,8 +993,8 @@ msgid ""
 "guiding."
 msgstr ""
 "赤經及赤緯軸導星速率有異常的差異發生, 赤緯軸轉動 %0.0f 度時, 赤經軸應該轉度赤"
-"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 %0.0f%"
-"%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
+"緯軸應有赤緯軸 %0.0f%% 的轉速才對, 但目前你的赤經軸轉動速率為赤緯軸的 "
+"%0.0f%%. 通常某一軸校準不準確的話會導致這種情況, 導星效能也會因此而變差。"
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -1117,7 +1151,7 @@ msgstr "校準距離, px"
 msgid ""
 "Targeted distance in each direction. The default value (%d) works fine for "
 "most setups."
-msgstr "每個方向的目標距離. 默認值 (%d) 適用於大多數使用環境"
+msgstr "每個方向的目標距離. 默認值 (%d) 適用於大多數使用環境。"
 
 #: calstep_dialog.cpp:159
 msgid "Calibration declination, degrees"
@@ -1179,7 +1213,7 @@ msgid ""
 "Discard this many frames whan capturing starts. Useful for preventing "
 "initial under-exposed frames interfering with automatic star selection."
 msgstr ""
-"於開始拍攝時丟棄一些片幅, 對於防止剛開始曝光不足片幅干擾自動選星會很有幫助"
+"於開始拍攝時丟棄一些片幅, 對於防止剛開始曝光不足片幅干擾自動選星會很有幫助。"
 
 #: cam_altair.cpp:336
 msgid "No Altair cameras detected"
@@ -1197,8 +1231,8 @@ msgstr "開啟 Altair 相機失敗。"
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "無法取得 Altair 相機的解析度數值。"
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:883 cam_indi.cpp:917 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:883
+#: cam_indi.cpp:917 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1483,8 +1517,8 @@ msgstr "設定增益發生錯誤"
 #: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
 #: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
 #: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:186
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
-#: stepguider_sxao_indi.cpp:202 stepguider_sxao_indi.cpp:213
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:202
+#: stepguider_sxao_indi.cpp:213
 msgid "Error"
 msgstr "錯誤"
 
@@ -1534,7 +1568,7 @@ msgstr "找不到 DSI 相機"
 
 #: cam_moravian.cpp:205
 msgid "No Moravian cameras detected."
-msgstr "偵測不到 Moravian 相機"
+msgstr "偵測不到 Moravian 相機。"
 
 #: cam_moravian.cpp:207 cam_svb.cpp:254 cam_zwo.cpp:389
 #, c-format
@@ -1842,19 +1876,19 @@ msgstr "SvBony 相機屬性"
 
 #: cam_svb.cpp:227
 msgid "No Svbony cameras detected."
-msgstr "未偵測到 SvBony 相機"
+msgstr "未偵測到 SvBony 相機。"
 
 #: cam_svb.cpp:300
 msgid "Failed to get camera info for Svbony camera."
-msgstr "無法由 SvBony 相機取得相機資訊"
+msgstr "無法由 SvBony 相機取得相機資訊。"
 
 #: cam_svb.cpp:308
 msgid "Failed to open Svbony camera."
-msgstr "無法開啟 SvBony 相機"
+msgstr "無法開啟 SvBony 相機。"
 
 #: cam_svb.cpp:316 cam_svb.cpp:443
 msgid "Failed to get camera properties for Svbony camera."
-msgstr "無法由 SvBony 相機取得相機屬性"
+msgstr "無法由 SvBony 相機取得相機屬性。"
 
 #: cam_svb.cpp:353
 #, c-format
@@ -1863,7 +1897,7 @@ msgstr "相機不支援 %s 模式, 請選擇 %s 模式"
 
 #: cam_svb.cpp:393
 msgid "Unable to initialize camera."
-msgstr "無法啟用相機"
+msgstr "無法啟用相機。"
 
 #: cam_svb.cpp:769 cam_sxv.cpp:822 cam_zwo.cpp:871 cam_zwo.cpp:902
 #: cam_zwo.cpp:910
@@ -1888,7 +1922,7 @@ msgstr "偵測不到 ToupTek 相機"
 
 #: cam_touptek.cpp:437
 msgid "Selected ToupTek camera not found."
-msgstr "找不到所選用的 ToupTek 相機"
+msgstr "找不到所選用的 ToupTek 相機。"
 
 #: cam_touptek.cpp:442
 msgid "Camera does not support software trigger"
@@ -1896,15 +1930,15 @@ msgstr "相機不支援軟體觸發"
 
 #: cam_touptek.cpp:448
 msgid "Failed to open ToupTek camera."
-msgstr "開啟 ToupTek 相激失敗"
+msgstr "開啟 ToupTek 相激失敗。"
 
 #: cam_touptek.cpp:471
 msgid "Failed to get camera resolution for ToupTek camera."
-msgstr "無法取得 ToupTek 相機解析度資訊"
+msgstr "無法取得 ToupTek 相機解析度資訊。"
 
 #: cam_touptek.cpp:479 cam_touptek.cpp:492
 msgid "Failed to initialize camera binning."
-msgstr "啟用相機併合功能失敗"
+msgstr "啟用相機併合功能失敗。"
 
 #: cam_touptek.cpp:718
 msgid "Capture failed: the camera disconnected"
@@ -2010,13 +2044,13 @@ msgstr "選擇你想使用內含暗場影像庫的配置檔:"
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:3001 profile_wizard.cpp:357
-#: profile_wizard.cpp:358 profile_wizard.cpp:359 profile_wizard.cpp:573
-#: profile_wizard.cpp:578 profile_wizard.cpp:606 profile_wizard.cpp:778
-#: profile_wizard.cpp:948 profile_wizard.cpp:963 profile_wizard.cpp:994
-#: profile_wizard.cpp:999 profile_wizard.cpp:1024 profile_wizard.cpp:1038
-#: rotator.cpp:49 rotator.cpp:84 scope.cpp:332 scope.cpp:374 scope.cpp:417
-#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
+#: mount.cpp:872 myframe.cpp:3001 profile_wizard.cpp:357 profile_wizard.cpp:358
+#: profile_wizard.cpp:359 profile_wizard.cpp:573 profile_wizard.cpp:578
+#: profile_wizard.cpp:606 profile_wizard.cpp:778 profile_wizard.cpp:948
+#: profile_wizard.cpp:963 profile_wizard.cpp:994 profile_wizard.cpp:999
+#: profile_wizard.cpp:1024 profile_wizard.cpp:1038 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:332 scope.cpp:374 scope.cpp:417 statswindow.cpp:262
+#: stepguider.cpp:105 stepguider.cpp:126
 msgid "None"
 msgstr "無"
 
@@ -2323,8 +2357,7 @@ msgid "Tracking rate axes"
 msgstr "軸追蹤速率"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:548
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
 msgid "Start"
 msgstr "開始"
 
@@ -2433,7 +2466,7 @@ msgstr "相機不支援串流"
 #: config_indi.cpp:150
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
-msgstr "強制不支援串流功能的相機使用曝光時間"
+msgstr "強制不支援串流功能的相機使用曝光時間。"
 
 #: config_indi.cpp:155
 msgid "Other options"
@@ -2553,7 +2586,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
-msgstr "目前暗場影像庫是以 %d 次曝光, 曝光時間範圍在 %.gs 至 %.gs 所建立的"
+msgstr "目前暗場影像庫是以 %d 次曝光, 曝光時間範圍在 %g s 至 %g s 所建立的"
 
 #: darks_dialog.cpp:150
 msgid ""
@@ -2616,7 +2649,7 @@ msgstr "建立主要暗場影像 %.1f 秒:"
 #: darks_dialog.cpp:282
 #, c-format
 msgid "Building master dark at %d mSec:"
-msgstr "建立主要暗場影像 %.1d  毫秒:"
+msgstr "建立主要暗場影像 %d  毫秒:"
 
 #: darks_dialog.cpp:299
 msgid "Operation cancelled - no changes have been made"
@@ -3809,7 +3842,7 @@ msgstr "訊號變異 (短期的)"
 #, c-format
 msgid ""
 "Signal variance (in pixels) of the short-term variations. Default = %.2f"
-msgstr "短時間內的訊號偏差 (以像素為單位), 預設值 = %2f"
+msgstr "短時間內的訊號偏差 (以像素為單位), 預設值 = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:225
 #: guide_algorithm_gaussian_process.cpp:311
@@ -3818,8 +3851,8 @@ msgid ""
 "What percent of the predictive guide correction should be applied? Default = "
 "%.f%%, increase to rely more on the predictions"
 msgstr ""
-"要套用多少百分比的預測性導星修正 (predictive guide correction) ？預設值 = %.f"
-"%%，增加百分比代表偏向預測值的層度越高"
+"要套用多少百分比的預測性導星修正 (predictive guide correction) ？預設值 = "
+"%.f%%，增加百分比代表偏向預測值的層度越高"
 
 #: guide_algorithm_gaussian_process.cpp:228
 msgid "PredWt"
@@ -3829,8 +3862,8 @@ msgstr "PredWt"
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要套用多少百分比的反應性導星修正 (reactive guide correction)？預設 = %.f%%，"
 "當有回應速度太慢或太快的情況發生時，可以調整該數值"
@@ -3952,8 +3985,8 @@ msgstr "修正強度"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -3975,8 +4008,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 "要使用多少百分比的計算修正 (computed correction)？預設 = %.f%%，當有回應速度"
 "太慢或太快的情況發生時，可以調整該數值"
@@ -4008,7 +4041,7 @@ msgstr "斜率加權值"
 #: guide_algorithm_lowpass.cpp:223 guide_algorithm_lowpass.cpp:290
 #, c-format
 msgid "Weighting of slope parameter in lowpass auto-dec. Default = %.1f"
-msgstr "低通 auto-dec 中斜率參數的加權值，預設 = %1f"
+msgstr "低通 auto-dec 中斜率參數的加權值，預設 = %.1f"
 
 #: guide_algorithm_lowpass.cpp:292
 msgid "Sl W"
@@ -4324,7 +4357,7 @@ msgid ""
 "guide stars."
 msgstr ""
 "自動選星時使用的相機禎降低採樣頻率參數, 如果自動選星無法判別畸形的導星星體, "
-"請選擇大於 1 的數值"
+"請選擇大於 1 的數值。"
 
 #: guider_multistar.cpp:1423
 msgid "Beep on lost star"
@@ -4376,7 +4409,7 @@ msgstr ""
 msgid ""
 "Additional sampling is being done for accurate measurements.  Results will "
 "be shown when sampling is complete."
-msgstr "正進行擴增取樣樣以利精確測量, 結果會在取樣完成後顯示"
+msgstr "正進行額外取樣以利精確測量, 結果會在取樣完成後顯示。"
 
 #: guiding_assistant.cpp:112
 msgid "Seconds remaining: "
@@ -5105,7 +5138,7 @@ msgstr ""
 msgid ""
 "Profile pixel size doesn't match camera-reported pixel size.  Re-calibrate "
 "to restore correct guiding."
-msgstr "設定檔中的像素大小與相機所回報的不同，重新校準以恢復正確的導星動作"
+msgstr "設定檔中的像素大小與相機所回報的不同，重新校準以恢復正確的導星動作。"
 
 #: mount.cpp:1333
 msgid "Rotator position has changed, recalibration is needed."
@@ -5209,11 +5242,11 @@ msgstr "自動選擇被導星體"
 
 #: myframe.cpp:510 myframe_events.cpp:985 myframe_events.cpp:992
 msgid "Calibration Assistant..."
-msgstr ""
+msgstr "校準小幫手..."
 
 #: myframe.cpp:510
 msgid "Slew to a preferred calibration position"
-msgstr ""
+msgstr "轉到想要的校準位置"
 
 #: myframe.cpp:511
 msgid "&Review Calibration Data\tAlt-C"
@@ -5650,7 +5683,7 @@ msgstr "開始連續曝光以對焦及對準影像"
 
 #: myframe.cpp:1003
 msgid "Auto-select Star. Shift-click to de-select star."
-msgstr "自動選星, [Shitf]+點擊來取消選星"
+msgstr "自動選星, [Shitf]+點擊來取消選星。"
 
 #: myframe.cpp:1004
 msgid "Begin guiding (PHD). Shift-click to force calibration."
@@ -5782,7 +5815,7 @@ msgid ""
 "unexpectedly. You should use separate profiles for different image scales."
 msgstr ""
 "導星參數因非預期的影像併合或像素大小改變而重置, 不同影像比例需使用個別的設置"
-"檔"
+"檔。"
 
 #: myframe.cpp:2844
 msgid "Global Settings"
@@ -5795,7 +5828,7 @@ msgid ""
 "or enter 0 if the focal length is not known"
 msgstr ""
 "以毫米為單位輸入焦長, 輸入數值在 %.f 與 %.f 之間,\n"
-"如果不知道焦長的話, 請輸入 0 "
+"如果不知道焦長的話, 請輸入 0"
 
 #: myframe.cpp:2943 myframe.cpp:3026
 msgid "System default"
@@ -6292,33 +6325,33 @@ msgstr ""
 msgid ""
 "Scope isn't pointing in recommended sky area for calibration - run the "
 "Calibration Assistant to improve results."
-msgstr ""
+msgstr "望遠鏡未指向建議的校準天空區域 - 執行校準小幫手以改善結果。"
 
 #: myframe_events.cpp:985 myframe_events.cpp:992
 msgid "Calibrate here"
-msgstr ""
+msgstr "在此校準"
 
 #: myframe_events.cpp:989
 msgid ""
 "With the scope pointing this close to the pole, calibration can be degraded "
 "and may "
-msgstr ""
+msgstr "當望遠鏡指向接近極點附近時，校準精度可能會降低並且可能 "
 
 #: myframe_events.cpp:990
 msgid ""
 "fail altogether.  Run the Calibration Assistant and follow the instructions "
 "to eliminate these risks, "
-msgstr ""
+msgstr "徹底失敗，執行校準小幫手並按照指示操作以消除這些風險, "
 
 #: myframe_events.cpp:991
 msgid ""
 "including slewing the scope as close as practical to the recommended "
 "position."
-msgstr ""
+msgstr "包括將望遠鏡盡可能轉至建議的位置。"
 
 #: myframe_events.cpp:1040
 msgid "Are you sure you want to force recalibration?"
-msgstr ""
+msgstr "確定要強制重新校準嗎？"
 
 #: myframe_events.cpp:1041
 msgid "Force Recalibration"
@@ -6656,11 +6689,11 @@ msgid ""
 msgstr ""
 "將望遠鏡指向接近時角= 0和傾角= 0 的子午線和天球赤道交叉點的方向\n"
 "\n"
-"準備好後點擊校準"
+"準備好後點擊校準。"
 
 #: pierflip_tool.cpp:260
 msgid "Wait for the first calibration to complete."
-msgstr "等候完成第一次校準"
+msgstr "等候完成第一次校準。"
 
 #: pierflip_tool.cpp:261 pierflip_tool.cpp:274
 #, c-format
@@ -6670,19 +6703,19 @@ msgstr "於赤道儀架台的 %s 面進行校準"
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Slew the telescope to force a meridian flip - the scope should move to the %"
-"s side of the pier, still pointing near Dec = 0."
+"Slew the telescope to force a meridian flip - the scope should move to the "
+"%s side of the pier, still pointing near Dec = 0."
 msgstr ""
 "轉動望遠鏡以強制過中天翻轉 - 望遠鏡應移動到赤道儀的%s 側，仍指向 Dec = 0 附"
 "近。"
 
 #: pierflip_tool.cpp:273
 msgid "Wait for the second calibration to complete."
-msgstr "等候完成第二次校準"
+msgstr "等候完成第二次校準。"
 
 #: pierflip_tool.cpp:280
 msgid "Meridian flip calibration completed sucessfully."
-msgstr "完成過中天翻轉校準"
+msgstr "完成過中天翻轉校準。"
 
 #: pierflip_tool.cpp:282
 #, c-format
@@ -6705,7 +6738,7 @@ msgstr "點擊套用以接受此設定"
 
 #: pierflip_tool.cpp:290
 msgid "Meridian flip calibration failed."
-msgstr "過中天翻轉校準失敗"
+msgstr "過中天翻轉校準失敗。"
 
 #: pierflip_tool.cpp:292
 msgid "Resolve any calibration issues and try again"
@@ -6713,11 +6746,11 @@ msgstr "解決與校準相關的問題後再試"
 
 #: pierflip_tool.cpp:466
 msgid "The RA calibration angles varied by an unexpected amount."
-msgstr "赤經校準角度因意外的量而有所變動"
+msgstr "赤經校準角度因意外的量而有所變動。"
 
 #: pierflip_tool.cpp:482
 msgid "The declination calibration angles varied by an unexpected amount."
-msgstr "赤緯校準角度因意外的量而有所變動"
+msgstr "赤緯校準角度因意外的量而有所變動。"
 
 #: pierflip_tool.cpp:496
 msgid ""
@@ -6729,7 +6762,7 @@ msgstr "過中天翻轉校準工具需要沒有 AO 設備存在的裝置配置�
 msgid ""
 "The meridian flip calibration tool requires a mount. Click the Connect "
 "Equipment button to select your mount."
-msgstr "過中天翻轉校準工具需要安裝, 單擊 “連接設備” 按鈕以選擇赤道儀"
+msgstr "過中天翻轉校準工具需要安裝, 單擊 “連接設備” 按鈕以選擇赤道儀。"
 
 #: pierflip_tool.cpp:509
 msgid ""
@@ -6738,7 +6771,7 @@ msgid ""
 "Auto and try again."
 msgstr ""
 "過中天翻轉校準工具無法在停用赤緯導星的情況下運行, 如果您的赤道儀可以做赤緯導"
-"星, 請將赤緯島星模式設置為自動, 然後再重試"
+"星, 請將赤緯島星模式設置為自動, 然後再重試。"
 
 #: polardrift_toolwin.cpp:65
 msgid ""
@@ -6899,7 +6932,7 @@ msgid ""
 "165mm."
 msgstr ""
 "這是導星鏡的焦長, 於使用離軸導星或調適應光學設備則是成像範圍 (焦長=口徑x焦"
-"比), 一般尋星鏡的焦距約為165mm"
+"比), 一般尋星鏡的焦距約為165mm。"
 
 #: profile_wizard.cpp:277
 msgid "Guide scope focal length (mm)"
@@ -6960,7 +6993,7 @@ msgid ""
 "between imaging sessions."
 msgstr ""
 "勾選這個選項讓程式載入設定檔後自動自動採用最後的校準資料, 但導星相機的旋轉角"
-"度和所有導星相關的設定必須要與之前的一致才能讓這個功能可以正常運作"
+"度和所有導星相關的設定必須要與之前的一致才能讓這個功能可以正常運作。"
 
 #: profile_wizard.cpp:323
 msgid "Profile Name"
@@ -7041,7 +7074,7 @@ msgid ""
 "connection that does provide pointing information."
 msgstr ""
 "相機/赤道儀“模擬器”界面不提供指向信息, 因此 PHD2 無法自動依赤道儀方向和赤緯進"
-"行導星, 您可以經由選擇能提供指向信息的“Aux Mount”來啟用這些功能"
+"行導星, 您可以經由選擇能提供指向信息的“Aux Mount”來啟用這些功能。"
 
 #: profile_wizard.cpp:414
 msgid ""
@@ -7091,7 +7124,7 @@ msgstr ""
 "您的設定檔已完成並可以保存, 命名並選擇地為其建立一個暗場影像庫, 強烈建議您這"
 "樣做以獲得最佳效果, 如果您的設定跑一兩天都是很穩定, 就可以選擇在載入此設定檔"
 "時自動重用上一次校準的結果, 如果您不熟悉 PHD2 或遇到問題，請使用“幫助”功能獲"
-"得協助"
+"得協助。"
 
 #: profile_wizard.cpp:474
 msgid "Configuration Suggestion"
@@ -7112,7 +7145,7 @@ msgstr ""
 "每當望遠鏡轉動時, 某些 PHD2 功能將被禁用, 除非你的赤道儀沒有相關可用的驅動程"
 "式, \n"
 "否則, 您應該在 “赤道儀” 或 “輔助赤道儀” 中選擇 ASCOM 或I NDI 赤道儀\\ n\n"
-"詳細信息，請查看“設備連接”的幫助指南"
+"詳細信息，請查看“設備連接”的幫助指南。"
 
 #: profile_wizard.cpp:487
 msgid ""
@@ -7303,7 +7336,7 @@ msgid ""
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
 "當像素比例高於 0.5“/ px 時, 導星識別效果最佳, 請選擇 2 的影像併合值以增加像素"
-"比例"
+"比例。"
 
 #: profile_wizard.cpp:1229
 msgid "Low pixel scale"
@@ -7794,7 +7827,7 @@ msgstr "校準步數 (ms)"
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Advanced..."
 "\" to compute a suitable value."
-msgstr "在校準時所用的導星脈衝長度? 點擊 “進階...”以計算適當的值"
+msgstr "在校準時所用的導星脈衝長度? 點擊 “進階...”以計算適當的值。"
 
 #: scope.cpp:1920
 msgid "Advanced..."
@@ -10150,8 +10183,8 @@ msgstr "正在連接相場旋轉器 ..."
 #~ msgstr "重置【不再詢問】訊息"
 
 #~ msgid ""
-#~ "Restore any messages that were hidden when you checked \"Don't Ask Again"
-#~ "\"."
+#~ "Restore any messages that were hidden when you checked \"Don't Ask "
+#~ "Again\"."
 #~ msgstr "回復所有被點選【不再詢問】所隱藏的訊息"
 
 #~ msgid "Dither RA only"
