@@ -320,7 +320,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             resizeQuality = wxIMAGE_QUALITY_NEAREST;
             toggleMsg = _("Click image for interpolated view");
         }
-        tmpMdc.SelectObject(wxBitmap(subDImg.Rescale(width, width, resizeQuality)));
+        wxBitmap zoomedDBmp(subDImg.Rescale(width, width, resizeQuality));
+        tmpMdc.SelectObject(zoomedDBmp);
         int imgTop = 30;
         imageBottom = imgTop + width;
         // blit into profile DC
