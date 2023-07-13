@@ -81,6 +81,8 @@ private:
     wxStaticBitmap *m_scaleIcon;
     wxStaticText *m_pixelScale;
     wxChoice *m_pBinningLevel;
+    wxRadioButton *m_pBits8;
+    wxRadioButton *m_pBits16;
     wxSpinCtrlDouble *m_pFocalLength;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxCheckBox *m_pHPEncoders;
@@ -241,7 +243,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
-    m_pUserProperties = new wxGridBagSizer(5, 5);
+    m_pUserProperties = new wxGridBagSizer(6,5);
 
     // Pixel-size
     m_pPixelSize = pFrame->MakeSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
@@ -260,11 +262,20 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
         "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
         "stars.  For more common setups, it's better to leave binning at 1."));
     m_pBinningLevel->SetSelection(0);
+    m_pBits8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
+    m_pBits8->SetToolTip(_("Choose this if your guide camera driver downloads 8-bit data"));
+    m_pBits16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
+    m_pBits16->SetToolTip(_("Choose this if your guide camera driver downoads 16-bit data.  Requires a camera with 10, 12, 14 or 16-bit ADC electronics"));
     wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
     sz->Add(Label(this, _("Binning level")), 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     sz->Add(m_pBinningLevel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_pUserProperties->Add(sz, wxGBPosition(1, 1), wxDefaultSpan, 0, 0);
-
+    // Camera bit depth
+    wxBoxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
+    sz2->Add(Label(this, _("Bit depth (bits/pixel)")), 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sz2->Add(m_pBits8, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sz2->Add(m_pBits16, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_pUserProperties->Add(sz2, wxGBPosition(2, 1), wxDefaultSpan, 0, 0);
     // Focal length
     m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
         wxSize(StringWidth(this, _T("888888")), -1), wxSP_ARROW_KEYS,
@@ -274,7 +285,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
     m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
         "adaptive optics device (Focal length = aperture x f-ratio).  Typical finder scopes have a focal length of about 165mm."));
     m_FocalLength = (int)m_pFocalLength->GetValue();
-    AddCellPair(this, m_pUserProperties, 2, _("Guide scope focal length (mm)"), m_pFocalLength);
+    AddCellPair(this, m_pUserProperties, 3, _("Guide scope focal length (mm)"), m_pFocalLength);
 
     // pixel scale
 #   include "icons/transparent24.png.h"
@@ -284,7 +295,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting) :
 
     m_pixelScale = new wxStaticText(this, wxID_ANY, wxString::Format(_("Pixel scale: %8.2f\"/px"), 99.99));
     m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
-    m_pUserProperties->Add(m_pixelScale, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 5);
+    m_pUserProperties->Add(m_pixelScale, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 5);
 
     UpdatePixelScale();
 
@@ -570,9 +581,9 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
         case STATE_GREETINGS:
             break;
         case STATE_CAMERA:
-            bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && m_SelectedCamera != _("None"));
+            bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && (m_pBits8->GetValue() || m_pBits16->GetValue()) && m_SelectedCamera != _("None"));
             if (!bOk)
-                ShowStatus(_("Please specify camera type, guider focal length, and guide camera pixel size"));
+                ShowStatus(_("Please specify camera type, guider focal length, camera bit-depth, and guide camera pixel size"));
             break;
         case STATE_MOUNT:
             bOk = (m_SelectedMount.Length() > 0 && m_SelectedMount != _("None"));
@@ -915,6 +926,10 @@ void ProfileWizard::WrapUp()
     double ImageScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
     if (ImageScale < 2.0)
         pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", false);
+    if (m_pBits8->GetValue())
+        pConfig->Profile.SetInt("/camera/SaturationADU", 255);
+    else
+        pConfig->Profile.SetInt("/camera/SaturationADU", 65535);
 
     GuideLog.EnableLogging(true);       // Especially for newbies
 
@@ -1085,6 +1100,8 @@ static double GetPixelSize(GuideCamera *cam)
 
 void ProfileWizard::InitCameraProps(bool tryConnect)
 {
+    m_pBits8->Enable(true);
+    m_pBits16->Enable(true);
     if (tryConnect)
     {
         // Pixel size
@@ -1104,6 +1121,22 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
             GuideCamera::GetBinningOpts(4, &opts);
         m_pBinningLevel->Set(opts);
         m_pBinningLevel->SetSelection(0);
+        // Bit depth
+        wxByte bitDepth = cam->BitsPerPixel();
+        if (bitDepth == 0)           // Cam doesn't report it, force the user to choose
+        {
+            m_pBits8->SetValue(false);
+            m_pBits16->SetValue(false);
+        }
+        else
+        {
+            m_pBits8->Enable(false);
+            m_pBits16->Enable(false);
+            if (bitDepth == 8)
+                m_pBits8->SetValue(true);
+            else
+                m_pBits16->SetValue(true);
+        }
     }
     else
     {
@@ -1115,6 +1148,8 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pPixelSize->Enable(true);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
+        m_pBits8->SetValue(false);      // force a user selection
+        m_pBits16->SetValue(false);
     }
 }
 
