@@ -165,7 +165,8 @@ class Guider : public wxWindow
     LockPosShiftParams m_lockPosShift;
     bool m_measurementMode;
     double m_minStarHFD;
-    double m_minStarSNR;
+    double m_minAFStarSNR;
+    double m_maxAFStarHFD;
     unsigned int m_autoSelDownsample;  // downsample factor for star auto-selection, 0=Auto
 
 protected:
@@ -266,12 +267,15 @@ public:
 
     void Reset(bool fullReset);
     void EnableMeasurementMode(bool enabled);
-    void SetMinStarHFD(double val);
     double GetMinStarHFD() const;
     double GetMinStarHFDFloor() const;
     double GetMinStarHFDDefault() const;
-    void SetMinStarSNR(double val);
-    double getMinStarSNR() const;
+    void SetMinStarHFD(double val);
+    double GetMaxStarHFD() const;
+    void SetMaxStarHFD(double val);
+    void SetAFMinStarSNR(double val);
+    double GetAFMinStarSNR() const;
+
     void SetAutoSelDownsample(unsigned int val);
     unsigned int GetAutoSelDownsample() const;
 
@@ -422,11 +426,15 @@ inline double Guider::GetMinStarHFDDefault() const
     return 1.5;
 }
 
-inline double Guider::getMinStarSNR() const
+inline double Guider::GetAFMinStarSNR() const
 {
-    return m_minStarSNR;
+    return m_minAFStarSNR;
 }
 
+inline double Guider::GetMaxStarHFD() const
+{
+    return m_maxAFStarHFD;
+}
 inline unsigned int Guider::GetAutoSelDownsample() const
 {
     return m_autoSelDownsample;

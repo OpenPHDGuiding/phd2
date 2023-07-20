@@ -63,6 +63,7 @@ public:
     wxCheckBox *m_pBeepForLostStarCtrl;
     wxCheckBox *m_pUseMultiStars;
     wxSpinCtrlDouble *m_MinSNR;
+    wxSpinCtrlDouble *m_MaxHFD;
 
     virtual void LoadValues();
     virtual void UnloadValues();
