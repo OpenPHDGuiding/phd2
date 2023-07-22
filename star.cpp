@@ -477,9 +477,9 @@ done:
     return wasFound;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, unsigned short saturation, StarFindLogType loggingControl)
+bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, double maxHFD, unsigned short saturation, StarFindLogType loggingControl)
 {
-    return Find(pImg, searchRegion, X, Y, mode, minHFD, pFrame->pGuider->GetMaxStarHFD(), saturation, loggingControl);
+    return Find(pImg, searchRegion, X, Y, mode, minHFD, maxHFD, saturation, loggingControl);
 }
 
 struct FloatImg
@@ -1004,9 +1004,9 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         GuideStar tmp;
-        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pFrame->pGuider->GetMaxStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
         // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
-        if (tmp.WasFound() && tmp.SNR >= minSNR && tmp.HFD <= maxHFD)
+        if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
             bool duplicate = std::find_if(foundStars.begin(), foundStars.end(),
                 [&tmp](const GuideStar& other) { return CloseToReference(tmp, other); }) != foundStars.end();
@@ -1033,7 +1033,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             GuideStar tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pFrame->pGuider->GetMaxStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
             if (tmp.WasFound())
             {
                 if (pass == 1)

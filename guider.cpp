@@ -1805,12 +1805,14 @@ EXPOSED_STATE Guider::GetExposedState()
 
     return rval;
 }
+
 void Guider::SetMinStarHFD(double val)
 {
     Debug.Write(wxString::Format("Setting StarMinHFD = %.2f\n", val));
     pConfig->Profile.SetDouble("/guider/StarMinHFD", val);
     m_minStarHFD = val;
 }
+
 // Minimum star SNR for auto-find; minimum SNR for normal star tracking is hard-wired to 3
 void Guider::SetAFMinStarSNR(double val)
 {
@@ -1826,6 +1828,7 @@ void Guider::SetMaxStarHFD(double val)
     pConfig->Profile.SetDouble("/guider/StarMaxHFD", val);
     m_maxAFStarHFD = val;
 }
+
 void Guider::SetAutoSelDownsample(unsigned int val)
 {
     Debug.Write(wxString::Format("Setting AutoSelDownsample = %u\n", val));

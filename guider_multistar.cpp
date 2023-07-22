@@ -931,7 +931,7 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         Star newStar(m_primaryStar);
 
         if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), GetMinStarHFD(),
-            pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
+            GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;

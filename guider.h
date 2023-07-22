@@ -435,6 +435,7 @@ inline double Guider::GetMaxStarHFD() const
 {
     return m_maxAFStarHFD;
 }
+
 inline unsigned int Guider::GetAutoSelDownsample() const
 {
     return m_autoSelDownsample;
