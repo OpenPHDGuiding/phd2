@@ -1826,7 +1826,7 @@ void Guider::SetMaxStarHFD(double val)
 {
     Debug.Write(wxString::Format("Setting MaxHFD = %0.1f\n", val));
     pConfig->Profile.SetDouble("/guider/StarMaxHFD", val);
-    m_maxAFStarHFD = val;
+    m_maxStarHFD = val;
 }
 
 void Guider::SetAutoSelDownsample(unsigned int val)

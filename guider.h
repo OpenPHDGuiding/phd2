@@ -166,7 +166,7 @@ class Guider : public wxWindow
     bool m_measurementMode;
     double m_minStarHFD;
     double m_minAFStarSNR;
-    double m_maxAFStarHFD;
+    double m_maxStarHFD;
     unsigned int m_autoSelDownsample;  // downsample factor for star auto-selection, 0=Auto
 
 protected:
@@ -273,6 +273,7 @@ public:
     void SetMinStarHFD(double val);
     double GetMaxStarHFD() const;
     void SetMaxStarHFD(double val);
+    // 'AF' methods deal with SNR threshold used only during Auto-Find - lets user specify a higher than default SNR floor for populating a multi-star list. Normal 'find' methods do not use this property
     void SetAFMinStarSNR(double val);
     double GetAFMinStarSNR() const;
 
@@ -433,7 +434,7 @@ inline double Guider::GetAFMinStarSNR() const
 
 inline double Guider::GetMaxStarHFD() const
 {
-    return m_maxAFStarHFD;
+    return m_maxStarHFD;
 }
 
 inline unsigned int Guider::GetAutoSelDownsample() const
