@@ -123,7 +123,7 @@ static double hfr(std::vector<R2M>& vec, double cx, double cy, double mass)
     return hfr;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD, unsigned short maxADU, StarFindLogType loggingControl)
+bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD, double maxHFD, unsigned short maxADU, StarFindLogType loggingControl)
 {
     FindResult Result = STAR_OK;
     double newX = base_x;
@@ -132,8 +132,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
     try
     {
         if (loggingControl == FIND_LOGGING_VERBOSE)
-            Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %hu) frame %u\n", searchRegion, base_x, base_y, mode,
-            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height, minHFD, maxADU, pImg->FrameNum));
+            Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %0.1f, %hu) frame %u\n", searchRegion, base_x, base_y, mode,
+            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
 
         int minx, miny, maxx, maxy;
 
@@ -395,11 +395,19 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         newY = peak_y + cy / mass;
 
         HFD = 2.0 * hfr(hfrvec, newX, newY, mass);
-
-        if (HFD < minHFD && mode != FIND_PEAK)
+        // Check for constraints on HFD value
+        if (mode != FIND_PEAK)
         {
-            Result = STAR_LOWHFD;
-            goto done;
+            if (HFD < minHFD)
+            {
+                Result = STAR_LOWHFD;
+                goto done;
+            }
+            if (HFD > maxHFD)
+            {
+                Result = STAR_HIHFD;
+                goto done;
+            }
         }
 
         // check for saturation
@@ -469,9 +477,9 @@ done:
     return wasFound;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, unsigned short saturation, StarFindLogType loggingControl)
+bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, double maxHFD, unsigned short saturation, StarFindLogType loggingControl)
 {
-    return Find(pImg, searchRegion, X, Y, mode, minHFD, saturation, loggingControl);
+    return Find(pImg, searchRegion, X, Y, mode, minHFD, maxHFD, saturation, loggingControl);
 }
 
 struct FloatImg
@@ -946,7 +954,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pFrame->pGuider->GetMaxStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
             if (tmp.WasFound() && tmp.GetError() == STAR_SATURATED)
             {
                 if ((maxVal - tmp.PeakVal) * 255U > maxVal)
@@ -990,12 +998,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
 
     // Before sifting for the best star, collect all the viable candidates
-    double minSNR = pFrame->pGuider->getMinStarSNR();
+    double minSNR = pFrame->pGuider->GetAFMinStarSNR();
+    double maxHFD = pFrame->pGuider->GetMaxStarHFD();
     foundStars.clear();
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         GuideStar tmp;
-        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
         // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
         if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
@@ -1024,7 +1033,7 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             GuideStar tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
             if (tmp.WasFound())
             {
                 if (pass == 1)

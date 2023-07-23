@@ -218,9 +218,11 @@ void Guider::LoadProfileSettings()
     if (minHFD < GetMinStarHFDFloor())
         minHFD = GetMinStarHFDFloor();
     SetMinStarHFD(minHFD);
+    double maxHFD = pConfig->Profile.GetDouble("/guider/StarMaxHFD", 20.0);
+    SetMaxStarHFD(maxHFD);
 
     double minSNR = pConfig->Profile.GetDouble("/guider/StarMinSNR", 6.0);
-    SetMinStarSNR(minSNR);
+    SetAFMinStarSNR(minSNR);
 
     unsigned int autoSelDownsample = wxMax(0, pConfig->Profile.GetInt("/guider/AutoSelDownsample", 0));
     SetAutoSelDownsample(autoSelDownsample);
@@ -1811,11 +1813,20 @@ void Guider::SetMinStarHFD(double val)
     m_minStarHFD = val;
 }
 
-void Guider::SetMinStarSNR(double val)
+// Minimum star SNR for auto-find; minimum SNR for normal star tracking is hard-wired to 3
+void Guider::SetAFMinStarSNR(double val)
 {
     Debug.Write(wxString::Format("Setting StarMinSNR = %0.1f\n", val));
     pConfig->Profile.SetDouble("/guider/StarMinSNR", val);
-    m_minStarSNR = val;
+    m_minAFStarSNR = val;
+}
+
+// Maximum star HFD
+void Guider::SetMaxStarHFD(double val)
+{
+    Debug.Write(wxString::Format("Setting MaxHFD = %0.1f\n", val));
+    pConfig->Profile.SetDouble("/guider/StarMaxHFD", val);
+    m_maxStarHFD = val;
 }
 
 void Guider::SetAutoSelDownsample(unsigned int val)

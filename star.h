@@ -56,6 +56,7 @@ public:
         STAR_LOWSNR,
         STAR_LOWMASS,
         STAR_LOWHFD,
+        STAR_HIHFD,
         STAR_TOO_NEAR_EDGE,
         STAR_MASSCHANGE,
         STAR_ERROR,
@@ -79,8 +80,8 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, unsigned short saturation, StarFindLogType loggingControl);
-    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, unsigned short saturation, StarFindLogType loggingControl);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, double max_hfd, unsigned short saturation, StarFindLogType loggingControl);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, double max_hfd, unsigned short saturation, StarFindLogType loggingControl);
 
     static bool WasFound(FindResult result);
     bool WasFound() const;
