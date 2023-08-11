@@ -37,103 +37,100 @@
 #ifdef STEPGUIDER_SXAO_INDI
 
 #include "stepguider_sxao_indi.h"
-#include "phdindiclient.h"
+#include <libindi/baseclient.h>
 #include "config_indi.h"
 
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
-class StepGuiderSxAoINDI : public StepGuider, public PhdIndiClient
+class StepGuiderSxAoINDI : public StepGuider, public INDI::BaseClient
 {
-private:
-    // INDI parts
-    static const int MaxDeviceInitWaitMilliSeconds = 2000;
-    static const int MaxDevicePropertiesWaitMilliSeconds = 5000;
-    long     INDIport;
-    wxString INDIhost;
-    wxString INDIaoDeviceName;
-    bool     modal;
-    bool     ready;
-    void     ClearStatus();
-    void     CheckState();
+    private:
+        // INDI parts
+        static const int MaxDeviceInitWaitMilliSeconds = 2000;
+        static const int MaxDevicePropertiesWaitMilliSeconds = 5000;
+        long     INDIport;
+        wxString INDIhost;
+        wxString INDIaoDeviceName;
+        bool     modal;
+        bool     ready;
+        void     ClearStatus();
+        void     CheckState();
 
-    INumberVectorProperty *pulseGuideNS_prop;
-    INumber               *pulseN_prop;
-    INumber               *pulseS_prop;
-    INumberVectorProperty *pulseGuideWE_prop;
-    INumber               *pulseW_prop;
-    INumber               *pulseE_prop;
-    INumberVectorProperty *aoNS_prop;
-    INumber               *aoN_prop;
-    INumber               *aoS_prop;
-    INumberVectorProperty *aoWE_prop;
-    INumber               *aoW_prop;
-    INumber               *aoE_prop;
-    ISwitchVectorProperty *aoCenterUnjam_prop;
-    ISwitch               *aoCenter_prop;
-    ISwitch               *aoUnjam_prop;
-    INDI::BaseDevice      *ao_device;
-    ITextVectorProperty   *ao_port;
-    ITextVectorProperty   *ao_driverInfo;
-    IText                 *ao_driverName;
-    IText                 *ao_driverExec;
-    IText                 *ao_driverVersion;
-    IText                 *ao_driverInterface;
-    ITextVectorProperty   *ao_info;
-    IText                 *ao_firmware;
-    ILightVectorProperty  *ao_limit;
-    ILight                *ao_limit_north;
-    ILight                *ao_limit_south;
-    ILight                *ao_limit_east;
-    ILight                *ao_limit_west;
+        INumberVectorProperty *pulseGuideNS_prop;
+        INumber               *pulseN_prop;
+        INumber               *pulseS_prop;
+        INumberVectorProperty *pulseGuideWE_prop;
+        INumber               *pulseW_prop;
+        INumber               *pulseE_prop;
+        INumberVectorProperty *aoNS_prop;
+        INumber               *aoN_prop;
+        INumber               *aoS_prop;
+        INumberVectorProperty *aoWE_prop;
+        INumber               *aoW_prop;
+        INumber               *aoE_prop;
+        ISwitchVectorProperty *aoCenterUnjam_prop;
+        ISwitch               *aoCenter_prop;
+        ISwitch               *aoUnjam_prop;
+        INDI::BaseDevice      ao_device;
+        ITextVectorProperty   *ao_port;
+        ITextVectorProperty   *ao_driverInfo;
+        IText                 *ao_driverName;
+        IText                 *ao_driverExec;
+        IText                 *ao_driverVersion;
+        IText                 *ao_driverInterface;
+        ITextVectorProperty   *ao_info;
+        IText                 *ao_firmware;
+        ILightVectorProperty  *ao_limit;
+        ILight                *ao_limit_north;
+        ILight                *ao_limit_south;
+        ILight                *ao_limit_east;
+        ILight                *ao_limit_west;
 
-    // StepGuider parts
-    static const int DefaultMaxSteps = 45;
-    wxString m_Name;
-    int m_maxSteps;
-    int SxAoVersion;
+        // StepGuider parts
+        static const int DefaultMaxSteps = 45;
+        wxString m_Name;
+        int m_maxSteps;
+        int SxAoVersion;
+        bool Connected {false};
 
-    bool Center() override;
-    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
-    int MaxPosition(GUIDE_DIRECTION direction) const override;
-    bool SetMaxPosition(int steps) override;
-    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
+        bool Center() override;
+        STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
+        int MaxPosition(GUIDE_DIRECTION direction) const override;
+        bool SetMaxPosition(int steps) override;
+        bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
 
-    bool FirmwareVersion(int *version);
+        bool FirmwareVersion(int *version);
 
-    bool    ST4HasGuideOutput() override;
-    bool    ST4HostConnected() override;
-    bool    ST4HasNonGuiMove() override;
-    bool    ST4PulseGuideScope(int direction, int duration) override;
+        bool    ST4HasGuideOutput() override;
+        bool    ST4HostConnected() override;
+        bool    ST4HasNonGuiMove() override;
+        bool    ST4PulseGuideScope(int direction, int duration) override;
 
-protected:
-    // INDI parts
-    void newDevice(INDI::BaseDevice *dp) override;
-    void removeDevice(INDI::BaseDevice *dp) override;
-    void newProperty(INDI::Property *property) override;
-    void removeProperty(INDI::Property *property) override {};
-    void newBLOB(IBLOB *bp) override {};
-    void newSwitch(ISwitchVectorProperty *svp) override {};
-    void newNumber(INumberVectorProperty *nvp) override;
-    void newMessage(INDI::BaseDevice *dp, int messageID) override;
-    void newText(ITextVectorProperty *tvp) override {};
-    void newLight(ILightVectorProperty *lvp) override {};
-    void IndiServerConnected() override;
-    void IndiServerDisconnected(int exit_code) override;
+    protected:
+        // INDI parts
+        void newDevice(INDI::BaseDevice dp) override;
+        void removeDevice(INDI::BaseDevice dp) override;
+        void newProperty(INDI::Property property) override;
+        void removeProperty(INDI::Property property) override {};
+        //void updateProperty(INDI::Property property) override;
+        //void newMessage(INDI::BaseDevice dp, int messageID) override;
+        void serverConnected() override;
+        void serverDisconnected(int exit_code) override;
 
-public:
-    StepGuiderSxAoINDI();
-    ~StepGuiderSxAoINDI();
+    public:
+        StepGuiderSxAoINDI();
+        ~StepGuiderSxAoINDI();
 
-    // StepGuider parts
-    bool Connect() override;
-    bool Disconnect() override;
-    bool HasNonGuiMove() override;
-    bool HasSetupDialog() const override;
-    void SetupDialog() override;
+        // StepGuider parts
+        bool Connect() override;
+        bool Disconnect() override;
+        bool HasNonGuiMove() override;
+        bool HasSetupDialog() const override;
+        void SetupDialog() override;
 
-private:
-    void ShowPropertyDialog() override;
+    private:
+        void ShowPropertyDialog() override;
 };
 
 StepGuiderSxAoINDI::StepGuiderSxAoINDI()
@@ -151,7 +148,7 @@ StepGuiderSxAoINDI::StepGuiderSxAoINDI()
 
 StepGuiderSxAoINDI::~StepGuiderSxAoINDI()
 {
-    DisconnectIndiServer();
+    disconnectServer();
 }
 
 void StepGuiderSxAoINDI::ClearStatus()
@@ -172,7 +169,6 @@ void StepGuiderSxAoINDI::ClearStatus()
     aoCenterUnjam_prop = nullptr;
     aoCenter_prop = nullptr;
     aoUnjam_prop = nullptr;
-    ao_device = nullptr;
     ao_port = nullptr;
     ao_driverInfo = nullptr;
     ao_driverName = nullptr;
@@ -195,27 +191,35 @@ void StepGuiderSxAoINDI::ClearStatus()
 void StepGuiderSxAoINDI::CheckState()
 {
     // Check if the device has all the required properties for our usage.
-    if (IsConnected() && (ao_driverVersion && aoN_prop && aoS_prop && aoW_prop && aoE_prop && aoCenter_prop)) {
-        if (atof(ao_driverVersion->text) < 1.12) {
+    if (IsConnected() && (ao_driverVersion && aoN_prop && aoS_prop && aoW_prop && aoE_prop && aoCenter_prop))
+    {
+        if (atof(ao_driverVersion->text) < 1.12)
+        {
             wxMessageBox(wxString::Format(
-                _("We need at least INDI driver %s version 1.12 to get the Firmware version and the Limit switch states."),
-                ao_driverExec->text), _("Error"));
-        } else if (ao_firmware) {
-            if (! ready) {
-                if (FirmwareVersion(&SxAoVersion)) {
+                             _("We need at least INDI driver %s version 1.12 to get the Firmware version and the Limit switch states."),
+                             ao_driverExec->text), _("Error"));
+        }
+        else if (ao_firmware)
+        {
+            if (! ready)
+            {
+                if (FirmwareVersion(&SxAoVersion))
+                {
                     throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: unable to get firmware version");
                 }
-                if (SxAoVersion == 0) {
+                if (SxAoVersion == 0)
+                {
                     wxMessageBox(wxString::Format(
-                        _("This AO device has firmware version %03u which means it needs to be flashed.\n"
-                          "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
-                          "contains the firmware."), SxAoVersion),
-                          _("Error"));
+                                     _("This AO device has firmware version %03u which means it needs to be flashed.\n"
+                                       "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                                       "contains the firmware."), SxAoVersion),
+                                 _("Error"));
                     throw ERROR_INFO("StepGuiderSxAoINDI::CheckState: V000 means AO device needs a flash");
                 }
                 Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::CheckState is ready, firmware %03u", SxAoVersion));
                 ready = true;
-                if (modal) {
+                if (modal)
+                {
                     modal = false;
                 }
             }
@@ -223,18 +227,18 @@ void StepGuiderSxAoINDI::CheckState()
     }
 }
 
-void StepGuiderSxAoINDI::newDevice(INDI::BaseDevice *dp)
+void StepGuiderSxAoINDI::newDevice(INDI::BaseDevice dp)
 {
-    if (strcmp(dp->getDeviceName(), INDIaoDeviceName.mb_str(wxConvUTF8)) == 0) {
+    if (strcmp(dp.getDeviceName(), INDIaoDeviceName.mb_str(wxConvUTF8)) == 0)
+    {
         ao_device = dp;
     }
 }
 
-void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
+void StepGuiderSxAoINDI::newProperty(INDI::Property property)
 {
-    const char* PropName = property->getName();
-
-    INDI_PROPERTY_TYPE Proptype = property->getType();
+    auto PropName = property.getName();
+    auto Proptype = property.getType();
 
     /*
     printf("SXAO PropName: %s Proptype: %d\n", PropName, Proptype);
@@ -260,44 +264,68 @@ void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
     SXAO PropName: AT_LIMIT Proptype: 3
     */
 
-    if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
-        ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
-        if (connectswitch->s == ISS_ON) {
+    if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH)
+    {
+        ISwitch *connectswitch = IUFindSwitch(property.getSwitch(), "CONNECT");
+        Connected = connectswitch->s == ISS_ON;
+        if (Connected)
+        {
             StepGuider::Connect();
         }
-    } else if (strcmp(PropName, "DRIVER_INFO") == 0 && Proptype == INDI_TEXT) {
-        ao_driverInfo = property->getText();
+    }
+    else if (strcmp(PropName, "DRIVER_INFO") == 0 && Proptype == INDI_TEXT)
+    {
+        ao_driverInfo = property.getText();
         ao_driverName = IUFindText(ao_driverInfo, "DRIVER_NAME");
         ao_driverExec = IUFindText(ao_driverInfo, "DRIVER_EXEC");
         ao_driverVersion = IUFindText(ao_driverInfo, "DRIVER_VERSION"); // we need >=1.12 for Firmware version and AT_LIMIT
         ao_driverInterface = IUFindText(ao_driverInfo, "DRIVER_INTERFACE");
-    } else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {
-        ao_port = property->getText();
-    } else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER){
-        pulseGuideNS_prop = property->getNumber();
-        pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
-        pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
-    } else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER){
-        pulseGuideWE_prop = property->getNumber();
-        pulseW_prop = IUFindNumber(pulseGuideWE_prop,"TIMED_GUIDE_W");
-        pulseE_prop = IUFindNumber(pulseGuideWE_prop,"TIMED_GUIDE_E");
-    } else if ((strcmp(PropName, "AO_NS") == 0) && Proptype == INDI_NUMBER){
-        aoNS_prop = property->getNumber();
-        aoN_prop = IUFindNumber(aoNS_prop,"AO_N");
-        aoS_prop = IUFindNumber(aoNS_prop,"AO_S");
-    } else if ((strcmp(PropName, "AO_WE") == 0) && Proptype == INDI_NUMBER){
-        aoWE_prop = property->getNumber();
-        aoW_prop = IUFindNumber(aoWE_prop,"AO_W");
-        aoE_prop = IUFindNumber(aoWE_prop,"AO_E");
-    } else if (strcmp(PropName, "AO_CENTER") == 0 && Proptype == INDI_SWITCH) {
-        aoCenterUnjam_prop = property->getSwitch();
-        aoCenter_prop = IUFindSwitch(aoCenterUnjam_prop,"CENTER");
-        aoUnjam_prop  = IUFindSwitch(aoCenterUnjam_prop,"UNJAM");
-    } else if (strcmp(PropName, "INFO") == 0 && Proptype == INDI_TEXT) {
-        ao_info = property->getText();
+
+        if (!Connected)
+            connectDevice(property.getDeviceName());
+    }
+    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT)
+    {
+        ao_port = property.getText();
+    }
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER)
+    {
+        pulseGuideNS_prop = property.getNumber();
+        pulseN_prop = IUFindNumber(pulseGuideNS_prop, "TIMED_GUIDE_N");
+        pulseS_prop = IUFindNumber(pulseGuideNS_prop, "TIMED_GUIDE_S");
+    }
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER)
+    {
+        pulseGuideWE_prop = property.getNumber();
+        pulseW_prop = IUFindNumber(pulseGuideWE_prop, "TIMED_GUIDE_W");
+        pulseE_prop = IUFindNumber(pulseGuideWE_prop, "TIMED_GUIDE_E");
+    }
+    else if ((strcmp(PropName, "AO_NS") == 0) && Proptype == INDI_NUMBER)
+    {
+        aoNS_prop = property.getNumber();
+        aoN_prop = IUFindNumber(aoNS_prop, "AO_N");
+        aoS_prop = IUFindNumber(aoNS_prop, "AO_S");
+    }
+    else if ((strcmp(PropName, "AO_WE") == 0) && Proptype == INDI_NUMBER)
+    {
+        aoWE_prop = property.getNumber();
+        aoW_prop = IUFindNumber(aoWE_prop, "AO_W");
+        aoE_prop = IUFindNumber(aoWE_prop, "AO_E");
+    }
+    else if (strcmp(PropName, "AO_CENTER") == 0 && Proptype == INDI_SWITCH)
+    {
+        aoCenterUnjam_prop = property.getSwitch();
+        aoCenter_prop = IUFindSwitch(aoCenterUnjam_prop, "CENTER");
+        aoUnjam_prop  = IUFindSwitch(aoCenterUnjam_prop, "UNJAM");
+    }
+    else if (strcmp(PropName, "INFO") == 0 && Proptype == INDI_TEXT)
+    {
+        ao_info = property.getText();
         ao_firmware = IUFindText(ao_info, "FIRMWARE");
-    } else if (strcmp(PropName, "AT_LIMIT") == 0 && Proptype == INDI_LIGHT) {
-        ao_limit = property->getLight();
+    }
+    else if (strcmp(PropName, "AT_LIMIT") == 0 && Proptype == INDI_LIGHT)
+    {
+        ao_limit = property.getLight();
         ao_limit_north = IUFindLight(ao_limit, "AT_LIMIT_N");
         ao_limit_south = IUFindLight(ao_limit, "AT_LIMIT_S");
         ao_limit_east  = IUFindLight(ao_limit, "AT_LIMIT_E");
@@ -307,28 +335,27 @@ void StepGuiderSxAoINDI::newProperty(INDI::Property *property)
     CheckState();
 }
 
-void StepGuiderSxAoINDI::newNumber(INumberVectorProperty *nvp) {}
-void StepGuiderSxAoINDI::newMessage(INDI::BaseDevice *dp, int messageID) {}
-
-
 bool StepGuiderSxAoINDI::Connect()
 {
-    if (INDIaoDeviceName == wxT("INDI SXV-AO-LF")) {
+    if (INDIaoDeviceName == wxT("INDI SXV-AO-LF"))
+    {
         SetupDialog(); // If not configured open the setup dialog
     }
+
+    if (isServerConnected())
+        return false;
+
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport); // define server to connect to.
     watchDevice(INDIaoDeviceName.mb_str(wxConvUTF8)); // Receive messages only for our device.
-    Debug.AddLine(wxString::Format("Connecting to INDI server %s on port %d, device %s", INDIhost.mb_str(wxConvUTF8), INDIport, INDIaoDeviceName.mb_str(wxConvUTF8)));
-    if (connectServer() ) { // Connect to INDI server.
-        return false; // and wait for serverConnected event
-    }
-    return true;
+    Debug.AddLine(wxString::Format("Connecting to INDI server %s on port %d, device %s", INDIhost.mb_str(wxConvUTF8), INDIport,
+                                   INDIaoDeviceName.mb_str(wxConvUTF8)));
+    return !connectServer();
 }
 
 bool StepGuiderSxAoINDI::Disconnect()
 {
     Debug.Write("StepGuiderSxAoINDI::Disconnect\n");
-    DisconnectIndiServer();
+    disconnectServer();
     ClearStatus();
     StepGuider::Disconnect();
     return false;
@@ -371,58 +398,65 @@ void StepGuiderSxAoINDI::ShowPropertyDialog()
     SetupDialog();
 }
 
-void StepGuiderSxAoINDI::IndiServerConnected()
+void StepGuiderSxAoINDI::serverConnected()
 {
     // wait for the DEVICE_PORT property
-    modal = true;
-    wxLongLong msec;
-    msec = wxGetUTCTimeMillis();
-    while (!ao_port && wxGetUTCTimeMillis() - msec < MaxDeviceInitWaitMilliSeconds)
-    {
-        wxMilliSleep(20);
-        ::wxSafeYield();
-    }
-    // connect to the device
-    connectDevice(INDIaoDeviceName.mb_str(wxConvUTF8));
+    //    modal = true;
+    //    wxLongLong msec;
+    //    msec = wxGetUTCTimeMillis();
+    //    while (!ao_port && wxGetUTCTimeMillis() - msec < MaxDeviceInitWaitMilliSeconds)
+    //    {
+    //        wxMilliSleep(20);
+    //        ::wxSafeYield();
+    //    }
+    //    // connect to the device
+    //    connectDevice(INDIaoDeviceName.mb_str(wxConvUTF8));
 
-    // wait for all defined properties in CheckState
-    msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < MaxDevicePropertiesWaitMilliSeconds)
-    {
-        wxMilliSleep(20);
-        ::wxSafeYield();
-    }
-    modal = false; // even if CheckState still says no
+    //    // wait for all defined properties in CheckState
+    //    msec = wxGetUTCTimeMillis();
+    //    while (modal && wxGetUTCTimeMillis() - msec < MaxDevicePropertiesWaitMilliSeconds)
+    //    {
+    //        wxMilliSleep(20);
+    //        ::wxSafeYield();
+    //    }
+    //    modal = false; // even if CheckState still says no
 
-    if (ready) {
-        try {
-            Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverConnected connecting StepGuider"));
-            StepGuider::Connect();
-        } catch (const wxString& Msg) {
-            POSSIBLY_UNUSED(Msg);
-        }
-    } else {
-        Disconnect();
-    }
+    //    if (ready)
+    //    {
+    //        try
+    //        {
+    //            Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverConnected connecting StepGuider"));
+    //            StepGuider::Connect();
+    //        }
+    //        catch (const wxString &Msg)
+    //        {
+    //            POSSIBLY_UNUSED(Msg);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Disconnect();
+    //    }
 }
 
-void StepGuiderSxAoINDI::IndiServerDisconnected(int exit_code)
+void StepGuiderSxAoINDI::serverDisconnected(int exit_code)
 {
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
-    if (exit_code==-1) {
-       // in case the connection is lost we must reset the client socket
-       Disconnect();
-       Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverDisconnected disconnecting StepGuider"));
-       StepGuider::Disconnect();
+    if (exit_code == -1)
+    {
+        // in case the connection is lost we must reset the client socket
+        Disconnect();
+        Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::serverDisconnected disconnecting StepGuider"));
+        StepGuider::Disconnect();
     }
 }
 
-void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice *dp)
+void StepGuiderSxAoINDI::removeDevice(INDI::BaseDevice dp)
 {
-   ClearStatus();
-   Disconnect();
-   StepGuider::Disconnect();
+    ClearStatus();
+    Disconnect();
+    StepGuider::Disconnect();
 }
 
 StepGuider::STEP_RESULT StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int steps)
@@ -434,33 +468,34 @@ StepGuider::STEP_RESULT StepGuiderSxAoINDI::Step(GUIDE_DIRECTION direction, int 
         if (!aoNS_prop || !aoWE_prop)
             throw ERROR_INFO("StepGuiderSxAO::step: missing ns or we property");
 
-        switch (direction) {
-        case NORTH:
-            aoN_prop->value = steps;
-            aoS_prop->value = 0;
-            sendNewNumber(aoNS_prop);
-            break;
-        case SOUTH:
-            aoN_prop->value = 0;
-            aoS_prop->value = steps;
-            sendNewNumber(aoNS_prop);
-            break;
-        case EAST:
-            aoW_prop->value = 0;
-            aoE_prop->value = steps;
-            sendNewNumber(aoWE_prop);
-            break;
-        case WEST:
-            aoW_prop->value = steps;
-            aoE_prop->value = 0;
-            sendNewNumber(aoWE_prop);
-            break;
-        default:
-            throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
-            break;
+        switch (direction)
+        {
+            case NORTH:
+                aoN_prop->value = steps;
+                aoS_prop->value = 0;
+                sendNewNumber(aoNS_prop);
+                break;
+            case SOUTH:
+                aoN_prop->value = 0;
+                aoS_prop->value = steps;
+                sendNewNumber(aoNS_prop);
+                break;
+            case EAST:
+                aoW_prop->value = 0;
+                aoE_prop->value = steps;
+                sendNewNumber(aoWE_prop);
+                break;
+            case WEST:
+                aoW_prop->value = steps;
+                aoE_prop->value = 0;
+                sendNewNumber(aoWE_prop);
+                break;
+            default:
+                throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
+                break;
         }
     }
-    catch (const wxString& Msg)
+    catch (const wxString &Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = STEP_ERROR;
@@ -485,9 +520,12 @@ bool StepGuiderSxAoINDI::SetMaxPosition(int steps)
 bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
 {
     bool bError = false;
-    if (ao_limit) {
-        try {
-            switch (direction) {
+    if (ao_limit)
+    {
+        try
+        {
+            switch (direction)
+            {
                 case NORTH:
                     *isAtLimit = ao_limit_north->s == IPS_ALERT;
                     Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit North"));
@@ -508,11 +546,15 @@ bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
                     throw ERROR_INFO("StepGuiderSxAoINDI::IsAtLimit: invalid direction");
                     break;
             }
-        } catch (const wxString& Msg) {
+        }
+        catch (const wxString &Msg)
+        {
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
-    } else {
+    }
+    else
+    {
         Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::IsAtLimit called before we received any ao_limit"));
         bError = true;
     }
@@ -523,24 +565,32 @@ bool StepGuiderSxAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
 bool StepGuiderSxAoINDI::FirmwareVersion(int *version)
 {
     bool bError = false;
-    if (ao_firmware) {
-        try {
+    if (ao_firmware)
+    {
+        try
+        {
             *version = 0;
-            for (int i=0; i<3; i++) {
-                unsigned char ch = (ao_firmware->text)[1+i];
-                if (ch < '0' || ch > '9') {
+            for (int i = 0; i < 3; i++)
+            {
+                unsigned char ch = (ao_firmware->text)[1 + i];
+                if (ch < '0' || ch > '9')
+                {
                     throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: invalid character");
                 }
                 *version *= 10;
                 *version += ch - '0';
             }
             Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Firmwareversion %u", *version));
-        } catch (const wxString& Msg) {
+        }
+        catch (const wxString &Msg)
+        {
             *version = -1;
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
-    } else {
+    }
+    else
+    {
         bError = true;
     }
     return bError;
@@ -549,7 +599,8 @@ bool StepGuiderSxAoINDI::FirmwareVersion(int *version)
 bool StepGuiderSxAoINDI::Center()
 {
     Debug.AddLine(wxString::Format("StepGuiderSxAoINDI::Center"));
-    if (aoCenterUnjam_prop) {
+    if (aoCenterUnjam_prop)
+    {
         aoCenter_prop->s = ISS_ON;
         aoUnjam_prop->s = ISS_OFF;
         sendNewSwitch(aoCenterUnjam_prop);
@@ -578,35 +629,40 @@ bool StepGuiderSxAoINDI::ST4HasNonGuiMove()
 bool StepGuiderSxAoINDI::ST4PulseGuideScope(int direction, int duration)
 {
     bool bError = true;
-    if (pulseGuideNS_prop && pulseGuideWE_prop) {
+    if (pulseGuideNS_prop && pulseGuideWE_prop)
+    {
         bError = false;
-        try {
-            switch (direction) {
-            case NORTH:
-                pulseN_prop->value = duration;
-                pulseS_prop->value = 0;
-                sendNewNumber(pulseGuideNS_prop);
-                break;
-            case SOUTH:
-                pulseN_prop->value = 0;
-                pulseS_prop->value = duration;
-                sendNewNumber(pulseGuideNS_prop);
-                break;
-            case EAST:
-                pulseW_prop->value = 0;
-                pulseE_prop->value = duration;
-                sendNewNumber(pulseGuideWE_prop);
-                break;
-            case WEST:
-                pulseW_prop->value = duration;
-                pulseE_prop->value = 0;
-                sendNewNumber(pulseGuideWE_prop);
-                break;
-            default:
-                throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope: invalid direction");
-                break;
+        try
+        {
+            switch (direction)
+            {
+                case NORTH:
+                    pulseN_prop->value = duration;
+                    pulseS_prop->value = 0;
+                    sendNewNumber(pulseGuideNS_prop);
+                    break;
+                case SOUTH:
+                    pulseN_prop->value = 0;
+                    pulseS_prop->value = duration;
+                    sendNewNumber(pulseGuideNS_prop);
+                    break;
+                case EAST:
+                    pulseW_prop->value = 0;
+                    pulseE_prop->value = duration;
+                    sendNewNumber(pulseGuideWE_prop);
+                    break;
+                case WEST:
+                    pulseW_prop->value = duration;
+                    pulseE_prop->value = 0;
+                    sendNewNumber(pulseGuideWE_prop);
+                    break;
+                default:
+                    throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope: invalid direction");
+                    break;
             }
-        } catch (const wxString& Msg) {
+        }
+        catch (const wxString &Msg)
+        {
             POSSIBLY_UNUSED(Msg);
             bError = true;
         }
