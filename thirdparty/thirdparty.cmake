@@ -643,9 +643,9 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
-  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
+  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-2.0.3-win32.zip)
   set(indiclient_root ${thirdparties_deflate_directory})
-  set(indiclient_dir ${indiclient_root}/indiclient)
+  set(indiclient_dir ${indiclient_root}/indiclient-2.03)
   if(NOT EXISTS ${indiclient_dir})
     message(STATUS "[thirdparty] untarring indiclient")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
@@ -653,7 +653,7 @@ if(WIN32)
   endif()
   include_directories(${indiclient_dir}/include)
   set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+  #set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
 else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
