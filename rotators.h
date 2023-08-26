@@ -36,12 +36,24 @@
 #define ROTATORS_INCLUDED
 
 #if defined(__WINDOWS__)
-# define ROTATOR_ASCOM
+
+    #define ROTATOR_ASCOM
+    #define ROTATOR_INDI
+
+#elif defined (__APPLE__)
+
+    #define ROTATOR_INDI
+
+#elif defined (__linux__) || defined (__FreeBSD__)
+
+    #define ROTATOR_INDI
+
 #endif
 
 #define ROTATOR_SIMULATOR
 
 #include "rotator.h"
 #include "rotator_ascom.h"
+#include "rotator_indi.h"
 
 #endif // ROTATORS_INCLUDED

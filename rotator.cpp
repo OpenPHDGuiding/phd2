@@ -36,11 +36,17 @@
 
 #include "gear_simulator.h"
 #include "rotator_ascom.h"
+#include "rotator_indi.h"
 
 const float Rotator::POSITION_ERROR = -999.f;
 const float Rotator::POSITION_UNKNOWN = -888.f;
 
 Rotator *pRotator;
+
+static wxString INDIRotatorName() {
+	wxString indirotator = pConfig->Profile.GetString("/indi/INDIrotator", wxEmptyString);
+	return indirotator.empty() ? _T("INDI Rotator") : wxString::Format("INDI Rotator [%s]", indirotator);
+}
 
 wxArrayString Rotator::RotatorList()
 {
@@ -51,6 +57,9 @@ wxArrayString Rotator::RotatorList()
     wxArrayString ascomRotators = RotatorAscom::EnumAscomRotators();
     for (unsigned int i = 0; i < ascomRotators.Count(); i++)
         rotatorList.Add(ascomRotators[i]);
+#endif
+#ifdef ROTATOR_INDI
+	rotatorList.Add(INDIRotatorName());
 #endif
 #ifdef ROTATOR_SIMULATOR
     rotatorList.Add(_T("Simulator"));
@@ -80,6 +89,11 @@ Rotator *Rotator::Factory(const wxString& choice)
         else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
             rotator = new RotatorAscom(choice);
         }
+#endif
+#ifdef ROTATOR_INDI
+        else if (choice.Contains(_T("INDI"))) {
+			rotator = INDIRotatorFactory::MakeINDIRotator();
+		}
 #endif
         else if (choice.Find(_("None")) != wxNOT_FOUND) {
         }
