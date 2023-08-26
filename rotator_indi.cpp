@@ -51,47 +51,47 @@ class RotatorINDI : public Rotator, public PhdIndiClient {
 	public:
 		RotatorINDI();
 		~RotatorINDI();
-        bool Connect() override;
-        bool Disconnect() override;
+		bool Connect() override;
+		bool Disconnect() override;
 		wxString Name() const override;
 		float Position() const override;
 
 	private:
-        long          INDIport;
-        wxString      INDIhost;
-        volatile bool modal;
-        bool          m_ready = false;
+		long          INDIport;
+		wxString      INDIhost;
+		volatile bool modal;
+		bool          m_ready = false;
 		float         m_angle = POSITION_UNKNOWN;
 
 		INumberVectorProperty *angle_prop;
-        ISwitchVectorProperty *connection_prop;
+		ISwitchVectorProperty *connection_prop;
 
-    	IndiGui  *m_gui;
+		IndiGui  *m_gui;
 
-    	wxString INDIRotatorName;
+		wxString INDIRotatorName;
 		wxString m_Name;
 
 		bool ConnectToDriver(RunInBg *ctx);
-        void ClearStatus();
-        void CheckState();
+		void ClearStatus();
+		void CheckState();
 		void RotatorDialog();
 		void RotatorSetup();
 		void updateAngle();
 
 	protected:
-        void IndiServerConnected() override;
-        void IndiServerDisconnected(int exit_code) override;
-        void newDevice(INDI::BaseDevice *dp) override;
-        void removeDevice(INDI::BaseDevice *dp) override;
-        void newProperty(INDI::Property *property) override;
-        void newSwitch(ISwitchVectorProperty *svp) override;
-        void newNumber(INumberVectorProperty *nvp) override;
-        void newMessage(INDI::BaseDevice *dp, int messageID) override;
+		void IndiServerConnected() override;
+		void IndiServerDisconnected(int exit_code) override;
+		void newDevice(INDI::BaseDevice *dp) override;
+		void removeDevice(INDI::BaseDevice *dp) override;
+		void newProperty(INDI::Property *property) override;
+		void newSwitch(ISwitchVectorProperty *svp) override;
+		void newNumber(INumberVectorProperty *nvp) override;
+		void newMessage(INDI::BaseDevice *dp, int messageID) override;
 
-        void removeProperty(INDI::Property *property) override {};
-        void newBLOB(IBLOB *bp) override {};
-        void newText(ITextVectorProperty *tvp) override {};
-        void newLight(ILightVectorProperty *lvp) override {};
+		void removeProperty(INDI::Property *property) override {};
+		void newBLOB(IBLOB *bp) override {};
+		void newText(ITextVectorProperty *tvp) override {};
+		void newLight(ILightVectorProperty *lvp) override {};
 
 	private:
 		void ShowPropertyDialog() override;
@@ -114,7 +114,7 @@ void RotatorINDI::CheckState() {
 	if ( ! angle_prop ) {
 		return;
 	}
-	
+
 	Debug.Write(wxString(_("INDI Rotator is ready\n")));
 	m_ready = true;
 	if ( modal ) {
@@ -144,9 +144,9 @@ bool RotatorINDI::Connect() {
 
 RotatorINDI::RotatorINDI() : m_gui(nullptr) {
 	ClearStatus();
-    INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
-    INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
-    INDIRotatorName = pConfig->Profile.GetString("/indi/INDIrotator", _T("INDI Rotator"));
+	INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
+	INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
+	INDIRotatorName = pConfig->Profile.GetString("/indi/INDIrotator", _T("INDI Rotator"));
 	m_Name = wxString::Format("INDI Rotator [%s]", INDIRotatorName);
 }
 
@@ -260,7 +260,7 @@ bool RotatorINDI::ConnectToDriver(RunInBg *r) {
 	connectDevice(INDIRotatorName.mb_str(wxConvUTF8));
 
 	// If the ABS_ROTATOR_ANGLE property comes already when connecting to the
-	// server (like an already connected simulator) we're ready early. If we 
+	// server (like an already connected simulator) we're ready early. If we
 	// don't bail out here the 30 seconds below will just pass for no apparent
 	// reason
 	if ( m_ready ) {
@@ -336,7 +336,7 @@ void RotatorINDI::newNumber(INumberVectorProperty *nvp) {
 
 void RotatorINDI::newDevice(INDI::BaseDevice *dp) {
 	if ( INDIConfig::Verbose() ) {
-    	Debug.Write(wxString::Format("INDI Rotator new device %s\n", dp->getDeviceName()));
+		Debug.Write(wxString::Format("INDI Rotator new device %s\n", dp->getDeviceName()));
 	}
 }
 
