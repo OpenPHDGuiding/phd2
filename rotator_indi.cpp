@@ -57,11 +57,8 @@ class RotatorINDI : public Rotator, public PhdIndiClient {
 		float Position() const override;
 
 	private:
-        static const int MaxDeviceInitWaitMilliSeconds = 2000;
-        static const int MaxDevicePropertiesWaitMilliSeconds = 5000;
         long          INDIport;
         wxString      INDIhost;
-        wxString      INDIRotatorDeviceName;
         volatile bool modal;
         bool          m_ready = false;
 		float         m_angle = POSITION_UNKNOWN;
