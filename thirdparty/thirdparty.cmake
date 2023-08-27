@@ -643,9 +643,9 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
-  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
+  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-2.0.3-win32.zip)
   set(indiclient_root ${thirdparties_deflate_directory})
-  set(indiclient_dir ${indiclient_root}/indiclient)
+  set(indiclient_dir ${indiclient_root}/indiclient-2.03)
   if(NOT EXISTS ${indiclient_dir})
     message(STATUS "[thirdparty] untarring indiclient")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
@@ -653,13 +653,13 @@ if(WIN32)
   endif()
   include_directories(${indiclient_dir}/include)
   set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+  #set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
 else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
     message(STATUS "Using system's libindi")
     # INDI
-    find_package(INDI 1.7 REQUIRED)
+    find_package(INDI 2.0.0 REQUIRED)
     # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
     get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
     include_directories(${INDI_INCLUDE_PARENT_DIR})
@@ -667,6 +667,11 @@ else()
 
     find_package(ZLIB REQUIRED)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+
+    find_package(Nova REQUIRED)
+    add_definitions("-DLIBNOVA")
+    include_directories(${NOVA_INCLUDE_DIR})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
   else()
     if(APPLE)
       # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
@@ -680,11 +685,11 @@ else()
     else()
       find_package(ZLIB REQUIRED)
     endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})    
 
-    set(indi_zip ${thirdparty_dir}/indi-1.8.3.tar.gz)
+    set(indi_zip ${thirdparty_dir}/indi-2.0.3.tar.gz)
     message(STATUS "Using project provided libindi '${indi_zip}'")
-    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.3")
+    set(libindi_root "${thirdparties_deflate_directory}/indi-2.0.3")
 
     # this does not work because of the configure_file commands below
     # that want to run at camke time, but this woudl extract the
@@ -720,10 +725,10 @@ else()
     # warning: copied from the indi CMakeLists.txt. This should be updated when
     # updating the archive of libindi
     # those variables should be defined before the configure_files
-    set(INDI_SOVERSION "1")
-    set(CMAKE_INDI_VERSION_MAJOR 1)
-    set(CMAKE_INDI_VERSION_MINOR 8)
-    set(CMAKE_INDI_VERSION_RELEASE 7)
+    set(INDI_SOVERSION "2")
+    set(CMAKE_INDI_VERSION_MAJOR 2)
+    set(CMAKE_INDI_VERSION_MINOR 0)
+    set(CMAKE_INDI_VERSION_RELEASE 3)
     set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
     set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
 

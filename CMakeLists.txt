@@ -429,9 +429,7 @@ set(phd2_SRC
   ${phd_src_dir}/phdconfig.cpp
   ${phd_src_dir}/phdconfig.h
   ${phd_src_dir}/phdcontrol.cpp
-  ${phd_src_dir}/phdcontrol.h
-  ${phd_src_dir}/phdindiclient.cpp
-  ${phd_src_dir}/phdindiclient.h
+  ${phd_src_dir}/phdcontrol.h  
   ${phd_src_dir}/phdupdate.cpp
   ${phd_src_dir}/phdupdate.h
   ${phd_src_dir}/pierflip_tool.cpp

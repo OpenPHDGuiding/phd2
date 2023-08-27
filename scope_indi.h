@@ -40,8 +40,8 @@
 
 class INDIScopeFactory
 {
-public:
-    static Scope *MakeINDIScope();
+    public:
+        static Scope *MakeINDIScope();
 };
 
 #endif
