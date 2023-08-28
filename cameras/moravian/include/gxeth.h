@@ -26,7 +26,9 @@
 #define gbpPowerUtilization         12
 #define gbpGain                     13
 #define gbpElectronicShutter        14
-#define gbpReadBeforeClose          15
+#define gbpGPS                      16
+#define gbpContinuousExposures      17
+#define gbpTrigger                  18
 #define gbpConfigured              127
 #define gbpRGB                     128
 #define gbpCMY                     129
@@ -80,6 +82,11 @@
 #define gvPowerUtilization          11
 #define gvADCGain                   20
 
+// CheckVersionMode values
+#define cvNever                      0
+#define cvOnConfigureDialog          1
+#define cvOnDriverStart              2
+
 namespace gxetha {
 
 typedef int            INTEGER;
@@ -99,6 +106,7 @@ struct CCamera;
 extern "C" EXPORT_ void     __cdecl Enumerate( void (__cdecl *CallbackProc)(CARDINAL ));
 extern "C" EXPORT_ CCamera *__cdecl Initialize( CARDINAL Id);
 extern "C" EXPORT_ void     __cdecl Configure( CCamera *PCamera, HWND ParentHWND );
+extern "C" EXPORT_ void     __cdecl Configure2( CARDINAL IPAddress_HIGH, CHAR *IPAddress, CARDINAL CheckVersionMode );
 extern "C" EXPORT_ void     __cdecl Release( CCamera *PCamera );
 
 extern "C" EXPORT_ void     __cdecl RegisterNotifyHWND( CCamera *PCamera, HWND NotifyHWND );
@@ -113,9 +121,14 @@ extern "C" EXPORT_ BOOLEAN  __cdecl SetTemperatureRamp( CCamera *PCamera, REAL T
 extern "C" EXPORT_ BOOLEAN  __cdecl SetBinning( CCamera *PCamera, CARDINAL x, CARDINAL y );
 
 extern "C" EXPORT_ BOOLEAN  __cdecl StartExposure( CCamera *PCamera, LONGREAL ExpTime, BOOLEAN UseShutter, INTEGER x, INTEGER y, INTEGER w, INTEGER d );
+extern "C" EXPORT_ BOOLEAN  __cdecl StartExposureTrigger( CCamera *PCamera, LONGREAL ExpTime, BOOLEAN UseShutter, INTEGER x, INTEGER y, INTEGER w, INTEGER d );
 extern "C" EXPORT_ BOOLEAN  __cdecl AbortExposure( CCamera *PCamera, BOOLEAN DownloadFlag );
 extern "C" EXPORT_ BOOLEAN  __cdecl ImageReady( CCamera *PCamera, BOOLEAN *Ready );
 extern "C" EXPORT_ BOOLEAN  __cdecl ReadImage( CCamera *PCamera, CARDINAL BufferLen, ADDRESS BufferAdr );
+extern "C" EXPORT_ BOOLEAN  __cdecl ReadImageExposure( CCamera *PCamera, CARDINAL BufferLen, ADDRESS BufferAdr );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl Open( CCamera *PCamera );
+extern "C" EXPORT_ BOOLEAN  __cdecl Close( CCamera *PCamera );
 
 extern "C" EXPORT_ BOOLEAN  __cdecl EnumerateReadModes( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description );
 extern "C" EXPORT_ BOOLEAN  __cdecl SetReadMode( CCamera *PCamera, CARDINAL mode );
@@ -130,6 +143,9 @@ extern "C" EXPORT_ BOOLEAN  __cdecl SetPreflash( CCamera *PCamera, LONGREAL Pref
 
 extern "C" EXPORT_ BOOLEAN  __cdecl MoveTelescope( CCamera *PCamera, INT16 RADurationMs, INT16 DecDurationMs );
 extern "C" EXPORT_ BOOLEAN  __cdecl MoveInProgress( CCamera *PCamera, BOOLEAN *Moving );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl GetImageTimeStamp( CCamera PCamera, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second );
+extern "C" EXPORT_ BOOLEAN  __cdecl GetGPSData( CCamera PCamera, LONGREAL *Lat, LONGREAL *Lon, LONGREAL *MSL, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second, CARDINAL *Satellites, BOOLEAN *Fix );
 
 extern "C" EXPORT_ void     __cdecl GetLastErrorString( CCamera *PCamera, CARDINAL ErrorString_HIGH, CHAR *ErrorString );
 
