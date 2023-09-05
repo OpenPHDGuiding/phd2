@@ -66,7 +66,7 @@ enum
 
 bool INDIConfig::s_verbose;
 
-INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devtype)
+INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype)
     :
     wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
     m_gui(nullptr),
@@ -100,7 +100,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devt
 
     ++pos;
     connect_status = new wxStaticText(this, wxID_ANY, _("Disconnected"));
-    gbs->Add(connect_status, POS(pos, 0), SPAN(1, 1), wxALIGN_RIGHT | wxALL | wxALIGN_CENTER_VERTICAL, border);
+    gbs->Add(connect_status,POS(pos, 0), SPAN(1, 1), wxALIGN_RIGHT | wxALL | wxALIGN_CENTER_VERTICAL, border);
     connect = new wxButton(this, MCONNECT, _("Connect"));
     gbs->Add(connect, POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
 
@@ -118,7 +118,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devt
     else if (dev_type == INDI_TYPE_AO)
         devlabel->SetLabel(_("AO"));
 
-    gbs->Add(devlabel, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
+    gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
 
     ++pos;
     gbs->Add(new wxStaticText(this, wxID_ANY, _("Driver")),
@@ -142,8 +142,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devt
     {
         ++pos;
         forcevideo = new wxCheckBox(this, FORCEVIDEO, _("Camera does not support exposure time"));
-        forcevideo->SetToolTip(
-            _("Force the use of streaming and frame stacking for cameras that do not support setting an absolute exposure time."));
+        forcevideo->SetToolTip(_("Force the use of streaming and frame stacking for cameras that do not support setting an absolute exposure time."));
         gbs->Add(forcevideo,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
 
         ++pos;
@@ -177,7 +176,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devt
     UpdateControlStates();
 }
 
-void INDIConfig::OnUpdateFromThread(wxThreadEvent &event)
+void INDIConfig::OnUpdateFromThread(wxThreadEvent& event)
 {
     UpdateControlStates();
 }
@@ -236,12 +235,12 @@ void INDIConfig::UpdateControlStates()
 wxDEFINE_EVENT(THREAD_UPDATE_EVENT, wxThreadEvent);
 
 wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
-    EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
-    EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
-    EVT_COMBOBOX(MDEV, INDIConfig::OnDevSelected)
-    EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
-    EVT_CHECKBOX(FORCEVIDEO, INDIConfig::OnForceVideoChecked)
-    EVT_THREAD(THREAD_UPDATE_EVENT, INDIConfig::OnUpdateFromThread)
+  EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
+  EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
+  EVT_COMBOBOX(MDEV, INDIConfig::OnDevSelected)
+  EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
+  EVT_CHECKBOX(FORCEVIDEO, INDIConfig::OnForceVideoChecked)
+  EVT_THREAD(THREAD_UPDATE_EVENT, INDIConfig::OnUpdateFromThread)
 wxEND_EVENT_TABLE()
 
 INDIConfig::~INDIConfig()
@@ -249,10 +248,10 @@ INDIConfig::~INDIConfig()
     if (m_gui)
         IndiGui::DestroyIndiGui(&m_gui);
 
-    disconnectServer();
+    DisconnectIndiServer();
 }
 
-void INDIConfig::OnIndiGui(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnIndiGui(wxCommandEvent& WXUNUSED(event))
 {
     if (m_gui)
     {
@@ -264,7 +263,7 @@ void INDIConfig::OnIndiGui(wxCommandEvent &WXUNUSED(event))
     }
 }
 
-void INDIConfig::OnConnectButton(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnConnectButton(wxCommandEvent& WXUNUSED(event))
 {
     if (isServerConnected())
         Disconnect();
@@ -272,7 +271,7 @@ void INDIConfig::OnConnectButton(wxCommandEvent &WXUNUSED(event))
         Connect();
 }
 
-void INDIConfig::OnDevSelected(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnDevSelected(wxCommandEvent& WXUNUSED(event))
 {
     okBtn->Enable(true);
 }
@@ -292,16 +291,15 @@ void INDIConfig::SetVerbose(bool val)
     }
 }
 
-void INDIConfig::OnVerboseChecked(wxCommandEvent &evt)
+void INDIConfig::OnVerboseChecked(wxCommandEvent& evt)
 {
     INDIConfig::SetVerbose(evt.IsChecked());
 }
 
-void INDIConfig::OnForceVideoChecked(wxCommandEvent &evt)
+void INDIConfig::OnForceVideoChecked(wxCommandEvent& evt)
 {
     forceexposure->Enable(!evt.IsChecked());
-    if (evt.IsChecked())
-    {
+    if (evt.IsChecked()) {
         forceexposure->SetValue(false);
     }
 }
@@ -319,10 +317,10 @@ void INDIConfig::Connect()
 
 void INDIConfig::Disconnect()
 {
-    disconnectServer();
+    DisconnectIndiServer();
 }
 
-void INDIConfig::serverConnected()
+void INDIConfig::IndiServerConnected()
 {
     if (wxThread::IsMain())
     {
@@ -334,7 +332,7 @@ void INDIConfig::serverConnected()
     }
 }
 
-void INDIConfig::serverDisconnected(int exit_code)
+void INDIConfig::IndiServerDisconnected(int exit_code)
 {
     if (wxThread::IsMain())
     {
@@ -346,9 +344,9 @@ void INDIConfig::serverDisconnected(int exit_code)
     }
 }
 
-void INDIConfig::newDevice(INDI::BaseDevice dp)
+void INDIConfig::newDevice(INDI::BaseDevice *dp)
 {
-    auto devname = dp.getDeviceName();
+    const char *devname = dp->getDeviceName();
 
     Debug.Write(wxString::Format("INDIConfig: newDevice %s\n", devname));
 
@@ -360,7 +358,7 @@ void INDIConfig::newDevice(INDI::BaseDevice dp)
     }
 }
 
-inline static void _append(wxString &s, const wxString &ap)
+inline static void _append(wxString& s, const wxString& ap)
 {
     if (s.Length())
         s += "|";
@@ -396,14 +394,14 @@ static wxString formatInterface(unsigned int ifs)
     return s;
 }
 
-void INDIConfig::newProperty(INDI::Property property)
+void INDIConfig::newProperty(INDI::Property *property)
 {
-    if (strcmp(property.getName(), "DRIVER_INFO") == 0)
+    if (strcmp(property->getName(), "DRIVER_INFO") == 0)
     {
-        wxString devname(property.getDeviceName());
-        uint16_t di = property.getBaseDevice().getDriverInterface();
+        wxString devname(property->getDeviceName());
+        uint16_t di = property->getBaseDevice()->getDriverInterface();
 
-        Debug.Write(wxString::Format("device %s interface(s) %s\n", property.getDeviceName(), formatInterface(di)));
+        Debug.Write(wxString::Format("device %s interface(s) %s\n", property->getDeviceName(), formatInterface(di)));
 
         bool include = false;
 
@@ -419,8 +417,7 @@ void INDIConfig::newProperty(INDI::Property property)
         if (!include)
         {
             Debug.Write(wxString::Format("exclude device %s not a valid %s\n", devname,
-                                         dev_type == INDI_TYPE_CAMERA ? "camera" : dev_type == INDI_TYPE_MOUNT ? "mount" : dev_type == INDI_TYPE_AUX_MOUNT ?
-                                         "aux mount" : "AO"));
+                dev_type == INDI_TYPE_CAMERA ? "camera" : dev_type == INDI_TYPE_MOUNT ? "mount" : dev_type == INDI_TYPE_AUX_MOUNT ? "aux mount" : "AO"));
 
             int n = dev->FindString(devname, true);
             if (n != wxNOT_FOUND)

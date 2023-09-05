@@ -40,7 +40,7 @@
 #ifndef _CONFIG_INDI_H_
 #define _CONFIG_INDI_H_
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 # include <libindi/indibasetypes.h>
@@ -55,67 +55,73 @@ enum IndiDevType
     INDI_TYPE_AO,
 };
 
-class INDIConfig : public wxDialog, public INDI::BaseClient
+class INDIConfig : public wxDialog, public PhdIndiClient
 {
-        static bool s_verbose;
+    static bool s_verbose;
 
-        wxTextCtrl *host;
-        wxTextCtrl *port;
-        wxButton *connect;
-        wxStaticText *connect_status;
-        wxStaticText *devlabel;
-        wxComboBox *dev;
-        wxComboBox *ccd;
-        wxCheckBox *forcevideo;
-        wxCheckBox *forceexposure;
-        wxButton *guiBtn;
-        wxButton *okBtn;
+    wxTextCtrl *host;
+    wxTextCtrl *port;
+    wxButton *connect;
+    wxStaticText *connect_status;
+    wxStaticText *devlabel;
+    wxComboBox *dev;
+    wxComboBox *ccd;
+    wxCheckBox *forcevideo;
+    wxCheckBox *forceexposure;
+    wxButton *guiBtn;
+    wxButton *okBtn;
 
-        IndiGui *m_gui;
-        IndiDevType dev_type;
+    IndiGui *m_gui;
+    IndiDevType dev_type;
 
-    public:
+public:
 
-        INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devtype);
-        ~INDIConfig();
+    INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype);
+    ~INDIConfig();
 
-        long     INDIport;
-        wxString INDIhost;
-        wxString INDIDevName;
-        long     INDIDevCCD;
-        bool     INDIForceVideo;
-        bool     INDIForceExposure;
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDIDevName;
+    long     INDIDevCCD;
+    bool     INDIForceVideo;
+    bool     INDIForceExposure;
 
-        void Connect();
-        void Disconnect();
-        void SetSettings();
-        void SaveSettings();
+    void Connect();
+    void Disconnect();
+    void SetSettings();
+    void SaveSettings();
 
-        static void LoadProfileSettings();
-        static bool Verbose();
-        static void SetVerbose(bool val);
+    static void LoadProfileSettings();
+    static bool Verbose();
+    static void SetVerbose(bool val);
 
-        void OnUpdateFromThread(wxThreadEvent &event);
+    void OnUpdateFromThread(wxThreadEvent& event);
 
-    protected:
+protected:
 
-        void newDevice(INDI::BaseDevice dp) override;
-        void removeDevice(INDI::BaseDevice dp) override {};
-        void newProperty(INDI::Property property) override;
-        void removeProperty(INDI::Property property) override {}
-        void serverConnected() override;
-        void serverDisconnected(int exit_code) override;
+    void newDevice(INDI::BaseDevice *dp) override;
+    void removeDevice(INDI::BaseDevice *dp) override {};
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override {}
+    void newBLOB(IBLOB *bp) override {}
+    void newSwitch(ISwitchVectorProperty *svp) override {}
+    void newNumber(INumberVectorProperty *nvp) override {}
+    void newMessage(INDI::BaseDevice *dp, int messageID) override {}
+    void newText(ITextVectorProperty *tvp) override {}
+    void newLight(ILightVectorProperty *lvp) override {}
+    void IndiServerConnected() override;
+    void IndiServerDisconnected(int exit_code) override;
 
-    private:
+private:
 
-        void OnConnectButton(wxCommandEvent &evt);
-        void OnIndiGui(wxCommandEvent &evt);
-        void OnDevSelected(wxCommandEvent &evt);
-        void OnVerboseChecked(wxCommandEvent &evt);
-        void OnForceVideoChecked(wxCommandEvent &evt);
-        void UpdateControlStates();
+    void OnConnectButton(wxCommandEvent& evt);
+    void OnIndiGui(wxCommandEvent& evt);
+    void OnDevSelected(wxCommandEvent& evt);
+    void OnVerboseChecked(wxCommandEvent& evt);
+    void OnForceVideoChecked(wxCommandEvent& evt);
+    void UpdateControlStates();
 
-        wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 inline bool INDIConfig::Verbose()

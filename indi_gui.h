@@ -28,7 +28,7 @@
 #ifndef _INDIGUI_H_
 #define _INDIGUI_H_
 
-#include <libindi/baseclient.h>
+#include "phdindiclient.h"
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
@@ -54,75 +54,81 @@ class IndiProp;
 /*
  *  INDI gui windows
  */
-class IndiGui : public wxDialog, public INDI::BaseClient
+class IndiGui : public wxDialog , public PhdIndiClient
 {
 
-    private:
-        // Main thread events called from INDI thread
-        void OnNewDeviceFromThread(wxThreadEvent &event);
-        void OnNewPropertyFromThread(wxThreadEvent &event);
-        void OnUpdatePropertyFromThread(wxThreadEvent &event);
-        void OnNewMessageFromThread(wxThreadEvent &event);
-        void OnRemovePropertyFromThread(wxThreadEvent &event);
+private:
+    // Main thread events called from INDI thread
+    void OnNewDeviceFromThread(wxThreadEvent& event);
+    void OnNewPropertyFromThread(wxThreadEvent& event);
+    void OnNewNumberFromThread(wxThreadEvent& event);
+    void OnNewTextFromThread(wxThreadEvent& event);
+    void OnNewSwitchFromThread(wxThreadEvent& event);
+    void OnNewMessageFromThread(wxThreadEvent& event);
+    void OnRemovePropertyFromThread(wxThreadEvent& event);
 
-        // Widget creation
-        void BuildPropWidget(INDI::Property property, wxPanel *parent, IndiProp *indiProp);
-        void CreateTextWidget(INDI::Property property, IndiProp *indiProp);
-        void CreateSwitchWidget(INDI::Property property, IndiProp *indiProp);
-        void CreateNumberWidget(INDI::Property property, IndiProp *indiProp);
-        void CreateLightWidget(INDI::Property property, IndiProp *indiProp);
-        void CreateBlobWidget(INDI::Property property, IndiProp *indiProp);
-        void CreateUnknowWidget(INDI::Property property, IndiProp *indiProp);
-        // More switch stuff
-        int GetSwitchType(ISwitchVectorProperty *svp);
-        void CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiProp);
-        void CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiProp);
-        void CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp);
+    // Widget creation
+    void BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp);
+    void CreateTextWidget(INDI::Property *property, IndiProp *indiProp);
+    void CreateSwitchWidget(INDI::Property *property, IndiProp *indiProp);
+    void CreateNumberWidget(INDI::Property *property, IndiProp *indiProp);
+    void CreateLightWidget(INDI::Property *property, IndiProp *indiProp);
+    void CreateBlobWidget(INDI::Property *property, IndiProp *indiProp);
+    void CreateUnknowWidget(INDI::Property *property, IndiProp *indiProp);
+    // More switch stuff
+    int GetSwitchType(ISwitchVectorProperty *svp);
+    void CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiProp);
+    void CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiProp);
+    void CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp);
 
-        // Button events
-        void SetButtonEvent(wxCommandEvent &event);
-        void SetComboboxEvent(wxCommandEvent &event);
-        void SetToggleButtonEvent(wxCommandEvent &event);
-        void SetCheckboxEvent(wxCommandEvent &event);
+    // Button events
+    void SetButtonEvent(wxCommandEvent& event);
+    void SetComboboxEvent(wxCommandEvent& event);
+    void SetToggleButtonEvent(wxCommandEvent& event);
+    void SetCheckboxEvent(wxCommandEvent& event);
 
-        void OnQuit(wxCloseEvent &event);
+    void OnQuit(wxCloseEvent& event);
 
-        void ConnectServer(const wxString &INDIhost, long INDIport);
-        bool allow_connect_disconnect;
+    void ConnectServer(const wxString& INDIhost, long INDIport);
+    bool allow_connect_disconnect;
 
-        wxPanel *panel;
-        wxBoxSizer *sizer;
-        wxNotebook *parent_notebook;
-        wxTextCtrl *textbuffer;
-        wxLongLong m_lastUpdate;
+    wxPanel *panel;
+    wxBoxSizer *sizer;
+    wxNotebook *parent_notebook;
+    wxTextCtrl *textbuffer;
+    wxLongLong m_lastUpdate;
 
-        PtrHash devlist;
+    PtrHash devlist;
 
-        bool m_deleted;
-        IndiGui **m_holder;
+    bool m_deleted;
+    IndiGui **m_holder;
 
-        DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 
-        IndiGui();
+    IndiGui();
 
-    protected:
-        //////////////////////////////////////////////////////////////////////
-        // Functions running in the INDI client thread
-        //////////////////////////////////////////////////////////////////////
-        void newDevice(INDI::BaseDevice dp) override;
-        void removeDevice(INDI::BaseDevice dp) override {};
-        void newProperty(INDI::Property property) override;
-        void removeProperty(INDI::Property property) override;
-        void updateProperty(INDI::Property property) override;
-        void newMessage(INDI::BaseDevice dp, int messageID) override;
-        void serverConnected() override;
-        void serverDisconnected(int exit_code) override;
+protected:
+    //////////////////////////////////////////////////////////////////////
+    // Functions running in the INDI client thread
+    //////////////////////////////////////////////////////////////////////
+    void newDevice(INDI::BaseDevice *dp) override;
+    void removeDevice(INDI::BaseDevice *dp) override {};
+    void newProperty(INDI::Property *property) override;
+    void removeProperty(INDI::Property *property) override;
+    void newBLOB(IBLOB *bp) override {}
+    void newSwitch(ISwitchVectorProperty *svp) override;
+    void newNumber(INumberVectorProperty *nvp) override;
+    void newMessage(INDI::BaseDevice *dp, int messageID) override;
+    void newText(ITextVectorProperty *tvp) override;
+    void newLight(ILightVectorProperty *lvp) override {}
+    void IndiServerConnected() override;
+    void IndiServerDisconnected(int exit_code) override;
 
-    public:
-        ~IndiGui();
+public:
+    ~IndiGui();
 
-        static void ShowIndiGui(IndiGui **ret, const wxString &host, long port, bool allow_connect_disconnect, bool modal);
-        static void DestroyIndiGui(IndiGui **holder);
+    static void ShowIndiGui(IndiGui **ret, const wxString& host, long port, bool allow_connect_disconnect, bool modal);
+    static void DestroyIndiGui(IndiGui **holder);
 };
 
 #endif //_INDIGUI_H_
