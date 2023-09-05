@@ -42,39 +42,29 @@
  */
 class IndiStatus : public wxLed
 {
-    public:
-        IndiStatus(wxWindow *parent, wxWindowID id, IPState state) : wxLed(parent, id)
-        {
-            SetState(state);
-            Enable();
-        }
+public:
+    IndiStatus(wxWindow *parent, wxWindowID id, IPState state) : wxLed(parent, id)
+    {
+        SetState(state);
+        Enable();
+    }
 
-        void SetState(int state)
-        {
-            static const char indi_state[4][6] =
-            {
-                "Idle",
-                "Ok",
-                "Busy",
-                "Alert",
-            };
-            switch(state)
-            {
-                case IPS_IDLE:
-                    SetColor("808080");
-                    break;
-                case IPS_OK:
-                    SetColor("008000");
-                    break;
-                case IPS_BUSY:
-                    SetColor("FFFF00");
-                    break;
-                case IPS_ALERT:
-                    SetColor("FF0000");
-                    break;
-            }
-            SetToolTip(wxString::FromAscii(indi_state[state]));
+    void SetState(int state)
+    {
+        static const char indi_state[4][6] = {
+            "Idle",
+            "Ok",
+            "Busy",
+            "Alert",
+        };
+        switch(state) {
+        case IPS_IDLE:  SetColor("808080"); break;
+        case IPS_OK:    SetColor("008000"); break;
+        case IPS_BUSY:  SetColor("FFFF00"); break;
+        case IPS_ALERT: SetColor("FF0000"); break;
         }
+        SetToolTip(wxString::FromAscii(indi_state[state]));
+    }
 };
 
 /*
@@ -82,11 +72,11 @@ class IndiStatus : public wxLed
  */
 class IndiDev
 {
-    public:
-        wxNotebook *page;
-        INDI::BaseDevice dp;
-        PtrHash groups;
-        PtrHash properties;
+public:
+    wxNotebook *page;
+    INDI::BaseDevice *dp;
+    PtrHash groups;
+    PtrHash properties;
 };
 
 /*
@@ -94,17 +84,17 @@ class IndiDev
  */
 class IndiProp
 {
-    public:
-        wxString PropName;
-        PtrHash ctrl;
-        PtrHash entry;
-        IndiStatus *state;
-        wxStaticText *name;
-        wxPanel *page;
-        wxPanel *panel;
-        wxGridBagSizer *gbs;
-        INDI::Property property;
-        IndiDev *idev;
+public:
+    wxString PropName;
+    PtrHash ctrl;
+    PtrHash entry;
+    IndiStatus *state;
+    wxStaticText *name;
+    wxPanel *page;
+    wxPanel *panel;
+    wxGridBagSizer *gbs;
+    INDI::Property *property;
+    IndiDev *idev;
 };
 
 enum
@@ -119,58 +109,76 @@ enum
 
 wxDEFINE_EVENT(INDIGUI_THREAD_NEWDEVICE_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_NEWPROPERTY_EVENT, wxThreadEvent);
-wxDEFINE_EVENT(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(INDIGUI_THREAD_NEWNUMBER_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(INDIGUI_THREAD_NEWTEXT_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(INDIGUI_THREAD_NEWSWITCH_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_NEWMESSAGE_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
 
 wxBEGIN_EVENT_TABLE(IndiGui, wxDialog)
-    EVT_CLOSE(IndiGui::OnQuit)
-    EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
-    EVT_THREAD(INDIGUI_THREAD_NEWPROPERTY_EVENT, IndiGui::OnNewPropertyFromThread)
-    EVT_THREAD(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, IndiGui::OnUpdatePropertyFromThread)
-    EVT_THREAD(INDIGUI_THREAD_NEWMESSAGE_EVENT, IndiGui::OnNewMessageFromThread)
-    EVT_THREAD(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, IndiGui::OnRemovePropertyFromThread)
+  EVT_CLOSE(IndiGui::OnQuit)
+  EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
+  EVT_THREAD(INDIGUI_THREAD_NEWPROPERTY_EVENT, IndiGui::OnNewPropertyFromThread)
+  EVT_THREAD(INDIGUI_THREAD_NEWNUMBER_EVENT, IndiGui::OnNewNumberFromThread)
+  EVT_THREAD(INDIGUI_THREAD_NEWTEXT_EVENT, IndiGui::OnNewTextFromThread)
+  EVT_THREAD(INDIGUI_THREAD_NEWSWITCH_EVENT, IndiGui::OnNewSwitchFromThread)
+  EVT_THREAD(INDIGUI_THREAD_NEWMESSAGE_EVENT, IndiGui::OnNewMessageFromThread)
+  EVT_THREAD(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, IndiGui::OnRemovePropertyFromThread)
 wxEND_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////
 // Functions running in the INDI client thread
 //////////////////////////////////////////////////////////////////////
 
-void IndiGui::newDevice(INDI::BaseDevice dp)
+void IndiGui::newDevice(INDI::BaseDevice *dp)
 {
-    auto event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWDEVICE_EVENT);
-    event->SetPayload(dp);
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWDEVICE_EVENT);
+    event->SetExtraLong((long) dp);
     wxQueueEvent(this, event);
 }
 
-void IndiGui::newProperty(INDI::Property property)
+void IndiGui::newProperty(INDI::Property *property)
 {
-    auto event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWPROPERTY_EVENT);
-    event->SetPayload(property);
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWPROPERTY_EVENT);
+    event->SetExtraLong((long) property);
     wxQueueEvent(this, event);
 }
 
-void IndiGui::updateProperty(INDI::Property property)
+void IndiGui::newNumber(INumberVectorProperty *nvp)
 {
-    auto event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_UPDATEPROPERTY_EVENT);
-    event->SetPayload(property);
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWNUMBER_EVENT);
+    event->SetExtraLong((long) nvp);
     wxQueueEvent(this, event);
 }
 
-void IndiGui::newMessage(INDI::BaseDevice dp, int messageID)
+void IndiGui::newSwitch(ISwitchVectorProperty *svp)
+{
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWSWITCH_EVENT);
+    event->SetExtraLong((long) svp);
+    wxQueueEvent(this, event);
+}
+
+void IndiGui::newText(ITextVectorProperty *tvp)
+{
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWTEXT_EVENT);
+    event->SetExtraLong((long) tvp);
+    wxQueueEvent(this, event);
+}
+
+void IndiGui::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWMESSAGE_EVENT);
-    event->SetString(dp.messageQueue(messageID));
+    event->SetString(dp->messageQueue(messageID));
     wxQueueEvent(this, event);
 }
 
-void IndiGui::removeProperty(INDI::Property property)
+void IndiGui::removeProperty(INDI::Property *property)
 {
     if (property)
     {
-        wxString devname =  wxString::FromAscii(property.getDeviceName());
-        wxString groupname =  wxString::FromAscii(property.getGroupName());
-        wxString propname =  wxString::FromAscii(property.getName());
+        wxString devname =  wxString::FromAscii(property->getDeviceName());
+        wxString groupname =  wxString::FromAscii(property->getGroupName());
+        wxString propname =  wxString::FromAscii(property->getName());
         IndiDev *indiDev = (IndiDev *)devlist[devname];
         if (!indiDev) return;
         IndiProp *indiProp = (IndiProp *)indiDev->properties[propname];
@@ -184,19 +192,19 @@ void IndiGui::removeProperty(INDI::Property property)
 
 //////////////////////////////////////////////////////////////////////
 
-void IndiGui::ConnectServer(const wxString &INDIhost, long INDIport)
+void IndiGui::ConnectServer(const wxString& INDIhost, long INDIport)
 {
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     connectServer();
 }
 
-void IndiGui::serverConnected()
+void IndiGui::IndiServerConnected()
 {
     setBLOBMode(B_NEVER, "", nullptr);
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::serverDisconnected(int exit_code)
+void IndiGui::IndiServerDisconnected(int exit_code)
 {
     if (m_deleted)
     {
@@ -218,12 +226,11 @@ void IndiGui::serverDisconnected(int exit_code)
     }
 }
 
-void IndiGui::OnNewDeviceFromThread(wxThreadEvent &event)
+void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
 {
-    auto dp = event.GetPayload<INDI::BaseDevice>();
+    INDI::BaseDevice *dp = (INDI::BaseDevice *) event.GetExtraLong();
     //printf("newdevice from thread %s \n",dp->getDeviceName());
-    auto name = dp.getDeviceName();
-    wxString devname =  wxString::FromAscii(dp.getDeviceName());
+    wxString devname =  wxString::FromAscii(dp->getDeviceName());
     IndiDev *indiDev = new IndiDev();
     wxPanel *panel = new wxPanel(parent_notebook);
     indiDev->page = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP);
@@ -239,13 +246,13 @@ void IndiGui::OnNewDeviceFromThread(wxThreadEvent &event)
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::OnNewPropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
 {
-    auto property = event.GetPayload<INDI::Property>();
+    INDI::Property *property = (INDI::Property *) event.GetExtraLong();
     //printf("newproperty from thread %s %s %s\n",property->getDeviceName(),property->getGroupName(),property->getName());
-    wxString devname =  wxString::FromAscii(property.getDeviceName());
-    wxString groupname =  wxString::FromAscii(property.getGroupName());
-    wxString propname =  wxString::FromAscii(property.getName());
+    wxString devname =  wxString::FromAscii(property->getDeviceName());
+    wxString groupname =  wxString::FromAscii(property->getGroupName());
+    wxString propname =  wxString::FromAscii(property->getName());
 
     IndiProp *indiProp = new IndiProp();
     wxPanel *page;
@@ -271,7 +278,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent &event)
 
     gbs->Add(indiProp->state, POS(next_free_row, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     gbs->Add(indiProp->name, POS(next_free_row, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    gbs->Add(indiProp->panel, POS(next_free_row, 2), SPAN(1, 1), wxALIGN_LEFT | wxEXPAND | wxALL);
+    gbs->Add(indiProp->panel,POS(next_free_row, 2), SPAN(1, 1), wxALIGN_LEFT | wxEXPAND | wxALL);
     gbs->Layout();
     page->Fit();
     panel->Fit();
@@ -284,44 +291,43 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent &event)
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::BuildPropWidget(INDI::Property property, wxPanel *parent, IndiProp *indiProp)
+void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
 {
-    wxString propname =  wxString::FromAscii(property.getName());
-    wxString proplbl =  wxString::FromAscii(property.getLabel());
+    wxString propname =  wxString::FromAscii(property->getName());
+    wxString proplbl =  wxString::FromAscii(property->getLabel());
     if (! proplbl) proplbl = propname;
-    auto proptype = property.getType();
 
+    INDI_PROPERTY_TYPE proptype = property->getType();
 
     indiProp->page = parent;
     indiProp->panel = new wxPanel(parent);
     indiProp->gbs  = new wxGridBagSizer(0, 20);
     indiProp->panel->SetSizer(indiProp->gbs);
 
-    indiProp->state = new IndiStatus(parent, wxID_ANY, property.getState());
-    indiProp->name  = new wxStaticText(parent, wxID_ANY, proplbl);
+    indiProp->state = new IndiStatus(parent, wxID_ANY, property->getState());
+    indiProp->name  = new wxStaticText(parent, wxID_ANY,proplbl);
     indiProp->PropName = propname;
     indiProp->property = property;
 
-    switch (proptype)
-    {
-        case INDI_TEXT:
-            CreateTextWidget(property, indiProp);
-            break;
-        case INDI_SWITCH:
-            CreateSwitchWidget(property, indiProp);
-            break;
-        case INDI_NUMBER:
-            CreateNumberWidget(property, indiProp);
-            break;
-        case INDI_LIGHT:
-            CreateLightWidget(property, indiProp);
-            break;
-        case INDI_BLOB:
-            CreateBlobWidget(property, indiProp);
-            break;
-        case INDI_UNKNOWN:
-            CreateUnknowWidget(property, indiProp);
-            break;
+    switch (proptype) {
+    case INDI_TEXT:
+        CreateTextWidget(property, indiProp);
+        break;
+    case INDI_SWITCH:
+        CreateSwitchWidget(property, indiProp);
+        break;
+    case INDI_NUMBER:
+        CreateNumberWidget(property, indiProp);
+        break;
+    case INDI_LIGHT:
+        CreateLightWidget(property, indiProp);
+        break;
+    case INDI_BLOB:
+        CreateBlobWidget(property, indiProp);
+        break;
+    case INDI_UNKNOWN:
+        CreateUnknowWidget(property, indiProp);
+        break;
     }
     indiProp->gbs->Layout();
 }
@@ -339,22 +345,15 @@ int IndiGui::GetSwitchType(ISwitchVectorProperty *svp)
     return SWITCH_COMBOBOX;
 }
 
-void IndiGui::CreateSwitchWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateSwitchWidget(INDI::Property *property, IndiProp *indiProp)
 {
     //printf("CreateSwitchWidget\n");
-    int guitype = GetSwitchType(property.getSwitch());
+    int guitype = GetSwitchType(property->getSwitch());
 
-    switch (guitype)
-    {
-        case SWITCH_COMBOBOX:
-            CreateSwitchCombobox(property.getSwitch(), indiProp);
-            break;
-        case SWITCH_CHECKBOX:
-            CreateSwitchCheckbox(property.getSwitch(), indiProp);
-            break;
-        case SWITCH_BUTTON:
-            CreateSwitchButton(property.getSwitch(), indiProp);
-            break;
+    switch (guitype) {
+    case SWITCH_COMBOBOX: CreateSwitchCombobox(property->getSwitch(), indiProp); break;
+    case SWITCH_CHECKBOX: CreateSwitchCheckbox(property->getSwitch(), indiProp); break;
+    case SWITCH_BUTTON:   CreateSwitchButton(property->getSwitch(), indiProp);   break;
     }
 }
 
@@ -421,7 +420,7 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
         button->SetClientData(indiProp);
         Connect(button->GetId(), wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
                 wxCommandEventHandler(IndiGui::SetToggleButtonEvent));
-        if (!allow_connect_disconnect && strcmp(svp->name, "CONNECTION") == 0)
+        if (!allow_connect_disconnect && strcmp(svp->name,"CONNECTION") == 0)
         {
             button->Enable(false);
         }
@@ -429,7 +428,7 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
     }
 }
 
-void IndiGui::CreateTextWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateTextWidget(INDI::Property *property, IndiProp *indiProp)
 {
     ITextVectorProperty *tvp = property->getText();
     wxPanel *p = indiProp->panel;
@@ -460,9 +459,9 @@ void IndiGui::CreateTextWidget(INDI::Property property, IndiProp *indiProp)
     }
 }
 
-void IndiGui::CreateNumberWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
 {
-    INumberVectorProperty *nvp = property.getNumber();
+    INumberVectorProperty *nvp = property->getNumber();
     wxPanel *p = indiProp->panel;
     wxGridBagSizer *gbs = indiProp->gbs;
 
@@ -491,170 +490,151 @@ void IndiGui::CreateNumberWidget(INDI::Property property, IndiProp *indiProp)
     }
 }
 
-void IndiGui::CreateLightWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateLightWidget(INDI::Property *property, IndiProp *indiProp)
 {
     //printf("IndiGui: Unimplemented CreateLightWidget\n");
 }
 
-void IndiGui::CreateBlobWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateBlobWidget(INDI::Property *property, IndiProp *indiProp)
 {
     //printf("IndiGui: Unimplemented CreateBlobWidget\n");
 }
 
-void IndiGui::CreateUnknowWidget(INDI::Property property, IndiProp *indiProp)
+void IndiGui::CreateUnknowWidget(INDI::Property *property, IndiProp *indiProp)
 {
     //printf("IndiGui: Unimplemented CreateUnknowWidget\n");
 }
 
-void IndiGui::OnUpdatePropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnNewNumberFromThread(wxThreadEvent& event)
 {
-    auto property = event.GetPayload<INDI::Property>();
-
-    switch (property.getType())
+    INumberVectorProperty *nvp = (INumberVectorProperty *) event.GetExtraLong();
+    wxString devname = wxString::FromAscii(nvp->device);
+    wxString propname = wxString::FromAscii(nvp->name);
+    IndiDev *indiDev = (IndiDev *) devlist[devname];
+    IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
+    for (int i = 0; i < nvp->nnp; i++)
     {
-        case INDI_NUMBER:
-        {
-            auto nvp = property.getNumber();
-            wxString devname = wxString::FromAscii(nvp->device);
-            wxString propname = wxString::FromAscii(nvp->name);
-            IndiDev *indiDev = (IndiDev *) devlist[devname];
-            IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
-            for (int i = 0; i < nvp->nnp; i++)
-            {
-                void *st = indiProp->ctrl[wxString::FromAscii(nvp->np[i].name)];
-                wxStaticText *ctrl = (wxStaticText *)st;
-                ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
-            }
-            indiProp->state->SetState(nvp->s);
-        }
-        break;
+        void *st = indiProp->ctrl[wxString::FromAscii(nvp->np[i].name)];
+        wxStaticText *ctrl = (wxStaticText *)st;
+        ctrl->SetLabel(wxString::Format(wxT("%f"), nvp->np[i].value));
+    }
+    indiProp->state->SetState(nvp->s);
+}
 
-        case INDI_TEXT:
-        {
-            auto tvp = property.getText();
-            wxString devname =  wxString::FromAscii(tvp->device);
-            wxString propname =  wxString::FromAscii(tvp->name);
-            IndiDev *indiDev = (IndiDev *) devlist[devname];
-            IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
-            for (int i = 0; i < tvp->ntp; i++)
-            {
-                void *st = indiProp->ctrl[wxString::FromAscii(tvp->tp[i].name)];
-                wxStaticText *ctrl = (wxStaticText *)st;
-                ctrl->SetLabel(wxString::Format(wxT("%s"), tvp->tp[i].text));
-            }
-            indiProp->state->SetState(tvp->s);
-        }
-        break;
+void IndiGui::OnNewTextFromThread(wxThreadEvent& event)
+{
+    ITextVectorProperty *tvp = (ITextVectorProperty *) event.GetExtraLong();
+    //printf("newtext from thread %s \n",tvp->name);
+    wxString devname =  wxString::FromAscii(tvp->device);
+    wxString propname =  wxString::FromAscii(tvp->name);
+    IndiDev *indiDev = (IndiDev *) devlist[devname];
+    IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
+    for (int i = 0; i < tvp->ntp; i++)
+    {
+        void *st = indiProp->ctrl[wxString::FromAscii(tvp->tp[i].name)];
+        wxStaticText *ctrl = (wxStaticText *)st;
+        ctrl->SetLabel(wxString::Format(wxT("%s"), tvp->tp[i].text));
+    }
+    indiProp->state->SetState(tvp->s);
+}
 
-        case INDI_SWITCH:
+void IndiGui::OnNewSwitchFromThread(wxThreadEvent& event)
+{
+    ISwitchVectorProperty *svp = (ISwitchVectorProperty *) event.GetExtraLong();
+    wxString devname = wxString::FromAscii(svp->device);
+    wxString propname = wxString::FromAscii(svp->name);
+    int swtype = GetSwitchType(svp);
+    IndiDev *indiDev = (IndiDev *) devlist[devname];
+    IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
+    switch (swtype) {
+    case SWITCH_COMBOBOX: {
+        int idx=0;
+        for (int i = 0; i < svp->nsp; i++)
         {
-            auto svp = property.getSwitch();
-            wxString devname = wxString::FromAscii(svp->device);
-            wxString propname = wxString::FromAscii(svp->name);
-            int swtype = GetSwitchType(svp);
-            IndiDev *indiDev = (IndiDev *) devlist[devname];
-            IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
-            switch (swtype)
-            {
-                case SWITCH_COMBOBOX:
-                {
-                    int idx = 0;
-                    for (int i = 0; i < svp->nsp; i++)
-                    {
-                        if (svp->sp[i].s == ISS_ON)
-                            idx = i;
-                    }
-                    void *st = indiProp->ctrl[wxString::FromAscii(svp->name)];
-                    wxChoice *combo = (wxChoice *)st;
-                    combo->SetSelection(idx);
-                    break;
-                }
-                case SWITCH_CHECKBOX:
-                {
-                    for (int i = 0; i < svp->nsp; i++)
-                    {
-                        void *st = indiProp->ctrl[wxString::FromAscii(svp->sp[i].name)];
-                        wxCheckBox *button = (wxCheckBox *) st;
-                        button->SetValue(svp->sp[i].s ? true : false);
-                    }
-                    break;
-                }
-                case SWITCH_BUTTON:
-                {
-                    for (int i = 0; i < svp->nsp; i++)
-                    {
-                        void *st = indiProp->ctrl[wxString::FromAscii(svp->sp[i].name)];
-                        wxToggleButton *button = (wxToggleButton *) st;
-                        button->SetValue(svp->sp[i].s ? true : false);
-                    }
-                    break;
-                }
-            }
+            if (svp->sp[i].s == ISS_ON)
+                idx = i;
+        }
+        void *st = indiProp->ctrl[wxString::FromAscii(svp->name)];
+        wxChoice *combo = (wxChoice *)st;
+        combo->SetSelection(idx);
+        break;
+    }
+    case SWITCH_CHECKBOX:{
+        for (int i = 0; i < svp->nsp; i++)
+        {
+            void *st = indiProp->ctrl[wxString::FromAscii(svp->sp[i].name)];
+            wxCheckBox *button = (wxCheckBox *) st;
+            button->SetValue(svp->sp[i].s ? true : false);
         }
         break;
-        default:
-            break;
+    }
+    case SWITCH_BUTTON:{
+        for (int i = 0; i < svp->nsp; i++)
+        {
+            void *st = indiProp->ctrl[wxString::FromAscii(svp->sp[i].name)];
+            wxToggleButton *button = (wxToggleButton *) st;
+            button->SetValue(svp->sp[i].s ? true : false);
+        }
+        break;
+    }
     }
 }
 
-void IndiGui::OnNewMessageFromThread(wxThreadEvent &event)
+void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)
 {
     textbuffer->SetInsertionPoint(0);
     textbuffer->WriteText(event.GetString());
     textbuffer->WriteText(_T("\n"));
 }
 
-void IndiGui::SetButtonEvent(wxCommandEvent &event)
+void IndiGui::SetButtonEvent(wxCommandEvent& event)
 {
     wxButton *button = (wxButton *)event.GetEventObject();
     if (!button) return;
     IndiProp *indiProp = (IndiProp *) button->GetClientData();
     if (!indiProp) return;
 
-    switch (indiProp->property.getType())
-    {
-        case INDI_TEXT:
+    switch (indiProp->property->getType()) {
+    case INDI_TEXT: {
+        ITextVectorProperty *tvp = indiProp->property->getText();
+        for (int i = 0; i < tvp->ntp; i++)
         {
-            ITextVectorProperty *tvp = indiProp->property.getText();
-            for (int i = 0; i < tvp->ntp; i++)
+            if (tvp->p != IP_RO)
             {
-                if (tvp->p != IP_RO)
-                {
-                    wxTextCtrl *entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(tvp->tp[i].name)]);
-                    sprintf(tvp->tp[i].text, "%s", entry->GetLineText(0).mb_str().data());
-                }
+                wxTextCtrl *entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(tvp->tp[i].name)]);
+                sprintf(tvp->tp[i].text, "%s", entry->GetLineText(0).mb_str().data());
             }
-            sendNewText(tvp);
-            break;
         }
-        case INDI_NUMBER:
+        sendNewText(tvp);
+        break;
+    }
+    case INDI_NUMBER:{
+        INumberVectorProperty *nvp = indiProp->property->getNumber();
+        for (int i = 0; i < nvp->nnp; i++)
         {
-            INumberVectorProperty *nvp = indiProp->property.getNumber();
-            for (int i = 0; i < nvp->nnp; i++)
+            if (nvp->p != IP_RO)
             {
-                if (nvp->p != IP_RO)
-                {
-                    wxTextCtrl *entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(nvp->np[i].name)]);
-                    entry->GetLineText(0).ToDouble(&nvp->np[i].value);
-                }
+                wxTextCtrl *entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(nvp->np[i].name)]);
+                entry->GetLineText(0).ToDouble(&nvp->np[i].value);
             }
-            sendNewNumber(nvp);
-            break;
         }
-        default:
-            break;
+        sendNewNumber(nvp);
+        break;
+    }
+    default:
+        break;
     }
 }
 
-void IndiGui::SetToggleButtonEvent(wxCommandEvent &event)
+void IndiGui::SetToggleButtonEvent(wxCommandEvent& event)
 {
     wxToggleButton *button = (wxToggleButton *)event.GetEventObject();
     if (!button) return;
     IndiProp *indiProp = (IndiProp *) button->GetClientData();
     if (!indiProp) return;
-    ISwitchVectorProperty *svp = indiProp->property.getSwitch();
+    ISwitchVectorProperty *svp = indiProp->property->getSwitch();
 
-    if (!allow_connect_disconnect && strcmp(svp->name, "CONNECTION") == 0 )
+    if (!allow_connect_disconnect && strcmp(svp->name, "CONNECTION") ==0 )
     {
         // Prevent device disconnection from this window.
         // Use Gear manager instead.
@@ -662,7 +642,7 @@ void IndiGui::SetToggleButtonEvent(wxCommandEvent &event)
     }
 
     wxString b_name;
-    for (auto it = indiProp->ctrl.begin(); it != indiProp->ctrl.end(); ++it)
+    for (auto it = indiProp->ctrl.begin(); it !=indiProp->ctrl.end(); ++it)
     {
         wxString key = it->first;
         wxToggleButton *value = (wxToggleButton *) it->second;
@@ -697,13 +677,13 @@ void IndiGui::SetToggleButtonEvent(wxCommandEvent &event)
 }
 
 
-void IndiGui::SetComboboxEvent(wxCommandEvent &event)
+void IndiGui::SetComboboxEvent(wxCommandEvent& event)
 {
     wxChoice *combo = (wxChoice *)event.GetEventObject();
     if (!combo) return;
     IndiProp *indiProp = (IndiProp *) combo->GetClientData();
     if (!indiProp) return;
-    ISwitchVectorProperty *svp = indiProp->property.getSwitch();
+    ISwitchVectorProperty *svp = indiProp->property->getSwitch();
     int choice = combo->GetSelection();
     for (int i = 0; i < svp->nsp; i++)
     {
@@ -715,16 +695,16 @@ void IndiGui::SetComboboxEvent(wxCommandEvent &event)
     sendNewSwitch(svp);
 }
 
-void IndiGui::SetCheckboxEvent(wxCommandEvent &event)
+void IndiGui::SetCheckboxEvent(wxCommandEvent& event)
 {
     wxCheckBox *button = (wxCheckBox *)event.GetEventObject();
     if (!button) return;
     IndiProp *indiProp = (IndiProp *) button->GetClientData();
     if (!indiProp) return;
-    ISwitchVectorProperty *svp = indiProp->property.getSwitch();
+    ISwitchVectorProperty *svp = indiProp->property->getSwitch();
 
     wxString b_name;
-    for (auto it = indiProp->ctrl.begin(); it != indiProp->ctrl.end(); ++it)
+    for (auto it = indiProp->ctrl.begin(); it !=indiProp->ctrl.end(); ++it)
     {
         wxString key = it->first;
         wxCheckBox *value = (wxCheckBox *) it->second;
@@ -745,7 +725,7 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent &event)
     sendNewSwitch(svp);
 }
 
-void IndiGui::OnRemovePropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 {
     IndiProp *indiProp = (IndiProp *)event.GetExtraLong();
     if (!indiProp) return;
@@ -793,7 +773,7 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent &event)
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::ShowIndiGui(IndiGui **ret, const wxString &host, long port, bool allow_connect_disconnect_, bool modal)
+void IndiGui::ShowIndiGui(IndiGui **ret, const wxString& host, long port, bool allow_connect_disconnect_, bool modal)
 {
     IndiGui *gui = new IndiGui();
     gui->allow_connect_disconnect = allow_connect_disconnect_;
@@ -846,7 +826,7 @@ IndiGui::IndiGui()
     sizer->Add(textbuffer, 1, wxFIXED_MINSIZE | wxEXPAND | wxALL);
 }
 
-void IndiGui::OnQuit(wxCloseEvent &WXUNUSED(event))
+void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 {
     if (isServerConnected())
         Show(false);
@@ -875,7 +855,7 @@ IndiGui::~IndiGui()
     if (m_holder)
         *m_holder = nullptr;
 
-    disconnectServer();
+    DisconnectIndiServer();
 
     for (auto itdev = devlist.begin(); itdev != devlist.end(); ++itdev)
     {
