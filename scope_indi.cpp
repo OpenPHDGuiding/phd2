@@ -847,11 +847,12 @@ bool ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
             found = true;
         }
     }
-
+#ifdef LIBNOVA
     if (!found)
     {
         *siderealTime = libnova_LST(this);
     }
+#endif
 
     return err;
 }
