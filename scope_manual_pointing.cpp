@@ -209,27 +209,6 @@ Mount::MOVE_RESULT ScopeManualPointing::Guide(GUIDE_DIRECTION, int)
     return MOVE_ERROR;
 }
 
-inline static double norm24(double t)
-{
-    return norm(t, 0.0, 24.0);
-}
-
-inline static double GST(time_t t)
-{
-    double d = (double) t / 86400.0 - 10957.5;
-    return 18.697374558 + 24.06570982441908 * d;
-}
-
-inline static double LST(time_t t, double longitude)
-{
-    return norm24(GST(t) + longitude / 15.0);
-}
-
-inline static double LST(double longitude)
-{
-    return LST(time(0), longitude);
-}
-
 bool ScopeManualPointing::Connect()
 {
     m_latitude = pConfig->Profile.GetDouble("/scope/manual_pointing/latitude", 41.661612);

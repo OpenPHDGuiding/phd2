@@ -128,4 +128,27 @@ inline static double radians(double degrees)
     return degrees * M_PI / 180.;
 }
 
+inline static double norm24(double t)
+{
+    return norm(t, 0.0, 24.0);
+}
+
+inline static double GST(time_t t)
+{
+    double d = (double) t / 86400.0 - 10957.5;
+    return 18.697374558 + 24.06570982441908 * d;
+}
+
+// Note: this is only intended for use a fallback if the scope (INDI/ASCOM)
+// cannot provide LST
+inline static double LST(time_t t, double longitude)
+{
+    return norm24(GST(t) + longitude / 15.0);
+}
+
+inline static double LST(double longitude)
+{
+    return LST(time(0), longitude);
+}
+
 #endif
