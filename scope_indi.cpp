@@ -803,23 +803,27 @@ bool ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
     return err;
 }
 
-static double libnova_LST(ScopeINDI *scope)
+static bool _LST(ScopeINDI *scope, double *lst)
 {
-#ifdef LIBNOVA
-
-    double jd = ln_get_julian_from_sys();
-    double lst = ln_get_apparent_sidereal_time(jd);
-
     double lat, lon;
     bool const err = scope->GetSiteLatLong(&lat, &lon);
     if (err)
-        return 0.0;
+        return false;
 
-    return norm(lst + lon / 15.0, 0.0, 24.0);
+#ifdef LIBNOVA
+
+    double jd = ln_get_julian_from_sys();
+    double gst = ln_get_apparent_sidereal_time(jd);
+
+    *lst = norm(gst + lon / 15.0, 0.0, 24.0);
 
 #else
-    return 0.0;
+
+    *lst = LST(lon);
+
 #endif
+
+    return true;
 }
 
 bool ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
@@ -850,7 +854,10 @@ bool ScopeINDI::GetCoordinates(double *ra, double *dec, double *siderealTime)
 
     if (!found)
     {
-        *siderealTime = libnova_LST(this);
+        // scope driver does not provide LST ... fall back to computing LST
+        // from the computer's clock
+        bool ok = _LST(this, siderealTime);
+        err = !ok;
     }
 
     return err;
