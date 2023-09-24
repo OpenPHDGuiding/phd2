@@ -643,23 +643,22 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
-  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
+  set(indi_zip ${thirdparty_dir}/indiclient-2.0.3.tar.gz)
   set(indiclient_root ${thirdparties_deflate_directory})
-  set(indiclient_dir ${indiclient_root}/indiclient)
+  set(libindi_root "${indiclient_root}/indiclient-2.0.3")
   if(NOT EXISTS ${indiclient_dir})
     message(STATUS "[thirdparty] untarring indiclient")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
                     WORKING_DIRECTORY ${indiclient_root})
   endif()
-  include_directories(${indiclient_dir}/include)
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+  include_directories(${libindi_root})
+  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)  
 else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
     message(STATUS "Using system's libindi")
     # INDI
-    find_package(INDI 1.7 REQUIRED)
+    find_package(INDI 2.0.0 REQUIRED)
     # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
     get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
     include_directories(${INDI_INCLUDE_PARENT_DIR})
@@ -667,6 +666,11 @@ else()
 
     find_package(ZLIB REQUIRED)
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+
+    find_package(Nova REQUIRED)
+    add_definitions("-DLIBNOVA")
+    include_directories(${NOVA_INCLUDE_DIR})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
   else()
     if(APPLE)
       # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
@@ -680,23 +684,12 @@ else()
     else()
       find_package(ZLIB REQUIRED)
     endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})    
 
-    set(indi_zip ${thirdparty_dir}/indi-1.8.3.tar.gz)
+    set(indi_zip ${thirdparty_dir}/indiclient-2.0.3.tar.gz)
     message(STATUS "Using project provided libindi '${indi_zip}'")
-    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.3")
+    set(libindi_root "${thirdparties_deflate_directory}/indiclient-2.0.3")
 
-    # this does not work because of the configure_file commands below
-    # that want to run at camke time, but this woudl extract the
-    # libindi files at build time
-#    add_custom_target(unzip_indi ALL)
-#    add_custom_command(TARGET unzip_indi PRE_BUILD
-#      COMMAND ${CMAKE_COMMAND} -E remove_directory ${libindi_root}
-#      COMMAND ${CMAKE_COMMAND} -E tar xvf ${indi_zip}
-#      WORKING_DIRECTORY ${thirdparties_deflate_directory}
-#      DEPENDS ${indi_zip}
-#      COMMENT "Unpacking INDI Client sources"
-#      VERBATIM)
     if(NOT EXISTS ${libindi_root})
       message(STATUS "[thirdparty] extracting libindi sources")
       execute_process(
@@ -717,142 +710,61 @@ else()
       endif()
     endif()
 
-    # warning: copied from the indi CMakeLists.txt. This should be updated when
-    # updating the archive of libindi
-    # those variables should be defined before the configure_files
-    set(INDI_SOVERSION "1")
-    set(CMAKE_INDI_VERSION_MAJOR 1)
-    set(CMAKE_INDI_VERSION_MINOR 8)
-    set(CMAKE_INDI_VERSION_RELEASE 7)
-    set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
-    set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
 
     ########################################  Paths  ###################################################
 
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    include(CheckSymbolExists)
+    set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+    check_symbol_exists(mremap sys/mman.h HAVE_MREMAP)
+    check_symbol_exists(timespec_get time.h HAVE_TIMESPEC_GET)
+    check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
+
+    set(CMAKE_INDI_VERSION_MAJOR 2)
+    set(CMAKE_INDI_VERSION_MINOR 0)
+    set(CMAKE_INDI_VERSION_RELEASE 3)
+
+    set(INDI_SOVERSION ${CMAKE_INDI_VERSION_MAJOR})
+    set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
+    set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
+
     set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
+##    set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+##    set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include")
 
     set(LIBINDI_DIRECTORY "${libindi_root}/")
 
-    # separate folder for the configurations
-    set(libindi_root_config "${thirdparties_deflate_directory}/libindi_configuration")
-    if(NOT EXISTS ${libindi_root_config})
-      file(MAKE_DIRECTORY "${libindi_root_config}")
-    endif()
+    configure_file(${LIBINDI_DIRECTORY}/config.h.cmake ${LIBINDI_DIRECTORY}/config.h @ONLY)
+    configure_file(${LIBINDI_DIRECTORY}/indiapi.h.in ${LIBINDI_DIRECTORY}/indiapi.h @ONLY)
 
-    configure_file(${LIBINDI_DIRECTORY}/config.h.cmake ${libindi_root_config}/config.h )
-    configure_file(${LIBINDI_DIRECTORY}/indiversion.h.cmake ${libindi_root_config}/indiversion.h )
+    file(GLOB CLIENT_SOURCES "${LIBINDI_DIRECTORY}/*.c*")
+    add_library(indiclient STATIC ${CLIENT_SOURCES})
 
-    # here we simulate the fact that the installation layout is not the same
-    # as the source layout in libindi for the client. The installation layout
-    # is needed by program
-    # we do not want to perform a full installation in a fake directory
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
-    if(NOT EXISTS "${libindi_root_config}/libindi")
-      file(MAKE_DIRECTORY "${libindi_root_config}/libindi")
-    endif()
-    configure_file(
-      "${LIBINDI_DIRECTORY}/libs/indibase/baseclient.h"
-      "${libindi_root_config}/libindi/baseclient.h"
-      COPYONLY)
-    set(indiclient_INC
-      indiapi.h
-      indidevapi.h
-      base64.h
-      libs/lilxml.h
-      libs/indicom.h
-      eventloop.h
-      indidriver.h
-      libs/indibase/indibase.h
-      libs/indibase/indibasetypes.h
-      libs/indibase/basedevice.h
-      libs/indibase/defaultdevice.h
-      libs/indibase/indiccd.h
-      libs/indibase/indidetector.h
-      libs/indibase/indifilterwheel.h
-      libs/indibase/indifocuserinterface.h
-      libs/indibase/indifocuser.h
-      libs/indibase/inditelescope.h
-      libs/indibase/indiguiderinterface.h
-      libs/indibase/indifilterinterface.h
-      libs/indibase/indiproperty.h
-      libs/indibase/indistandardproperty.h
-      libs/indibase/indidome.h
-      libs/indibase/indigps.h
-      libs/indibase/indilightboxinterface.h
-      libs/indibase/indidustcapinterface.h
-      libs/indibase/indiweather.h
-      libs/indibase/indilogger.h
-      libs/indibase/indicontroller.h
-      libs/indibase/indiusbdevice.h
-      libs/indibase/hidapi.h
-
-      libs/indibase/connectionplugins/connectioninterface.h
-      libs/indibase/connectionplugins/connectionserial.h
-      libs/indibase/connectionplugins/connectiontcp.h
-    )
-
-    foreach(_file IN LISTS indiclient_INC)
-      get_filename_component(_file_wo_d "${_file}" NAME)
-      configure_file(
-        "${LIBINDI_DIRECTORY}/${_file}"
-        "${libindi_root_config}/libindi/${_file_wo_d}"
-        COPYONLY)
-    endforeach()
-
-
-
-    # include_directories( ${CMAKE_CURRENT_BINARY_DIR})
-    ####include_directories( ${LIBINDI_DIRECTORY})
-    ####include_directories( ${LIBINDI_DIRECTORY}/libs)
-    ####include_directories( ${LIBINDI_DIRECTORY}/libs/indibase)
-    ####include_directories( ${ZLIB_INCLUDE_DIR})
-    ####include_directories( ${CFITSIO_INCLUDE_DIR})
-
-    # default for libindi client
-    option(INDI_FAST_BLOB "Build INDI with Fast BLOB support" ON)
-
-    set(indiclient_C_SRC
-        ${LIBINDI_DIRECTORY}/libs/lilxml.c
-        ${LIBINDI_DIRECTORY}/base64.c
-        ${LIBINDI_DIRECTORY}/libs/indicom.c)
-
-    set(indiclient_CXX_SRC
-        ${LIBINDI_DIRECTORY}/libs/indibase/basedevice.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/baseclient.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/indiproperty.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/indistandardproperty.cpp)
-
-    add_library(indiclient STATIC ${indiclient_C_SRC} ${indiclient_CXX_SRC})
     target_include_directories(indiclient
-      PUBLIC
-        ${libindi_root_config}
-        ${LIBINDI_DIRECTORY}
-        ${LIBINDI_DIRECTORY}/libs
-        ${LIBINDI_DIRECTORY}/libs/indibase
-        ${ZLIB_INCLUDE_DIR}
-        ${CFITSIO_INCLUDE_DIR}
-    )
-    if(INDI_FAST_BLOB)
-      # Append ENCLEN attribute to outgoing BLOB elements to enable fast parsing by clients
-      target_compile_definitions(indiclient
-        PUBLIC
-          -DWITH_ENCLEN)
-    endif()
-    set_property(TARGET indiclient PROPERTY C_STANDARD 99) # some C code of the client requires this
+          PUBLIC
+            ${libindi_root}
+            ${ZLIB_INCLUDE_DIR}
+            ${CFITSIO_INCLUDE_DIR}
+            ${NOVA_INCLUDE_DIR}
+        )
+
+    target_compile_definitions(indiclient
+            PUBLIC
+              -DWITH_ENCLEN
+              $<$<BOOL:${NOVA_FOUND}>:HAVE_LIBNOVA>
+              $<$<BOOL:${HAVE_TIMESPEC_GET}>:HAVE_TIMESPEC_GET>
+              $<$<BOOL:${HAVE_CLOCK_GETTIME}>:HAVE_CLOCK_GETTIME>
+          )
+
     target_link_libraries(indiclient
-      PUBLIC
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${ZLIB_LIBRARIES}) # for conserving DSO
+          PUBLIC
+            ${CMAKE_THREAD_LIBS_INIT}
+            ${ZLIB_LIBRARIES}
+            ${NOVA_LIBRARIES}
+            )
+
     set_property(TARGET indiclient PROPERTY FOLDER "Thirdparty/")
-
-    # Raffi: I do not think we need this, see documentaiton for
-    # POSITION_INDEPENDENT_CODE property of CMake
-    #if (NOT CYGWIN AND NOT WIN32)
-    #  set_target_properties(indiclient PROPERTIES COMPILE_FLAGS "-fPIC")
-    #endif (NOT CYGWIN AND NOT WIN32)
-
-    #install(TARGETS indiclient ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-    #install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
 
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} indiclient)
   endif()
