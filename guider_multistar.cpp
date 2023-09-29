@@ -1385,7 +1385,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
         "PHD skips frames when the guide star mass changes by an amount greater than the setting for 'tolerance'."));
     GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
     width = StringWidth(_T("100.0"));
-    m_pMassChangeThreshold = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+    m_pMassChangeThreshold = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
     wxSizer *pTolerance = MakeLabeledControl(AD_szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
@@ -1398,7 +1398,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     width = StringWidth(_("65535"));
     wxStaticBoxSizer *pHFDLimits = new wxStaticBoxSizer(wxVERTICAL, GetParentWindow(AD_szStarTracking), _("Star HFD Constraints (pixels)"));
     double minHFD = pGuider->GetMinStarHFDFloor();
-    m_MinHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+    m_MinHFD = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDFloor(), 0.5);
     m_MinHFD->SetDigits(1);
     wxSizer *pMinHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum HFD"), m_MinHFD,
@@ -1407,7 +1407,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
           "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
           "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
     pHFDLimits->Add(pMinHFD, wxSizerFlags(0).Border(wxLEFT, 2));
-    m_MaxHFD = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+    m_MaxHFD = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 2.0, 20.0, 6.0, 1.0);
     m_MaxHFD->SetDigits(1);
     wxSizer *pMaxHFD = MakeLabeledControl(AD_szStarTracking, _("Maximum HFD"), m_MaxHFD,
@@ -1417,7 +1417,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     pHFDLimits->Add(pMaxHFD, wxSizerFlags(0).Border(wxTOP, 4));
 
     wxString ary[] = { _("Auto"), _T("1"), _T("2"), _T("3") };
-    m_autoSelDownsample = new wxChoice(pParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
+    m_autoSelDownsample = new wxChoice(GetParentWindow(AD_szStarTracking), wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
     wxSizer *dsamp = MakeLabeledControl(AD_szStarTracking, _("Auto-selection frame downsample"), m_autoSelDownsample,
         _("Downsampling factor for star auto-selection camera frames. Choose a value greater than 1 if star "
           "auto-selection is failing to recognize misshapen guide stars."));
@@ -1426,7 +1426,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
     wxStaticBoxSizer *pAFParams = new wxStaticBoxSizer(wxVERTICAL, GetParentWindow(AD_szStarTracking), _("Auto-Find Controls"));
-    m_MinSNR = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+    m_MinSNR = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 6.0, 200.0, 6.0, 2.0);
     m_MinSNR->SetDigits(0);
     wxSizer *pSNR = MakeLabeledControl(AD_szStarTracking, _("Min star SNR for Auto-Find"), m_MinSNR,
