@@ -40,10 +40,10 @@
 #ifndef _CONFIG_INDI_H_
 #define _CONFIG_INDI_H_
 
-#include <libindi/baseclient.h>
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
-# include <libindi/indibasetypes.h>
+#include <baseclient.h>
+#include <basedevice.h>
+#include <indiproperty.h>
+# include <indibasetypes.h>
 
 #include "indi_gui.h"
 

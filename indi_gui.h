@@ -28,9 +28,9 @@
 #ifndef _INDIGUI_H_
 #define _INDIGUI_H_
 
-#include <libindi/baseclient.h>
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#include <baseclient.h>
+#include <basedevice.h>
+#include <indiproperty.h>
 
 #include "wxled.h"
 

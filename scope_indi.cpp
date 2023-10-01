@@ -39,15 +39,15 @@
 #ifdef GUIDE_INDI
 
 #include "config_indi.h"
-#include <libindi/baseclient.h>
+#include <baseclient.h>
 
 #ifdef LIBNOVA
 # include <libnova/sidereal_time.h>
 # include <libnova/julian_day.h>
 #endif
 
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#include <basedevice.h>
+#include <indiproperty.h>
 
 class RunInBg;
 

@@ -37,11 +37,11 @@
 #ifdef STEPGUIDER_SXAO_INDI
 
 #include "stepguider_sxao_indi.h"
-#include <libindi/baseclient.h>
+#include <baseclient.h>
 #include "config_indi.h"
 
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#include <basedevice.h>
+#include <indiproperty.h>
 
 class StepGuiderSxAoINDI : public StepGuider, public INDI::BaseClient
 {
