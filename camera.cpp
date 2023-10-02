@@ -834,6 +834,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         if (pCamera->HasPortNum)     ++numItems;
         if (pCamera->MaxBinning > 1) ++numItems;
         if (pCamera->HasCooler)      ++numItems;
+        numItems = 12;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
