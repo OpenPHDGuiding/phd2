@@ -811,6 +811,8 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
+#define ADBUG(where) Debug.Write(wxString::Format("ADBUG: LayoutCtrls: %s\n", where))
+
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
@@ -829,31 +831,73 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
     if (pCamera)
     {
         int numItems = 3;
-        if (pCamera->HasGainControl) ++numItems;
-        if (pCamera->HasDelayParam)  ++numItems;
-        if (pCamera->HasPortNum)     ++numItems;
-        if (pCamera->MaxBinning > 1) ++numItems;
-        if (pCamera->HasCooler)      ++numItems;
+        if (pCamera->HasGainControl)
+        {
+            ++numItems;
+            ADBUG("Gain true");
+        }
+        if (pCamera->HasDelayParam)
+        {
+            ++numItems;
+            ADBUG("Delay true");
+        }
+        if (pCamera->HasPortNum)
+        {
+            ++numItems;
+            ADBUG("Port true");
+        }
+        if (pCamera->MaxBinning > 1)
+        {
+            ++numItems;
+            ADBUG("Binning true");
+        }
+        if (pCamera->HasCooler)
+        {
+            ++numItems;
+            ADBUG("Cooler true");
+        }
         numItems = 12;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
+        ADBUG("Pixel size");
         if (pCamera->HasGainControl)
+        {
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
+            ADBUG("Gain");
+        }
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
+        ADBUG("Timeout");
         if (pCamera->HasDelayParam)
+        {
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
+            ADBUG("Delay");
+        }
         if (pCamera->HasPortNum)
+        {
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
+            ADBUG("Port");
+        }
         if (pCamera->MaxBinning > 1)
+        {
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
+            ADBUG("Binning");
+        }
         if (pCamera->HasSubframes)
+        {
             pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
+            ADBUG("Subframes");
+        }
         if (pCamera->HasCooler)
+        {
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
+            ADBUG("Cooler");
+        }
         pSpecGroup->Add(pDetailsSizer, spec_flags);
+        ADBUG("Details sizer");
         pSpecGroup->Layout();
+        ADBUG("Specific controls laid out");
     }
     else
     {
@@ -876,17 +920,23 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         szSaturationGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
         szSaturationGroup->Layout();
         this->Add(szSaturationGroup, def_flags);
+        ADBUG("Saturation group added to tab");
     }
     this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
+    ADBUG("Specific controls added to tab");
     this->Layout();
     Fit(m_pParent);
+    ADBUG("Camera control layout complete");
 }
+
+#undef ADBUG
 
 CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new CameraConfigDialogCtrlSet(pParent, pCamera, pAdvancedDialog, CtrlMap);
 }
 
+#define ADBUG(where) Debug.Write(wxString::Format("ADBUG: CDC: %s\n", where))
 CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap),
       m_pUseSubframes(nullptr)
@@ -900,12 +950,14 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     {
         m_pUseSubframes = new wxCheckBox(GetParentWindow(AD_cbUseSubFrames), wxID_ANY, _("Use Subframes"));
         AddCtrl(CtrlMap, AD_cbUseSubFrames, m_pUseSubframes, _("Check to only download subframes (ROIs). Sub-frame size is equal to search region size."));
+        ADBUG("Subframes");
     }
 
     // Pixel size always
     m_pPixelSize = NewSpinnerDouble(GetParentWindow(AD_szPixelSize), textWidth, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera un-binned pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
     AddLabeledCtrl(CtrlMap, AD_szPixelSize, _("Pixel size"), m_pPixelSize, "");
+    ADBUG("Pixel size");
 
     // Gain control
     if (m_pCamera->HasGainControl)
@@ -925,6 +977,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         sizer->Add(m_pCameraGain, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         sizer->Add(m_resetGain, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         AddGroup(CtrlMap, AD_szGain, sizer);
+        ADBUG("Gain");
     }
 
     // Binning
@@ -937,6 +990,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), opts);
         AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
+        ADBUG("Binning");
     }
 
     // Delay parameter
@@ -944,6 +998,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     {
         m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, 0, 250, 150);
         AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        ADBUG("Delay");
     }
 
     // Port number
@@ -959,6 +1014,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxDefaultPosition,
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
+        ADBUG("Port");
     }
 
     // Cooler settings
@@ -972,6 +1028,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
         wxSizer *szt = MakeLabeledControl(AD_szCooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
         sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
         AddGroup(CtrlMap, AD_szCooler, sz);
+        ADBUG("Cooler");
     }
 
     // Max ADU and related saturation choices in a single group
@@ -995,13 +1052,17 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     szSaturationGroup->Add(szADUGroup, wxSizerFlags().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
     szSaturationGroup->Add(m_SaturationByProfile, wxSizerFlags(0).Border(wxLEFT, 70).Expand().Align(wxALIGN_CENTER_VERTICAL));
     AddGroup(CtrlMap, AD_szSaturationOptions, szSaturationGroup);
+    ADBUG("Saturation group");
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
     AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
         wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
         "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+    ADBUG("Timeout");
 }
+
+#undef ADBUG
 
 void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
 {
@@ -1013,6 +1074,7 @@ static unsigned short SaturationValFromBPP(GuideCamera *cam)
     return (unsigned short) ((1U << cam->BitsPerPixel()) - 1);
 }
 
+#define ADBUG(where) Debug.Write(wxString::Format("ADBUG: LoadValues: %s\n", where))
 void CameraConfigDialogCtrlSet::LoadValues()
 {
     assert(m_pCamera);
@@ -1020,12 +1082,14 @@ void CameraConfigDialogCtrlSet::LoadValues()
     if (m_pCamera->HasSubframes)
     {
         m_pUseSubframes->SetValue(m_pCamera->UseSubframes);
+        ADBUG("Subframes");
     }
 
     if (m_pCamera->HasGainControl)
     {
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
         m_resetGain->Enable(m_pCamera->Connected);
+        ADBUG("Gain control");
     }
 
     if (m_binning)
@@ -1035,18 +1099,22 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_prevBinning = idx + 1;
         // don't allow binning change when calibrating or guiding
         m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
+        ADBUG("Binning");
     }
 
     m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
+    ADBUG("Timeout");
 
     bool saturationByADU = m_pCamera->IsSaturationByADU();
     m_SaturationByADU->SetValue(saturationByADU);
     m_SaturationByProfile->SetValue(!saturationByADU);
+    ADBUG("Saturation radio buttons");
 
     if (pConfig->Profile.HasEntry("/camera/SaturationADU"))
     {
         unsigned int maxADU = wxMin(pConfig->Profile.GetInt("/camera/SaturationADU", 0), 65535);
         m_camSaturationADU->SetValue(wxString::Format("%u", maxADU));
+        ADBUG("Saturation by ADU");
     }
     else
     {
@@ -1054,6 +1122,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
         int val = SaturationValFromBPP(m_pCamera);
         Debug.Write(wxString::Format("initializing cam saturation ADU val to %d\n", val));
         m_camSaturationADU->SetValue(wxString::Format("%d", val));
+        ADBUG("Saturation, first-time");
     }
     wxCommandEvent dummy;
     OnSaturationChoiceChanged(dummy);
@@ -1071,10 +1140,12 @@ void CameraConfigDialogCtrlSet::LoadValues()
     if (m_pCamera->HasDelayParam)
     {
         m_pDelay->SetValue(m_pCamera->ReadDelay);
+        ADBUG("Delay");
     }
 
     if (m_pCamera->HasPortNum)
     {
+        ADBUG("PortNum");
         switch (m_pCamera->Port)
         {
         case 0x3BC:
@@ -1146,9 +1217,12 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_pPixelSize->Enable(!pFrame->CaptureActive);
     }
     else
+    {
         m_pPixelSize->Enable(false);                // Got a device-level pixel size, disable the control
+    }
 
     m_pPixelSize->SetValue(pxSize);
+    ADBUG("Pixel size");
 
     if (m_pCamera->HasCooler)
     {
@@ -1176,9 +1250,11 @@ void CameraConfigDialogCtrlSet::LoadValues()
 
         m_coolerOn->Enable(ok);
         m_coolerSetpt->Enable(ok);
+        ADBUG("Cooler");
     }
 }
 
+#undef ADBUG
 void CameraConfigDialogCtrlSet::UnloadValues()
 {
     assert(m_pCamera);
