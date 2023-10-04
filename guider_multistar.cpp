@@ -1365,6 +1365,7 @@ GuiderConfigDialogCtrlSet* GuiderMultiStar::GetConfigDialogCtrlSet(wxWindow *pPa
     return new GuiderMultiStarConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
 }
 
+#define ADBUG(where) Debug.Write(wxString::Format("ADBUG: GuiderMSCfgDlg: %s\n", where))
 GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
 {
@@ -1407,6 +1408,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
           "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
           "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
     pHFDLimits->Add(pMinHFD, wxSizerFlags(0).Border(wxLEFT, 2));
+    ADBUG("pMinHFD added to sizer");
     m_MaxHFD = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width, -1), wxSP_ARROW_KEYS, 2.0, 20.0, 6.0, 1.0);
     m_MaxHFD->SetDigits(1);
@@ -1415,6 +1417,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
         "This setting can be used to prevent PHD2 from choosing a large clump of sensor noise, adjacent faint stars, "
         "internal reflections, or comet heads as guide stars."));
     pHFDLimits->Add(pMaxHFD, wxSizerFlags(0).Border(wxTOP, 4));
+    ADBUG("pMaxHFD added to sizer");
 
     wxString ary[] = { _("Auto"), _T("1"), _T("2"), _T("3") };
     m_autoSelDownsample = new wxChoice(GetParentWindow(AD_szStarTracking), wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
@@ -1435,12 +1438,14 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
         "This setting applies to both the primary guide star and candidate secondary stars in multi-star guiding. "
         "If this constraint cannot be met, a saturated or near-saturated star may be selected."));
     pAFParams->Add(pSNR, wxSizerFlags(0).Border(wxTOP, 4));
+    ADBUG("pAFMinSNR added to sizer");
 
     m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), MULTI_STAR_ENABLE, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
     GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, MULTI_STAR_ENABLE);
     width = StringWidth(_T("100.0"));
     pAFParams->Add(m_pUseMultiStars, wxSizerFlags(0).Border(wxTOP, 4));
+    ADBUG("AF params sizer filled");
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
@@ -1451,6 +1456,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags(0).Border(wxLEFT, 75));
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
+    ADBUG("Guider config dialog completed");
 }
 
 GuiderMultiStarConfigDialogCtrlSet::~GuiderMultiStarConfigDialogCtrlSet()
@@ -1466,8 +1472,10 @@ void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
     m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderMultiStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderMultiStar->GetSearchRegion());
     m_MinHFD->SetValue(m_pGuiderMultiStar->GetMinStarHFD());
+    ADBUG(wxString::Format("Min HFD set to %0.1f", m_pGuiderMultiStar->GetMinStarHFD()));
     m_MinSNR->SetValue(m_pGuiderMultiStar->GetAFMinStarSNR());
     m_MaxHFD->SetValue(m_pGuiderMultiStar->GetMaxStarHFD());
+    ADBUG(wxString::Format("Max HFD set to %0.1f", m_pGuiderMultiStar->GetMaxStarHFD()));
     m_autoSelDownsample->SetSelection(m_pGuiderMultiStar->GetAutoSelDownsample());
     m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
     m_pUseMultiStars->SetValue(m_pGuiderMultiStar->GetMultiStarMode());

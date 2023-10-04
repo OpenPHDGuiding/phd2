@@ -1115,6 +1115,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
         unsigned int maxADU = wxMin(pConfig->Profile.GetInt("/camera/SaturationADU", 0), 65535);
         m_camSaturationADU->SetValue(wxString::Format("%u", maxADU));
         ADBUG("Saturation by ADU");
+        ADBUG(wxString::Format("Sat ADU set to %u", maxADU));
     }
     else
     {
