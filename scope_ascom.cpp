@@ -136,7 +136,13 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     return list;
 }
 
-bool ScopeASCOM::Create(DispatchObj& obj, bool *alreadyRegistered)
+static bool AlreadyPresentInGit(GITEntry deviceEntry)
+{
+    IDispatch *idisp = deviceEntry.Get();
+    return idisp != nullptr;
+}
+
+bool ScopeASCOM::Create(DispatchObj& obj)
 {
     try
     {
@@ -145,12 +151,10 @@ bool ScopeASCOM::Create(DispatchObj& obj, bool *alreadyRegistered)
         if (idisp)
         {
             obj.Attach(idisp, NULL);
-            *alreadyRegistered = true;
             return true;
         }
 
         Debug.Write(wxString::Format("Create ASCOM Scope: choice '%s' progid %s\n", m_choice, s_progid[m_choice]));
-        *alreadyRegistered = false;
         wxBasicString progid(s_progid[m_choice]);
 
         if (!obj.Create(progid))
@@ -180,8 +184,8 @@ bool ScopeASCOM::HasSetupDialog() const
 void ScopeASCOM::SetupDialog()
 {
     DispatchObj scope;
-    bool alreadyRegistered;
-    if (Create(scope, &alreadyRegistered))
+    bool prevRegistered = AlreadyPresentInGit(m_gitEntry);
+    if (Create(scope))
     {
         Variant res;
         if (!scope.InvokeMethod(&res, L"SetupDialog"))
@@ -192,11 +196,12 @@ void ScopeASCOM::SetupDialog()
             wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
-    // destroy the COM object now as this reduces the likelhood of getting into a
+    // If we just created the COM object for doing the SetupDialog (device not already connected),
+    // we need to destroy it now as this reduces the likelhood of getting into a
     // state where the user has killed the ASCOM local server instance and PHD2 is
     // holding a reference to the defunct driver instance in the global interface
     // table
-    if (!alreadyRegistered)
+    if (!prevRegistered)
         m_gitEntry.Unregister();
 }
 
@@ -215,8 +220,7 @@ bool ScopeASCOM::Connect()
         }
 
         DispatchObj pScopeDriver;
-        bool alreadyRegistered = false;
-        if (!Create(pScopeDriver, &alreadyRegistered))
+        if (!Create(pScopeDriver))
         {
             wxMessageBox(_T("Could not establish instance of ") + m_choice, _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not establish ASCOM Scope instance");
