@@ -136,7 +136,7 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     return list;
 }
 
-bool ScopeASCOM::Create(DispatchObj& obj)
+bool ScopeASCOM::Create(DispatchObj& obj, bool *alreadyRegistered)
 {
     try
     {
@@ -145,11 +145,12 @@ bool ScopeASCOM::Create(DispatchObj& obj)
         if (idisp)
         {
             obj.Attach(idisp, NULL);
+            *alreadyRegistered = true;
             return true;
         }
 
         Debug.Write(wxString::Format("Create ASCOM Scope: choice '%s' progid %s\n", m_choice, s_progid[m_choice]));
-
+        *alreadyRegistered = false;
         wxBasicString progid(s_progid[m_choice]);
 
         if (!obj.Create(progid))
@@ -179,7 +180,8 @@ bool ScopeASCOM::HasSetupDialog() const
 void ScopeASCOM::SetupDialog()
 {
     DispatchObj scope;
-    if (Create(scope))
+    bool alreadyRegistered;
+    if (Create(scope, &alreadyRegistered))
     {
         Variant res;
         if (!scope.InvokeMethod(&res, L"SetupDialog"))
@@ -194,7 +196,8 @@ void ScopeASCOM::SetupDialog()
     // state where the user has killed the ASCOM local server instance and PHD2 is
     // holding a reference to the defunct driver instance in the global interface
     // table
-    m_gitEntry.Unregister();
+    if (!alreadyRegistered)
+        m_gitEntry.Unregister();
 }
 
 bool ScopeASCOM::Connect()
@@ -212,8 +215,8 @@ bool ScopeASCOM::Connect()
         }
 
         DispatchObj pScopeDriver;
-
-        if (!Create(pScopeDriver))
+        bool alreadyRegistered = false;
+        if (!Create(pScopeDriver, &alreadyRegistered))
         {
             wxMessageBox(_T("Could not establish instance of ") + m_choice, _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not establish ASCOM Scope instance");

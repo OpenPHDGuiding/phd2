@@ -78,7 +78,7 @@ class ScopeASCOM : public Scope
     wxString m_choice; // name of chosen scope
 
     // private functions
-    bool Create(DispatchObj& obj);
+    bool Create(DispatchObj& obj, bool *alreadyRegistered);
     bool IsGuiding(DispatchObj *pScopeDriver);
     bool IsSlewing(DispatchObj *pScopeDriver);
     void AbortSlew(DispatchObj *pScopeDriver);
