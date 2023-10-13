@@ -136,12 +136,6 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     return list;
 }
 
-static bool AlreadyPresentInGit(GITEntry deviceEntry)
-{
-    IDispatch *idisp = deviceEntry.Get();
-    return idisp != nullptr;
-}
-
 bool ScopeASCOM::Create(DispatchObj& obj)
 {
     try
@@ -183,8 +177,8 @@ bool ScopeASCOM::HasSetupDialog() const
 
 void ScopeASCOM::SetupDialog()
 {
+    bool prevRegistered = m_gitEntry.IsRegistered();
     DispatchObj scope;
-    bool prevRegistered = AlreadyPresentInGit(m_gitEntry);
     if (Create(scope))
     {
         Variant res;
@@ -196,11 +190,9 @@ void ScopeASCOM::SetupDialog()
             wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
-    // If we just created the COM object for doing the SetupDialog (device not already connected),
-    // we need to destroy it now as this reduces the likelhood of getting into a
-    // state where the user has killed the ASCOM local server instance and PHD2 is
-    // holding a reference to the defunct driver instance in the global interface
-    // table
+    // Only un-register from the GIT if we happened to have done the registration here
+    // in this function call. Otherwise, if the object was already registered at the time
+    // we came into this function, de-registration will be taken care of elsewhere.
     if (!prevRegistered)
         m_gitEntry.Unregister();
 }
