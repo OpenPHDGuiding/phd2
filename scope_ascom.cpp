@@ -149,6 +149,7 @@ bool ScopeASCOM::Create(DispatchObj& obj)
         }
 
         Debug.Write(wxString::Format("Create ASCOM Scope: choice '%s' progid %s\n", m_choice, s_progid[m_choice]));
+
         wxBasicString progid(s_progid[m_choice]);
 
         if (!obj.Create(progid))
@@ -190,10 +191,15 @@ void ScopeASCOM::SetupDialog()
             wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
-    // Only un-register from the GIT if we happened to have done the registration here
-    // in this function call. Otherwise, if the object was already registered at the time
-    // we came into this function, de-registration will be taken care of elsewhere.
+
+    // We may need to de-register from the GIT to reduce the likelhood of getting into a
+    // state where the user has killed the ASCOM local server instance and PHD2 is
+    // holding a reference to the defunct driver instance in the global interface
+    // table
     if (!prevRegistered)
+        // But only de-register from the GIT if we happened to have done the registration here
+        // in this function call. Otherwise, if the object was already registered at the time
+        // we came into this function, de-registration will be taken care of elsewhere.
         m_gitEntry.Unregister();
 }
 
