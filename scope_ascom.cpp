@@ -178,6 +178,7 @@ bool ScopeASCOM::HasSetupDialog() const
 
 void ScopeASCOM::SetupDialog()
 {
+    bool prevRegistered = m_gitEntry.IsRegistered();
     DispatchObj scope;
     if (Create(scope))
     {
@@ -190,11 +191,16 @@ void ScopeASCOM::SetupDialog()
             wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
         }
     }
-    // destroy the COM object now as this reduces the likelhood of getting into a
+
+    // We may need to de-register from the GIT to reduce the likelhood of getting into a
     // state where the user has killed the ASCOM local server instance and PHD2 is
     // holding a reference to the defunct driver instance in the global interface
     // table
-    m_gitEntry.Unregister();
+    if (!prevRegistered)
+        // But only de-register from the GIT if we happened to have done the registration here
+        // in this function call. Otherwise, if the object was already registered at the time
+        // we came into this function, de-registration will be taken care of elsewhere.
+        m_gitEntry.Unregister();
 }
 
 bool ScopeASCOM::Connect()
@@ -212,7 +218,6 @@ bool ScopeASCOM::Connect()
         }
 
         DispatchObj pScopeDriver;
-
         if (!Create(pScopeDriver))
         {
             wxMessageBox(_T("Could not establish instance of ") + m_choice, _("Error"), wxOK | wxICON_ERROR);
