@@ -132,7 +132,7 @@ bool MyFrame::StartServer(bool state)
 
         Debug.AddLine("stopping server");
         std::for_each(s_clients.begin(), s_clients.end(), std::mem_fn(&wxSocketBase::Destroy));
-        s_clients.empty();
+        s_clients.clear();
         EvtServer.EventServerStop();
         delete SocketServer;
         SocketServer = nullptr;
