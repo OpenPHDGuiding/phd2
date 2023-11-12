@@ -70,10 +70,6 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_LELXUSBwebcam.h"
 #endif
 
-#if defined (SAC42)
-# include "cam_SAC42.h"
-#endif
-
 #if defined (QGUIDE)
 # include "cam_qguide.h"
 #endif
@@ -321,9 +317,6 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined (SKYRAIDER_CAMERA)
     CameraList.Add(_T("MallinCam SkyRaider"));
 #endif
-#if defined (SAC42)
-    CameraList.Add(_T("SAC4-2"));
-#endif
 #if defined (SBIG)
     CameraList.Add(_T("SBIG"));
 #endif
@@ -415,10 +408,6 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn = nullptr;
         else if (choice == _T("Simulator"))
             pReturn = GearSimulator::MakeCamSimulator();
-#if defined (SAC42)
-        else if (choice.Contains(_T("SAC4-2")))
-            pReturn = new CameraSAC42();
-#endif
 #if defined (ATIK16)
         else if (choice.StartsWith("Atik 16 series"))
         {

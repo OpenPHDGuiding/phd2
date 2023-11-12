@@ -200,10 +200,6 @@ set(cam_SRC
   ${phd_src_dir}/cam_qguide.h
   ${phd_src_dir}/cam_qhy.cpp
   ${phd_src_dir}/cam_qhy.h
-  ${phd_src_dir}/cam_SAC42.cpp
-  ${phd_src_dir}/cam_SAC42.h
-  ${phd_src_dir}/cam_SACGuide.cpp
-  ${phd_src_dir}/cam_SACGuide.h
   ${phd_src_dir}/cam_sbig.cpp
   ${phd_src_dir}/cam_sbig.h
   ${phd_src_dir}/cam_sbigrotator.cpp
