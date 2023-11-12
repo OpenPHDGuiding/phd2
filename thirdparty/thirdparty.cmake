@@ -505,8 +505,8 @@ else()
     # make sure to pick up the macos curl, not the mapcports curl in /opt/local/lib
     find_library(CURL_LIBRARIES
                  NAMES curl
-		 PATHS /usr/lib
-		 NO_DEFAULT_PATH)
+                 PATHS /usr/lib
+                 NO_DEFAULT_PATH)
     if(NOT CURL_LIBRARIES)
       message(FATAL_ERROR "libcurl not found")
     endif()
@@ -605,12 +605,12 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 
   set(wxRequiredLibs aui core base adv html net)
   execute_process(COMMAND ${wxWidgets_CONFIG_EXECUTABLE} --libs ${wxRequiredLibs}
-	  OUTPUT_VARIABLE wxWidgets_LIBRARIES
-	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+                  OUTPUT_VARIABLE wxWidgets_LIBRARIES
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
   separate_arguments(${wxWidgets_LIBRARIES})
   execute_process(COMMAND ${wxWidgets_CONFIG_EXECUTABLE} --cflags ${wxRwxRequiredLibs}
-	  OUTPUT_VARIABLE wxWidgets_CXXFLAGS
-	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+                  OUTPUT_VARIABLE wxWidgets_CXXFLAGS
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
   separate_arguments(wxWidgets_CXX_FLAGS UNIX_COMMAND "${wxWidgets_CXXFLAGS}")
   separate_arguments(wxWidgets_LDFLAGS UNIX_COMMAND "${wxWidgets_LDFLAGS}")
 else()
@@ -672,8 +672,8 @@ else()
       # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
       find_library(ZLIB_LIBRARIES
                    NAMES z
-		   PATHS /usr/lib
-		   NO_DEFAULT_PATH)
+                   PATHS /usr/lib
+                   NO_DEFAULT_PATH)
       if(NOT ZLIB_LIBRARIES)
         message(FATAL_ERROR "libz not found")
       endif()
@@ -983,11 +983,6 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSAGIFv2.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSAGIFv4.dll)
-
-  # FCLib
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/FCAPI.dll)
 
   # SXUSB
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)

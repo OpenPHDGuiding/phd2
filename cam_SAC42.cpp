@@ -37,7 +37,6 @@
 #include "time.h"
 #include "image_math.h"
 #include "cam_SAC42.h"
-//#include "cameras/FcApiUser.h"
 
 
 CameraSAC42::CameraSAC42()
