@@ -60,7 +60,6 @@
 # define SBIG
 # define SBIGROTATOR_CAMERA
 # define SIMULATOR
-# define SSAG
 # define SSPIAG
 # define SVB_CAMERA
 # define SXV
