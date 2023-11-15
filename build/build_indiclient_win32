@@ -1,76 +1,62 @@
 #!/bin/bash
 
 # this script builds the indi client libraries for Windows
+# the indiclient library dependencies are built with vcpkg [https://github.com/microsoft/vcpkg]
+
+# If VCPKG_ROOT is set, the script will use the packages installed there.
+# Otherwise it will use the existing vcpkg dependencies bundeled in the PHD2 source tree.
+
+# usage: build_indiclient_win32 DIRECTORY
+
+set -x
+set -e
+
+if [[ ! $1 ]]; then
+    echo "Usage: build_indiclient_win32 DIRECTORY" >&1
+    exit 1
+fi
+
+dir=$1
+shift
+mkdir -p "$dir"
+
+TOP=$(cd $(dirname "$0")/..; /bin/pwd)
+cd "$dir"
+
+if [[ ! $VCPKG_ROOT ]]; then
+    if [[ ! -d vcpkg-installed-win32 ]]; then
+	unzip -q "$TOP"/thirdparty/vcpkg-installed-win32.zip
+    fi
+    VCPKG_ROOT=$PWD/vcpkg-installed-win32
+fi
+PREFIX=$(cygpath -w "$VCPKG_ROOT"/installed/x86-windows)
 
 CMD="/c/Windows/System32/cmd.exe"
 CMAKE=$(cygpath -w '/c/Program Files/CMake/bin/cmake.exe')
 
-# zlib
-#
-# get pre-compiled zlib for win32
-#  see: https://github.com/maxirmx/Dist_zlib
-#
-if [ ! -d zlib ]; then
-    wget -O zlib.7z 'http://ci.appveyor.com/api/projects/maxirmx/Dist-zlib/artifacts/zlib.7z?job=platform%3A+x86'
-    mkdir -p zlib
-    (
-        cd zlib
-        7z x ../zlib.7z
-    )
-    rm zlib.7z
+if [[ ! -d indi ]]; then
+    git clone https://github.com/indilib/indi.git
 fi
+INDIREV=44aaf5d3
+(
+    cd indi
+    git checkout "$INDIREV"
+)
 
-# cfitsio
-#
-# nothing special about this version, it is the latest version at the time
-CFITS_VERSION=3410
-if [ ! -d cfitsio.install ]; then
-    if [ ! -d cfitsio.src ]; then
-        wget "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfit${CFITS_VERSION}.zip"
-        mkdir -p cfitsio.src
-        (
-            cd cfitsio.src
-            unzip ../cfit${CFITS_VERSION}.zip
-        )
-        rm cfit${CFITS_VERSION}.zip
-    fi
-    mkdir -p cfitsio.build
-    (
-        cd cfitsio.build
-        cat > bld.bat <<EOF
-"$CMAKE" -Wno-dev -G "Visual Studio 12" ..\cfitsio.src -DBUILD_SHARED_LIBS=OFF
-"$CMAKE" --build . --config Release
-EOF
-        "$CMD" /c bld.bat
-    )
-    mkdir -p cfitsio.install/include cfitsio.install/lib
-    cp cfitsio.src/*.h cfitsio.install/include
-    cp cfitsio.build/Release/cfitsio.lib cfitsio.install/lib/
-fi
+mkdir -p indiclient.build indiclient
 
-# indiclient
-#
-# indiclient changes for MSVC were added to INDI on 2017-07-17
-#  https://github.com/indilib/indi/commit/d71f1c1de15f4b52ba254e295ad7ac8e56f3e085
-#  any earlier version of INDI will not work!
-if [ ! -d indiclient ]; then
-    if [ ! -d indi ]; then
-        git clone https://github.com/indilib/indi.git
-    fi
-    INDIREV=$(cd indi; git rev-parse --short HEAD)
-    mkdir indi_client_build indiclient
-    TOP=$(cygpath -w "$PWD")
-    (
-        cd indi_client_build
-        cat > bld.bat <<EOF
-"$CMAKE" -Wno-dev -G "Visual Studio 12" "-DCMAKE_INSTALL_PREFIX:PATH=$TOP\indiclient" "-DCMAKE_PREFIX_PATH=$TOP\cfitsio.install" "-DZLIB_ROOT=$TOP\zlib" -DINDI_BUILD_SERVER=OFF -DINDI_BUILD_DRIVERS=OFF -DINDI_BUILD_CLIENT=ON -DINDI_BUILD_QT5_CLIENT=OFF . ../indi/libindi
+(
+    cd indiclient.build
+    cat > bld.bat <<EOF
+"$CMAKE" -Wno-dev -G "Visual Studio 17" -A Win32 "-DCMAKE_INSTALL_PREFIX:PATH=../indiclient" "-DCMAKE_PREFIX_PATH=$PREFIX" -DINDI_BUILD_SERVER=OFF -DINDI_BUILD_DRIVERS=OFF -DINDI_BUILD_CLIENT=ON -DINDI_BUILD_QT5_CLIENT=OFF ../indi/libindi
 "$CMAKE" --build . --config Release
 "$CMAKE" --build . --config Release --target install
 "$CMAKE" --build . --config Debug
 EOF
-        "$CMD" /c bld.bat
-    )
-    cp indi_client_build/Debug/indiclient.lib indiclient/lib/indiclientd.lib
-    rm -f indiclient-${INDIREV}-win32.zip
-    zip -r indiclient-${INDIREV}-win32.zip indiclient
-fi
+    "$CMD" /c bld.bat
+)
+cp indiclient.build/Debug/indiclient.lib indiclient/lib/indiclientd.lib
+rm -f indiclient-${INDIREV}-win32.zip
+zip -r indiclient-${INDIREV}-win32.zip indiclient
+
+install -m 0644 indiclient-${INDIREV}-win32.zip "$TOP"/thirdparty/

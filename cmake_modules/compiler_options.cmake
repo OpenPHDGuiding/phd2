@@ -37,9 +37,7 @@ if(APPLE)
   set(CMAKE_MACOSX_RPATH TRUE)
 endif()
 
-# this must appear very early in the file
 if(WIN32)
-  set(CMAKE_GENERATOR_TOOLSET "v120_xp" CACHE STRING "Platform Toolset" FORCE)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
