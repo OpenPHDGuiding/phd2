@@ -7,13 +7,13 @@ WWW_HOST="user@openphdguiding.org"
 WWW_DIR="/path/to/phd2"
 
 # mac 32-bit build host
-MAC_HOST32="mac32"
+MAC32_HOST="mac32"
 
 # mac 32-bit host phd2 source tree directory
-MAC_DIR32="devel/phd2"
+MAC32_DIR="devel/phd2"
 
 # mac 64-bit build host
-MAC_HOST64="mac64"
+MAC64_HOST="mac64"
 
 # mac 64-bit host phd2 source tree directory
-MAC_DIR64="devel/phd2"
+MAC64_DIR="devel/phd2"

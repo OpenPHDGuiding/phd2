@@ -53,7 +53,7 @@ D=$(cd $(dirname "$0"); /bin/pwd)
 . "$D"/build.cfg
 
 # sanity check config
-for v in WWW_{HOST,DIR} MAC_{HOST,DIR}{32,64}; do
+for v in WWW_{HOST,DIR} MAC{32,64}_{HOST,DIR}; do
     [[ -v $v ]] || {
         echo "missing build.cfg variable $v!" >&2
         exit 1
@@ -61,7 +61,7 @@ for v in WWW_{HOST,DIR} MAC_{HOST,DIR}{32,64}; do
 done
 
 # make sure hosts are reachable
-for h in $WWW_HOST $MAC_HOST32 $MAC_HOST64; do
+for h in $WWW_HOST $MAC32_HOST $MAC64_HOST; do
     printf "checking $h ..."
     ssh -q -oBatchMode=yes $h exit || {
         echo "Error: host $h is not ssh-accessible" >&2
@@ -79,8 +79,8 @@ esac
 set -e
 
 # copy build cfg to macs
-scp "$D"/build.cfg ${MAC_HOST32}:${MAC_DIR32}/build/
-scp "$D"/build.cfg ${MAC_HOST64}:${MAC_DIR64}/build/
+scp "$D"/build.cfg ${MAC32_HOST}:${MAC32_DIR}/build/
+scp "$D"/build.cfg ${MAC64_HOST}:${MAC64_DIR}/build/
 
 # change to top-level phd2 dir
 cd "$D"/..
@@ -178,9 +178,9 @@ if [[ $do_build ]]; then
     if [[ $do_upload ]]; then
         OSX_UPLOAD="-u"
     fi
-    ssh $MAC_HOST32 "cd $MAC_DIR32 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 32" &
+    ssh $MAC32_HOST "cd $MAC32_DIR && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 32" &
     macpid_32=$!
-    ssh $MAC_HOST64 "cd $MAC_DIR64 && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 64" &
+    ssh $MAC64_HOST "cd $MAC64_DIR && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 64" &
     macpid_64=$!
 
     #
@@ -228,7 +228,7 @@ if [[ $do_release ]]; then
     echo "updating auto-upgrade release tags"
     PAUSE
     ./build/publish_win -r -d
-    ssh $MAC_HOST64 "cd $MAC_DIR64 && ./build/publish_osx -r"
+    ssh $MAC64_HOST "cd $MAC64_DIR && ./build/publish_osx -r"
     ssh $WWW_HOST "cd $WWW_DIR && cp release-dev-osx.txt release-dev-linux.txt && chmod o+r release-dev-linux.txt"
     need_static_update=1
 fi
