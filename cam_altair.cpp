@@ -104,7 +104,7 @@ struct SDKLib
 
     bool Load()
     {
-        return _Load(_T("AltairCam.dll"), "Altaircam_");
+        return _Load(_T("altaircam.dll"), "Altaircam_");
     }
 
     bool LoadLegacy()
