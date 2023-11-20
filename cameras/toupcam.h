@@ -1,7 +1,7 @@
 #ifndef __toupcam_h__
 #define __toupcam_h__
 
-/* Version: 54.23926.20231119 */
+/* Version: 54.23585.20231015 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -230,9 +230,9 @@ typedef struct Toupcam_t { int unused; } *HToupcam, *HToupCam;
 #define TOUPCAM_TEC_TARGET_MAX           400     /* TEC target: 40.0 degrees Celsius */
 #define TOUPCAM_HEARTBEAT_MIN            100     /* millisecond */
 #define TOUPCAM_HEARTBEAT_MAX            10000   /* millisecond */
-#define TOUPCAM_AE_PERCENT_MIN           0       /* auto exposure percent; 0 or 100 => full roi average, means "disabled" */
+#define TOUPCAM_AE_PERCENT_MIN           0       /* auto exposure percent, 0 => full roi average */
 #define TOUPCAM_AE_PERCENT_MAX           100
-#define TOUPCAM_AE_PERCENT_DEF           10      /* auto exposure percent: enabled, percentage = 10% */
+#define TOUPCAM_AE_PERCENT_DEF           10
 #define TOUPCAM_NOPACKET_TIMEOUT_MIN     500     /* no packet timeout minimum: 500ms */
 #define TOUPCAM_NOFRAME_TIMEOUT_MIN      500     /* no frame timeout minimum: 500ms */
 #define TOUPCAM_DYNAMIC_DEFECT_T1_MIN    10      /* dynamic defect pixel correction, threshold, means: 1.0 */
@@ -285,7 +285,7 @@ typedef struct {
 } ToupcamDeviceV2; /* camera instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 54.23926.20231119
+    get the version of this dll/so/dylib, which is: 54.23585.20231015
 */
 #if defined(_WIN32)
 TOUPCAM_API(const wchar_t*)   Toupcam_Version();
@@ -966,9 +966,9 @@ TOUPCAM_API(HRESULT)  Toupcam_feed_Pipe(HToupcam h, unsigned pipeId);
                                                          */
 #define TOUPCAM_OPTION_AUTOEXPOSURE_PERCENT   0x4a       /* auto exposure percent to average:
                                                                 1~99: peak percent average
-                                                                0 or 100: full roi average, means "disabled"
+                                                                0 or 100: full roi average
                                                          */
-#define TOUPCAM_OPTION_ANTI_SHUTTER_EFFECT    0x4b       /* anti shutter effect: 1 => disable, 0 => disable; default: 0 */
+#define TOUPCAM_OPTION_ANTI_SHUTTER_EFFECT    0x4b       /* anti shutter effect: 1 => disable, 0 => disable; default: 1 */
 #define TOUPCAM_OPTION_CHAMBER_HT             0x4c       /* get chamber humidity & temperature:
                                                                 high 16 bits: humidity, in 0.1%, such as: 325 means humidity is 32.5%
                                                                 low 16 bits: temperature, in 0.1 degrees Celsius, such as: 32 means 3.2 degrees Celsius
@@ -1024,32 +1024,7 @@ TOUPCAM_API(HRESULT)  Toupcam_feed_Pipe(HToupcam h, unsigned pipeId);
 #define TOUPCAM_OPTION_MOTOR_POS              0x10000000 /* range: [1, 702] */
 #define TOUPCAM_OPTION_PSEUDO_COLOR_START     0x63       /* Pseudo: start color, BGR format */
 #define TOUPCAM_OPTION_PSEUDO_COLOR_END       0x64       /* Pseudo: end color, BGR format */
-#define TOUPCAM_OPTION_PSEUDO_COLOR_ENABLE    0x65       /* Pseudo: -1 => custom: use startcolor & endcolor to generate the colormap
-                                                                    0 => disable
-                                                                    1 => spot
-                                                                    2 => spring
-                                                                    3 => summer
-                                                                    4 => autumn
-                                                                    5 => winter
-                                                                    6 => bone
-                                                                    7 => jet
-                                                                    8 => rainbow
-                                                                    9 => deepgreen
-                                                                    10 => ocean
-                                                                    11 => cool
-                                                                    12 => hsv
-                                                                    13 => pink
-                                                                    14 => hot
-                                                                    15 => parula
-                                                                    16 => magma
-                                                                    17 => inferno
-                                                                    18 => plasma
-                                                                    19 => viridis
-                                                                    20 => cividis
-                                                                    21 => twilight
-                                                                    22 => twilight_shifted
-                                                                    23 => turbo
-                                                         */
+#define TOUPCAM_OPTION_PSEUDO_COLOR_ENABLE    0x65       /* Pseudo: 1 => enable, 0 => disable */
 
 /* pixel format */
 #define TOUPCAM_PIXELFORMAT_RAW8              0x00
