@@ -963,7 +963,7 @@ if(WIN32)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/tbb.dll)
 
   # altair cameras
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/AltairCam.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/altaircam.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/AltairCam_legacy.dll)
 
   # DsiDevice
