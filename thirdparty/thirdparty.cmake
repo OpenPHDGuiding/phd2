@@ -547,7 +547,9 @@ endif()
 #############################################
 # the Eigen library, mostly header only
 
-if(USE_SYSTEM_EIGEN3)
+if(WIN32)
+  set(EIGEN_SRC ${VCPKG_INCLUDE}/eigen3)
+elseif(USE_SYSTEM_EIGEN3)
   find_package(Eigen3 REQUIRED)
   set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
   message(STATUS "Using system's Eigen3.")
