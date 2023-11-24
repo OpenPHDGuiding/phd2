@@ -41,8 +41,6 @@ Source: Release\opencv_imgproc2410.dll; DestDir: {app}; Flags: replacesameversio
 Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\SSAGIFv4.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion

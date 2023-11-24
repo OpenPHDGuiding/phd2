@@ -206,8 +206,6 @@ set(cam_SRC
   ${phd_src_dir}/cam_sbigrotator.h
   ${phd_src_dir}/cam_skyraider.cpp
   ${phd_src_dir}/cam_skyraider.h
-  ${phd_src_dir}/cam_ssag.cpp
-  ${phd_src_dir}/cam_ssag.h
   ${phd_src_dir}/cam_sspiag.cpp
   ${phd_src_dir}/cam_sspiag.h
   ${phd_src_dir}/cam_starfish.cpp
