@@ -57,7 +57,6 @@
 # define ORION_DSCI
 # define QGUIDE
 # define QHY_CAMERA
-# define SAC42
 # define SBIG
 # define SBIGROTATOR_CAMERA
 # define SIMULATOR
