@@ -34,7 +34,6 @@ Source: Release\astroDLLsspiag.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\DSCI.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\FcApi.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\gXusb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\inpout32.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_core2410.dll; DestDir: {app}; Flags: replacesameversion

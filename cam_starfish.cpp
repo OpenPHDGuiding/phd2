@@ -41,11 +41,7 @@
 
 #include "cam_starfish.h"
 
-#if defined (__WINDOWS__)
-# include "cameras/FcLib.h"
-#else
-# include <fcCamFw/fcCamFw.h>
-#endif
+#include <fcCamFw/fcCamFw.h>
 
 class CameraStarfish : public GuideCamera
 {
