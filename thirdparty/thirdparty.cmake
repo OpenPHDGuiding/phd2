@@ -61,20 +61,31 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(WIN32)
-  if(NOT VCPKG_ROOT)
-    # unzip the bundled vcpkg-build artifacts
-    set(vcpkg_zip ${CMAKE_SOURCE_DIR}/thirdparty/vcpkg-installed-win32.zip)
-    set(VCPKG_ROOT ${thirdparties_deflate_directory}/vcpkg-installed-win32)
-    if(NOT EXISTS ${VCPKG_ROOT})
-      message(STATUS "[thirdparty] unzipping vcpkg libs")
-      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${vcpkg_zip}
-                      WORKING_DIRECTORY ${thirdparties_deflate_directory})
-    endif()
-  endif()
-  set(VCPKG_BIN ${VCPKG_ROOT}/installed/x86-windows/bin)
-  set(VCPKG_INCLUDE ${VCPKG_ROOT}/installed/x86-windows/include)
+  include(FetchContent)
+  set(FETCHCONTENT_QUIET OFF)
+  FetchContent_Declare(
+    vcpkg
+    GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
+    GIT_TAG 61f610845fb206298a69f708104a51d651872877
+    UPDATE_COMMAND bootstrap-vcpkg.bat -disableMetrics
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg cfitsio"
+    COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg curl[ssl]"
+    COMMAND vcpkg install --binarysource=default --no-print-usage curl[ssl]:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg gtest"
+    COMMAND vcpkg install --binarysource=default --no-print-usage gtest:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg eigen3"
+    COMMAND vcpkg install --binarysource=default --no-print-usage eigen3:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg opencv2"
+    COMMAND vcpkg install --binarysource=default --no-print-usage opencv2:x86-windows
+  )
+  message(STATUS "Preparing VCPKG")
+  FetchContent_MakeAvailable(vcpkg)
+  set(VCPKG_PREFIX ${vcpkg_SOURCE_DIR}/installed/x86-windows)
+  set(VCPKG_BIN ${VCPKG_PREFIX}/bin)
+  set(VCPKG_INCLUDE ${VCPKG_PREFIX}/include)
   include_directories(${VCPKG_INCLUDE})
-  link_directories(${VCPKG_ROOT}/installed/x86-windows/lib)
+  link_directories(${VCPKG_PREFIX}/lib)
 endif()
 
 #
