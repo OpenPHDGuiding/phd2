@@ -52,7 +52,6 @@
 # define LE_LXUSB_CAMERA
 # define LE_PARALLEL_CAMERA
 # define LE_SERIAL_CAMERA
-# define MEADE_DSI_CAMERA
 # define MORAVIAN_CAMERA
 # define OPENCV_CAMERA
 # define ORION_DSCI
