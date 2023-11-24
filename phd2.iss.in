@@ -52,10 +52,10 @@ Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll
-Source: ..\WinLibs\msvcr120.dll; DestDir: {app}; Flags: replacesameversion
-Source: ..\WinLibs\msvcp120.dll; DestDir: {app}; Flags: replacesameversion
-Source: ..\WinLibs\vcomp140.dll; DestDir: {app}; Flags: replacesameversion
-Source: ..\WinLibs\vcruntime140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\msvcr120.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\msvcp120.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\vcomp140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\vcruntime140.dll; DestDir: {app}; Flags: replacesameversion
 
 [Icons]
 Name: {group}\PHD Guiding 2; FileName: {app}\phd2.exe
