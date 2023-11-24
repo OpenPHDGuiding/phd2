@@ -670,17 +670,17 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
-  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
-  set(indiclient_root ${thirdparties_deflate_directory})
-  set(indiclient_dir ${indiclient_root}/indiclient)
-  if(NOT EXISTS ${indiclient_dir})
-    message(STATUS "[thirdparty] untarring indiclient")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
-                    WORKING_DIRECTORY ${indiclient_root})
-  endif()
-  include_directories(${indiclient_dir}/include)
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+  Include(ExternalProject)
+  ExternalProject_Add(
+    indi
+    GIT_REPOSITORY https://github.com/indilib/indi.git
+    GIT_TAG 44aaf5d3022c52e4981ef026cb43c41115262ba9
+    SOURCE_SUBDIR libindi
+    CMAKE_ARGS -Wno-dev -DINDI_BUILD_SERVER=OFF -DINDI_BUILD_DRIVERS=OFF -DINDI_BUILD_CLIENT=ON -DINDI_BUILD_QT5_CLIENT=OFF -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
+  )
+  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
+  include_directories(${indi_INSTALL_DIR}/include)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
 else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
