@@ -60,6 +60,33 @@ if(UNIX AND NOT APPLE)
   find_package(PkgConfig)
 endif()
 
+if(WIN32)
+  include(FetchContent)
+  set(FETCHCONTENT_QUIET OFF)
+  FetchContent_Declare(
+    vcpkg
+    GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
+    GIT_TAG 61f610845fb206298a69f708104a51d651872877
+    UPDATE_COMMAND bootstrap-vcpkg.bat -disableMetrics
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg cfitsio"
+    COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg curl[ssl]"
+    COMMAND vcpkg install --binarysource=default --no-print-usage curl[ssl]:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg gtest"
+    COMMAND vcpkg install --binarysource=default --no-print-usage gtest:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg eigen3"
+    COMMAND vcpkg install --binarysource=default --no-print-usage eigen3:x86-windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg opencv2"
+    COMMAND vcpkg install --binarysource=default --no-print-usage opencv2:x86-windows
+  )
+  message(STATUS "Preparing VCPKG")
+  FetchContent_MakeAvailable(vcpkg)
+  set(VCPKG_PREFIX ${vcpkg_SOURCE_DIR}/installed/x86-windows)
+  set(VCPKG_BIN ${VCPKG_PREFIX}/bin)
+  set(VCPKG_INCLUDE ${VCPKG_PREFIX}/include)
+  include_directories(${VCPKG_INCLUDE})
+  link_directories(${VCPKG_PREFIX}/lib)
+endif()
 
 #
 # copies the dependency files into the target output directory
@@ -188,7 +215,11 @@ endif()
 ##############################################
 # cfitsio
 
-if(USE_SYSTEM_CFITSIO)
+if(WIN32)
+  include_directories(${VCPKG_INCLUDE}/cfitsio)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio.lib zlib.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${VCPKG_BIN}/cfitsio.dll ${VCPKG_BIN}/zlib1.dll)
+elseif(USE_SYSTEM_CFITSIO)
   find_package(CFITSIO REQUIRED)
   include_directories(${CFITSIO_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CFITSIO_LIBRARIES})
@@ -489,17 +520,10 @@ endif() # NOT WIN32
 #############################################
 
 if(WIN32)
-  set(libcurl_root ${thirdparties_deflate_directory}/libcurl)
-  set(libcurl_dir ${libcurl_root}/libcurl-7.54.0-win32)
-  if(NOT EXISTS ${libcurl_root})
-    # unzip the dependency
-    file(MAKE_DIRECTORY ${libcurl_root})
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/thirdparty/libcurl-7.54.0-win32.zip --format=zip
-        WORKING_DIRECTORY ${libcurl_root})
-  endif()
-  include_directories(${libcurl_dir}/include)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libcurl_dir}/lib/LIBCURL.LIB)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} libcurl.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}
+      ${VCPKG_BIN}/libcurl.dll
+  )
 else()
   if(APPLE)
     # make sure to pick up the macos curl, not the mapcports curl in /opt/local/lib
@@ -523,7 +547,9 @@ endif()
 #############################################
 # the Eigen library, mostly header only
 
-if(USE_SYSTEM_EIGEN3)
+if(WIN32)
+  set(EIGEN_SRC ${VCPKG_INCLUDE}/eigen3)
+elseif(USE_SYSTEM_EIGEN3)
   find_package(Eigen3 REQUIRED)
   set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
   message(STATUS "Using system's Eigen3.")
@@ -544,7 +570,9 @@ endif(USE_SYSTEM_EIGEN3)
 #############################################
 # Google test, easily built
 
-if(USE_SYSTEM_GTEST)
+if(WIN32)
+  set(GTEST_HEADERS ${VCPKG_INCLUDE})
+elseif(USE_SYSTEM_GTEST)
   find_package(GTest REQUIRED)
   set(GTEST_HEADERS ${GTEST_INCLUDE_DIRS})
   message(STATUS "Using system's Gtest.")
@@ -583,6 +611,7 @@ if(WIN32)
   endif()
 
   set(wxWidgets_ROOT_DIR ${wxWidgets_PREFIX_DIRECTORY})
+  set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/vc_lib)
   set(wxWidgets_USE_STATIC ON)
   set(wxWidgets_USE_DEBUG ON)
   set(wxWidgets_USE_UNICODE OFF)
@@ -643,17 +672,17 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #############################################
 
 if(WIN32)
-  set(indi_zip ${CMAKE_SOURCE_DIR}/thirdparty/indiclient-44aaf5d3-win32.zip)
-  set(indiclient_root ${thirdparties_deflate_directory})
-  set(indiclient_dir ${indiclient_root}/indiclient)
-  if(NOT EXISTS ${indiclient_dir})
-    message(STATUS "[thirdparty] untarring indiclient")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
-                    WORKING_DIRECTORY ${indiclient_root})
-  endif()
-  include_directories(${indiclient_dir}/include)
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE} ${indiclient_dir}/lib/indiclient.lib)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG} ${indiclient_dir}/lib/indiclientd.lib)
+  Include(ExternalProject)
+  ExternalProject_Add(
+    indi
+    GIT_REPOSITORY https://github.com/indilib/indi.git
+    GIT_TAG 44aaf5d3022c52e4981ef026cb43c41115262ba9
+    SOURCE_SUBDIR libindi
+    CMAKE_ARGS -Wno-dev -DINDI_BUILD_SERVER=OFF -DINDI_BUILD_DRIVERS=OFF -DINDI_BUILD_CLIENT=ON -DINDI_BUILD_QT5_CLIENT=OFF -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
+  )
+  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
+  include_directories(${indi_INSTALL_DIR}/include)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
 else()
   # Linux or OSX
   if(USE_SYSTEM_LIBINDI)
@@ -888,53 +917,21 @@ if(WIN32)
     message(STATUS "Disabling VLD: DISABLE_VLD is set")
   endif()
 
-  # openCV
-  # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and
-  # the build is aborted.
-  if(NOT OpenCVRoot)
-    message(FATAL_ERROR "OpenCVRoot is not defined. OpenCVRoot should be defined with the option -DOpenCVRoot=<root-to-opencv>")
-  endif()
-
-  set(opencv_root ${OpenCVRoot})
-
-  if(NOT EXISTS ${opencv_root}/build/include)
-    message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
-  endif()
-
-  if(NOT EXISTS ${opencv_root}/build/OpenCVConfig.cmake)
-    message(FATAL_ERROR "Cannot find the header directory of open cvOpenCVConfig.cmake. Please ensure you have decompressed the version for windows")
-  endif()
-
-  # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
-  set(OpenCV_DIR ${opencv_root}/build CACHE PATH "Location of the OpenCV configuration directory")
-  set(OpenCV_SHARED ON)
-  set(OpenCV_STATIC OFF)
-  set(BUILD_SHARED_LIBS ON)
-  find_package(OpenCV REQUIRED)
-
-  if(NOT OpenCV_INCLUDE_DIRS)
-    message(FATAL_ERROR "Cannot add the OpenCV include directories")
-  endif()
-
-  list(REMOVE_DUPLICATES OpenCV_LIB_DIR)
-  list(LENGTH OpenCV_LIB_DIR list_lenght)
-  if(${list_lenght} GREATER 1)
-    list(GET OpenCV_LIB_DIR 0 OpenCV_LIB_DIR)
-  endif()
-  set(OpenCV_BIN_DIR ${OpenCV_LIB_DIR}/../bin)
-  get_filename_component(OpenCV_BIN_DIR ${OpenCV_BIN_DIR} ABSOLUTE)
-
-  include_directories(${OpenCV_INCLUDE_DIRS})
-  set(OPENCV_VER "2410")
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${OpenCV_LIBS}) # Raffi: maybe reduce a bit the number of libraries to link against
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}.dll)
-
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}.dll)
-
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}.dll)
+  include_directories(${VCPKG_INCLUDE}/opencv2.4)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL}
+      opencv_imgproc2.lib
+      opencv_highgui2.lib
+      opencv_core2.lib
+  )
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}
+      ${VCPKG_BIN}/opencv_imgproc2.dll
+      ${VCPKG_BIN}/opencv_highgui2.dll
+      ${VCPKG_BIN}/opencv_core2.dll
+      ${VCPKG_BIN}/jpeg62.dll
+      ${VCPKG_BIN}/libpng16.dll
+      ${VCPKG_BIN}/tiff.dll
+      ${VCPKG_BIN}/liblzma.dll
+  )
 endif()
 
 
@@ -1008,7 +1005,6 @@ if(WIN32)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll)
   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
 
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${libcurl_dir}/lib/LIBCURL.DLL)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcr120.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcp120.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcomp140.dll)

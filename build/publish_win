@@ -123,12 +123,16 @@ if [[ $do_rebuild ]]; then
 fi
 
 if [[ $do_build ]]; then
+    vcpkg_args=()
+    if [[ $VCPKG_ROOT ]]; then
+        vcpkg_args+=(-DVCPKG_ROOT=$VCPKG_ROOT)
+    fi
     mkdir -p tmp
     (
         cd tmp
 
         cat >run_cmake.bat <<EOF
-"$CMAKE_W" -Wno-dev -G "Visual Studio 12" "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" "-DOpenCVRoot=%OPENCV_DIR%" ..
+"$CMAKE_W" -Wno-dev -G "Visual Studio 17" -A Win32 ${vcpkg_args[@]} "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" ..
 EOF
 
         "$CMD" /c run_cmake.bat
