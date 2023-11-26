@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 do_build=1
 do_clean=1
@@ -31,11 +31,18 @@ while getopts "Cnurd" o; do
 done
 shift $((OPTIND-1))
 
+set -x
+set -e
+
+os=$(sysctl -n kern.osproductversion 2>/dev/null | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
+
+mojave=010014
+sonoma=014000
+
 case "$1" in
   "")
       # auto-detect: 64-bits on 10.14 mojave or later
-      os=$(sysctl -n kern.osproductversion 2>/dev/null | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
-      if [ "$os" \< "010014" ]; then
+      if [[ $os < $mojave ]]; then
           bits=32
       else
           bits=64
@@ -46,7 +53,12 @@ case "$1" in
   *)  echo "usage?" >&2 ; exit 1 ;;
 esac
 
-set -ex
+suffix=
+cmake_extra_args=()
+if [[ $os > $sonoma || $os == $sonoma ]]; then
+    suffix=-sonoma+
+    cmake_extra_args+=(-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0)
+fi
 
 D=$(cd $(dirname "$0"); /bin/pwd)
 
@@ -59,25 +71,25 @@ D=$(cd $(dirname "$0"); /bin/pwd)
 SCPDST=${WWW_HOST}:${WWW_DIR}
 
 # run from the top of the source tree (this script is in <top>/build/)
-cd $D/..
+cd "$D"/..
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
  /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
 
-[ -n "$V" ] || {
+[[ $V ]] || {
     echo "could not get version from phd.h!" >&2
     exit 1
 }
 
-if [ -n "$do_clean" ]; then
+if [[ $do_clean ]]; then
     rm -rf tmp
-    ./run_cmake-osx $bits
+    ./run_cmake-osx $bits "${cmake_extra_args[@]}"
 fi
 
 cd tmp
 
-if [ -n "$do_build" ]; then
+if [[ $do_build ]]; then
     rm -rf PHD2.app
     # worakaround for infrequent intermittent build failure when
     # translations are built in parallel -- build the translations
@@ -93,29 +105,30 @@ if [ -n "$do_build" ]; then
     make -j$cores
 fi
 
-SCPFILES=
+SCPFILES=()
 
-if [ -n "$do_upload" ]; then
+if [[ $do_upload ]]; then
     case $bits in
         32) Z=PHD2-${V}-OSX.zip ;;
-        64) Z=PHD2-${V}-OSX-64.zip ;;
+        64) Z=PHD2-${V}-OSX-64${suffix}.zip ;;
     esac
     zip -r "$Z" PHD2.app
-    SCPFILES="$SCPFILES $Z"
+    chmod 644 "$Z"
+    SCPFILES+=("$Z")
 fi
 
-if [ -n "$do_release" ]; then
-    if [ -z "$series" ]; then
+if [[ $do_release ]]; then
+    if [[ ! $series ]]; then
         case $V in
-            *dev*) series="dev" ;;
-            *) series="main" ;;
+            *dev*) series=dev ;;
+            *) series=main ;;
         esac
     fi
     R="release-${series}-osx.txt"
-    echo "${V}" > $R
-    SCPFILES="$SCPFILES $R"
+    echo "${V}" > "$R"
+    SCPFILES+=("$R")
 fi
 
-if [ -n "$SCPFILES" ]; then
-    scp -p $SCPFILES $SCPDST/
+if (( ${#SCPFILES[@]} )); then
+    scp -p "${SCPFILES[@]}" "$SCPDST"/
 fi

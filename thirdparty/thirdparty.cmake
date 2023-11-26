@@ -193,7 +193,7 @@ if(USE_SYSTEM_CFITSIO)
   include_directories(${CFITSIO_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CFITSIO_LIBRARIES})
   message(STATUS "Using system's CFITSIO.")
-else(USE_SYSTEM_CFITSIO)
+else()
 
   set(CFITSIO_MAJOR_VERSION 3)
   set(CFITSIO_MINOR_VERSION 47)
@@ -276,7 +276,7 @@ else(USE_SYSTEM_CFITSIO)
   # include_directories(${libcfitsio_root})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
 
-endif(USE_SYSTEM_CFITSIO)
+endif()
 
 
 
@@ -505,8 +505,8 @@ else()
     # make sure to pick up the macos curl, not the mapcports curl in /opt/local/lib
     find_library(CURL_LIBRARIES
                  NAMES curl
-		 PATHS /usr/lib
-		 NO_DEFAULT_PATH)
+                 PATHS /usr/lib
+    )
     if(NOT CURL_LIBRARIES)
       message(FATAL_ERROR "libcurl not found")
     endif()
@@ -538,7 +538,7 @@ else(USE_SYSTEM_EIGEN3)
   endif()
 
   set(EIGEN_SRC ${eigen_root})
-endif(USE_SYSTEM_EIGEN3)
+endif()
 
 
 #############################################
@@ -568,7 +568,7 @@ else(USE_SYSTEM_GTEST)
   add_subdirectory(${gtest_root} tmp_cmakegtest)
   set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
   set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
-endif(USE_SYSTEM_GTEST)
+endif()
 
 
 #############################################
@@ -672,8 +672,8 @@ else()
       # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
       find_library(ZLIB_LIBRARIES
                    NAMES z
-		   PATHS /usr/lib
-		   NO_DEFAULT_PATH)
+                   PATHS /usr/lib
+      )
       if(NOT ZLIB_LIBRARIES)
         message(FATAL_ERROR "libz not found")
       endif()
