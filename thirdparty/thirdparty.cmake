@@ -327,7 +327,6 @@ endif()
 
 
 
-
 ##############################################
 # VidCapture
 
@@ -698,9 +697,9 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 if(USE_SYSTEM_LIBINDI)
   message(STATUS "Using system's libindi")
   find_package(INDI 2.0.0 REQUIRED)
-  # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
+  # source files include <baseclient.h> so we need the libindi parent directory in the include directories
   get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
-  include_directories(${INDI_INCLUDE_PARENT_DIR})
+  include_directories(${INDI_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
 
   find_package(ZLIB REQUIRED)
@@ -712,10 +711,13 @@ if(USE_SYSTEM_LIBINDI)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
 else()
   Include(ExternalProject)
+  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
-    GIT_TAG 40fd4e1cd6d51a143915abd2a5262f940381d3fb  # v2.0.4
+    GIT_TAG 856ac85b965177d23cd0c819a49fd50bdaeece60  # v2.0.5
+    GIT_SHALLOW ON
+    BUILD_COMMAND ${CMAKE_COMMAND}
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
@@ -725,10 +727,15 @@ else()
       -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
       -DCMAKE_CXX_FLAGS=-D_CRT_SECURE_NO_WARNINGS
-  )
-  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
-  include_directories(${indi_INSTALL_DIR}/include)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
+    BUILD_BYPRODUCTS ${indi_INSTALL_DIR}/lib/libindiclient.a
+  )  
+  include_directories(${indi_INSTALL_DIR}/include/libindi)
+  if (WIN32)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
+  else()
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/libindiclient.a z nova)
+  endif()
+
 endif()
 
 

@@ -42,10 +42,10 @@
 
 #include "stepguider_sbigao_indi.h"
 #include "config_indi.h"
-#include <libindi/baseclient.h>
+#include <baseclient.h>
 
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#include <basedevice.h>
+#include <indiproperty.h>
 
 class StepGuiderSbigAoINDI : public StepGuider, public INDI::BaseClient
 {
