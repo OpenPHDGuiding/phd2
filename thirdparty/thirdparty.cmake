@@ -307,10 +307,7 @@ else(USE_SYSTEM_CFITSIO)
   # include_directories(${libcfitsio_root})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
 
-endif(USE_SYSTEM_CFITSIO)
-
-
-
+endif(WIN32)
 
 ##############################################
 # VidCapture
@@ -564,7 +561,7 @@ else(USE_SYSTEM_EIGEN3)
   endif()
 
   set(EIGEN_SRC ${eigen_root})
-endif(USE_SYSTEM_EIGEN3)
+endif(WIN32)
 
 
 #############################################
@@ -596,7 +593,7 @@ else(USE_SYSTEM_GTEST)
   add_subdirectory(${gtest_root} tmp_cmakegtest)
   set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
   set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
-endif(USE_SYSTEM_GTEST)
+endif(WIN32)
 
 
 #############################################
@@ -688,10 +685,13 @@ if(USE_SYSTEM_LIBINDI)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
 else()
   Include(ExternalProject)
+  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
     GIT_TAG 856ac85b965177d23cd0c819a49fd50bdaeece60  # v2.0.5
+    GIT_SHALLOW ON
+    BUILD_COMMAND ${CMAKE_COMMAND}
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
@@ -701,10 +701,15 @@ else()
       -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
       -DCMAKE_CXX_FLAGS=-D_CRT_SECURE_NO_WARNINGS
-  )
-  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
+    BUILD_BYPRODUCTS ${indi_INSTALL_DIR}/lib/libindiclient.a
+  )  
   include_directories(${indi_INSTALL_DIR}/include/libindi)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
+  if (WIN32)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
+  else()
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/libindiclient.a z nova)
+  endif()
+
 endif()
 
 
