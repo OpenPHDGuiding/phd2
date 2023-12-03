@@ -82,10 +82,12 @@ if(WIN32)
   message(STATUS "Preparing VCPKG")
   FetchContent_MakeAvailable(vcpkg)
   set(VCPKG_PREFIX ${vcpkg_SOURCE_DIR}/installed/x86-windows)
-  set(VCPKG_BIN ${VCPKG_PREFIX}/bin)
+  set(VCPKG_DEBUG_BIN ${VCPKG_PREFIX}/debug/bin)
+  set(VCPKG_RELEASE_BIN ${VCPKG_PREFIX}/bin)
+  set(VCPKG_DEBUG_LIB ${VCPKG_PREFIX}/debug/lib)
+  set(VCPKG_RELEASE_LIB ${VCPKG_PREFIX}/lib)
   set(VCPKG_INCLUDE ${VCPKG_PREFIX}/include)
   include_directories(${VCPKG_INCLUDE})
-  link_directories(${VCPKG_PREFIX}/lib)
 endif()
 
 #
@@ -217,8 +219,22 @@ endif()
 
 if(WIN32)
   include_directories(${VCPKG_INCLUDE}/cfitsio)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio.lib zlib.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${VCPKG_BIN}/cfitsio.dll ${VCPKG_BIN}/zlib1.dll)
+  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+      ${VCPKG_DEBUG_LIB}/cfitsio.lib
+      ${VCPKG_DEBUG_LIB}/zlibd.lib
+  )
+  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+      ${VCPKG_RELEASE_LIB}/cfitsio.lib
+      ${VCPKG_RELEASE_LIB}/zlib.lib
+  )
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+      ${VCPKG_DEBUG_BIN}/cfitsio.dll
+      ${VCPKG_DEBUG_BIN}/zlibd1.dll
+  )
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+      ${VCPKG_RELEASE_BIN}/cfitsio.dll
+      ${VCPKG_RELEASE_BIN}/zlib1.dll
+  )
 elseif(USE_SYSTEM_CFITSIO)
   find_package(CFITSIO REQUIRED)
   include_directories(${CFITSIO_INCLUDE_DIR})
@@ -520,9 +536,17 @@ endif() # NOT WIN32
 #############################################
 
 if(WIN32)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} libcurl.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}
-      ${VCPKG_BIN}/libcurl.dll
+  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+      ${VCPKG_DEBUG_LIB}/libcurl-d.lib
+  )
+  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+      ${VCPKG_RELEASE_LIB}/libcurl.lib
+  )
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+      ${VCPKG_DEBUG_BIN}/libcurl-d.dll
+  )
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+      ${VCPKG_RELEASE_BIN}/libcurl.dll
   )
 else()
   if(APPLE)
@@ -918,19 +942,33 @@ if(WIN32)
   endif()
 
   include_directories(${VCPKG_INCLUDE}/opencv2.4)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL}
-      opencv_imgproc2.lib
-      opencv_highgui2.lib
-      opencv_core2.lib
+  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+      ${VCPKG_DEBUG_LIB}/opencv_imgproc2d.lib
+      ${VCPKG_DEBUG_LIB}/opencv_highgui2d.lib
+      ${VCPKG_DEBUG_LIB}/opencv_core2d.lib
   )
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}
-      ${VCPKG_BIN}/opencv_imgproc2.dll
-      ${VCPKG_BIN}/opencv_highgui2.dll
-      ${VCPKG_BIN}/opencv_core2.dll
-      ${VCPKG_BIN}/jpeg62.dll
-      ${VCPKG_BIN}/libpng16.dll
-      ${VCPKG_BIN}/tiff.dll
-      ${VCPKG_BIN}/liblzma.dll
+  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+      ${VCPKG_RELEASE_LIB}/opencv_imgproc2.lib
+      ${VCPKG_RELEASE_LIB}/opencv_highgui2.lib
+      ${VCPKG_RELEASE_LIB}/opencv_core2.lib
+  )
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+      ${VCPKG_DEBUG_BIN}/opencv_imgproc2d.dll
+      ${VCPKG_DEBUG_BIN}/opencv_highgui2d.dll
+      ${VCPKG_DEBUG_BIN}/opencv_core2d.dll
+      ${VCPKG_DEBUG_BIN}/jpeg62.dll
+      ${VCPKG_DEBUG_BIN}/libpng16d.dll
+      ${VCPKG_DEBUG_BIN}/tiffd.dll
+      ${VCPKG_DEBUG_BIN}/liblzma.dll
+  )
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+      ${VCPKG_RELEASE_BIN}/opencv_imgproc2.dll
+      ${VCPKG_RELEASE_BIN}/opencv_highgui2.dll
+      ${VCPKG_RELEASE_BIN}/opencv_core2.dll
+      ${VCPKG_RELEASE_BIN}/jpeg62.dll
+      ${VCPKG_RELEASE_BIN}/libpng16.dll
+      ${VCPKG_RELEASE_BIN}/tiff.dll
+      ${VCPKG_RELEASE_BIN}/liblzma.dll
   )
 endif()
 

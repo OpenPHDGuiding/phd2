@@ -792,12 +792,14 @@ if(APPLE AND NOT APPLE32)
 endif()
 target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 
-if (PHD_LINK_EXTERNAL_RELEASE)
-  target_link_libraries(phd2 optimized ${PHD_LINK_EXTERNAL_RELEASE})
-endif()
-if (PHD_LINK_EXTERNAL_DEBUG)
-  target_link_libraries(phd2 debug ${PHD_LINK_EXTERNAL_DEBUG})
-endif()
+foreach(lib ${PHD_LINK_EXTERNAL_DEBUG})
+  target_link_libraries(phd2 debug ${lib})
+endforeach()
+
+foreach(lib ${PHD_LINK_EXTERNAL_RELEASE})
+  target_link_libraries(phd2 optimized ${lib})
+endforeach()
+
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
