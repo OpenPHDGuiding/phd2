@@ -184,7 +184,7 @@ void IndiGui::removeProperty(INDI::Property property)
 
 //////////////////////////////////////////////////////////////////////
 
-void IndiGui::ConnectServer(const wxString &INDIhost, long INDIport)
+void IndiGui::ConnectServer(const wxString& INDIhost, long INDIport)
 {
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     connectServer();
@@ -218,7 +218,7 @@ void IndiGui::serverDisconnected(int exit_code)
     }
 }
 
-void IndiGui::OnNewDeviceFromThread(wxThreadEvent &event)
+void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
 {
     auto dp = event.GetPayload<INDI::BaseDevice>();
     //printf("newdevice from thread %s \n",dp->getDeviceName());
@@ -239,7 +239,7 @@ void IndiGui::OnNewDeviceFromThread(wxThreadEvent &event)
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::OnNewPropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
 {
     auto property = event.GetPayload<INDI::Property>();
     //printf("newproperty from thread %s %s %s\n",property->getDeviceName(),property->getGroupName(),property->getName());
@@ -431,7 +431,7 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
 
 void IndiGui::CreateTextWidget(INDI::Property property, IndiProp *indiProp)
 {
-    ITextVectorProperty *tvp = property->getText();
+    ITextVectorProperty *tvp = property.getText();
     wxPanel *p = indiProp->panel;
     wxGridBagSizer *gbs = indiProp->gbs;
 
@@ -506,7 +506,7 @@ void IndiGui::CreateUnknowWidget(INDI::Property property, IndiProp *indiProp)
     //printf("IndiGui: Unimplemented CreateUnknowWidget\n");
 }
 
-void IndiGui::OnUpdatePropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnUpdatePropertyFromThread(wxThreadEvent& event)
 {
     auto property = event.GetPayload<INDI::Property>();
 
@@ -597,14 +597,14 @@ void IndiGui::OnUpdatePropertyFromThread(wxThreadEvent &event)
     }
 }
 
-void IndiGui::OnNewMessageFromThread(wxThreadEvent &event)
+void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)
 {
     textbuffer->SetInsertionPoint(0);
     textbuffer->WriteText(event.GetString());
     textbuffer->WriteText(_T("\n"));
 }
 
-void IndiGui::SetButtonEvent(wxCommandEvent &event)
+void IndiGui::SetButtonEvent(wxCommandEvent& event)
 {
     wxButton *button = (wxButton *)event.GetEventObject();
     if (!button) return;
@@ -646,7 +646,7 @@ void IndiGui::SetButtonEvent(wxCommandEvent &event)
     }
 }
 
-void IndiGui::SetToggleButtonEvent(wxCommandEvent &event)
+void IndiGui::SetToggleButtonEvent(wxCommandEvent& event)
 {
     wxToggleButton *button = (wxToggleButton *)event.GetEventObject();
     if (!button) return;
@@ -697,7 +697,7 @@ void IndiGui::SetToggleButtonEvent(wxCommandEvent &event)
 }
 
 
-void IndiGui::SetComboboxEvent(wxCommandEvent &event)
+void IndiGui::SetComboboxEvent(wxCommandEvent& event)
 {
     wxChoice *combo = (wxChoice *)event.GetEventObject();
     if (!combo) return;
@@ -715,7 +715,7 @@ void IndiGui::SetComboboxEvent(wxCommandEvent &event)
     sendNewSwitch(svp);
 }
 
-void IndiGui::SetCheckboxEvent(wxCommandEvent &event)
+void IndiGui::SetCheckboxEvent(wxCommandEvent& event)
 {
     wxCheckBox *button = (wxCheckBox *)event.GetEventObject();
     if (!button) return;
@@ -745,7 +745,7 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent &event)
     sendNewSwitch(svp);
 }
 
-void IndiGui::OnRemovePropertyFromThread(wxThreadEvent &event)
+void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 {
     IndiProp *indiProp = (IndiProp *)event.GetExtraLong();
     if (!indiProp) return;
@@ -793,7 +793,7 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent &event)
     m_lastUpdate = wxGetUTCTimeMillis();
 }
 
-void IndiGui::ShowIndiGui(IndiGui **ret, const wxString &host, long port, bool allow_connect_disconnect_, bool modal)
+void IndiGui::ShowIndiGui(IndiGui **ret, const wxString& host, long port, bool allow_connect_disconnect_, bool modal)
 {
     IndiGui *gui = new IndiGui();
     gui->allow_connect_disconnect = allow_connect_disconnect_;
@@ -846,7 +846,7 @@ IndiGui::IndiGui()
     sizer->Add(textbuffer, 1, wxFIXED_MINSIZE | wxEXPAND | wxALL);
 }
 
-void IndiGui::OnQuit(wxCloseEvent &WXUNUSED(event))
+void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 {
     if (isServerConnected())
         Show(false);

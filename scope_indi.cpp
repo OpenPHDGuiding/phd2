@@ -39,15 +39,15 @@
 #ifdef GUIDE_INDI
 
 #include "config_indi.h"
-#include <baseclient.h>
+#include <libindi/baseclient.h>
 
 #ifdef LIBNOVA
 # include <libnova/sidereal_time.h>
 # include <libnova/julian_day.h>
 #endif
 
-#include <basedevice.h>
-#include <indiproperty.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
 class RunInBg;
 
@@ -942,7 +942,7 @@ PierSide ScopeINDI::SideOfPier()
             pierSide = PIER_SIDE_WEST;
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }

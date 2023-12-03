@@ -40,10 +40,10 @@
 #ifndef _CONFIG_INDI_H_
 #define _CONFIG_INDI_H_
 
-#include <baseclient.h>
-#include <basedevice.h>
-#include <indiproperty.h>
-#include <indibasetypes.h>
+#include <libindi/baseclient.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
+#include <libindi/indibasetypes.h>
 
 #include "indi_gui.h"
 
@@ -76,7 +76,7 @@ class INDIConfig : public wxDialog, public INDI::BaseClient
 
     public:
 
-        INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devtype);
+        INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype);
         ~INDIConfig();
 
         long     INDIport;
@@ -95,7 +95,7 @@ class INDIConfig : public wxDialog, public INDI::BaseClient
         static bool Verbose();
         static void SetVerbose(bool val);
 
-        void OnUpdateFromThread(wxThreadEvent &event);
+        void OnUpdateFromThread(wxThreadEvent& event);
 
     protected:
 
@@ -108,11 +108,11 @@ class INDIConfig : public wxDialog, public INDI::BaseClient
 
     private:
 
-        void OnConnectButton(wxCommandEvent &evt);
-        void OnIndiGui(wxCommandEvent &evt);
-        void OnDevSelected(wxCommandEvent &evt);
-        void OnVerboseChecked(wxCommandEvent &evt);
-        void OnForceVideoChecked(wxCommandEvent &evt);
+        void OnConnectButton(wxCommandEvent& evt);
+        void OnIndiGui(wxCommandEvent& evt);
+        void OnDevSelected(wxCommandEvent& evt);
+        void OnVerboseChecked(wxCommandEvent& evt);
+        void OnForceVideoChecked(wxCommandEvent& evt);
         void UpdateControlStates();
 
         wxDECLARE_EVENT_TABLE();

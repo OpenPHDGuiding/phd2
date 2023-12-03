@@ -28,9 +28,9 @@
 #ifndef _INDIGUI_H_
 #define _INDIGUI_H_
 
-#include <baseclient.h>
-#include <basedevice.h>
-#include <indiproperty.h>
+#include <libindi/baseclient.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
 #include "wxled.h"
 
@@ -59,11 +59,11 @@ class IndiGui : public wxDialog, public INDI::BaseClient
 
     private:
         // Main thread events called from INDI thread
-        void OnNewDeviceFromThread(wxThreadEvent &event);
-        void OnNewPropertyFromThread(wxThreadEvent &event);
-        void OnUpdatePropertyFromThread(wxThreadEvent &event);
-        void OnNewMessageFromThread(wxThreadEvent &event);
-        void OnRemovePropertyFromThread(wxThreadEvent &event);
+        void OnNewDeviceFromThread(wxThreadEvent& event);
+        void OnNewPropertyFromThread(wxThreadEvent& event);
+        void OnUpdatePropertyFromThread(wxThreadEvent& event);
+        void OnNewMessageFromThread(wxThreadEvent& event);
+        void OnRemovePropertyFromThread(wxThreadEvent& event);
 
         // Widget creation
         void BuildPropWidget(INDI::Property property, wxPanel *parent, IndiProp *indiProp);
@@ -80,14 +80,14 @@ class IndiGui : public wxDialog, public INDI::BaseClient
         void CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp);
 
         // Button events
-        void SetButtonEvent(wxCommandEvent &event);
-        void SetComboboxEvent(wxCommandEvent &event);
-        void SetToggleButtonEvent(wxCommandEvent &event);
-        void SetCheckboxEvent(wxCommandEvent &event);
+        void SetButtonEvent(wxCommandEvent& event);
+        void SetComboboxEvent(wxCommandEvent& event);
+        void SetToggleButtonEvent(wxCommandEvent& event);
+        void SetCheckboxEvent(wxCommandEvent& event);
 
-        void OnQuit(wxCloseEvent &event);
+        void OnQuit(wxCloseEvent& event);
 
-        void ConnectServer(const wxString &INDIhost, long INDIport);
+        void ConnectServer(const wxString& INDIhost, long INDIport);
         bool allow_connect_disconnect;
 
         wxPanel *panel;
@@ -121,7 +121,7 @@ class IndiGui : public wxDialog, public INDI::BaseClient
     public:
         ~IndiGui();
 
-        static void ShowIndiGui(IndiGui **ret, const wxString &host, long port, bool allow_connect_disconnect, bool modal);
+        static void ShowIndiGui(IndiGui **ret, const wxString& host, long port, bool allow_connect_disconnect, bool modal);
         static void DestroyIndiGui(IndiGui **holder);
 };
 

@@ -43,10 +43,10 @@
 #include "config_indi.h"
 #include "image_math.h"
 #include "indi_gui.h"
-#include <baseclient.h>
+#include <libindi/baseclient.h>
 
-#include <basedevice.h>
-#include <indiproperty.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
 
 class CapturedFrame
@@ -151,7 +151,7 @@ class CameraINDI : public GuideCamera, public INDI::BaseClient
         void     CheckState();
         void     CameraDialog();
         void     CameraSetup();
-        bool     ReadFITS(CapturedFrame *cf, usImage &img, bool takeSubframe, const wxRect &subframe);
+        bool     ReadFITS(CapturedFrame *cf, usImage& img, bool takeSubframe, const wxRect& subframe);
         bool     StackStream(CapturedFrame *cf);
         void     SendBinning();
 
@@ -176,14 +176,14 @@ class CameraINDI : public GuideCamera, public INDI::BaseClient
     public:
         CameraINDI();
         ~CameraINDI();
-        bool    Connect(const wxString &camId) override;
+        bool    Connect(const wxString& camId) override;
         bool    Disconnect() override;
         bool    HasNonGuiCapture() override;
         wxByte  BitsPerPixel() override;
         bool    GetDevicePixelSize(double *pixSize) override;
         void    ShowPropertyDialog() override;
 
-        bool    Capture(int duration, usImage &img, int options, const wxRect &subframe) override;
+        bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
 
         bool    ST4PulseGuideScope(int direction, int duration) override;
         bool    ST4HasNonGuiMove() override;
@@ -619,7 +619,7 @@ void CameraINDI::newProperty(INDI::Property property)
     CheckState();
 }
 
-bool CameraINDI::Connect(const wxString &camId)
+bool CameraINDI::Connect(const wxString& camId)
 {
     // If not configured open the setup dialog
     if (INDICameraName == wxT("INDI Camera"))
@@ -825,7 +825,7 @@ void CameraINDI::SetCCDdevice()
     }
 }
 
-bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage &img, bool takeSubframe, const wxRect &subframe)
+bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe, const wxRect& subframe)
 {
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
@@ -955,7 +955,7 @@ bool CameraINDI::StackStream(CapturedFrame *cf)
     const unsigned char *inptr = (unsigned char *) cf->m_data;
 
     for (int i = 0; i < StackImg->NPixels; i++)
-        *outptr++ += (unsigned short) * inptr++;
+        *outptr++ += (unsigned short) *inptr++;
 
     ++StackFrames;
 
@@ -973,7 +973,7 @@ void CameraINDI::SendBinning()
     m_curBinning = Binning;
 }
 
-bool CameraINDI::Capture(int duration, usImage &img, int options, const wxRect &subframeArg)
+bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     if (!Connected)
         return true;

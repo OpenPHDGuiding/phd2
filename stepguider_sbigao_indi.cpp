@@ -42,10 +42,10 @@
 
 #include "stepguider_sbigao_indi.h"
 #include "config_indi.h"
-#include <baseclient.h>
+#include <libindi/baseclient.h>
 
-#include <basedevice.h>
-#include <indiproperty.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
 class StepGuiderSbigAoINDI : public StepGuider, public INDI::BaseClient
 {
@@ -376,7 +376,7 @@ void StepGuiderSbigAoINDI::serverConnected()
     //            Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::serverConnected connecting StepGuider"));
     //            StepGuider::Connect();
     //        }
-    //        catch (const wxString &Msg)
+    //        catch (const wxString& Msg)
     //        {
     //            POSSIBLY_UNUSED(Msg);
     //        }
@@ -443,7 +443,7 @@ StepGuider::STEP_RESULT StepGuiderSbigAoINDI::Step(GUIDE_DIRECTION direction, in
                 break;
         }
     }
-    catch (const wxString &Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = STEP_ERROR;
@@ -495,7 +495,7 @@ bool StepGuiderSbigAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
                     break;
             }
         }
-        catch (const wxString &Msg)
+        catch (const wxString& Msg)
         {
             POSSIBLY_UNUSED(Msg);
             bError = true;
@@ -573,7 +573,7 @@ bool StepGuiderSbigAoINDI::ST4PulseGuideScope(int direction, int duration)
                     break;
             }
         }
-        catch (const wxString &Msg)
+        catch (const wxString& Msg)
         {
             POSSIBLY_UNUSED(Msg);
             bError = true;

@@ -66,7 +66,7 @@ enum
 
 bool INDIConfig::s_verbose;
 
-INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devtype)
+INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype)
     :
     wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
     m_gui(nullptr),
@@ -177,7 +177,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString &title, IndiDevType devt
     UpdateControlStates();
 }
 
-void INDIConfig::OnUpdateFromThread(wxThreadEvent &event)
+void INDIConfig::OnUpdateFromThread(wxThreadEvent& event)
 {
     UpdateControlStates();
 }
@@ -252,7 +252,7 @@ INDIConfig::~INDIConfig()
     disconnectServer();
 }
 
-void INDIConfig::OnIndiGui(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnIndiGui(wxCommandEvent& WXUNUSED(event))
 {
     if (m_gui)
     {
@@ -264,7 +264,7 @@ void INDIConfig::OnIndiGui(wxCommandEvent &WXUNUSED(event))
     }
 }
 
-void INDIConfig::OnConnectButton(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnConnectButton(wxCommandEvent& WXUNUSED(event))
 {
     if (isServerConnected())
         Disconnect();
@@ -272,7 +272,7 @@ void INDIConfig::OnConnectButton(wxCommandEvent &WXUNUSED(event))
         Connect();
 }
 
-void INDIConfig::OnDevSelected(wxCommandEvent &WXUNUSED(event))
+void INDIConfig::OnDevSelected(wxCommandEvent& WXUNUSED(event))
 {
     okBtn->Enable(true);
 }
@@ -292,12 +292,12 @@ void INDIConfig::SetVerbose(bool val)
     }
 }
 
-void INDIConfig::OnVerboseChecked(wxCommandEvent &evt)
+void INDIConfig::OnVerboseChecked(wxCommandEvent& evt)
 {
     INDIConfig::SetVerbose(evt.IsChecked());
 }
 
-void INDIConfig::OnForceVideoChecked(wxCommandEvent &evt)
+void INDIConfig::OnForceVideoChecked(wxCommandEvent& evt)
 {
     forceexposure->Enable(!evt.IsChecked());
     if (evt.IsChecked())
@@ -360,7 +360,7 @@ void INDIConfig::newDevice(INDI::BaseDevice dp)
     }
 }
 
-inline static void _append(wxString &s, const wxString &ap)
+inline static void _append(wxString& s, const wxString& ap)
 {
     if (s.Length())
         s += "|";
