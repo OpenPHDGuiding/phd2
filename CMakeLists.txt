@@ -780,6 +780,7 @@ else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
 
+add_dependencies(phd2 ${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
 
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")

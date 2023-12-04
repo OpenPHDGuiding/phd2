@@ -53,6 +53,7 @@ set(PHD_LINK_EXTERNAL)          # target to which the phd2 main library will lin
 set(PHD_COPY_EXTERNAL_ALL)      # copy of a file for any configuration
 set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
+set(PHD_EXTERNAL_PROJECT_DEPENDENCIES)
 
 
 # this module will be used to find system installed libraries on Linux
@@ -730,6 +731,7 @@ else()
   else()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/libindiclient.a z nova)
   endif()
+  list(APPEND PHD_EXTERNAL_PROJECT_DEPENDENCIES indi)
 endif()
 
 
