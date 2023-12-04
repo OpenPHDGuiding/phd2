@@ -714,7 +714,6 @@ else()
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
     GIT_TAG 856ac85b965177d23cd0c819a49fd50bdaeece60  # v2.0.5
-    GIT_SHALLOW ON
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
