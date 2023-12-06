@@ -424,8 +424,6 @@ set(phd2_SRC
   ${phd_src_dir}/phdconfig.h
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
-  ${phd_src_dir}/phdindiclient.cpp
-  ${phd_src_dir}/phdindiclient.h
   ${phd_src_dir}/phdupdate.cpp
   ${phd_src_dir}/phdupdate.h
   ${phd_src_dir}/pierflip_tool.cpp
@@ -782,6 +780,7 @@ else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
 
+add_dependencies(phd2 ${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
 
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")

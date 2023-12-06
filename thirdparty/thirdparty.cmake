@@ -53,6 +53,7 @@ set(PHD_LINK_EXTERNAL)          # target to which the phd2 main library will lin
 set(PHD_COPY_EXTERNAL_ALL)      # copy of a file for any configuration
 set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
+set(PHD_EXTERNAL_PROJECT_DEPENDENCIES)
 
 
 # this module will be used to find system installed libraries on Linux
@@ -324,7 +325,6 @@ else()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
 
 endif()
-
 
 
 
@@ -695,223 +695,43 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 #
 #############################################
 
-if(WIN32)
+if(USE_SYSTEM_LIBINDI)
+  message(STATUS "Using system's libindi")
+  find_package(INDI 2.0.0 REQUIRED)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+
+  find_package(ZLIB REQUIRED)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+
+  find_package(Nova REQUIRED)
+  add_definitions("-DLIBNOVA")
+  include_directories(${NOVA_INCLUDE_DIR})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+else()
   Include(ExternalProject)
+  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
-    GIT_TAG 44aaf5d3022c52e4981ef026cb43c41115262ba9
-    SOURCE_SUBDIR libindi
-    CMAKE_ARGS -Wno-dev -DINDI_BUILD_SERVER=OFF -DINDI_BUILD_DRIVERS=OFF -DINDI_BUILD_CLIENT=ON -DINDI_BUILD_QT5_CLIENT=OFF -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
+    GIT_TAG 856ac85b965177d23cd0c819a49fd50bdaeece60  # v2.0.5
+    CMAKE_ARGS -Wno-dev
+      -DINDI_BUILD_SERVER=OFF
+      -DINDI_BUILD_DRIVERS=OFF
+      -DINDI_BUILD_CLIENT=ON
+      -DINDI_BUILD_QT5_CLIENT=OFF
+      -DINDI_BUILD_SHARED=OFF
+      -DCMAKE_PREFIX_PATH=${VCPKG_PREFIX}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libindi
+      -DCMAKE_CXX_FLAGS=-D_CRT_SECURE_NO_WARNINGS
   )
-  set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
   include_directories(${indi_INSTALL_DIR}/include)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
-else()
-  # Linux or OSX
-  if(USE_SYSTEM_LIBINDI)
-    message(STATUS "Using system's libindi")
-    # INDI
-    find_package(INDI 1.7 REQUIRED)
-    # source files include <libindi/baseclient.h> so we need the libindi parent directory in the include directories
-    get_filename_component(INDI_INCLUDE_PARENT_DIR ${INDI_INCLUDE_DIR} DIRECTORY)
-    include_directories(${INDI_INCLUDE_PARENT_DIR})
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
-
-    find_package(ZLIB REQUIRED)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+  if (WIN32)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
   else()
-    if(APPLE)
-      # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
-      find_library(ZLIB_LIBRARIES
-                   NAMES z
-                   PATHS /usr/lib
-      )
-      if(NOT ZLIB_LIBRARIES)
-        message(FATAL_ERROR "libz not found")
-      endif()
-    else()
-      find_package(ZLIB REQUIRED)
-    endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-
-    set(indi_zip ${thirdparty_dir}/indi-1.8.3.tar.gz)
-    message(STATUS "Using project provided libindi '${indi_zip}'")
-    set(libindi_root "${thirdparties_deflate_directory}/indi-1.8.3")
-
-    # this does not work because of the configure_file commands below
-    # that want to run at camke time, but this woudl extract the
-    # libindi files at build time
-#    add_custom_target(unzip_indi ALL)
-#    add_custom_command(TARGET unzip_indi PRE_BUILD
-#      COMMAND ${CMAKE_COMMAND} -E remove_directory ${libindi_root}
-#      COMMAND ${CMAKE_COMMAND} -E tar xvf ${indi_zip}
-#      WORKING_DIRECTORY ${thirdparties_deflate_directory}
-#      DEPENDS ${indi_zip}
-#      COMMENT "Unpacking INDI Client sources"
-#      VERBATIM)
-    if(NOT EXISTS ${libindi_root})
-      message(STATUS "[thirdparty] extracting libindi sources")
-      execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf ${indi_zip}
-        WORKING_DIRECTORY ${thirdparties_deflate_directory})
-    endif()
-
-    if(NOT APPLE)
-      # todo: OSX build fails when Nova is found. I think it needs the include dir
-      # punting for now to get the build un-broken
-
-      # Nova is required for sidereal time computation with Indi driver that not report it.
-      # This is not critical if it is not present but the hour angle computation will be wrong.
-      find_package(Nova)
-      if(NOVA_FOUND)
-        add_definitions("-DLIBNOVA")
-        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-      endif()
-    endif()
-
-    # warning: copied from the indi CMakeLists.txt. This should be updated when
-    # updating the archive of libindi
-    # those variables should be defined before the configure_files
-    set(INDI_SOVERSION "1")
-    set(CMAKE_INDI_VERSION_MAJOR 1)
-    set(CMAKE_INDI_VERSION_MINOR 8)
-    set(CMAKE_INDI_VERSION_RELEASE 7)
-    set(CMAKE_INDI_VERSION_STRING "${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE}")
-    set(INDI_VERSION ${CMAKE_INDI_VERSION_MAJOR}.${CMAKE_INDI_VERSION_MINOR}.${CMAKE_INDI_VERSION_RELEASE})
-
-    ########################################  Paths  ###################################################
-
-    set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
-
-    set(LIBINDI_DIRECTORY "${libindi_root}/")
-
-    # separate folder for the configurations
-    set(libindi_root_config "${thirdparties_deflate_directory}/libindi_configuration")
-    if(NOT EXISTS ${libindi_root_config})
-      file(MAKE_DIRECTORY "${libindi_root_config}")
-    endif()
-
-    configure_file(${LIBINDI_DIRECTORY}/config.h.cmake ${libindi_root_config}/config.h )
-    configure_file(${LIBINDI_DIRECTORY}/indiversion.h.cmake ${libindi_root_config}/indiversion.h )
-
-    # here we simulate the fact that the installation layout is not the same
-    # as the source layout in libindi for the client. The installation layout
-    # is needed by program
-    # we do not want to perform a full installation in a fake directory
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
-    if(NOT EXISTS "${libindi_root_config}/libindi")
-      file(MAKE_DIRECTORY "${libindi_root_config}/libindi")
-    endif()
-    configure_file(
-      "${LIBINDI_DIRECTORY}/libs/indibase/baseclient.h"
-      "${libindi_root_config}/libindi/baseclient.h"
-      COPYONLY)
-    set(indiclient_INC
-      indiapi.h
-      indidevapi.h
-      base64.h
-      libs/lilxml.h
-      libs/indicom.h
-      eventloop.h
-      indidriver.h
-      libs/indibase/indibase.h
-      libs/indibase/indibasetypes.h
-      libs/indibase/basedevice.h
-      libs/indibase/defaultdevice.h
-      libs/indibase/indiccd.h
-      libs/indibase/indidetector.h
-      libs/indibase/indifilterwheel.h
-      libs/indibase/indifocuserinterface.h
-      libs/indibase/indifocuser.h
-      libs/indibase/inditelescope.h
-      libs/indibase/indiguiderinterface.h
-      libs/indibase/indifilterinterface.h
-      libs/indibase/indiproperty.h
-      libs/indibase/indistandardproperty.h
-      libs/indibase/indidome.h
-      libs/indibase/indigps.h
-      libs/indibase/indilightboxinterface.h
-      libs/indibase/indidustcapinterface.h
-      libs/indibase/indiweather.h
-      libs/indibase/indilogger.h
-      libs/indibase/indicontroller.h
-      libs/indibase/indiusbdevice.h
-      libs/indibase/hidapi.h
-
-      libs/indibase/connectionplugins/connectioninterface.h
-      libs/indibase/connectionplugins/connectionserial.h
-      libs/indibase/connectionplugins/connectiontcp.h
-    )
-
-    foreach(_file IN LISTS indiclient_INC)
-      get_filename_component(_file_wo_d "${_file}" NAME)
-      configure_file(
-        "${LIBINDI_DIRECTORY}/${_file}"
-        "${libindi_root_config}/libindi/${_file_wo_d}"
-        COPYONLY)
-    endforeach()
-
-
-
-    # include_directories( ${CMAKE_CURRENT_BINARY_DIR})
-    ####include_directories( ${LIBINDI_DIRECTORY})
-    ####include_directories( ${LIBINDI_DIRECTORY}/libs)
-    ####include_directories( ${LIBINDI_DIRECTORY}/libs/indibase)
-    ####include_directories( ${ZLIB_INCLUDE_DIR})
-    ####include_directories( ${CFITSIO_INCLUDE_DIR})
-
-    # default for libindi client
-    option(INDI_FAST_BLOB "Build INDI with Fast BLOB support" ON)
-
-    set(indiclient_C_SRC
-        ${LIBINDI_DIRECTORY}/libs/lilxml.c
-        ${LIBINDI_DIRECTORY}/base64.c
-        ${LIBINDI_DIRECTORY}/libs/indicom.c)
-
-    set(indiclient_CXX_SRC
-        ${LIBINDI_DIRECTORY}/libs/indibase/basedevice.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/baseclient.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/indiproperty.cpp
-        ${LIBINDI_DIRECTORY}/libs/indibase/indistandardproperty.cpp)
-
-    add_library(indiclient STATIC ${indiclient_C_SRC} ${indiclient_CXX_SRC})
-    target_include_directories(indiclient
-      PUBLIC
-        ${libindi_root_config}
-        ${LIBINDI_DIRECTORY}
-        ${LIBINDI_DIRECTORY}/libs
-        ${LIBINDI_DIRECTORY}/libs/indibase
-        ${ZLIB_INCLUDE_DIR}
-        ${CFITSIO_INCLUDE_DIR}
-    )
-    if(INDI_FAST_BLOB)
-      # Append ENCLEN attribute to outgoing BLOB elements to enable fast parsing by clients
-      target_compile_definitions(indiclient
-        PUBLIC
-          -DWITH_ENCLEN)
-    endif()
-    set_property(TARGET indiclient PROPERTY C_STANDARD 99) # some C code of the client requires this
-    target_link_libraries(indiclient
-      PUBLIC
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${ZLIB_LIBRARIES}) # for conserving DSO
-    set_property(TARGET indiclient PROPERTY FOLDER "Thirdparty/")
-
-    # Raffi: I do not think we need this, see documentaiton for
-    # POSITION_INDEPENDENT_CODE property of CMake
-    #if (NOT CYGWIN AND NOT WIN32)
-    #  set_target_properties(indiclient PROPERTIES COMPILE_FLAGS "-fPIC")
-    #endif (NOT CYGWIN AND NOT WIN32)
-
-    #install(TARGETS indiclient ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-    #install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libs/indibase/baseclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/libindi COMPONENT Devel)
-
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} indiclient)
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/libindiclient.a z nova)
   endif()
-
+  list(APPEND PHD_EXTERNAL_PROJECT_DEPENDENCIES indi)
 endif()
-
 
 
 #############################################
