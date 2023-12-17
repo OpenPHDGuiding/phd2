@@ -9,7 +9,7 @@
 #
 
 build=$(cd $(dirname $0); /bin/pwd)
-top="$build/.."
+top=$(realpath "$build/..")
 help="$top"/help
 
 BUILDTREE=$top/tmp
@@ -100,7 +100,10 @@ EOF
 # generate the default toc
 "$wkhtmltopdf" --dump-default-toc-xsl >"$tocxsl_native"
 
-"$wkhtmltopdf" -q $useX --dpi 96 --enable-toc-back-links --enable-external-links \
+"$wkhtmltopdf" -q $useX --dpi 96 \
+               --allow "$top" \
+               --allow "$TMP" \
+               --enable-toc-back-links --enable-external-links \
                --enable-internal-links --footer-right '[page]' \
                cover "$titlepg" toc --xsl-style-sheet "$tocxsl" \
                $files "$output"
