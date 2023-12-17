@@ -65,10 +65,12 @@ int YWinSize = 512;
 
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
+    { wxCMD_LINE_SWITCH, "?", "help", "display this help and exit" },
     { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
     { wxCMD_LINE_OPTION, "l", "load", "load settings from file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
     { wxCMD_LINE_SWITCH, "R", "Reset", "Reset all PHD2 settings to default values" },
     { wxCMD_LINE_OPTION, "s", "save", "save settings to file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+    { wxCMD_LINE_SWITCH, "v", "version", "print the program version and exit" },
     { wxCMD_LINE_NONE }
 };
 
@@ -682,7 +684,16 @@ void PhdApp::OnInitCmdLine(wxCmdLineParser& parser)
 
 bool PhdApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
-    bool bReturn = true;
+    if (parser.Found("?"))
+    {
+        parser.Usage();
+        ::exit(0);
+    }
+    else if (parser.Found("v"))
+    {
+        wxPrintf("%s\n", FULLVER);
+        ::exit(0);
+    }
 
     parser.Found("i", &m_instanceNumber);
 
@@ -693,7 +704,7 @@ bool PhdApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
     m_resetConfig = parser.Found("R");
 
-    return bReturn;
+    return true;
 }
 
 bool PhdApp::Yield(bool onlyIfNeeded)
