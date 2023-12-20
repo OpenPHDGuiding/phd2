@@ -1,9 +1,7 @@
-#!/bin/bash
-
-INTERACTIVE=
+#!/usr/bin/env bash
 
 usage () {
-    echo "usage: $0 [-i] [-d devN] changelog_file" >&2
+    echo "usage: $0 [-i] [-b branch] [-d devN] changelog_file" >&2
     exit 1
 }
 
@@ -20,15 +18,20 @@ PAUSE () {
 
 # === main ===
 
-if [[ $1 = "-i" ]]; then
-    INTERACTIVE=1
-    shift
-fi
+INTERACTIVE=
+branch=master
+dev=
 
-if [[ $1 = "-d" ]]; then
-    dev=$2
-    shift 2
-fi
+OPTIND=1
+while getopts "ib:d:" opt; do
+    case "$opt" in
+        i) INTERACTIVE=1 ;;
+        b) branch=$OPTARG ;;
+        d) dev=$OPTARG ;;
+        '?') usage >&2; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
 
 changelog=$1
 shift
@@ -53,7 +56,7 @@ D=$(cd $(dirname "$0"); /bin/pwd)
 . "$D"/build.cfg
 
 # sanity check config
-for v in WWW_{HOST,DIR} MAC{32,64}_{HOST,DIR}; do
+for v in WWW_{HOST,DIR} MAC{32,64,64S}_{HOST,DIR}; do
     [[ -v $v ]] || {
         echo "missing build.cfg variable $v!" >&2
         exit 1
@@ -61,7 +64,7 @@ for v in WWW_{HOST,DIR} MAC{32,64}_{HOST,DIR}; do
 done
 
 # make sure hosts are reachable
-for h in $WWW_HOST $MAC32_HOST $MAC64_HOST; do
+for h in $WWW_HOST $MAC32_HOST $MAC64_HOST $MAC64S_HOST; do
     printf "checking $h ..."
     ssh -q -oBatchMode=yes $h exit || {
         echo "Error: host $h is not ssh-accessible" >&2
@@ -78,14 +81,11 @@ esac
 
 set -e
 
-# copy build cfg to macs
-scp "$D"/build.cfg ${MAC32_HOST}:${MAC32_DIR}/build/
-scp "$D"/build.cfg ${MAC64_HOST}:${MAC64_DIR}/build/
-
 # change to top-level phd2 dir
 cd "$D"/..
 
-git checkout -q master
+git fetch -q
+git checkout -q "$branch"
 git pull -r -q
 
 V=$(perl -ne '/^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { print $1; exit }' phd.h)
@@ -178,10 +178,21 @@ if [[ $do_build ]]; then
     if [[ $do_upload ]]; then
         OSX_UPLOAD="-u"
     fi
-    ssh $MAC32_HOST "cd $MAC32_DIR && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 32" &
+    scp "$D"/build.cfg ${MAC32_HOST}:${MAC32_DIR}/build/
+    ssh $MAC32_HOST \
+        "cd $MAC32_DIR &&
+         ./build/publish_osx $OSX_UPLOAD -b '$branch'" &
     macpid_32=$!
-    ssh $MAC64_HOST "cd $MAC64_DIR && git checkout -q master && git pull -r && ./build/publish_osx $OSX_UPLOAD 64" &
+    scp "$D"/build.cfg ${MAC64_HOST}:${MAC64_DIR}/build/
+    ssh $MAC64_HOST \
+        "cd $MAC64_DIR &&
+         ./build/publish_osx $OSX_UPLOAD -b '$branch'" &
     macpid_64=$!
+    scp "$D"/build.cfg ${MAC64S_HOST}:${MAC64S_DIR}/build/
+    ssh $MAC64S_HOST \
+        "cd $MAC64S_DIR &&
+         ./build/publish_osx $OSX_UPLOAD -b '$branch'" &
+    macpid_64s=$!
 
     #
     # start win build
@@ -196,6 +207,8 @@ if [[ $do_build ]]; then
         || die "MacOS-32 build failed!"
     wait $macpid_64 \
         || die "MacOS-64 build failed!"
+    wait $macpid_64s \
+        || die "MacOS-64S build failed!"
 fi
 
 #
