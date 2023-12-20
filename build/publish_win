@@ -8,7 +8,8 @@ usage: publish_win [OPTIONS]
 Options:
   -u      upload installer to web site
   -i      run the installer on the local machine
-  -b      incremental build (default: full rebuild)
+  -B      incremental build (default: full rebuild)
+  -b branch  branch to build (default: current branch)
   -r      update release version info for auto-update checker
   -d      update dev release version info even if version number looks like a main rev
   -s      skip version check
@@ -25,8 +26,9 @@ do_upload=
 do_install=
 do_release=
 series=
+branch=
 
-while getopts "uibrdsSh" o; do
+while getopts "uiBb:rdsSh" o; do
     case "${o}" in
         u)
             do_upload=1
@@ -34,8 +36,11 @@ while getopts "uibrdsSh" o; do
         i)
             do_install=1
             ;;
-        b)
+        B)
             do_rebuild=
+            ;;
+        b)
+            branch=$OPTARG
             ;;
         r)
             do_release=1
@@ -84,38 +89,26 @@ V=$(perl -ne '
 
 F=phd2-${V}-installer
 
+repo_is_clean () {
+    git update-index -q --refresh
+    git diff-index --quiet HEAD --
+}
+
 uptodate=1
-if git status | grep -q "Your branch is up to date with 'origin/master'"; then
-    echo "branch is up to date with origin/master"
-else
-    echo "need git pull" >&2
+if ! repo_is_clean; then
+    echo "uncommited files are present!" >&2
     uptodate=
-fi
-modified=$(git status | grep "modified:" || :)
-if [[ $modified ]]; then
-    echo "**files are modified" >&2
-    uptodate=
-else
-    echo "no files are modified"
-fi
-staged=$(git diff --stat --staged)
-if [[ $staged ]]; then
-    echo "**changes are staged" >&2
-    uptodate=
-else
-    echo "no changes are staged"
-fi
-cached=$(git diff --stat --cached origin/master)
-if [[ $cached ]]; then
-    echo "changes are cached" >&2
-    uptodate=
-else
-    echo "no changes are cached"
 fi
 [[ $uptodate || ! $do_versioncheck ]] || \
     exit 1
 
 cd "$D"/..
+
+if [[ $branch ]]; then
+    git fetch -q
+    git checkout -q "$branch"
+    git pull -r -q
+fi
 
 rebuild=
 if [[ $do_rebuild ]]; then

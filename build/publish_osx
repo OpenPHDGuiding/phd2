@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
+do_repocheck=1
 do_build=1
 do_clean=1
 do_upload=
 do_release=
 series=
+branch=
 
-while getopts "Cnurd" o; do
+while getopts "b:Cdnrsu" o; do
     case "${o}" in
+        b)
+            branch=$OPTARG
+            ;;
         C)
             do_clean=
             ;;
@@ -23,6 +28,9 @@ while getopts "Cnurd" o; do
             do_clean=
             do_upload=
             do_release=1
+            ;;
+        s)
+            do_repocheck=
             ;;
         d)
             series="dev"
@@ -67,6 +75,23 @@ D=$(cd $(dirname "$0"); /bin/pwd)
     exit 1
 }
 . "$D"/build.cfg
+
+repo_is_clean () {
+    git update-index -q --refresh
+    git diff-index --quiet HEAD --
+}
+if [[ $do_repocheck ]]; then
+    if ! repo_is_clean; then
+        echo "modified files are present" >&2
+        exit 1
+    fi
+fi
+
+if [[ $branch ]]; then
+    git fetch -q
+    git checkout -q "$branch"
+    git pull -r -q
+fi
 
 SCPDST=${WWW_HOST}:${WWW_DIR}
 
