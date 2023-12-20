@@ -12,8 +12,14 @@ MAC32_HOST="mac32"
 # mac 32-bit host phd2 source tree directory
 MAC32_DIR="devel/phd2"
 
-# mac 64-bit build host
+# mac 64-bit build host - pre-Sonoma
 MAC64_HOST="mac64"
 
 # mac 64-bit host phd2 source tree directory
 MAC64_DIR="devel/phd2"
+
+# mac 64-bit build host - Sonoma+
+MAC64S_HOST="mac64s"
+
+# mac 64-bit host phd2 source tree directory
+MAC64S_DIR="devel/phd2"
