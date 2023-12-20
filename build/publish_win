@@ -69,6 +69,8 @@ shift $((OPTIND-1))
 
 set -ex
 
+cd "$D"/..
+
 CMD="/c/Windows/System32/cmd.exe"
 CMAKE='/c/Program Files/CMake/bin/cmake.exe'
 ISCC="/c/Program Files (x86)/Inno Setup 5/ISCC.exe"
@@ -101,8 +103,6 @@ if ! repo_is_clean; then
 fi
 [[ $uptodate || ! $do_versioncheck ]] || \
     exit 1
-
-cd "$D"/..
 
 if [[ $branch ]]; then
     git fetch -q

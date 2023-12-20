@@ -76,6 +76,9 @@ D=$(cd $(dirname "$0"); /bin/pwd)
 }
 . "$D"/build.cfg
 
+# run from the top of the source tree (this script is in <top>/build/)
+cd "$D"/..
+
 repo_is_clean () {
     git update-index -q --refresh
     git diff-index --quiet HEAD --
@@ -94,9 +97,6 @@ if [[ $branch ]]; then
 fi
 
 SCPDST=${WWW_HOST}:${WWW_DIR}
-
-# run from the top of the source tree (this script is in <top>/build/)
-cd "$D"/..
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
