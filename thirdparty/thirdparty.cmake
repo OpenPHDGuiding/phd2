@@ -54,6 +54,10 @@ set(PHD_COPY_EXTERNAL_ALL)      # copy of a file for any configuration
 set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
 
+if(APPLE)
+  # make sure not to pick up any homebrew or macports dependencies
+  set(CMAKE_IGNORE_PREFIX_PATH /opt/local)
+endif()
 
 # this module will be used to find system installed libraries on Linux
 if(UNIX AND NOT APPLE)
@@ -502,7 +506,6 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libcurl_dir}/lib/LIBCURL.LIB)
 else()
   if(APPLE)
-    # make sure to pick up the macos curl, not the mapcports curl in /opt/local/lib
     find_library(CURL_LIBRARIES
                  NAMES curl
                  PATHS /usr/lib
@@ -669,7 +672,6 @@ else()
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
   else()
     if(APPLE)
-      # make sure to pick up the macos libz, not the mapcports libz in /opt/local/lib
       find_library(ZLIB_LIBRARIES
                    NAMES z
                    PATHS /usr/lib
