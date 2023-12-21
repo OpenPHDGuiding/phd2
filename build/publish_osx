@@ -114,6 +114,11 @@ fi
 
 cd tmp
 
+case $bits in
+    32) ZIPFILE=PHD2-${V}-OSX.zip ;;
+    64) ZIPFILE=PHD2-${V}-OSX-64${suffix}.zip ;;
+esac
+
 if [[ $do_build ]]; then
     rm -rf PHD2.app
     # worakaround for infrequent intermittent build failure when
@@ -128,18 +133,19 @@ if [[ $do_build ]]; then
     make "${translation_targets[@]}"
     cores=$(sysctl -n hw.logicalcpu)
     make -j$cores
+
+    zip -r "$ZIPFILE" PHD2.app
+    chmod 644 "$ZIPFILE"
 fi
 
 SCPFILES=()
 
 if [[ $do_upload ]]; then
-    case $bits in
-        32) Z=PHD2-${V}-OSX.zip ;;
-        64) Z=PHD2-${V}-OSX-64${suffix}.zip ;;
-    esac
-    zip -r "$Z" PHD2.app
-    chmod 644 "$Z"
-    SCPFILES+=("$Z")
+    if [[ ! -e "$ZIPFILE" ]]; then
+        echo "$ZIPFILE was not built" >&2
+        exit 1
+    fi
+    SCPFILES+=("$ZIPFILE")
 fi
 
 if [[ $do_release ]]; then
