@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-21 03:59+0000\n"
+"POT-Creation-Date: 2023-12-22 22:20+0000\n"
 "PO-Revision-Date: 2020-11-11 01:17+0100\n"
 "Last-Translator: Paweł Pleskaczyński <pawelpleskaczynski@gmail.com>\n"
 "Language-Team: Paweł Pleskaczyński <pawelpleskaczynski@gmail.com>, Jakub "
@@ -310,7 +310,7 @@ msgid "Measurement halted"
 msgstr "Pomiar anulowany"
 
 #: calibration_assistant.cpp:146 calstep_dialog.cpp:196
-#: camcal_import_dialog.cpp:47 camera.cpp:913 configdialog.cpp:61
+#: camcal_import_dialog.cpp:47 camera.cpp:896 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:52 gear_simulator.cpp:1655
 #: guide_algorithm_gaussian_process.cpp:179 myframe.cpp:3139
 #: Refine_DefMap.cpp:59 starcross_test.cpp:52
@@ -1149,7 +1149,7 @@ msgstr "Deklinacja kalibracji, stopnie"
 msgid "Approximate declination where you will do calibration"
 msgstr "Przybliżona deklinacja, na której wykonasz kalibrację"
 
-#: calstep_dialog.cpp:162 camera.cpp:917 darks_dialog.cpp:202
+#: calstep_dialog.cpp:162 camera.cpp:900 darks_dialog.cpp:202
 #: gear_simulator.cpp:1842 mount.cpp:270 mount.cpp:322 Refine_DefMap.cpp:175
 #: starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
@@ -1535,7 +1535,7 @@ msgstr "Nie można uruchomić urządzenia LXUSB"
 msgid "Serial LE Webcam"
 msgstr "Webcam z szeregowym portem LE"
 
-#: cam_LESerialWebcam.cpp:299 camera.cpp:961
+#: cam_LESerialWebcam.cpp:299 camera.cpp:940
 msgid "LE Port"
 msgstr "Port LE"
 
@@ -2116,31 +2116,25 @@ msgstr "Ustawienia kamery"
 msgid "General Properties"
 msgstr "Właściwości ogólne"
 
-#: camera.cpp:828
+#: camera.cpp:829
 msgid "Camera-Specific Properties"
 msgstr "Właściwości specyficzne dla aparatu"
 
-#: camera.cpp:859
+#: camera.cpp:851
 msgid "No camera specified"
 msgstr "Nie wybrano kamery"
 
-#: camera.cpp:868
+#: camera.cpp:862
 msgid ""
-"Camera is not connected.  Additional camera properties may be available if "
-"you connect to it first."
+"Camera is not connected.  Property controls may change if you connect to it "
+"first."
 msgstr ""
-"Kamera nie jest podłączona. Dodatkowe właściwości kamery mogą być dostępne "
-"po jej podłączeniu."
 
-#: camera.cpp:874
-msgid "Star Saturation Detection"
-msgstr "Detekcja nasycenia gwiazdy"
-
-#: camera.cpp:900
+#: camera.cpp:886
 msgid "Use Subframes"
 msgstr "Korzystaj z zaznaczonego regionu (subklatki)"
 
-#: camera.cpp:901
+#: camera.cpp:887
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
@@ -2148,7 +2142,7 @@ msgstr ""
 "Zaznacz, żeby pobierać tylko subklatki (ROIs). Rozmiar subklatki jest równy "
 "rozmiarowi regionu wyszukiwania."
 
-#: camera.cpp:906
+#: camera.cpp:891
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
@@ -2156,15 +2150,15 @@ msgstr ""
 "Rozmiar niezbinnowanych pikseli kamery w mikronach. Używany wraz z ogniskową "
 "guidera do wyświetlania błędu guidowania (w sekundach łuku)."
 
-#: camera.cpp:907
+#: camera.cpp:892
 msgid "Pixel size"
 msgstr "Rozmiar piksela"
 
-#: camera.cpp:913
+#: camera.cpp:896
 msgid "Camera gain"
 msgstr "Wzmocnienie kamery (gain)"
 
-#: camera.cpp:916
+#: camera.cpp:899
 #, no-c-format
 msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
@@ -2174,50 +2168,50 @@ msgstr ""
 "szum lub chcesz guidować na bardzo jasnej gwieździe. Nie jest to dostępne "
 "dla wszystkich kamer."
 
-#: camera.cpp:918
+#: camera.cpp:901
 msgid ""
 "Reset gain to camera's default value (disabled when camera is not connected)"
 msgstr ""
 "Przywróć gain do domyślnej wartości kamery (niedostępne, jeśli kamera nie "
 "jest podłączona)"
 
-#: camera.cpp:939
+#: camera.cpp:919
 msgid "Binning"
 msgstr ""
 
-#: camera.cpp:939
+#: camera.cpp:919
 msgid "Camera pixel binning"
 msgstr "Binning pikseli kamery"
 
-#: camera.cpp:946
+#: camera.cpp:925
 msgid "Delay"
 msgstr "Opóźnienie"
 
-#: camera.cpp:946
+#: camera.cpp:925
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
 msgstr "Opóźnienie odczytu LE (ms), dostosuj wartość, jeśli klatki są gubione"
 
-#: camera.cpp:961
+#: camera.cpp:940
 msgid "Port number for long-exposure control"
 msgstr "Numer portu do kontroli długich czasów"
 
-#: camera.cpp:968
+#: camera.cpp:945
 msgid "Cooler On"
 msgstr "Chłodzenie włączone"
 
-#: camera.cpp:969
+#: camera.cpp:946
 msgid "Turn camera cooler on or off"
 msgstr "Włącz lub wyłącz chłodzenie kamery"
 
-#: camera.cpp:972
+#: camera.cpp:949
 msgid "Set Temperature"
 msgstr "Ustaw temperaturę"
 
-#: camera.cpp:972
+#: camera.cpp:949
 msgid "Cooler setpoint temperature"
 msgstr "Nastawa temperatury chłodzenia"
 
-#: camera.cpp:981
+#: camera.cpp:957
 msgid ""
 "ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
 "for 8-bit cameras."
@@ -2225,22 +2219,22 @@ msgstr ""
 "Poziom ADU do określenia nasycenia - 65535 dla większości kamer 16-bitowych "
 "lub 255 dla kamer 8-bitowych."
 
-#: camera.cpp:982
+#: camera.cpp:958
 msgid "Saturation by Max-ADU value:"
 msgstr "Nasycenie przez maksymalną wartość ADU:"
 
-#: camera.cpp:983
+#: camera.cpp:959
 msgid ""
 "Identify star saturation based on camera maximum-ADU value (recommended)"
 msgstr ""
 "Zidentyfikuj nasycenie gwiazd na podstawie maksymalnej wartości ADU "
 "(zalecane)"
 
-#: camera.cpp:990
+#: camera.cpp:966
 msgid "Saturation via star-profile"
 msgstr "Nasycenie przez profil gwiazdy"
 
-#: camera.cpp:991
+#: camera.cpp:967
 msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
@@ -2248,7 +2242,7 @@ msgstr ""
 "Zidentyfikuj nasycenie gwiazdy na podstawie płaskiego profilu, niezależnie "
 "od jasności"
 
-#: camera.cpp:1001
+#: camera.cpp:977
 msgid ""
 "Disconnect nonresponsive          \n"
 "camera after (seconds)"
@@ -2256,7 +2250,7 @@ msgstr ""
 "Odłącz nieodpowiadajcą           \n"
 "kamerę po (sekundach)"
 
-#: camera.cpp:1002
+#: camera.cpp:978
 #, c-format
 msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
@@ -2265,20 +2259,20 @@ msgstr ""
 "Kamera zostanie odłączona, jeśli nie będzie reagować przez tak długi czas. "
 "Wartość domyślna, %d sekund, powinna być odpowiednia dla większości kamer."
 
-#: camera.cpp:1319
+#: camera.cpp:1311
 msgid "unspecified"
 msgstr "nieokreślone"
 
-#: camera.cpp:1321
+#: camera.cpp:1313
 #, c-format
 msgid "%0.1f um"
 msgstr ""
 
-#: camera.cpp:1462
+#: camera.cpp:1454
 msgid "Memory allocation error during capture"
 msgstr "Błąd alokacji pamięci podczas przechwytywania"
 
-#: camera.cpp:1470
+#: camera.cpp:1462
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
@@ -2286,18 +2280,18 @@ msgid ""
 "section of Help."
 msgstr ""
 
-#: camera.cpp:1475
+#: camera.cpp:1467
 msgid ""
 "The camera has not completed an exposure in at least 15 seconds, so it has "
 "been disconnected to prevent other problems. Refer to Trouble-shooting "
 "section of Help."
 msgstr ""
 
-#: camera.cpp:1496
+#: camera.cpp:1488
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr "PHD podejmie kilka prób ponownego podłączenia kamery."
 
-#: camera.cpp:1501
+#: camera.cpp:1493
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -6685,102 +6679,102 @@ msgstr "Wybierz port równoległy"
 msgid "Custom Port Address:"
 msgstr "Adres portu użytkownika:"
 
-#: phd.cpp:280
+#: phd.cpp:282
 msgid "Win32s on Windows 3.1"
 msgstr ""
 
-#: phd.cpp:290
+#: phd.cpp:292
 msgid "Windows 95 OSR2"
 msgstr ""
 
-#: phd.cpp:294
+#: phd.cpp:296
 msgid "Windows 95"
 msgstr ""
 
-#: phd.cpp:301
+#: phd.cpp:303
 msgid "Windows 98 SE"
 msgstr ""
 
-#: phd.cpp:305
+#: phd.cpp:307
 msgid "Windows 98"
 msgstr ""
 
-#: phd.cpp:309
+#: phd.cpp:311
 msgid "Windows ME"
 msgstr ""
 
-#: phd.cpp:312
+#: phd.cpp:314
 #, c-format
 msgid "Windows 9x (%d.%d)"
 msgstr ""
 
-#: phd.cpp:330
+#: phd.cpp:332
 msgid "Windows 2000"
 msgstr ""
 
-#: phd.cpp:339
+#: phd.cpp:341
 msgid "Windows Server 2003"
 msgstr ""
 
-#: phd.cpp:345
+#: phd.cpp:347
 msgid "Windows XP"
 msgstr ""
 
-#: phd.cpp:355
+#: phd.cpp:357
 msgid "Windows Server 2008"
 msgstr ""
 
-#: phd.cpp:356
+#: phd.cpp:358
 msgid "Windows Vista"
 msgstr ""
 
-#: phd.cpp:361
+#: phd.cpp:363
 msgid "Windows Server 2008 R2"
 msgstr ""
 
-#: phd.cpp:362
+#: phd.cpp:364
 msgid "Windows 7"
 msgstr ""
 
-#: phd.cpp:367
+#: phd.cpp:369
 msgid "Windows Server 2012"
 msgstr ""
 
-#: phd.cpp:368
+#: phd.cpp:370
 msgid "Windows 8"
 msgstr ""
 
-#: phd.cpp:373
+#: phd.cpp:375
 msgid "Windows Server 2012 R2"
 msgstr ""
 
-#: phd.cpp:374
+#: phd.cpp:376
 msgid "Windows 8.1"
 msgstr ""
 
-#: phd.cpp:381
+#: phd.cpp:383
 msgid "Windows Server 2016"
 msgstr ""
 
-#: phd.cpp:382
+#: phd.cpp:384
 msgid "Windows 10"
 msgstr ""
 
-#: phd.cpp:388
+#: phd.cpp:390
 #, c-format
 msgid "Windows NT %lu.%lu"
 msgstr ""
 
-#: phd.cpp:394
+#: phd.cpp:396
 #, c-format
 msgid "build %lu"
 msgstr "kompilacja %lu"
 
-#: phd.cpp:402
+#: phd.cpp:404
 msgid ", 64-bit edition"
 msgstr ", edycja 64-bitowa"
 
-#: phd.cpp:538
+#: phd.cpp:540
 #, c-format
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
@@ -9309,6 +9303,16 @@ msgstr "Łączenie z kamerą..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Łączenie z rotatorem..."
+
+#~ msgid ""
+#~ "Camera is not connected.  Additional camera properties may be available "
+#~ "if you connect to it first."
+#~ msgstr ""
+#~ "Kamera nie jest podłączona. Dodatkowe właściwości kamery mogą być "
+#~ "dostępne po jej podłączeniu."
+
+#~ msgid "Star Saturation Detection"
+#~ msgstr "Detekcja nasycenia gwiazdy"
 
 #~ msgid ""
 #~ "Please specify camera type, guider focal length, and guide camera pixel "
