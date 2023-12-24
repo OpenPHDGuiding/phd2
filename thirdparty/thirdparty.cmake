@@ -1125,17 +1125,6 @@ endif()
 
 
 
-  #############################################
-  # HID Utils
-  #
-  #if(NOT EXISTS "${thirdparty_dir}/HID Utilities Source")
-  #  # untar the dependency
-  #  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${thirdparty_dir}/HID Utilities Source.zip")
-  #endif()
-
-  # library removed
-
-
   ### does not work on x64
   #find_library( openssag
   #              NAMES openssag
