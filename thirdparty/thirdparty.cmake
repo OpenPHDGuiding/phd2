@@ -511,9 +511,6 @@ if(${USB_build})
     # target_link_options requires newer cmake, so fall back to the old LINK_FLAGS target property
     #   target_link_options(usb_openphd -compatibility_version 2 -current_version 2)
     set_target_properties(usb_openphd PROPERTIES LINK_FLAGS "-compatibility_version 2 -current_version 2")
-    if(APPLE32)
-      set(libUSB_link_objc "objc")
-    endif()
     target_link_libraries(usb_openphd
       ${coreFoundationFramework}
       ${iokitFramework}
@@ -942,30 +939,6 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sbigudFramework})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${sbigudFramework})
 
-  if(APPLE32)
-    find_library( fcCamFramework
-                  NAMES fcCamFw
-                  PATHS ${thirdparty_dir}/frameworks)
-    if(NOT fcCamFramework)
-      message(FATAL_ERROR "Cannot find the fcCamFw drivers")
-    endif()
-    include_directories(${fcCamFramework})
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${fcCamFramework})
-    add_definitions(-DHAVE_STARFISH_CAMERA=1)
-    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${fcCamFramework})
-  endif()
-
-  if(APPLE32)
-    find_library( dsiMeadeLibrary
-                  NAMES DsiDevice
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
-    if(NOT dsiMeadeLibrary)
-      message(FATAL_ERROR "Cannot find the dsiMeadeLibrary drivers")
-    endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dsiMeadeLibrary})
-    add_definitions(-DHAVE_MEADE_DSI_CAMERA=1)
-  endif()
-
   find_library( asiCamera2
                 NAMES ASICamera2
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/mac)
@@ -976,19 +949,11 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
-  if(APPLE32)
-    find_library( SVBCameraSDK
-                  NAMES SVBCameraSDK
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x86)
-    # SVB SDK v1.10 crashes when the dylib loads on APPLE32 -- disable for now
-    unset(SVBCameraSDK CACHE)
-  else()
-    find_library( SVBCameraSDK
-                  NAMES SVBCameraSDK
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
-    if(NOT SVBCameraSDK)
-      message(FATAL_ERROR "Cannot find the Svbony SDK libs")
-    endif()
+  find_library( SVBCameraSDK
+                NAMES SVBCameraSDK
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
+  if(NOT SVBCameraSDK)
+    message(FATAL_ERROR "Cannot find the Svbony SDK libs")
   endif()
 
   if(SVBCameraSDK)
@@ -997,15 +962,9 @@ if(APPLE)
     set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${SVBCameraSDK})
   endif()
 
-  if(APPLE32)
-    find_library( qhylib
-                  NAMES qhyccd
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_32)
-  else()
-    find_library( qhylib
-                  NAMES qhyccd
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_64)
-  endif()
+  find_library( qhylib
+                NAMES qhyccd
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/mac/x86_64)
   if(NOT qhylib)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
@@ -1013,30 +972,15 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${qhylib})
 
-  if(APPLE32)
-    find_library( mallincamFramework
-                  NAMES MallincamGuider
-                  PATHS ${thirdparty_dir}/frameworks)
-    if(NOT mallincamFramework)
-      message(FATAL_ERROR "Cannot find the Mallincam framework")
-    endif()
-    include_directories(${mallincamFramework})
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mallincamFramework})
-    add_definitions(-DHAVE_SKYRAIDER_CAMERA=1)
-    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${mallincamFramework})
+  find_library( toupcam
+                NAMES toupcam
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/mac)
+  if(NOT toupcam)
+    message(FATAL_ERROR "Cannot find the toupcam drivers")
   endif()
-
-  if(NOT APPLE32)
-    find_library( toupcam
-                  NAMES toupcam
-                  PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/mac)
-    if(NOT toupcam)
-      message(FATAL_ERROR "Cannot find the toupcam drivers")
-    endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
-    add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
-    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
-  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+  add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
 
 #  libDC does not seem to be used by anything, disabling it (2019/11/20 - remove in next release)
 if(0)

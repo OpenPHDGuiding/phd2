@@ -93,15 +93,6 @@
 #  define SBIG
 # endif
 # define SIMULATOR
-# ifdef HAVE_MEADE_DSI_CAMERA
-#  define MEADE_DSI_CAMERA
-# endif
-# ifdef HAVE_SKYRAIDER_CAMERA
-#  define SKYRAIDER_CAMERA
-# endif
-# ifdef HAVE_STARFISH_CAMERA
-#  define STARFISH_CAMERA
-# endif
 # ifdef HAVE_SXV_CAMERA
 #  define SXV
 # endif
