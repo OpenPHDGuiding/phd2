@@ -42,30 +42,13 @@ shift $((OPTIND-1))
 set -x
 set -e
 
-os=$(sysctl -n kern.osproductversion 2>/dev/null | sed -e 's/\./ /g' | awk '{printf "%03d%03d\n", $1, $2}')
+os=$(IFS=. read -r a b _ < <(sysctl -n kern.osproductversion); printf "%03d" "$a" "$b")
 
-mojave=010014
 sonoma=014000
 
-case "$1" in
-  "")
-      # auto-detect: 64-bits on 10.14 mojave or later
-      if [[ $os < $mojave ]]; then
-          bits=32
-      else
-          bits=64
-      fi
-      ;;
-  32) bits=32 ;;
-  64) bits=64 ;;
-  *)  echo "usage?" >&2 ; exit 1 ;;
-esac
-
 suffix=
-cmake_extra_args=()
 if [[ $os > $sonoma || $os == $sonoma ]]; then
     suffix=-sonoma+
-    cmake_extra_args+=(-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0)
 fi
 
 D=$(cd $(dirname "$0"); /bin/pwd)
@@ -109,15 +92,12 @@ V=$(perl -ne '
 
 if [[ $do_clean ]]; then
     rm -rf tmp
-    ./run_cmake-osx $bits "${cmake_extra_args[@]}"
+    ./run_cmake-osx
 fi
 
 cd tmp
 
-case $bits in
-    32) ZIPFILE=PHD2-${V}-OSX.zip ;;
-    64) ZIPFILE=PHD2-${V}-OSX-64${suffix}.zip ;;
-esac
+ZIPFILE=PHD2-${V}-OSX-64${suffix}.zip ;;
 
 if [[ $do_build ]]; then
     rm -rf PHD2.app
