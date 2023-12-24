@@ -1533,7 +1533,7 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     static int frame = 0;
     static int step = 1;
     char fname[256];
-    sprintf(fname,"/Users/stark/dev/PHD/simimg/DriftSim_%d.fit",frame);
+    snprintf(fname, sizeof(fname), "/Users/stark/dev/PHD/simimg/DriftSim_%d.fit", frame);
     if (!PHD_fits_open_diskfile(&fptr, fname, READONLY, &status))
     {
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
