@@ -28,16 +28,17 @@
 
 # File created by Raffi Enficiaud
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.24)
 
 # this must come before any enable_language() or project()
 if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OSX deployment version")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-  set(CMAKE_CXX_STANDARD 11)
 endif()
 
 enable_language(C CXX)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
@@ -45,6 +46,7 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0043 NEW)
     endif()
 endif()
+cmake_policy(SET CMP0135 NEW)
 
 
 # root directory of the project
