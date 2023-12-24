@@ -45,6 +45,7 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0043 NEW)
     endif()
 endif()
+cmake_policy(SET CMP0135 NEW)
 
 
 # root directory of the project

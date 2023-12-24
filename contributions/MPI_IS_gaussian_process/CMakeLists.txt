@@ -82,9 +82,6 @@ set_property(TARGET GPGuider PROPERTY FOLDER "Contributions/")
 if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     set(gtest_link_debug GTest::GTest)
     set(gtest_link_optimized GTest::GTest)
-elseif(WIN32)
-    set(gtest_link_debug ${VCPKG_DEBUG_LIB}/gtest.lib)
-    set(gtest_link_optimized ${VCPKG_RELEASE_LIB}/gtest.lib)
 else()
     set(gtest_link_debug gtest)
     set(gtest_link_optimized gtest)
@@ -99,7 +96,7 @@ target_link_libraries(
   debug ${gtest_link_debug}
   optimized ${gtest_link_optimized}
 )
-target_include_directories(GaussianProcessTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS})
+target_include_directories(GaussianProcessTest  PRIVATE ${gaussian_process_root_dir}/tools)
 set_property(TARGET GaussianProcessTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GaussianProcessTest COMMAND GaussianProcessTest)
 
@@ -111,7 +108,7 @@ target_link_libraries(
   debug ${gtest_link_debug}
   optimized ${gtest_link_optimized}
 )
-target_include_directories(MathToolboxTest  PRIVATE ${gaussian_process_root_dir}/src ${GTEST_HEADERS} ${EIGEN_SRC})
+target_include_directories(MathToolboxTest  PRIVATE ${gaussian_process_root_dir}/src ${EIGEN_SRC})
 set_property(TARGET MathToolboxTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME MathToolboxTest COMMAND MathToolboxTest)
 
@@ -124,7 +121,7 @@ target_link_libraries(
   optimized ${gtest_link_optimized}
   GPGuider
 )
-target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
+target_include_directories(GPGuiderTest  PRIVATE ${gaussian_process_root_dir}/tools ${phd_src_dir})
 set_property(TARGET GPGuiderTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GPGuiderTest COMMAND GPGuiderTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
@@ -137,7 +134,7 @@ target_link_libraries(
   optimized ${gtest_link_optimized}
   GPGuider
 )
-target_include_directories(GuidePerformanceTest  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
+target_include_directories(GuidePerformanceTest  PRIVATE ${gaussian_process_root_dir}/tools ${phd_src_dir})
 set_property(TARGET GuidePerformanceTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(NAME GuidePerformanceTest COMMAND GuidePerformanceTest WORKING_DIRECTORY ${gaussian_process_root_dir}/tests/gaussian_process/)
 
@@ -150,5 +147,5 @@ target_link_libraries(
   optimized ${gtest_link_optimized}
   GPGuider
 )
-target_include_directories(GuidePerformanceEval  PRIVATE ${gaussian_process_root_dir}/tools ${GTEST_HEADERS} ${phd_src_dir})
+target_include_directories(GuidePerformanceEval  PRIVATE ${gaussian_process_root_dir}/tools ${phd_src_dir})
 set_property(TARGET GuidePerformanceEval PROPERTY FOLDER "Unit tests/Contribution")

@@ -77,8 +77,6 @@ if(WIN32)
     COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:x86-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg curl[ssl]"
     COMMAND vcpkg install --binarysource=default --no-print-usage curl[ssl]:x86-windows
-    COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg gtest"
-    COMMAND vcpkg install --binarysource=default --no-print-usage gtest:x86-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg eigen3"
     COMMAND vcpkg install --binarysource=default --no-print-usage eigen3:x86-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg opencv2"
@@ -517,34 +515,16 @@ endif()
 
 #############################################
 # Google test, easily built
+# https://github.com/google/googletest/tree/main/googletest#incorporating-into-an-existing-cmake-project
 
-if(WIN32)
-  set(GTEST_HEADERS ${VCPKG_INCLUDE})
-elseif(USE_SYSTEM_GTEST)
-  find_package(GTest REQUIRED)
-  set(GTEST_HEADERS ${GTEST_INCLUDE_DIRS})
-  message(STATUS "Using system's Gtest.")
-else(USE_SYSTEM_GTEST)
-  set(GTEST gtest-1.7.0)
-  set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
-  if(NOT EXISTS ${gtest_root})
-    # unzip the dependency
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
-      WORKING_DIRECTORY ${thirdparties_deflate_directory})
-  endif()
-
-  if(MSVC)
-    # do not replace default things, basically this line avoids gtest to replace
-    # default compilation options (which ends up with messing the link options) for the CRT
-    # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
-    set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
-  endif()
-  set(GTEST_HEADERS ${gtest_root}/include)
-  add_subdirectory(${gtest_root} tmp_cmakegtest)
-  set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
-  set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
-endif()
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 
 #############################################
