@@ -102,28 +102,24 @@ Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
     char buf[16];
     switch (direction) {
         case NORTH:
-            sprintf(buf,":Mg0%4d#",duration);
+            snprintf(buf, sizeof(buf), ":Mg0%4d#", duration);
             break;
         case SOUTH:
-            sprintf(buf,":Mg1%4d#",duration);
+            snprintf(buf, sizeof(buf), ":Mg1%4d#", duration);
             break;
         case EAST:
-            sprintf(buf,":Mg2%4d#",duration);
+            snprintf(buf, sizeof(buf), ":Mg2%4d#", duration);
             break;
         case WEST:
-            sprintf(buf,":Mg3%4d#",duration);
+            snprintf(buf, sizeof(buf), ":Mg3%4d#", duration);
             break;
         case NONE:
             return MOVE_OK;
     }
-//  wxMessageBox(wxString::Format("Sending -%s-",buf));
     int num_bytes = write(portFID,buf,strlen(buf));
     if (num_bytes == -1) {
         pFrame->Alert(wxString::Format(_("Error writing to GC USB ST4: %s(%d)"),_U(strerror(errno)),errno));
-//      close(portFID);
-//      return false;
     }
-//  wxMessageBox(wxString::Format("send %d vs %d",strlen(buf),num_bytes));
     WorkerThread::MilliSleep(duration + 50);
     return MOVE_OK;
 }

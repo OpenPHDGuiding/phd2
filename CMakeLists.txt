@@ -866,7 +866,6 @@ if(APPLE)
     foreach(current_file IN LISTS current_translations current_zip)
       get_filename_component(message_file_name ${current_file} NAME)
       get_filename_component(message_file_ext ${current_file} EXT)
-      message(STATUS "${current_file} // ${message_file_ext}")
       if("${message_file_ext}" STREQUAL ".mo" OR "${message_file_ext}" STREQUAL ".zip")
         add_custom_command(
           TARGET phd2
@@ -874,7 +873,6 @@ if(APPLE)
           COMMAND "${CMAKE_COMMAND}" -E make_directory $<TARGET_FILE_DIR:phd2>/../${destination}
           COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${current_file} $<TARGET_FILE_DIR:phd2>/../${destination}/${message_file_name}
         )
-        message(STATUS "${current_file} // $<TARGET_FILE_DIR:phd2>/../${destination}/${message_file_name}")
       endif()
     endforeach()
   endforeach()

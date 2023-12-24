@@ -621,7 +621,8 @@ void IndiGui::SetButtonEvent(wxCommandEvent& event)
                 if (tvp->p != IP_RO)
                 {
                     wxTextCtrl *entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(tvp->tp[i].name)]);
-                    sprintf(tvp->tp[i].text, "%s", entry->GetLineText(0).mb_str().data());
+                    size_t buf_size = strlen(tvp->tp[i].text) + 1;
+                    snprintf(tvp->tp[i].text, buf_size, "%s", entry->GetLineText(0).mb_str().data());
                 }
             }
             sendNewText(tvp);
