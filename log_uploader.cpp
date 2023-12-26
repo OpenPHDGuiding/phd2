@@ -1162,12 +1162,13 @@ bool BgUpload::Entry()
     }
 
     // log the transfer info
-    double speed_upload, total_time;
-    curl_easy_getinfo(m_curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
+    curl_off_t speed_upload;
+    double total_time;
+    curl_easy_getinfo(m_curl, CURLINFO_SPEED_UPLOAD_T, &speed_upload);
     curl_easy_getinfo(m_curl, CURLINFO_TOTAL_TIME, &total_time);
 
-    Debug.Write(wxString::Format("Upload log: %.3f bytes/sec, %.3f seconds elapsed\n",
-        speed_upload, total_time));
+    Debug.Write(wxString::Format("Upload log: %ld bytes/sec, %.3f seconds elapsed\n",
+        (long) speed_upload, total_time));
 
     return true;
 }
