@@ -532,7 +532,7 @@ FetchContent_MakeAvailable(googletest)
 # The usage is a bit different on all the platforms. For having version >= 3.0, a version of cmake >= 3.0 should be used on Windows (on Linux/OSX it works properly this way).
 if(WIN32)
   # wxWidgets
-  set(wxWidgets_CONFIGURATION msw)
+  set(wxWidgets_CONFIGURATION msw CACHE STRING "Set wxWidgets configuration")
 
   if(NOT wxWidgets_PREFIX_DIRECTORY OR NOT EXISTS ${wxWidgets_PREFIX_DIRECTORY})
     message(FATAL_ERROR "The variable wxWidgets_PREFIX_DIRECTORY should be defined and should point to a valid wxWindows installation path. See the open-phd-guiding wiki for more information.")
