@@ -1,5 +1,34 @@
 #!/usr/bin/env bash
 
+check_library_dependencies () (
+    # Sanity check to make sure the final executable does not contain
+    # any unwanted dylib dependencies.
+    #
+    # If a third party vendor library has an unexpected library load
+    # path, or if the build somehow introduces a homebrew or macports
+    # dylib dependency, the executable will run in the build
+    # environment but not on the end user's machine.
+    #
+    # See calls to install_name_tool in CMakeLists.txt for how we
+    # manage the camera vendor dylib paths.
+
+    set -o pipefail
+    grep_output=$(
+        otool -L PHD2.app/Contents/MacOS/PHD2 | \
+        grep -v \
+             -e 'PHD2:$' \
+             -e '@executable_path/\.\./Frameworks/' \
+             -e '/usr/lib/.*\.dylib' \
+             -e /System/Library/Frameworks/ \
+             || :
+    )
+    if [[ $grep_output ]]; then
+        echo "Unexpected dylib dependency!" >&2
+        echo "$grep_output" >&2
+        exit 1
+    fi
+)
+
 do_repocheck=1
 do_build=1
 do_clean=1
@@ -97,7 +126,7 @@ fi
 
 cd tmp
 
-ZIPFILE=PHD2-${V}-OSX-64${suffix}.zip ;;
+ZIPFILE=PHD2-${V}-OSX-64${suffix}.zip
 
 if [[ $do_build ]]; then
     rm -rf PHD2.app
@@ -113,6 +142,8 @@ if [[ $do_build ]]; then
     make "${translation_targets[@]}"
     cores=$(sysctl -n hw.logicalcpu)
     make -j$cores
+
+    check_library_dependencies
 
     zip -r "$ZIPFILE" PHD2.app
     chmod 644 "$ZIPFILE"
