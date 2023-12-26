@@ -45,7 +45,7 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
     
     if ((kernResult = IOMainPort(0, &masterPort)) != KERN_SUCCESS)
     {
-        printf("IOMasterPort returned %d\n", kernResult);
+        printf("IOMainPort returned %d\n", kernResult);
         return kernResult;
     }
     

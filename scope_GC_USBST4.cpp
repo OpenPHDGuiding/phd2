@@ -56,9 +56,9 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
     kern_return_t   kernResult;
     mach_port_t     masterPort;
     CFMutableDictionaryRef  classesToMatch;
-    if ((kernResult = IOMasterPort(0, &masterPort)) != KERN_SUCCESS)
+    if ((kernResult = IOMainPort(0, &masterPort)) != KERN_SUCCESS)
     {
-        printf("IOMasterPort returned %d\n", kernResult);
+        printf("IOMainPort returned %d\n", kernResult);
         return kernResult;
     }
     if ((classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue)) == NULL)
