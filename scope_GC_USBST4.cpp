@@ -49,6 +49,10 @@
 
 #include <IOKit/serial/IOSerialKeys.h>
 
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 120000
+# define IOMainPort IOMasterPort
+#endif
+
 #define IOSSDATALAT    _IOW('T', 0, unsigned long)
 
 static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
