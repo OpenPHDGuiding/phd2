@@ -517,14 +517,19 @@ endif()
 # Google test, easily built
 # https://github.com/google/googletest/tree/main/googletest#incorporating-into-an-existing-cmake-project
 
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+if(USE_SYSTEM_GTEST)
+  find_package(GTest REQUIRED)
+  message(STATUS "Using system's gtest")
+else()
+  include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+  )
+  # For Windows: Prevent overriding the parent project's compiler/linker settings
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+endif()
 
 
 #############################################

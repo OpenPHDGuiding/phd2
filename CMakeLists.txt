@@ -28,7 +28,14 @@
 
 # File created by Raffi Enficiaud
 
-cmake_minimum_required(VERSION 3.24)
+if(USE_SYSTEM_GTEST)
+  cmake_minimum_required(VERSION 3.16)
+else()
+  # If the system gtest is not available (especially Windows and Mac
+  # builds) gtest is incorporated using FetchContent which requires
+  # cmake 3.24
+  cmake_minimum_required(VERSION 3.24)
+endif()
 
 # this must come before any enable_language() or project()
 if(APPLE)
@@ -46,7 +53,9 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0043 NEW)
     endif()
 endif()
-cmake_policy(SET CMP0135 NEW)
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 
 # root directory of the project
@@ -768,7 +777,9 @@ else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
 
-add_dependencies(phd2 ${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
+if(PHD_EXTERNAL_PROJECT_DEPENDENCIES)
+  add_dependencies(phd2 ${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
+endif()
 
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
