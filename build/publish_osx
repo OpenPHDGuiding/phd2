@@ -32,12 +32,9 @@ check_library_dependencies () (
 do_repocheck=1
 do_build=1
 do_clean=1
-do_upload=
-do_release=
-series=
 branch=
 
-while getopts "b:Cdnrsu" o; do
+while getopts "b:Cns" o; do
     case "${o}" in
         b)
             branch=$OPTARG
@@ -49,20 +46,8 @@ while getopts "b:Cdnrsu" o; do
             do_build=
             do_clean=
             ;;
-        u)
-            do_upload=1
-            ;;
-        r)
-            do_build=
-            do_clean=
-            do_upload=
-            do_release=1
-            ;;
         s)
             do_repocheck=
-            ;;
-        d)
-            series="dev"
             ;;
     esac
 done
@@ -147,30 +132,4 @@ if [[ $do_build ]]; then
 
     zip -r "$ZIPFILE" PHD2.app
     chmod 644 "$ZIPFILE"
-fi
-
-SCPFILES=()
-
-if [[ $do_upload ]]; then
-    if [[ ! -e "$ZIPFILE" ]]; then
-        echo "$ZIPFILE was not built" >&2
-        exit 1
-    fi
-    SCPFILES+=("$ZIPFILE")
-fi
-
-if [[ $do_release ]]; then
-    if [[ ! $series ]]; then
-        case $V in
-            *dev*) series=dev ;;
-            *) series=main ;;
-        esac
-    fi
-    R="release-${series}-osx.txt"
-    echo "${V}" > "$R"
-    SCPFILES+=("$R")
-fi
-
-if (( ${#SCPFILES[@]} )); then
-    scp -p "${SCPFILES[@]}" "$SCPDST"/
 fi

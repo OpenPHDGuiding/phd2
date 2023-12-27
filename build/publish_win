@@ -6,7 +6,6 @@ usage () {
     cat <<EOF
 usage: publish_win [OPTIONS]
 Options:
-  -u      upload installer to web site
   -i      run the installer on the local machine
   -B      incremental build (default: full rebuild)
   -b branch  branch to build (default: current branch)
@@ -22,17 +21,11 @@ EOF
 do_versioncheck=1
 do_build=1
 do_rebuild=1
-do_upload=
 do_install=
-do_release=
-series=
 branch=
 
-while getopts "uiBb:rdsSh" o; do
+while getopts "iBb:sSh" o; do
     case "${o}" in
-        u)
-            do_upload=1
-            ;;
         i)
             do_install=1
             ;;
@@ -42,22 +35,12 @@ while getopts "uiBb:rdsSh" o; do
         b)
             branch=$OPTARG
             ;;
-        r)
-            do_release=1
-            do_build=
-            do_upload=
-            do_install=
-            ;;
-        d)
-            series="dev"
-            ;;
         s)
             do_versioncheck=
             ;;
         S)
             do_versioncheck=1
             do_build=
-            do_upload=
             do_install=
             ;;
         h)
@@ -146,23 +129,4 @@ fi
 
 if [[ $do_install ]]; then
     ./tmp/${F}.exe
-fi
-
-if [[ $do_upload ]]; then
-    scp ./tmp/${F}.exe $SCPDST/phd2-${V}-installer.exe
-    ssh $WWW_HOST chmod o+rX $WWW_DIR/phd2-${V}-installer.exe
-fi
-
-if [[ $do_release ]]; then
-    if [[ ! $series ]]; then
-        case $V in
-            *dev*) series="dev" ;;
-            *) series="main" ;;
-        esac
-    fi
-    sha1=$(sha1sum ./tmp/${F}.exe | cut -d' ' -f 1)
-    R="./tmp/release-${series}-win.txt"
-    echo "${V} https://openphdguiding.org/phd2-${V}-installer.exe $sha1" > $R
-    scp $R $SCPDST/
-    ssh $WWW_HOST "chmod o+r $WWW_DIR/release-${series}-win.txt"
 fi
