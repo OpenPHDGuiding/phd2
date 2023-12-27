@@ -79,13 +79,8 @@ set_property(TARGET GPGuider PROPERTY FOLDER "Contributions/")
 # Unit tests
 #
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-    set(gtest_link_debug GTest::GTest)
-    set(gtest_link_optimized GTest::GTest)
-else()
-    set(gtest_link_debug gtest)
-    set(gtest_link_optimized gtest)
-endif()
+set(gtest_link_debug GTest::gtest)
+set(gtest_link_optimized GTest::gtest)
 
 
 # Test for the GP
