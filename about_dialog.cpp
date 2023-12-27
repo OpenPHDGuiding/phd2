@@ -176,7 +176,7 @@ AboutDialog::AboutDialog()
         "<tr>"
         "<td>Pawe&#322; Soja</td>"
         "<td>ToupTek Photonics Co., Ltd</td>"
-        "<td></td>"
+        "<td>Jarno Paananen</td>"
         "<td></td>"
         "<td></td>"
         "</tr>"
