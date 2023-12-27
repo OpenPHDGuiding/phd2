@@ -35,14 +35,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-21 03:59+0000\n"
+"POT-Creation-Date: 2023-12-26 20:37-0500\n"
 "PO-Revision-Date: 2016-04-15 21:31+0100\n"
 "Last-Translator: Giorgio Mazzacurati <pkorama@gmail.com>\n"
 "Language-Team: GrAG <info@grag.org>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
 "X-Generator: Poedit 1.7.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -303,7 +303,7 @@ msgid "Measurement halted"
 msgstr "Misurazione bloccata"
 
 #: calibration_assistant.cpp:146 calstep_dialog.cpp:196
-#: camcal_import_dialog.cpp:47 camera.cpp:913 configdialog.cpp:61
+#: camcal_import_dialog.cpp:47 camera.cpp:885 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:52 gear_simulator.cpp:1655
 #: guide_algorithm_gaussian_process.cpp:179 myframe.cpp:3139
 #: Refine_DefMap.cpp:59 starcross_test.cpp:52
@@ -965,10 +965,10 @@ msgid ""
 "guiding."
 msgstr ""
 "La velocità di guida tra AR e Dec differisce di un valore imprevisto. Per la "
-"tua declinazione di %0.0f gradi, la velocità di AR dovrebbe essere di circa %"
-"0.0f%% la velocità in Dec, ma la tua velocità di AR è di %0.0f%% quella Dec. "
-"Questo in genere è causato da una calibrazione degli assi non corretta e "
-"potrebbe determinare una guida poco accurata."
+"tua declinazione di %0.0f gradi, la velocità di AR dovrebbe essere di circa "
+"%0.0f%% la velocità in Dec, ma la tua velocità di AR è di %0.0f%% quella "
+"Dec. Questo in genere è causato da una calibrazione degli assi non corretta "
+"e potrebbe determinare una guida poco accurata."
 
 #: calreview_dialog.cpp:644
 msgid "Explanation"
@@ -1133,7 +1133,7 @@ msgstr "Calibrazione in declinazione, gradi"
 msgid "Approximate declination where you will do calibration"
 msgstr "Declinazione approssimativa dove compiere la calibrazione"
 
-#: calstep_dialog.cpp:162 camera.cpp:917 darks_dialog.cpp:202
+#: calstep_dialog.cpp:162 camera.cpp:889 darks_dialog.cpp:202
 #: gear_simulator.cpp:1842 mount.cpp:270 mount.cpp:322 Refine_DefMap.cpp:175
 #: starcross_test.cpp:148 testguide.cpp:101
 msgid "Reset"
@@ -1202,8 +1202,8 @@ msgstr "Impossibile aprire la camera Altair"
 msgid "Failed to get camera resolution for Altair Camera."
 msgstr "Impossibile recuperare la risoluzione della camera Altair."
 
-#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288
-#: cam_indi.cpp:883 cam_indi.cpp:917 cam_opencv.cpp:145 gear_simulator.cpp:710
+#: cam_ascom.cpp:366 cam_ascom.cpp:389 cam_firewire_IC.cpp:288 cam_indi.cpp:888
+#: cam_indi.cpp:922 cam_opencv.cpp:145 gear_simulator.cpp:710
 #: gear_simulator.cpp:1301 gear_simulator.cpp:1376 gear_simulator.cpp:1557
 #: image_math.cpp:85 image_math.cpp:547
 msgid "Memory allocation error"
@@ -1303,6 +1303,265 @@ msgstr ""
 msgid "Couldn't start exposure - aborting"
 msgstr "Impossibile far partire l'esposizione - operazione annullata"
 
+#: camcal_import_dialog.cpp:57
+#, c-format
+msgid "Import Darks to Profile %s"
+msgstr "Importa i dark nel profilo %s"
+
+#: camcal_import_dialog.cpp:63 darks_dialog.cpp:105
+msgid "Dark Library"
+msgstr "Libreria dark"
+
+#: camcal_import_dialog.cpp:65
+msgid "Choose the profile with the dark library you want to use:"
+msgstr "Scegli il profilo con la libreria dark che vuoi usare:"
+
+#: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
+#: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
+#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:246
+#: camera.cpp:407 gear_dialog.cpp:440 gear_dialog.cpp:444 gear_dialog.cpp:448
+#: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
+#: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
+#: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
+#: mount.cpp:872 myframe.cpp:3001 profile_wizard.cpp:368 profile_wizard.cpp:369
+#: profile_wizard.cpp:370 profile_wizard.cpp:584 profile_wizard.cpp:589
+#: profile_wizard.cpp:617 profile_wizard.cpp:789 profile_wizard.cpp:963
+#: profile_wizard.cpp:978 profile_wizard.cpp:1009 profile_wizard.cpp:1014
+#: profile_wizard.cpp:1039 profile_wizard.cpp:1053 rotator.cpp:49
+#: rotator.cpp:84 scope.cpp:332 scope.cpp:374 scope.cpp:417 statswindow.cpp:262
+#: stepguider.cpp:105 stepguider.cpp:126
+msgid "None"
+msgstr "Nessuno"
+
+#: camcal_import_dialog.cpp:76
+msgid "Darks Profiles"
+msgstr "Profili dei dark"
+
+#: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
+msgid "Import from profile"
+msgstr "Importa dal profilo"
+
+#: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
+msgid "Camera in profile"
+msgstr "Camera del profilo"
+
+#: camcal_import_dialog.cpp:85
+msgid "There are no compatible dark libraries available"
+msgstr "Non è disponibile una libreria dei dark compatibile"
+
+#: camcal_import_dialog.cpp:89
+msgid "Bad-pixel Map"
+msgstr "Map dei pixel difettosi"
+
+#: camcal_import_dialog.cpp:91
+msgid "Choose the profile with the bad-pixel map you want to use:"
+msgstr "Scegli il profilo con la mappa dei pixel difettosi che vuoi usare:"
+
+#: camcal_import_dialog.cpp:101
+msgid "Bad-pix Map Profiles"
+msgstr "Profili della mappa dei pixel errati"
+
+#: camcal_import_dialog.cpp:111
+msgid "There are no compatible bad-pixel maps available"
+msgstr "Non è disponibile una mappa dei pixel difettosi compatibile"
+
+#: camcal_import_dialog.cpp:119 gear_simulator.cpp:1848
+msgid "OK"
+msgstr "OK"
+
+#: camcal_import_dialog.cpp:216
+msgid "Bad-pixel map could not be imported because of errors in file/copy"
+msgstr ""
+"La mappa dei pixel difettosi non può essere importata a causa di un errore "
+"nel file"
+
+#: camcal_import_dialog.cpp:235
+msgid "Dark library could not be imported because of errors in file/copy"
+msgstr ""
+"la libreria dei dark non può essere importata a causa di un errore nel file"
+
+#: camera.cpp:595
+msgid "Select your camera"
+msgstr "Seleziona la tua camera"
+
+#: camera.cpp:791
+msgid "Camera Settings"
+msgstr "Impostazioni camera"
+
+#: camera.cpp:805
+msgid "General Properties"
+msgstr "Proprietà generali"
+
+#: camera.cpp:818
+msgid "Camera-Specific Properties"
+msgstr ""
+
+#: camera.cpp:840
+msgid "No camera specified"
+msgstr "Non è stata indicata una camera"
+
+#: camera.cpp:851
+msgid ""
+"Camera is not connected.  Property controls may change if you connect to it "
+"first."
+msgstr ""
+
+#: camera.cpp:875
+msgid "Use Subframes"
+msgstr "Utilizza subframe"
+
+#: camera.cpp:876
+msgid ""
+"Check to only download subframes (ROIs). Sub-frame size is equal to search "
+"region size."
+msgstr ""
+
+#: camera.cpp:880
+msgid ""
+"Guide camera un-binned pixel size in microns. Used with the guide telescope "
+"focal length to display guiding error in arc-seconds."
+msgstr ""
+
+#: camera.cpp:881
+msgid "Pixel size"
+msgstr "Grandezza pixel"
+
+#: camera.cpp:885
+msgid "Camera gain"
+msgstr "Guadagno (gain) della camera"
+
+#: camera.cpp:888
+#, no-c-format
+msgid ""
+"Camera gain, default = 95%, lower if you experience noise or wish to guide "
+"on a very bright star. Not available on all cameras."
+msgstr ""
+
+#: camera.cpp:890
+msgid ""
+"Reset gain to camera's default value (disabled when camera is not connected)"
+msgstr ""
+
+#: camera.cpp:908
+msgid "Binning"
+msgstr "Binning"
+
+#: camera.cpp:908
+msgid "Camera pixel binning"
+msgstr "Pixel binning della camera"
+
+#: camera.cpp:914
+msgid "Delay"
+msgstr "Ritardo"
+
+#: camera.cpp:914
+msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
+msgstr "Ritardo di lettura LE (ms), regolala se ci sono perdite di immagini"
+
+#: camera.cpp:929 cam_LESerialWebcam.cpp:299
+msgid "LE Port"
+msgstr "Porta LE"
+
+#: camera.cpp:929
+msgid "Port number for long-exposure control"
+msgstr "Numero di porta per il controllo delle espozioni lunghe"
+
+#: camera.cpp:934
+msgid "Cooler On"
+msgstr ""
+
+#: camera.cpp:935
+msgid "Turn camera cooler on or off"
+msgstr ""
+
+#: camera.cpp:938
+msgid "Set Temperature"
+msgstr ""
+
+#: camera.cpp:938
+msgid "Cooler setpoint temperature"
+msgstr ""
+
+#: camera.cpp:946
+msgid ""
+"ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
+"for 8-bit cameras."
+msgstr ""
+
+#: camera.cpp:947
+msgid "Saturation by Max-ADU value:"
+msgstr ""
+
+#: camera.cpp:948
+msgid ""
+"Identify star saturation based on camera maximum-ADU value (recommended)"
+msgstr ""
+
+#: camera.cpp:955
+msgid "Saturation via star-profile"
+msgstr ""
+
+#: camera.cpp:956
+msgid ""
+"Identify star saturation based on flat-topped profile, regardless of "
+"brightness"
+msgstr ""
+
+#: camera.cpp:966
+msgid ""
+"Disconnect nonresponsive          \n"
+"camera after (seconds)"
+msgstr ""
+
+#: camera.cpp:967
+#, c-format
+msgid ""
+"The camera will be disconnected if it fails to respond for this long. The "
+"default value, %d seconds, should be appropriate for most cameras."
+msgstr ""
+"La camera si disconnetterà se non riesce a connettersi per questo tempo. Il "
+"valore predefinito , %d secondi, dovrebbe essere adeguato per la maggior "
+"parte delle camere."
+
+#: camera.cpp:1300
+msgid "unspecified"
+msgstr ""
+
+#: camera.cpp:1302
+#, c-format
+msgid "%0.1f um"
+msgstr ""
+
+#: camera.cpp:1443
+msgid "Memory allocation error during capture"
+msgstr "Errore di allocazione di memoria durante la cattura delle immagini"
+
+#: camera.cpp:1451
+#, c-format
+msgid ""
+"After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
+"been disconnected to prevent other problems. Refer to Trouble-shooting "
+"section of Help."
+msgstr ""
+
+#: camera.cpp:1456
+msgid ""
+"The camera has not completed an exposure in at least 15 seconds, so it has "
+"been disconnected to prevent other problems. Refer to Trouble-shooting "
+"section of Help."
+msgstr ""
+
+#: camera.cpp:1477
+msgid "PHD will make several attempts to re-connect the camera."
+msgstr "PHD proverà più volte a riconnettersi alla camera."
+
+#: camera.cpp:1482
+msgid ""
+"The camera has been disconnected. Please resolve the problem and re-connect "
+"the camera."
+msgstr ""
+"La camera è stata disconnessa. Risolvi il problema e riconnetti la camera."
+
 #: cam_firewire_IC.cpp:95
 msgid "Cannot initialize ImageCapture library"
 msgstr ""
@@ -1401,72 +1660,67 @@ msgstr ""
 msgid "Cannot get a frame from the queue"
 msgstr "Impossibile recuperare il frame dalla coda"
 
-#: cam_indi.cpp:338 cam_indi.cpp:744
+#: cam_indi.cpp:350 cam_indi.cpp:749
 msgid "INDI camera disconnected"
 msgstr ""
 
-#: cam_indi.cpp:673
+#: cam_indi.cpp:678
 msgid "connection timed-out"
 msgstr ""
 
-#: cam_indi.cpp:693 scope_indi.cpp:345 scope_indi.cpp:366
+#: cam_indi.cpp:698 scope_indi.cpp:337 scope_indi.cpp:358
 msgid "Connection timed-out"
 msgstr ""
 
-#: cam_indi.cpp:718
-#, c-format
-msgid "Cannot connect to camera %s: %s"
-msgstr ""
-
-#: cam_indi.cpp:738 scope_indi.cpp:411
+#: cam_indi.cpp:743 scope_indi.cpp:375
 msgid "INDI server disconnected"
 msgstr ""
 
-#: cam_indi.cpp:776
+#: cam_indi.cpp:781
 msgid "INDI Camera Selection"
 msgstr ""
 
-#: cam_indi.cpp:838 cam_indi.cpp:864 gear_simulator.cpp:698
+#: cam_indi.cpp:843 cam_indi.cpp:869 gear_simulator.cpp:698
 msgid "Unsupported type or read error loading FITS file"
 msgstr "Errore nell'apertura del file FITS o tipo non supportato"
 
-#: cam_indi.cpp:845 gear_simulator.cpp:687 gear_simulator.cpp:1540
+#: cam_indi.cpp:850 gear_simulator.cpp:687 gear_simulator.cpp:1540
 msgid "FITS file is not of an image"
 msgstr "Il file FITS non è una immagine"
 
-#: cam_indi.cpp:895 cam_indi.cpp:925 gear_simulator.cpp:728
+#: cam_indi.cpp:900 cam_indi.cpp:930 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
 msgid "Error reading data"
 msgstr "Errore durante la lettura dei dati"
 
-#: cam_indi.cpp:1085
+#: cam_indi.cpp:1090
 #, c-format
 msgid "Camera  %s, exposure error. Trying to use streaming instead."
 msgstr ""
 
-#: cam_indi.cpp:1130
+#: cam_indi.cpp:1135
 #, c-format
 msgid "Unknown image format: %s"
 msgstr ""
 
-#: cam_indi.cpp:1220 cam_wdm.cpp:483
+#: cam_indi.cpp:1225 cam_wdm.cpp:483
 #, c-format
 msgid "%d frames"
 msgstr ""
 
-#: cam_indi.cpp:1232
+#: cam_indi.cpp:1237
 msgid ""
 "Camera has no VIDEO_STREAM property, please uncheck the option: Camera does "
 "not support exposure time."
 msgstr ""
 
-#: cam_indi.cpp:1234
+#: cam_indi.cpp:1239
 msgid ""
 "Camera has no CCD_EXPOSURE property, please uncheck the option: Camera does "
 "not support stream."
 msgstr ""
 
-#: cam_indi.cpp:1236
+#: cam_indi.cpp:1241
 msgid "Camera has no CCD_EXPOSURE or VIDEO_STREAM property"
 msgstr ""
 
@@ -1495,11 +1749,11 @@ msgstr "Errore nell'impostazione del guadagno (Gain)"
 #: scope_ascom.cpp:232 scope_ascom.cpp:248 scope_ascom.cpp:255
 #: scope_ascom.cpp:343 scope_ascom.cpp:351 scope_eqmac.cpp:135
 #: scope_eqmac.cpp:139 scope_equinox.cpp:138 scope_equinox.cpp:142
-#: scope_GC_USBST4.cpp:142 scope_GC_USBST4.cpp:160 scope_GC_USBST4.cpp:173
-#: scope_GC_USBST4.cpp:183 scope_GC_USBST4.cpp:204 scope_GC_USBST4.cpp:232
-#: scope_GC_USBST4.cpp:242 stepguider_sbigao_indi.cpp:186
-#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191
-#: stepguider_sxao_indi.cpp:202 stepguider_sxao_indi.cpp:213
+#: scope_GC_USBST4.cpp:138 scope_GC_USBST4.cpp:156 scope_GC_USBST4.cpp:169
+#: scope_GC_USBST4.cpp:179 scope_GC_USBST4.cpp:200 scope_GC_USBST4.cpp:228
+#: scope_GC_USBST4.cpp:238 stepguider_sbigao_indi.cpp:182
+#: stepguider_sxao.cpp:152 stepguider_sxao.cpp:191 stepguider_sxao_indi.cpp:200
+#: stepguider_sxao_indi.cpp:216
 msgid "Error"
 msgstr "Errore"
 
@@ -1514,10 +1768,6 @@ msgstr "Impossibile aprire il dispositivo LXUSB"
 #: cam_LESerialWebcam.cpp:294
 msgid "Serial LE Webcam"
 msgstr "Wecam LE seriale"
-
-#: cam_LESerialWebcam.cpp:299 camera.cpp:961
-msgid "LE Port"
-msgstr "Porta LE"
 
 #: cam_LESerialWebcam.cpp:314 stepguider_sxao.cpp:191
 msgid "No serial ports found"
@@ -1692,31 +1942,6 @@ msgstr ""
 msgid "QHY get frame failed"
 msgstr ""
 
-#: cam_SAC42.cpp:71
-msgid "Error connecting to SAC4-2"
-msgstr ""
-
-#: cam_SAC42.cpp:134
-msgid "Error capturing data from camera"
-msgstr "Errore nel recuperare dati dalla camera"
-
-#: cam_SACGuide.cpp:82 cam_StarShootDSCI.cpp:82
-msgid "Didn't find openUSB in DLL"
-msgstr ""
-
-#: cam_SACGuide.cpp:93 cam_SACGuide.cpp:98 cam_SACGuide.cpp:103
-#: cam_SACGuide.cpp:108 cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101
-#: cam_StarShootDSCI.cpp:107 cam_StarShootDSCI.cpp:113
-#: cam_StarShootDSCI.cpp:118 cam_StarShootDSCI.cpp:124
-#: cam_StarShootDSCI.cpp:129 cam_StarShootDSCI.cpp:134
-#, c-format
-msgid "Didn't find %s in DLL"
-msgstr ""
-
-#: cam_SACGuide.cpp:118
-msgid "Can't find cmosDLL.dll"
-msgstr ""
-
 #: cam_sbig.cpp:149
 msgid "Error loading SBIG driver and/or DLL"
 msgstr "Errore nel caricamento dei driver SBIG e/o DLL"
@@ -1838,6 +2063,18 @@ msgstr ""
 
 #: cam_sspiag.cpp:245
 msgid "Failed to open the camera"
+msgstr ""
+
+#: cam_StarShootDSCI.cpp:82
+msgid "Didn't find openUSB in DLL"
+msgstr ""
+
+#: cam_StarShootDSCI.cpp:95 cam_StarShootDSCI.cpp:101 cam_StarShootDSCI.cpp:107
+#: cam_StarShootDSCI.cpp:113 cam_StarShootDSCI.cpp:118
+#: cam_StarShootDSCI.cpp:124 cam_StarShootDSCI.cpp:129
+#: cam_StarShootDSCI.cpp:134
+#, c-format
+msgid "Didn't find %s in DLL"
 msgstr ""
 
 #: cam_StarShootDSCI.cpp:162
@@ -2004,265 +2241,6 @@ msgstr "Impossibile aprire la camera ZWO ASI."
 msgid "Failed to initizlize ZWO ASI Camera."
 msgstr ""
 
-#: camcal_import_dialog.cpp:57
-#, c-format
-msgid "Import Darks to Profile %s"
-msgstr "Importa i dark nel profilo %s"
-
-#: camcal_import_dialog.cpp:63 darks_dialog.cpp:105
-msgid "Dark Library"
-msgstr "Libreria dark"
-
-#: camcal_import_dialog.cpp:65
-msgid "Choose the profile with the dark library you want to use:"
-msgstr "Scegli il profilo con la libreria dark che vuoi usare:"
-
-#: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
-#: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
-#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:250
-#: camera.cpp:414 gear_dialog.cpp:440 gear_dialog.cpp:444 gear_dialog.cpp:448
-#: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
-#: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
-#: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:3001 profile_wizard.cpp:368
-#: profile_wizard.cpp:369 profile_wizard.cpp:370 profile_wizard.cpp:584
-#: profile_wizard.cpp:589 profile_wizard.cpp:617 profile_wizard.cpp:789
-#: profile_wizard.cpp:963 profile_wizard.cpp:978 profile_wizard.cpp:1009
-#: profile_wizard.cpp:1014 profile_wizard.cpp:1039 profile_wizard.cpp:1053
-#: rotator.cpp:49 rotator.cpp:84 scope.cpp:332 scope.cpp:374 scope.cpp:417
-#: statswindow.cpp:262 stepguider.cpp:105 stepguider.cpp:126
-msgid "None"
-msgstr "Nessuno"
-
-#: camcal_import_dialog.cpp:76
-msgid "Darks Profiles"
-msgstr "Profili dei dark"
-
-#: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
-msgid "Import from profile"
-msgstr "Importa dal profilo"
-
-#: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
-msgid "Camera in profile"
-msgstr "Camera del profilo"
-
-#: camcal_import_dialog.cpp:85
-msgid "There are no compatible dark libraries available"
-msgstr "Non è disponibile una libreria dei dark compatibile"
-
-#: camcal_import_dialog.cpp:89
-msgid "Bad-pixel Map"
-msgstr "Map dei pixel difettosi"
-
-#: camcal_import_dialog.cpp:91
-msgid "Choose the profile with the bad-pixel map you want to use:"
-msgstr "Scegli il profilo con la mappa dei pixel difettosi che vuoi usare:"
-
-#: camcal_import_dialog.cpp:101
-msgid "Bad-pix Map Profiles"
-msgstr "Profili della mappa dei pixel errati"
-
-#: camcal_import_dialog.cpp:111
-msgid "There are no compatible bad-pixel maps available"
-msgstr "Non è disponibile una mappa dei pixel difettosi compatibile"
-
-#: camcal_import_dialog.cpp:119 gear_simulator.cpp:1848
-msgid "OK"
-msgstr "OK"
-
-#: camcal_import_dialog.cpp:216
-msgid "Bad-pixel map could not be imported because of errors in file/copy"
-msgstr ""
-"La mappa dei pixel difettosi non può essere importata a causa di un errore "
-"nel file"
-
-#: camcal_import_dialog.cpp:235
-msgid "Dark library could not be imported because of errors in file/copy"
-msgstr ""
-"la libreria dei dark non può essere importata a causa di un errore nel file"
-
-#: camera.cpp:606
-msgid "Select your camera"
-msgstr "Seleziona la tua camera"
-
-#: camera.cpp:802
-msgid "Camera Settings"
-msgstr "Impostazioni camera"
-
-#: camera.cpp:816
-msgid "General Properties"
-msgstr "Proprietà generali"
-
-#: camera.cpp:828
-msgid "Camera-Specific Properties"
-msgstr ""
-
-#: camera.cpp:859
-msgid "No camera specified"
-msgstr "Non è stata indicata una camera"
-
-#: camera.cpp:868
-msgid ""
-"Camera is not connected.  Additional camera properties may be available if "
-"you connect to it first."
-msgstr ""
-
-#: camera.cpp:874
-msgid "Star Saturation Detection"
-msgstr ""
-
-#: camera.cpp:900
-msgid "Use Subframes"
-msgstr "Utilizza subframe"
-
-#: camera.cpp:901
-msgid ""
-"Check to only download subframes (ROIs). Sub-frame size is equal to search "
-"region size."
-msgstr ""
-
-#: camera.cpp:906
-msgid ""
-"Guide camera un-binned pixel size in microns. Used with the guide telescope "
-"focal length to display guiding error in arc-seconds."
-msgstr ""
-
-#: camera.cpp:907
-msgid "Pixel size"
-msgstr "Grandezza pixel"
-
-#: camera.cpp:913
-msgid "Camera gain"
-msgstr "Guadagno (gain) della camera"
-
-#: camera.cpp:916
-#, no-c-format
-msgid ""
-"Camera gain, default = 95%, lower if you experience noise or wish to guide "
-"on a very bright star. Not available on all cameras."
-msgstr ""
-
-#: camera.cpp:918
-msgid ""
-"Reset gain to camera's default value (disabled when camera is not connected)"
-msgstr ""
-
-#: camera.cpp:939
-msgid "Binning"
-msgstr "Binning"
-
-#: camera.cpp:939
-msgid "Camera pixel binning"
-msgstr "Pixel binning della camera"
-
-#: camera.cpp:946
-msgid "Delay"
-msgstr "Ritardo"
-
-#: camera.cpp:946
-msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
-msgstr "Ritardo di lettura LE (ms), regolala se ci sono perdite di immagini"
-
-#: camera.cpp:961
-msgid "Port number for long-exposure control"
-msgstr "Numero di porta per il controllo delle espozioni lunghe"
-
-#: camera.cpp:968
-msgid "Cooler On"
-msgstr ""
-
-#: camera.cpp:969
-msgid "Turn camera cooler on or off"
-msgstr ""
-
-#: camera.cpp:972
-msgid "Set Temperature"
-msgstr ""
-
-#: camera.cpp:972
-msgid "Cooler setpoint temperature"
-msgstr ""
-
-#: camera.cpp:981
-msgid ""
-"ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
-"for 8-bit cameras."
-msgstr ""
-
-#: camera.cpp:982
-msgid "Saturation by Max-ADU value:"
-msgstr ""
-
-#: camera.cpp:983
-msgid ""
-"Identify star saturation based on camera maximum-ADU value (recommended)"
-msgstr ""
-
-#: camera.cpp:990
-msgid "Saturation via star-profile"
-msgstr ""
-
-#: camera.cpp:991
-msgid ""
-"Identify star saturation based on flat-topped profile, regardless of "
-"brightness"
-msgstr ""
-
-#: camera.cpp:1001
-msgid ""
-"Disconnect nonresponsive          \n"
-"camera after (seconds)"
-msgstr ""
-
-#: camera.cpp:1002
-#, c-format
-msgid ""
-"The camera will be disconnected if it fails to respond for this long. The "
-"default value, %d seconds, should be appropriate for most cameras."
-msgstr ""
-"La camera si disconnetterà se non riesce a connettersi per questo tempo. Il "
-"valore predefinito , %d secondi, dovrebbe essere adeguato per la maggior "
-"parte delle camere."
-
-#: camera.cpp:1319
-msgid "unspecified"
-msgstr ""
-
-#: camera.cpp:1321
-#, c-format
-msgid "%0.1f um"
-msgstr ""
-
-#: camera.cpp:1462
-msgid "Memory allocation error during capture"
-msgstr "Errore di allocazione di memoria durante la cattura delle immagini"
-
-#: camera.cpp:1470
-#, c-format
-msgid ""
-"After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
-"been disconnected to prevent other problems. Refer to Trouble-shooting "
-"section of Help."
-msgstr ""
-
-#: camera.cpp:1475
-msgid ""
-"The camera has not completed an exposure in at least 15 seconds, so it has "
-"been disconnected to prevent other problems. Refer to Trouble-shooting "
-"section of Help."
-msgstr ""
-
-#: camera.cpp:1496
-msgid "PHD will make several attempts to re-connect the camera."
-msgstr "PHD proverà più volte a riconnettersi alla camera."
-
-#: camera.cpp:1501
-msgid ""
-"The camera has been disconnected. Please resolve the problem and re-connect "
-"the camera."
-msgstr ""
-"La camera è stata disconnessa. Risolvi il problema e riconnetti la camera."
-
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
 msgstr ""
@@ -2332,8 +2310,7 @@ msgid "Tracking rate axes"
 msgstr "Velocità inseguimenti assi"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:206 guiding_assistant.cpp:548
-#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353
-#: starcross_test.cpp:161
+#: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:353 starcross_test.cpp:161
 msgid "Start"
 msgstr "Inizia"
 
@@ -2402,11 +2379,11 @@ msgstr "Nome macchina"
 msgid "Port"
 msgstr "Porta"
 
-#: config_indi.cpp:102 config_indi.cpp:215
+#: config_indi.cpp:102 config_indi.cpp:216
 msgid "Disconnected"
 msgstr "Disconnesso"
 
-#: config_indi.cpp:104 config_indi.cpp:216 gear_dialog.cpp:605
+#: config_indi.cpp:104 config_indi.cpp:217 gear_dialog.cpp:605
 #: gear_dialog.cpp:631 gear_dialog.cpp:647 gear_dialog.cpp:668
 #: gear_dialog.cpp:712 gear_dialog.cpp:733 gear_dialog.cpp:750
 #: gear_dialog.cpp:771 gear_dialog.cpp:788 gear_dialog.cpp:809 runinbg.h:85
@@ -2430,52 +2407,52 @@ msgstr ""
 msgid "Camera does not support exposure time"
 msgstr ""
 
-#: config_indi.cpp:145
+#: config_indi.cpp:146
 msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
 
-#: config_indi.cpp:149
+#: config_indi.cpp:150
 msgid "Camera does not support streaming"
 msgstr ""
 
-#: config_indi.cpp:150
+#: config_indi.cpp:151
 msgid ""
 "Force the use of exposure time for cameras that do not support streaming."
 msgstr ""
 
-#: config_indi.cpp:155
+#: config_indi.cpp:156
 msgid "Other options"
 msgstr "Altre opzioni"
 
-#: config_indi.cpp:157 indi_gui.cpp:783 scope.cpp:414
+#: config_indi.cpp:158 indi_gui.cpp:804 scope.cpp:414
 msgid "INDI"
 msgstr "INDI"
 
-#: config_indi.cpp:161
+#: config_indi.cpp:162
 msgid "Verbose logging"
 msgstr ""
 
-#: config_indi.cpp:162
+#: config_indi.cpp:163
 msgid "Enable more detailed INDI information in the PHD2 Debug Log."
 msgstr ""
 
-#: config_indi.cpp:190
+#: config_indi.cpp:191
 msgid "Connected"
 msgstr "Connesso"
 
-#: config_indi.cpp:191 gear_dialog.cpp:188 gear_dialog.cpp:622
+#: config_indi.cpp:192 gear_dialog.cpp:188 gear_dialog.cpp:622
 #: gear_dialog.cpp:660 gear_dialog.cpp:725 gear_dialog.cpp:762
 #: gear_dialog.cpp:800
 msgid "Disconnect"
 msgstr "Disconnetti"
 
-#: config_indi.cpp:198
+#: config_indi.cpp:199
 msgid "Main"
 msgstr ""
 
-#: config_indi.cpp:199
+#: config_indi.cpp:200
 msgid "Secondary"
 msgstr ""
 
@@ -3565,32 +3542,6 @@ msgstr "Ripristina tutti i valori a quelli predefiniti dell'applicazione"
 msgid "Side of pier: %s"
 msgstr "Lato della montatura: %s"
 
-#: graph-stepguider.cpp:86 myframe.cpp:339 myframe.cpp:410
-msgid "AO Position"
-msgstr "Posizione OA"
-
-#: graph-stepguider.cpp:101 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Selezionare il numero di fotogrammi della storia da visualizzare"
-
-#: graph-stepguider.cpp:104 graph.cpp:130 staticpa_toolwin.cpp:420
-#: statswindow.cpp:134 target.cpp:79
-msgid "Clear"
-msgstr "Cancella"
-
-#: graph-stepguider.cpp:105 target.cpp:80
-msgid "Clear graph data"
-msgstr "Cancella i dati del grafico"
-
-#: graph-stepguider.cpp:208
-#, c-format
-msgid "%.1f Hz"
-msgstr ""
-
-#: graph-stepguider.cpp:303
-msgid "AO not connected"
-msgstr "OA non connessa"
-
 #: graph.cpp:88 graph.cpp:605
 msgid "Scope:"
 msgstr "Telescopio:"
@@ -3603,6 +3554,11 @@ msgstr ""
 #: graph.cpp:127
 msgid "Graph settings"
 msgstr "Impostazioni grafico"
+
+#: graph.cpp:130 graph-stepguider.cpp:104 staticpa_toolwin.cpp:420
+#: statswindow.cpp:134 target.cpp:79
+msgid "Clear"
+msgstr "Cancella"
 
 #: graph.cpp:131
 msgid ""
@@ -3728,6 +3684,27 @@ msgstr "GuidaEst"
 #: graph.cpp:1442 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
+
+#: graph-stepguider.cpp:86 myframe.cpp:339 myframe.cpp:410
+msgid "AO Position"
+msgstr "Posizione OA"
+
+#: graph-stepguider.cpp:101 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Selezionare il numero di fotogrammi della storia da visualizzare"
+
+#: graph-stepguider.cpp:105 target.cpp:80
+msgid "Clear graph data"
+msgstr "Cancella i dati del grafico"
+
+#: graph-stepguider.cpp:208
+#, c-format
+msgid "%.1f Hz"
+msgstr ""
+
+#: graph-stepguider.cpp:303
+msgid "AO not connected"
+msgstr "OA non connessa"
 
 #: guide_algorithm.cpp:50
 msgid "DEC"
@@ -3855,8 +3832,8 @@ msgstr ""
 #: guide_algorithm_gaussian_process.cpp:318
 #, c-format
 msgid ""
-"What percent of the reactive guide correction should be applied? Default = %."
-"f%%, adjust if responding too much or too slowly"
+"What percent of the reactive guide correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:237
@@ -3874,7 +3851,7 @@ msgid ""
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:248 guide_algorithm_hysteresis.cpp:337
-#: guide_algorithm_lowpass.cpp:301 guide_algorithm_lowpass2.cpp:318
+#: guide_algorithm_lowpass2.cpp:318 guide_algorithm_lowpass.cpp:301
 #: guide_algorithm_resistswitch.cpp:394 guide_algorithm_zfilter.cpp:365
 msgid "MnMo"
 msgstr "MoMi"
@@ -3892,7 +3869,7 @@ msgid "Reactive Weight"
 msgstr ""
 
 #: guide_algorithm_gaussian_process.cpp:325 guide_algorithm_hysteresis.cpp:256
-#: guide_algorithm_lowpass.cpp:230 guide_algorithm_lowpass2.cpp:249
+#: guide_algorithm_lowpass2.cpp:249 guide_algorithm_lowpass.cpp:230
 #: guide_algorithm_resistswitch.cpp:317 guide_algorithm_zfilter.cpp:291
 msgid "Minimum Move (pixels)"
 msgstr "Movimento minimo (in pixel)"
@@ -3973,13 +3950,13 @@ msgstr "Aggressività"
 #: guide_algorithm_hysteresis.cpp:249
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 
 #: guide_algorithm_hysteresis.cpp:257 guide_algorithm_hysteresis.cpp:334
-#: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass.cpp:298
 #: guide_algorithm_lowpass2.cpp:250 guide_algorithm_lowpass2.cpp:315
+#: guide_algorithm_lowpass.cpp:231 guide_algorithm_lowpass.cpp:298
 #: guide_algorithm_resistswitch.cpp:318 guide_algorithm_resistswitch.cpp:391
 #: guide_algorithm_zfilter.cpp:292 guide_algorithm_zfilter.cpp:362
 #, c-format
@@ -3992,8 +3969,8 @@ msgstr ""
 #: guide_algorithm_hysteresis.cpp:317
 #, c-format
 msgid ""
-"What percentage of the computed correction should be applied?? Default = %.f%"
-"%, adjust if responding too much or too slowly"
+"What percentage of the computed correction should be applied?? Default = "
+"%.f%%, adjust if responding too much or too slowly"
 msgstr ""
 
 #: guide_algorithm_hysteresis.cpp:319
@@ -4012,6 +3989,21 @@ msgstr "Algoritmo di guida"
 msgid "Nothing to Configure"
 msgstr "Niente da configurare"
 
+#: guide_algorithm_lowpass2.cpp:229
+msgid "Lowpass2 Guide Algorithm"
+msgstr "Algoritmo di guida passa basso 2"
+
+#: guide_algorithm_lowpass2.cpp:242 guide_algorithm_lowpass2.cpp:307
+#: guide_algorithm_resistswitch.cpp:310 guide_algorithm_resistswitch.cpp:381
+#, c-format
+msgid ""
+"What percentage of the computed correction should be applied? Default = %.f%%"
+msgstr ""
+
+#: guide_algorithm_lowpass2.cpp:309
+msgid "Agg"
+msgstr "Agg"
+
 #: guide_algorithm_lowpass.cpp:211
 msgid "Lowpass Guide Algorithm"
 msgstr "Algoritmo di guida passa basso (Lowpass)"
@@ -4028,21 +4020,6 @@ msgstr ""
 #: guide_algorithm_lowpass.cpp:292
 msgid "Sl W"
 msgstr "Sl W"
-
-#: guide_algorithm_lowpass2.cpp:229
-msgid "Lowpass2 Guide Algorithm"
-msgstr "Algoritmo di guida passa basso 2"
-
-#: guide_algorithm_lowpass2.cpp:242 guide_algorithm_lowpass2.cpp:307
-#: guide_algorithm_resistswitch.cpp:310 guide_algorithm_resistswitch.cpp:381
-#, c-format
-msgid ""
-"What percentage of the computed correction should be applied? Default = %.f%%"
-msgstr ""
-
-#: guide_algorithm_lowpass2.cpp:309
-msgid "Agg"
-msgstr "Agg"
 
 #: guide_algorithm_resistswitch.cpp:299
 msgid "ResistSwitch Guide Algorithm"
@@ -4808,15 +4785,15 @@ msgstr ""
 "La mappa dei pixel difettosi non corrisponde alla camera in questo profilo - "
 "deve essere sostituita."
 
-#: indi_gui.cpp:455 indi_gui.cpp:486 nudge_lock.cpp:178 nudge_lock.cpp:185
+#: indi_gui.cpp:456 indi_gui.cpp:487 nudge_lock.cpp:178 nudge_lock.cpp:185
 msgid "Set"
 msgstr "Imposta"
 
-#: indi_gui.cpp:783
+#: indi_gui.cpp:804
 msgid "Loading INDI properties..."
 msgstr ""
 
-#: indi_gui.cpp:815
+#: indi_gui.cpp:836
 msgid "INDI Options"
 msgstr "Opzioni INDI"
 
@@ -4889,7 +4866,7 @@ msgstr ""
 msgid "Guide Asst."
 msgstr ""
 
-#: log_uploader.cpp:719 log_uploader.cpp:1342
+#: log_uploader.cpp:719 log_uploader.cpp:1343
 msgid "Recent uploads"
 msgstr ""
 
@@ -4897,7 +4874,7 @@ msgstr ""
 msgid "< Back"
 msgstr "< Indietro"
 
-#: log_uploader.cpp:728 log_uploader.cpp:1366 profile_wizard.cpp:346
+#: log_uploader.cpp:728 log_uploader.cpp:1367 profile_wizard.cpp:346
 #: profile_wizard.cpp:760 profile_wizard.cpp:776
 msgid "Next >"
 msgstr "Avanti >"
@@ -4911,7 +4888,7 @@ msgid ""
 "Show all available logs, including logs from nights when there was no guiding"
 msgstr ""
 
-#: log_uploader.cpp:892 log_uploader.cpp:1213
+#: log_uploader.cpp:892 log_uploader.cpp:1214
 msgid "Upload"
 msgstr ""
 
@@ -4938,64 +4915,64 @@ msgstr ""
 msgid "Upload failed, will retry in %ds"
 msgstr ""
 
-#: log_uploader.cpp:1179
+#: log_uploader.cpp:1180
 msgid "The following log files will be uploaded:"
 msgstr ""
 
-#: log_uploader.cpp:1192
+#: log_uploader.cpp:1193
 msgid "Guide and Debug logs"
 msgstr ""
 
-#: log_uploader.cpp:1194
+#: log_uploader.cpp:1195
 msgid "Debug log"
 msgstr ""
 
-#: log_uploader.cpp:1196
+#: log_uploader.cpp:1197
 msgid "Guide log"
 msgstr ""
 
-#: log_uploader.cpp:1282
+#: log_uploader.cpp:1283
 msgid "The log files have been uploaded and can be accessed at this link:"
 msgstr ""
 
-#: log_uploader.cpp:1285
+#: log_uploader.cpp:1286
 msgid ""
 "You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by "
 "posting a message that includes the link. Copy and paste the link into your "
 "forum post."
 msgstr ""
 
-#: log_uploader.cpp:1287
+#: log_uploader.cpp:1288
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: log_uploader.cpp:1303
+#: log_uploader.cpp:1304
 msgid ""
 "PHD2 was unable to upload the log files due to an internal error. Please "
 "report the error in the PHD2 Forum."
 msgstr ""
 
-#: log_uploader.cpp:1306
+#: log_uploader.cpp:1307
 msgid ""
 "PHD2 was unable to upload the log files. The service may be temproarily "
 "unavailable. You can try again later or you can try another file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1310
+#: log_uploader.cpp:1311
 msgid ""
 "PHD2 encountered an error while compressing the log files. Please make sure "
 "the selected logs are available and try again."
 msgstr ""
 
-#: log_uploader.cpp:1314
+#: log_uploader.cpp:1315
 msgid ""
 "The total compressed size of the selected log files exceeds the maximum size "
 "allowed. Try selecting fewer files, or use an alternative file sharing "
 "service such as Dropbox or Google Drive."
 msgstr ""
 
-#: log_uploader.cpp:1397
+#: log_uploader.cpp:1398
 msgid "Link copied to clipboard"
 msgstr ""
 
@@ -6488,102 +6465,106 @@ msgstr "Seleziona la porta parallela"
 msgid "Custom Port Address:"
 msgstr "Indirizzo personalizzato della porta:"
 
-#: phd.cpp:280
+#: phdconfig.cpp:45
+msgid "My Equipment"
+msgstr "I miei dispositivi"
+
+#: phd.cpp:282
 msgid "Win32s on Windows 3.1"
 msgstr ""
 
-#: phd.cpp:290
+#: phd.cpp:292
 msgid "Windows 95 OSR2"
 msgstr ""
 
-#: phd.cpp:294
+#: phd.cpp:296
 msgid "Windows 95"
 msgstr ""
 
-#: phd.cpp:301
+#: phd.cpp:303
 msgid "Windows 98 SE"
 msgstr ""
 
-#: phd.cpp:305
+#: phd.cpp:307
 msgid "Windows 98"
 msgstr ""
 
-#: phd.cpp:309
+#: phd.cpp:311
 msgid "Windows ME"
 msgstr ""
 
-#: phd.cpp:312
+#: phd.cpp:314
 #, c-format
 msgid "Windows 9x (%d.%d)"
 msgstr ""
 
-#: phd.cpp:330
+#: phd.cpp:332
 msgid "Windows 2000"
 msgstr ""
 
-#: phd.cpp:339
+#: phd.cpp:341
 msgid "Windows Server 2003"
 msgstr ""
 
-#: phd.cpp:345
+#: phd.cpp:347
 msgid "Windows XP"
 msgstr ""
 
-#: phd.cpp:355
+#: phd.cpp:357
 msgid "Windows Server 2008"
 msgstr ""
 
-#: phd.cpp:356
+#: phd.cpp:358
 msgid "Windows Vista"
 msgstr ""
 
-#: phd.cpp:361
+#: phd.cpp:363
 msgid "Windows Server 2008 R2"
 msgstr ""
 
-#: phd.cpp:362
+#: phd.cpp:364
 msgid "Windows 7"
 msgstr ""
 
-#: phd.cpp:367
+#: phd.cpp:369
 msgid "Windows Server 2012"
 msgstr ""
 
-#: phd.cpp:368
+#: phd.cpp:370
 msgid "Windows 8"
 msgstr ""
 
-#: phd.cpp:373
+#: phd.cpp:375
 msgid "Windows Server 2012 R2"
 msgstr ""
 
-#: phd.cpp:374
+#: phd.cpp:376
 msgid "Windows 8.1"
 msgstr ""
 
-#: phd.cpp:381
+#: phd.cpp:383
 msgid "Windows Server 2016"
 msgstr ""
 
-#: phd.cpp:382
+#: phd.cpp:384
 msgid "Windows 10"
 msgstr ""
 
-#: phd.cpp:388
+#: phd.cpp:390
 #, c-format
 msgid "Windows NT %lu.%lu"
 msgstr ""
 
-#: phd.cpp:394
+#: phd.cpp:396
 #, c-format
 msgid "build %lu"
 msgstr ""
 
-#: phd.cpp:402
+#: phd.cpp:404
 msgid ", 64-bit edition"
 msgstr ""
 
-#: phd.cpp:538
+#: phd.cpp:540
 #, c-format
 msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
@@ -6591,10 +6572,6 @@ msgid ""
 msgstr ""
 "PHD2 %ld è già in esecuzione. Utilizza l'opzione -i INSTANCE_NUM sulla riga "
 "di comando per far partire una istanza diversa."
-
-#: phdconfig.cpp:45
-msgid "My Equipment"
-msgstr "I miei dispositivi"
 
 #: phdupdate.cpp:683
 #, c-format
@@ -6696,8 +6673,8 @@ msgstr ""
 #: pierflip_tool.cpp:265
 #, c-format
 msgid ""
-"Slew the telescope to force a meridian flip - the scope should move to the %"
-"s side of the pier, still pointing near Dec = 0."
+"Slew the telescope to force a meridian flip - the scope should move to the "
+"%s side of the pier, still pointing near Dec = 0."
 msgstr ""
 
 #: pierflip_tool.cpp:273
@@ -7535,14 +7512,6 @@ msgstr ""
 msgid "Settings restored to original values"
 msgstr "Impostazioni ripristinate ai valori originali"
 
-#: rotator.cpp:148
-msgid "Rotator Settings"
-msgstr "Impostazioni rotatore"
-
-#: rotator.cpp:174
-msgid "Reverse sign of angle"
-msgstr "Inverti il segno dell'angolo"
-
 #: rotator_ascom.cpp:152
 msgid ""
 "Could not create ASCOM rotator object. See the debug log for more "
@@ -7557,9 +7526,66 @@ msgstr ""
 "Problemi con i driver ASCOM -- impossibile recuperare la posiziona del "
 "rotatore"
 
+#: rotator.cpp:148
+msgid "Rotator Settings"
+msgstr "Impostazioni rotatore"
+
+#: rotator.cpp:174
+msgid "Reverse sign of angle"
+msgstr "Inverti il segno dell'angolo"
+
 #: runinbg.cpp:118
 msgid "The operation was canceled"
 msgstr "Operazione annullata"
+
+#: scope_ascom.cpp:449
+msgid ""
+"ASCOM driver problem during disconnect, check the debug log for more "
+"information"
+msgstr ""
+"Problemi con i driver ASCOM durante la disconnessione, controlla il log del "
+"debug per ulteriori informazioni"
+
+#: scope_ascom.cpp:530
+msgid ""
+"ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."
+msgstr ""
+"I driver ASCOM non supportano il metodo PulseGuide. Controlla le "
+"impostazioni dei driver ASCOM."
+
+#: scope_ascom.cpp:687
+msgid ""
+"PulseGuide command to mount has failed - guiding is likely to be ineffective."
+msgstr ""
+"Il commando PulseGuide inviato alla montatura è fallito - la guida "
+"probabilmente non funzionarà."
+
+#: scope_ascom.cpp:695
+msgid "Guiding stopped: the scope started slewing."
+msgstr "La guida è stata fermata: il telescopio è iniziato a muoversi."
+
+#: scope_ascom.cpp:742
+msgid ""
+"ASCOM driver failed checking for slewing, see the debug log for more "
+"information."
+msgstr ""
+"I driver ASCOM non riescono a controllare il movimento della montatura, "
+"controlla il log del debug per ulteriori informazioni."
+
+#: scope_ascom.cpp:759
+msgid ""
+"ASCOM driver failed calling AbortSlew, see the debug log for more "
+"information."
+msgstr ""
+"I driver ASCOM non riescono a chiamare il metodo AbortSlew, controlla il log "
+"del debug per ulteriori informazioni."
+
+#: scope_ascom.cpp:874
+msgid ""
+"The mount's ASCOM driver is reporting invalid guide speeds. Some guiding "
+"functions including PPEC will be impaired. Contact the ASCOM driver provider "
+"or mount vendor for support."
+msgstr ""
 
 #: scope.cpp:264
 msgid "Invalid"
@@ -7885,55 +7911,6 @@ msgstr "Mx AR"
 msgid "Mx DEC"
 msgstr "Mx Dec"
 
-#: scope_ascom.cpp:449
-msgid ""
-"ASCOM driver problem during disconnect, check the debug log for more "
-"information"
-msgstr ""
-"Problemi con i driver ASCOM durante la disconnessione, controlla il log del "
-"debug per ulteriori informazioni"
-
-#: scope_ascom.cpp:530
-msgid ""
-"ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."
-msgstr ""
-"I driver ASCOM non supportano il metodo PulseGuide. Controlla le "
-"impostazioni dei driver ASCOM."
-
-#: scope_ascom.cpp:687
-msgid ""
-"PulseGuide command to mount has failed - guiding is likely to be ineffective."
-msgstr ""
-"Il commando PulseGuide inviato alla montatura è fallito - la guida "
-"probabilmente non funzionarà."
-
-#: scope_ascom.cpp:695
-msgid "Guiding stopped: the scope started slewing."
-msgstr "La guida è stata fermata: il telescopio è iniziato a muoversi."
-
-#: scope_ascom.cpp:742
-msgid ""
-"ASCOM driver failed checking for slewing, see the debug log for more "
-"information."
-msgstr ""
-"I driver ASCOM non riescono a controllare il movimento della montatura, "
-"controlla il log del debug per ulteriori informazioni."
-
-#: scope_ascom.cpp:759
-msgid ""
-"ASCOM driver failed calling AbortSlew, see the debug log for more "
-"information."
-msgstr ""
-"I driver ASCOM non riescono a chiamare il metodo AbortSlew, controlla il log "
-"del debug per ulteriori informazioni."
-
-#: scope_ascom.cpp:874
-msgid ""
-"The mount's ASCOM driver is reporting invalid guide speeds. Some guiding "
-"functions including PPEC will be impaired. Contact the ASCOM driver provider "
-"or mount vendor for support."
-msgstr ""
-
 #: scope_eqmac.cpp:172 scope_equinox.cpp:177
 msgid " responded it's not connected to a mount"
 msgstr " non è connesso alla montatura"
@@ -7942,7 +7919,7 @@ msgstr " non è connesso alla montatura"
 msgid " not running"
 msgstr " non è in esecuzione"
 
-#: scope_GC_USBST4.cpp:122
+#: scope_GC_USBST4.cpp:121
 #, c-format
 msgid "Error writing to GC USB ST4: %s(%d)"
 msgstr "Impossibile scrivere in GC USB ST4: %s(%d)"
@@ -7951,28 +7928,16 @@ msgstr "Impossibile scrivere in GC USB ST4: %s(%d)"
 msgid "Please restart PHD2 to re-connect to the GPUSB"
 msgstr ""
 
-#: scope_indi.cpp:239
+#: scope_indi.cpp:247
 msgid "INDI Aux Mount Selection"
 msgstr ""
 
-#: scope_indi.cpp:244
+#: scope_indi.cpp:252
 msgid "INDI Mount Selection"
 msgstr ""
 
-#: scope_indi.cpp:391
-#, c-format
-msgid "Cannot connect to mount %s: %s"
-msgstr ""
-
-#: scope_indi.cpp:453
+#: scope_indi.cpp:424
 msgid "INDI mount was disconnected"
-msgstr ""
-
-#: scope_indi.cpp:796
-msgid ""
-"The mount's INDI driver is reporting invalid guide speeds. Some guiding "
-"functions including PPEC will be impaired. Contact the INDI driver provider "
-"or mount vendor for support."
 msgstr ""
 
 #: scope_manual_pointing.cpp:81
@@ -8088,48 +8053,6 @@ msgstr ""
 #: socket_server.cpp:303
 #, c-format
 msgid "Lock set to %d,%d"
-msgstr ""
-
-#: star_profile.cpp:50
-msgid "Profile"
-msgstr "Profilo"
-
-#: star_profile.cpp:170
-msgid "Mid row"
-msgstr "Linea a metà"
-
-#: star_profile.cpp:174
-msgid "Avg row"
-msgstr "Linea media"
-
-#: star_profile.cpp:178
-msgid "Avg col"
-msgstr "Colonna media"
-
-#: star_profile.cpp:241
-msgid "Peak"
-msgstr "Picco"
-
-#: star_profile.cpp:252 star_profile.cpp:279
-#, c-format
-msgid "%s FWHM: %.2f"
-msgstr "%s FWHM: %.2f"
-
-#: star_profile.cpp:259
-msgid "HFD: "
-msgstr "HFD:"
-
-#: star_profile.cpp:274
-#, c-format
-msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
-msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
-
-#: star_profile.cpp:316
-msgid "Click image for raw view"
-msgstr ""
-
-#: star_profile.cpp:321
-msgid "Click image for interpolated view"
 msgstr ""
 
 #: starcross_test.cpp:86
@@ -8270,6 +8193,48 @@ msgstr ""
 
 #: starcross_test.cpp:455
 msgid "Hide Details"
+msgstr ""
+
+#: star_profile.cpp:50
+msgid "Profile"
+msgstr "Profilo"
+
+#: star_profile.cpp:170
+msgid "Mid row"
+msgstr "Linea a metà"
+
+#: star_profile.cpp:174
+msgid "Avg row"
+msgstr "Linea media"
+
+#: star_profile.cpp:178
+msgid "Avg col"
+msgstr "Colonna media"
+
+#: star_profile.cpp:241
+msgid "Peak"
+msgstr "Picco"
+
+#: star_profile.cpp:252 star_profile.cpp:279
+#, c-format
+msgid "%s FWHM: %.2f"
+msgstr "%s FWHM: %.2f"
+
+#: star_profile.cpp:259
+msgid "HFD: "
+msgstr "HFD:"
+
+#: star_profile.cpp:274
+#, c-format
+msgid "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
+msgstr "%s FWHM: %.2f, HFD: %.2f (%.2f\")"
+
+#: star_profile.cpp:316
+msgid "Click image for raw view"
+msgstr ""
+
+#: star_profile.cpp:321
+msgid "Click image for interpolated view"
 msgstr ""
 
 #: staticpa_toolwin.cpp:108
@@ -8673,12 +8638,12 @@ msgstr ""
 "Seleziona il valore per la guida OA. Deseleziona per disabilitare le "
 "correzioni OA e utilizzare solo ma guida della montatura"
 
-#: stepguider_sbigao_indi.cpp:185
+#: stepguider_sbigao_indi.cpp:181
 #, c-format
 msgid "We need at least INDI driver %s version 2.1 to get AO support."
 msgstr ""
 
-#: stepguider_sbigao_indi.cpp:326 stepguider_sxao_indi.cpp:345
+#: stepguider_sbigao_indi.cpp:321 stepguider_sxao_indi.cpp:372
 msgid "INDI AO Selection"
 msgstr ""
 
@@ -8724,14 +8689,14 @@ msgstr "Seleziona porta seriale"
 msgid "Serial Port"
 msgstr "Porta seriale"
 
-#: stepguider_sxao_indi.cpp:201
+#: stepguider_sxao_indi.cpp:199
 #, c-format
 msgid ""
 "We need at least INDI driver %s version 1.12 to get the Firmware version and "
 "the Limit switch states."
 msgstr ""
 
-#: stepguider_sxao_indi.cpp:210
+#: stepguider_sxao_indi.cpp:213
 #, c-format
 msgid ""
 "This AO device has firmware version %03u which means it needs to be "
@@ -8890,6 +8855,9 @@ msgstr "Connessione della camera..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Connessione al rotatore..."
+
+#~ msgid "Error capturing data from camera"
+#~ msgstr "Errore nel recuperare dati dalla camera"
 
 #~ msgid ""
 #~ "Please specify camera type, guider focal length, and guide camera pixel "
@@ -9635,8 +9603,8 @@ msgstr "Connessione al rotatore..."
 #~ msgstr "Ripristina il messaggio \"Non chiedere di nuovo\""
 
 #~ msgid ""
-#~ "Restore any messages that were hidden when you checked \"Don't Ask Again"
-#~ "\"."
+#~ "Restore any messages that were hidden when you checked \"Don't Ask "
+#~ "Again\"."
 #~ msgstr ""
 #~ "Ripristina tutti i messaggi che sono stati nascosti quando hai "
 #~ "selezionato \"Non chiedere di nuovo\""
