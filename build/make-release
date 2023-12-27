@@ -1,0 +1,303 @@
+#!/usr/bin/env bash
+
+# make-release - pubilsh a new release of PHD2
+#
+# This script is used to publish a new release of PHD2
+#
+#  - prepares the release by setting the version number in phd.h,
+#    updating the translation templates and tagging the release
+#  - builds all the release products - help docs, Windows and Mac
+#    binaries, auto-update version files
+#  - copies the build products to the web server and updates the
+#    server web pages
+
+SCRIPT_DIR=${BASH_SOURCE%/*}
+
+usage () {
+    cat <<EOF
+Usage: build [-b branch] -r rev
+EOF
+}
+
+die () {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+load_config () {
+    [[ -f build/build.cfg ]] ||
+        die "missing build.cfg"
+    . build/build.cfg
+    for v in WWW_{HOST,DIR} WIN_{HOST,DIR} MAC{64,64S}_{HOST,DIR}; do
+        [[ -v $v ]] ||
+            die "missing build.cfg variable $v!"
+    done
+    check_hosts_reachable
+}
+
+check_hosts_reachable () (
+    # make sure hosts are reachable
+
+    for h in $WWW_HOST $WIN_HOST $MAC64_HOST $MAC64S_HOST; do
+        printf "checking $h ..."
+        ssh -q -oBatchMode=yes $h exit || {
+            echo "Error: host $h is not ssh-accessible" >&2
+            exit 1
+        }
+        printf " ok\n"
+    done
+)
+
+setup_worktree () {
+    # create a temporary worktree from which to run the build.
+    # Initialize a cmake build directory in <worktree>/tmp/ which will
+    # be used to update the translations.
+
+    umask 022
+    load_config
+    git worktree add --force "$worktree" "$branch"
+    trap cleanup_worktree EXIT
+
+    # copy the ChangeLog files into the worktree
+    if [[ ! -f ChangeLog-dev ]]; then
+        die "ChangeLog-dev is missing"
+    fi
+    echo "-------- ChangeLog-dev --------"
+    cat ChangeLog-dev
+    cp ChangeLog-dev "$worktree"/
+
+    if is_full_release; then
+        if [[ ! -f ChangeLog-full ]]; then
+            die "ChangeLog-full is missing"
+        fi
+        echo "-------- ChangeLog-full --------"
+        cat ChangeLog-full
+        cp ChangeLog-full "$worktree"/
+    fi
+    echo "--------"
+
+    cd "$worktree"
+    git pull -r -q
+    (
+        mkdir tmp
+        cd tmp
+        cmake ..
+    )
+}
+
+cleanup_worktree () {
+    # remove the temporary worktree
+
+    cd "$top"
+    if [[ -d $worktree ]]; then
+        if [[ ! $debug && $complete ]]; then
+            git worktree remove -f "$worktree"
+        fi
+    fi
+}
+
+update_translations () (
+    # update translation templates and commit
+
+    # if nothing changed besides the POT-Creation-Date line, do nothing
+    TMP=$(mktemp)
+    trap "rm -f '$TMP'" EXIT
+    grep -v '^"POT-Creation-Date: ' locale/messages.pot > "$TMP"
+    "$SCRIPT_DIR"/locales_update.sh
+    if cmp -s "$TMP" <(grep -v '^"POT-Creation-Date: ' locale/messages.pot); then
+        return
+    fi
+    git commit -m "update translation templates" -- locale
+)
+
+bump_rev () (
+    cur_rev=$(./build/get_phd_version phd.h)
+    if [[ $cur_rev == $rev ]]; then
+        echo "version update not neeed"
+        return
+    fi
+    echo "update phd.h version to $rev"
+    TMP=$(mktemp)
+    trap "rm -f '$TMP'" EXIT
+    cp phd.h "$TMP"
+    ver=${rev/dev*}
+    subver=${rev/$ver}
+    awk -v q='"' -v VER=$ver -v SUBVER=$subver '
+        /^#define PHDVERSION/ { print "#define PHDVERSION _T(" q VER q ")"; next }
+        /^#define PHDSUBVER/  { print "#define PHDSUBVER _T(" q SUBVER q ")"; next }
+                              { print }
+    ' "$TMP" > phd.h
+    # normalize line endings
+    dos2unix phd.h
+    unix2dos phd.h
+    git commit -m "bump rev to $rev" phd.h
+    echo "adding tag v$rev"
+    git tag -f -a -m "v${rev}" "v${rev}"
+)
+
+do_release_prep () {
+    # Perform pre-release actions such as bumping the version in
+    # phd.h, tagging the tree, and pushing the tags to the repo. If
+    # the release tag already exists, do nothing.
+
+    if git tag -l "v${rev}" >/dev/null; then
+        echo "release is already tagged"
+        return
+    fi
+    update_translations
+    bump_rev
+    echo "pushing to github"
+    git push
+    git push --tags
+}
+
+is_full_release () (
+    ver=${rev/dev*}
+    subver=${rev/$ver}
+    [[ ! $subver ]]
+)
+
+build_help () (
+    ./build/build_help.sh -w
+    mv tmp/PHD2_User_Guide.pdf tmp/release/PHD2-${rev}_User_Guide.pdf
+    mv tmp/man.tar.gz tmp/release/man-${rev}.tar.gz
+    (
+        cd tmp/release
+        mkdir man-${rev}
+        tar xfz man-${rev}.tar.gz -C man-${rev}
+        ln -sfn man-${rev} man-dev
+        if is_full_release; then
+            ln -sfn man-${rev} man
+            ln -sfn PHD2-${rev}_User_Guide.pdf PHD2_User_Guide.pdf
+        fi
+        chmod -R o+rX PHD2-${rev}_User_Guide.pdf man-${rev}.tar.gz man-${rev}
+    )
+)
+
+generate_release_version_files () (
+    win_installer=phd2-${rev}-installer.exe
+    sha1=$(sha1sum "./tmp/release/${win_installer}" | cut -d' ' -f 1)
+    if is_full_release; then
+        series_needed=(main dev)
+    else
+        series_needed=(dev)
+    fi
+    for series in "${series_needed[@]}"; do
+        win_relfile=./tmp/release/release-${series}-win.txt
+        echo "$rev https://openphdguiding.org/${win_installer} $sha1" > "$win_relfile"
+        echo "$rev" > ./tmp/release/release-${series}-osx.txt
+        echo "$rev" > ./tmp/release/release-${series}-linux.txt
+    done
+)
+
+build_os_packages () (
+    pids=()
+    (
+        ssh "$WIN_HOST" "'$WIN_DIR/build/publish_win' -b 'v${rev}'" \
+            > tmp/build-logs/win.log 2>&1
+        win_installer=phd2-${rev}-installer.exe
+        echo "Windows build completed"
+        scp "$WIN_HOST:$WIN_DIR/tmp/${win_installer}" tmp/release/
+    ) & pids+=($!)
+    (
+        ssh "$MAC64_HOST" "'$MAC64_DIR/build/publish_osx' -b 'v${rev}'" \
+            > tmp/build-logs/mac64.log 2>&1
+        echo "mac64 build completed"
+        scp "$MAC64_HOST:$MAC64_DIR/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
+    ) & pids+=($!)
+    (
+        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/publish_osx' -b 'v${rev}'" \
+            > tmp/build-logs/mac64s.log 2>&1
+        echo "mac64s build completed"
+        scp "$MAC64S_HOST:$MAC64S_DIR/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
+    ) & pids+=($!)
+    success=1
+    for pid in ${pids[@]}; do
+        wait $pid || success=
+    done
+    if [[ ! $success ]]; then
+        echo "build failed!"
+    fi
+    [[ $success ]]
+)
+
+build_release_artifacts () {
+    # generate the release artifacts in tmp/release with everything
+    # staged for deployment. Per-OS installers are built on the worker
+    # machines and then copied to the staging area.
+
+    rm -rf tmp/release
+    mkdir -p tmp/release
+    mkdir -p tmp/build-logs
+
+    build_help
+    build_os_packages
+    generate_release_version_files
+
+    echo "----"
+    ls -l tmp/release
+    echo "----"
+}
+
+make_wp_release_pages () (
+    echo "adding dev release web page"
+    scp ChangeLog-dev "${WWW_HOST}:/tmp/phd2changelog-dev"
+    ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' /tmp/phd2changelog-dev"
+
+    if is_full_release; then
+        echo "adding full release web page"
+        scp ChangeLog-full "${WWW_HOST}:/tmp/phd2changelog-full"
+        ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' -R /tmp/phd2changelog-full"
+    fi
+)
+
+deploy_release_to_website () (
+    # copy the build artifacts to the web server, create wordpress
+    # release pages in wordpress, and generate the static site from
+    # wordpress
+
+    rsync -a tmp/release/ "$WWW_HOST:$WWW_DIR"/
+    make_wp_release_pages
+    ssh $WWW_HOST "./bin/phd2_generate_static_site"
+)
+
+# === main ===
+
+set -e
+set -o pipefail
+
+top=$(cd "$SCRIPT_DIR" && git rev-parse --show-toplevel)
+cd "$top"
+
+branch=master
+debug=
+rev=
+
+while getopts 'b:gr:' opt "$@"; do
+    case $opt in
+        b) branch=$OPTARG;;
+        g) set -x; debug=1 ;;
+        r) rev=$OPTARG;;
+        \?) usage >&2; exit 1;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [[ ! $rev ]]; then
+    usage >&2
+    exit 1
+fi
+rev_pattern='^2\.[1-9][0-9]*\.[1-9][0-9]*(dev[1-9][0-9]*)?$'
+if [[ ! $rev =~ $rev_pattern ]]; then
+    die "Invalid rev '$rev'"
+fi
+
+worktree=$(realpath ../phd2-build-"$rev")
+
+setup_worktree
+do_release_prep
+build_release_artifacts
+deploy_release_to_website
+
+complete=1
+cleanup_worktree
