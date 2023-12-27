@@ -140,7 +140,7 @@ do_release_prep () {
     # phd.h, tagging the tree, and pushing the tags to the repo. If
     # the release tag already exists, do nothing.
 
-    if git tag -l "v${rev}" >/dev/null; then
+    if [[ $(git tag -l "v${rev}") ]]; then
         echo "release is already tagged"
         return
     fi

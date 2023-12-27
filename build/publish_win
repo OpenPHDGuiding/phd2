@@ -90,7 +90,11 @@ fi
 if [[ $branch ]]; then
     git fetch -q
     git checkout -q "$branch"
-    git pull -r -q
+    # if $branch is an actual branch--not a tag or SHA hash--pull
+    # latest code from upstream
+    if [[ $(git rev-parse --abbrev-ref --symbolic-full-name HEAD) != HEAD ]]; then
+        git pull -r -q
+    fi
 fi
 
 rebuild=
