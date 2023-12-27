@@ -768,7 +768,8 @@ else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
 
-if (${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
+
+if(PHD_EXTERNAL_PROJECT_DEPENDENCIES)
   add_dependencies(phd2 ${PHD_EXTERNAL_PROJECT_DEPENDENCIES})
 endif()
 
