@@ -67,12 +67,6 @@ fi
 
 D=$(cd $(dirname "$0"); /bin/pwd)
 
-[[ -f $D/build.cfg ]] || {
-    echo "missing build.cfg" >&2
-    exit 1
-}
-. "$D"/build.cfg
-
 # run from the top of the source tree (this script is in <top>/build/)
 cd "$D"/..
 
@@ -96,8 +90,6 @@ if [[ $branch ]]; then
         git pull -r -q
     fi
 fi
-
-SCPDST=${WWW_HOST}:${WWW_DIR}
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };

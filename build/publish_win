@@ -58,14 +58,6 @@ CMD="/c/Windows/System32/cmd.exe"
 CMAKE='/c/Program Files/CMake/bin/cmake.exe'
 ISCC="/c/Program Files (x86)/Inno Setup 5/ISCC.exe"
 
-[[ -f $D/build.cfg ]] || {
-    echo "missing build.cfg" >&2
-    exit 1
-}
-. "$D"/build.cfg
-
-SCPDST="${WWW_HOST}:${WWW_DIR}"
-
 CMAKE_W=$(cygpath -w "$CMAKE")
 
 V=$(perl -ne '
