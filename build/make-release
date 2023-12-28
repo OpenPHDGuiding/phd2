@@ -193,20 +193,20 @@ generate_release_version_files () (
 build_os_packages () (
     pids=()
     (
-        ssh "$WIN_HOST" "'$WIN_DIR/build/publish_win' -b 'v${rev}'" \
+        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -b 'v${rev}'" \
             > tmp/build-logs/win.log 2>&1
         win_installer=phd2-${rev}-installer.exe
         echo "Windows build completed"
         scp "$WIN_HOST:$WIN_DIR/tmp/${win_installer}" tmp/release/
     ) & pids+=($!)
     (
-        ssh "$MAC64_HOST" "'$MAC64_DIR/build/publish_osx' -b 'v${rev}'" \
+        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -b 'v${rev}'" \
             > tmp/build-logs/mac64.log 2>&1
         echo "mac64 build completed"
         scp "$MAC64_HOST:$MAC64_DIR/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
     ) & pids+=($!)
     (
-        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/publish_osx' -b 'v${rev}'" \
+        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -b 'v${rev}'" \
             > tmp/build-logs/mac64s.log 2>&1
         echo "mac64s build completed"
         scp "$MAC64S_HOST:$MAC64S_DIR/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
