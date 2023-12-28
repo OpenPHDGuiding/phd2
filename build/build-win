@@ -1,58 +1,68 @@
-#!/bin/bash
-
-D=$(cd $(dirname "$0"); /bin/pwd)
+#!/usr/bin/env bash
 
 usage () {
     cat <<EOF
-usage: publish_win [OPTIONS]
+usage: build-win [OPTIONS]
 Options:
-  -i      run the installer on the local machine
-  -B      incremental build (default: full rebuild)
   -b branch  branch to build (default: current branch)
-  -r      update release version info for auto-update checker
-  -d      update dev release version info even if version number looks like a main rev
-  -s      skip version check
-  -S      version check only
-  -h      display this help
+  -c         cleanup worktree
+  -w NAME    use worktree NAME
+  -h         display this help
+
+Build installer from current directory
+  build-win
+
+Build installer for a specific branch/tag in a worktree
+  build-win -b BRANCH -w NAME
+
+Cleanup worktree
+  build-win -c -w NAME
 EOF
     exit
 }
 
-do_versioncheck=1
-do_build=1
-do_rebuild=1
-do_install=
+do_cleanup=
 branch=
+use_worktree=
 
-while getopts "iBb:sSh" o; do
+while getopts "b:chw:" o; do
     case "${o}" in
-        i)
-            do_install=1
-            ;;
-        B)
-            do_rebuild=
-            ;;
-        b)
-            branch=$OPTARG
-            ;;
-        s)
-            do_versioncheck=
-            ;;
-        S)
-            do_versioncheck=1
-            do_build=
-            do_install=
-            ;;
-        h)
-            usage
-            ;;
+        b) branch=$OPTARG ;;
+        c) do_cleanup=1 ;;
+        h) usage ;;
+        w) use_worktree=$OPTARG ;;
     esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-set -ex
+if [[ $do_cleanup ]]; then
+     if [[ ! $use_worktree ]]; then
+         echo "a worktree is required to cleanup" >&2
+         exit 1
+     fi
+else
+    if [[ $use_worktree && ! $branch ]]; then
+        echo "a branch is required to use a worktree" >&2
+        exit 1
+    fi
+fi
 
-cd "$D"/..
+set -x
+set -e
+
+SCRIPT_DIR=$(cd $(dirname "$0"); /bin/pwd)
+cd "$SCRIPT_DIR"/..
+
+if [[ $use_worktree ]]; then
+    worktree=../$use_worktree
+    if [[ $do_cleanup ]]; then
+        git worktree remove --force "$worktree"
+        exit
+    fi
+    git fetch -q
+    git worktree add --force "$worktree" "$branch"
+    cd "$worktree"
+fi
 
 CMD="/c/Windows/System32/cmd.exe"
 CMAKE='/c/Program Files/CMake/bin/cmake.exe'
@@ -64,65 +74,30 @@ V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
  /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
 
-F=phd2-${V}-installer
+INSTALLER=phd2-${V}-installer
 
-repo_is_clean () {
-    git update-index -q --refresh
-    git diff-index --quiet HEAD --
-}
-
-uptodate=1
-if ! repo_is_clean; then
-    echo "uncommited files are present!" >&2
-    uptodate=
+vcpkg_args=()
+if [[ $VCPKG_ROOT ]]; then
+    vcpkg_args+=(-DVCPKG_ROOT=$VCPKG_ROOT)
 fi
-[[ $uptodate || ! $do_versioncheck ]] || \
-    exit 1
+mkdir -p tmp
+(
+    cd tmp
 
-if [[ $branch ]]; then
-    git fetch -q
-    git checkout -q "$branch"
-    # if $branch is an actual branch--not a tag or SHA hash--pull
-    # latest code from upstream
-    if [[ $(git rev-parse --abbrev-ref --symbolic-full-name HEAD) != HEAD ]]; then
-        git pull -r -q
-    fi
-fi
-
-rebuild=
-if [[ $do_rebuild ]]; then
-    rebuild="--clean-first"
-fi
-
-if [[ $do_build ]]; then
-    vcpkg_args=()
-    if [[ $VCPKG_ROOT ]]; then
-        vcpkg_args+=(-DVCPKG_ROOT=$VCPKG_ROOT)
-    fi
-    mkdir -p tmp
-    (
-        cd tmp
-
-        cat >run_cmake.bat <<EOF
+    cat >run_cmake.bat <<EOF
 "$CMAKE_W" -Wno-dev -G "Visual Studio 17" -A Win32 ${vcpkg_args[@]} "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" ..
 EOF
 
-        "$CMD" /c run_cmake.bat
-    )
+    "$CMD" /c run_cmake.bat
+)
 
-    # generate phd2.iss and README.txt in tmp, one level up from Release/
-    sed -e "s/@VERSION@/$V/g" phd2.iss.in >tmp/phd2.iss
-    sed -e "s/@VERSION@/$V/g" README-PHD2.txt.in >tmp/README-PHD2.txt
+# generate phd2.iss and README.txt in tmp, one level up from Release/
+sed -e "s/@VERSION@/$V/g" phd2.iss.in >tmp/phd2.iss
+sed -e "s/@VERSION@/$V/g" README-PHD2.txt.in >tmp/README-PHD2.txt
 
-    (
-        cd tmp
-        #"$MSBUILD" phd2.sln $rebuild /property:Configuration=Release
-        "$CMAKE" --build . --target phd2 --config Release $rebuild
+(
+    cd tmp
+    "$CMAKE" --build . --target phd2 --config Release
 
-        "$ISCC" phd2.iss /F$F
-    )
-fi
-
-if [[ $do_install ]]; then
-    ./tmp/${F}.exe
-fi
+    "$ISCC" phd2.iss /F"${INSTALLER}"
+)

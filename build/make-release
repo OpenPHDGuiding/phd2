@@ -15,7 +15,12 @@ SCRIPT_DIR=${BASH_SOURCE%/*}
 
 usage () {
     cat <<EOF
-Usage: build [-b branch] -r rev
+Usage: build [-n] [-b BRANCH] -r rev
+
+Options:
+ -n            dry-run mode: build but do not publish to website
+ -b BRANCH     branch to build from [default: master]
+ -r REV        release version number
 EOF
 }
 
@@ -144,6 +149,9 @@ do_release_prep () {
         echo "release is already tagged"
         return
     fi
+    if [[ $dry_run ]]; then
+        die "dry run requires an existing tag"
+    fi
     update_translations
     bump_rev
     echo "pushing to github"
@@ -191,25 +199,32 @@ generate_release_version_files () (
 )
 
 build_os_packages () (
+    remote_worktree=phd2-build-$(date +%Y%m%d-%H%M%S)
     pids=()
     (
-        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -b 'v${rev}'" \
+        echo "Building windows installer on $WIN_HOST"
+        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -b 'v${rev}' -w '$remote_worktree'" \
             > tmp/build-logs/win.log 2>&1
         win_installer=phd2-${rev}-installer.exe
         echo "Windows build completed"
-        scp "$WIN_HOST:$WIN_DIR/tmp/${win_installer}" tmp/release/
+        scp "$WIN_HOST:$WIN_DIR/../${remote_worktree}/tmp/${win_installer}" tmp/release/
+        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -c -w '$remote_worktree'"
     ) & pids+=($!)
     (
-        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -b 'v${rev}'" \
+        echo "Building Mac installer on $MAC64_HOST"
+        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
             > tmp/build-logs/mac64.log 2>&1
         echo "mac64 build completed"
-        scp "$MAC64_HOST:$MAC64_DIR/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
+        scp "$MAC64_HOST:$MAC64_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
+        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -c -w '$remote_worktree'"
     ) & pids+=($!)
     (
-        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -b 'v${rev}'" \
+        echo "Building Mac Sonoma+ installer on $MAC64S_HOST"
+        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
             > tmp/build-logs/mac64s.log 2>&1
         echo "mac64s build completed"
-        scp "$MAC64S_HOST:$MAC64S_DIR/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
+        scp "$MAC64S_HOST:$MAC64S_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
+        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -c -w '$remote_worktree'"
     ) & pids+=($!)
     success=1
     for pid in ${pids[@]}; do
@@ -256,6 +271,11 @@ deploy_release_to_website () (
     # release pages in wordpress, and generate the static site from
     # wordpress
 
+    if [[ $dry_run ]]; then
+        echo "dry run: skipping deployment"
+        return
+    fi
+
     rsync -a tmp/release/ "$WWW_HOST:$WWW_DIR"/
     make_wp_release_pages
     ssh $WWW_HOST "./bin/phd2_generate_static_site"
@@ -269,14 +289,16 @@ set -o pipefail
 top=$(cd "$SCRIPT_DIR" && git rev-parse --show-toplevel)
 cd "$top"
 
+dry_run=
 branch=master
 debug=
 rev=
 
-while getopts 'b:gr:' opt "$@"; do
+while getopts 'b:gnr:' opt "$@"; do
     case $opt in
         b) branch=$OPTARG;;
         g) set -x; debug=1 ;;
+        n) dry_run=1 ;;
         r) rev=$OPTARG;;
         \?) usage >&2; exit 1;;
     esac
