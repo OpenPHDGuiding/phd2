@@ -1122,7 +1122,9 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pBinningLevel->Set(opts);
         m_pBinningLevel->SetSelection(0);
         // Bit depth
-        wxByte bitDepth = cam->BitsPerPixel();
+        wxByte bitDepth = 0;
+        if (cam)
+            bitDepth = cam->BitsPerPixel();
         if (bitDepth == 0)           // Cam doesn't report it, force the user to choose
         {
             m_pBits8->SetValue(false);
