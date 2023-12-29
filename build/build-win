@@ -66,6 +66,7 @@ fi
 
 CMD="/c/Windows/System32/cmd.exe"
 CMAKE='/c/Program Files/CMake/bin/cmake.exe'
+CTEST='/c/Program Files/CMake/bin/ctest.exe'
 ISCC="/c/Program Files (x86)/Inno Setup 5/ISCC.exe"
 
 CMAKE_W=$(cygpath -w "$CMAKE")
@@ -80,24 +81,21 @@ vcpkg_args=()
 if [[ $VCPKG_ROOT ]]; then
     vcpkg_args+=(-DVCPKG_ROOT=$VCPKG_ROOT)
 fi
-mkdir -p tmp
-(
-    cd tmp
 
-    cat >run_cmake.bat <<EOF
+mkdir -p tmp
+cd tmp
+
+cat >run_cmake.bat <<EOF
 "$CMAKE_W" -Wno-dev -G "Visual Studio 17" -A Win32 ${vcpkg_args[@]} "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" ..
 EOF
-
-    "$CMD" /c run_cmake.bat
-)
+"$CMD" /c run_cmake.bat
 
 # generate phd2.iss and README.txt in tmp, one level up from Release/
-sed -e "s/@VERSION@/$V/g" phd2.iss.in >tmp/phd2.iss
-sed -e "s/@VERSION@/$V/g" README-PHD2.txt.in >tmp/README-PHD2.txt
+sed -e "s/@VERSION@/$V/g" ../phd2.iss.in >phd2.iss
+sed -e "s/@VERSION@/$V/g" ../README-PHD2.txt.in >README-PHD2.txt
 
-(
-    cd tmp
-    "$CMAKE" --build . --target phd2 --config Release
+"$CMAKE" --build . --config Release
 
-    "$ISCC" phd2.iss /F"${INSTALLER}"
-)
+"$CTEST" --build-config Release
+
+"$ISCC" phd2.iss /F"${INSTALLER}"

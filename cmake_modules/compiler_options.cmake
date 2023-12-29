@@ -42,9 +42,7 @@ if(WIN32)
 endif()
 
 # these options allow to use system libraries
-option(USE_SYSTEM_CFITSIO "Enable this option here or in cmake call if you want to use system's cfitsio." OFF)
 option(USE_SYSTEM_LIBUSB "Enable this option here or in cmake call if you want to use system's libUSB." OFF)
-option(USE_SYSTEM_EIGEN3 "Enable this option here or in cmake call if you want to use system's Eigen3." OFF)
 option(USE_SYSTEM_GTEST "Enable this option here or in cmake call if you want to use system's Gtest." OFF)
 option(USE_SYSTEM_LIBINDI "Enable this option here or in cmake call if you want to use system's libindi." OFF)
 
