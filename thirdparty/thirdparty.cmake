@@ -310,147 +310,147 @@ endif()
 
 if(NOT WIN32)
 
-set(LIBUSB libusb-1.0.21)
-set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
-set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
-set(LIBUSB_static TRUE)  # true for static lib, dynamic lib otherwise
+  set(LIBUSB libusb-1.0.21)
+  set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
+  set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
+  set(LIBUSB_static TRUE)  # true for static lib, dynamic lib otherwise
 
-if(NOT EXISTS ${libusb_root})
-  # untar the dependency
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xf ${thirdparty_dir}/${LIBUSB}.tar.bz2
-    WORKING_DIRECTORY ${thirdparties_deflate_directory})
-endif()
+  if(NOT EXISTS ${libusb_root})
+    # untar the dependency
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xf ${thirdparty_dir}/${LIBUSB}.tar.bz2
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
 
-set(libusb_dir ${libusb_root}/libusb)
-# core files
-set(libUSB_SRC
-  ${libusb_dir}/core.c
-  ${libusb_dir}/descriptor.c
-  ${libusb_dir}/hotplug.c
-  ${libusb_dir}/io.c
-  ${libusb_dir}/sync.c
-  ${libusb_dir}/libusb.h
-  ${libusb_dir}/libusbi.h
+  set(libusb_dir ${libusb_root}/libusb)
+  # core files
+  set(libUSB_SRC
+    ${libusb_dir}/core.c
+    ${libusb_dir}/descriptor.c
+    ${libusb_dir}/hotplug.c
+    ${libusb_dir}/io.c
+    ${libusb_dir}/sync.c
+    ${libusb_dir}/libusb.h
+    ${libusb_dir}/libusbi.h
   )
 
-# platform dependent files
-if(APPLE)
-  set(libUSB_SRC ${libUSB_SRC}
-
-    # platform specific configuration file
-    ${thirdparty_dir}/include/${LIBUSB}
-
-    # platform specific implementation
-    ${libusb_dir}/os/darwin_usb.h
-    ${libusb_dir}/os/darwin_usb.c
-
-    ${libusb_dir}/os/threads_posix.h
-    ${libusb_dir}/os/threads_posix.c
-
-    ${libusb_dir}/os/poll_posix.c
-  )
-  set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1")
-  set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
-  # need to build a dynamic libusb since the ZWO SDK requires libusb
-  set(LIBUSB_static FALSE)
-elseif(WIN32)
-  set(libUSB_SRC ${libUSB_SRC}
-
-    # platform specific configuration files
-    ${libusb_root}/msvc/stdint.h
-    ${libusb_root}/msvc/inttypes.h
-    ${libusb_root}/msvc/config.h
-
-    # platform specific implementation
-    ${libusb_dir}/os/windows_winusb.h
-    ${libusb_dir}/os/windows_winusb.c
-
-    ${libusb_dir}/os/threads_windows.h
-    ${libusb_dir}/os/threads_windows.c
-
-    ${libusb_dir}/os/poll_windows.h
-    ${libusb_dir}/os/poll_windows.c
-   )
-  set(${LIBUSB}_additional_compile_definition "OS_WINDOWS=1")
-  set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
-elseif(UNIX)
-  # libUSB is already an indirect requirement/dependency for phd2 (through libindi).
-  # I (Raffi) personally prefer having the same version
-  # for all platforms, but it should in theory always be better to link against existing libraries
-  # compiled and shipped by skilled people.
-
-  # this would find the libUSB module that is installed on the system.
-  # It requires "sudo apt-get install libusb-1.0-0-dev"
-  if(USE_SYSTEM_LIBUSB)
-    pkg_check_modules(USB_pkg libusb-1.0)
-    if(0)
-      message(FATAL_ERROR "libUSB not detected")
-    else()
-      include_directories(${USB_pkg_INCLUDE_DIRS})
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
-      set(USB_build FALSE)
-      set(usb_openphd ${USB_pkg_LIBRARIES})
-      message(STATUS "Using system's libUSB.")
-    endif()
-  else(USE_SYSTEM_LIBUSB)
-
-    # in case the library is not installed on the system (as I have on my machines)
-    # try by building the library ourselves
-
+  # platform dependent files
+  if(APPLE)
     set(libUSB_SRC ${libUSB_SRC}
 
-     # platform specific configuration file
-     ${thirdparty_dir}/include/${LIBUSB}
+      # platform specific configuration file
+      ${thirdparty_dir}/include/${LIBUSB}
 
-     # platform specific implementation
-     ${libusb_dir}/os/linux_usbfs.c
-     ${libusb_dir}/os/linux_usbfs.h
-     ${libusb_dir}/os/linux_netlink.c
+      # platform specific implementation
+      ${libusb_dir}/os/darwin_usb.h
+      ${libusb_dir}/os/darwin_usb.c
 
-     ${libusb_dir}/os/threads_posix.h
-     ${libusb_dir}/os/threads_posix.c
+      ${libusb_dir}/os/threads_posix.h
+      ${libusb_dir}/os/threads_posix.c
 
-     ${libusb_dir}/os/poll_posix.c
+      ${libusb_dir}/os/poll_posix.c
     )
-
-    set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
+    set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1")
     set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
-  endif(USE_SYSTEM_LIBUSB)
+    # need to build a dynamic libusb since the ZWO SDK requires libusb
+    set(LIBUSB_static FALSE)
+  elseif(WIN32)
+    set(libUSB_SRC ${libUSB_SRC}
 
-else()
-  message(FATAL_ERROR "libUSB unsupported platform")
-endif()
+      # platform specific configuration files
+      ${libusb_root}/msvc/stdint.h
+      ${libusb_root}/msvc/inttypes.h
+      ${libusb_root}/msvc/config.h
 
-if(${USB_build})
-  include_directories(${libusb_dir})
+      # platform specific implementation
+      ${libusb_dir}/os/windows_winusb.h
+      ${libusb_dir}/os/windows_winusb.c
 
-  # libUSB compilation if OSX or Win32 or not installed on Linux
-  if(LIBUSB_static)
-    add_library(usb_openphd ${libUSB_SRC})
-  else()
-    add_library(usb_openphd SHARED ${libUSB_SRC})
-    # target_link_options requires newer cmake, so fall back to the old LINK_FLAGS target property
-    #   target_link_options(usb_openphd -compatibility_version 2 -current_version 2)
-    set_target_properties(usb_openphd PROPERTIES LINK_FLAGS "-compatibility_version 2 -current_version 2")
-    target_link_libraries(usb_openphd
-      ${coreFoundationFramework}
-      ${iokitFramework}
-      ${libUSB_link_objc}
+      ${libusb_dir}/os/threads_windows.h
+      ${libusb_dir}/os/threads_windows.c
+
+      ${libusb_dir}/os/poll_windows.h
+      ${libusb_dir}/os/poll_windows.c
     )
-  endif()
-  target_include_directories(usb_openphd PRIVATE ${${LIBUSB}_additional_include_dir})
-  target_compile_definitions(usb_openphd PUBLIC ${${LIBUSB}_additional_compile_definition})
-  set_property(TARGET usb_openphd PROPERTY FOLDER "Thirdparty/")
+    set(${LIBUSB}_additional_compile_definition "OS_WINDOWS=1")
+    set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
+  elseif(UNIX)
+    # libUSB is already an indirect requirement/dependency for phd2 (through libindi).
+    # I (Raffi) personally prefer having the same version
+    # for all platforms, but it should in theory always be better to link against existing libraries
+    # compiled and shipped by skilled people.
 
-  if(WIN32)
-    # silence the warnings on externals for win32
-    target_compile_definitions(usb_openphd PRIVATE _CRT_SECURE_NO_WARNINGS)
+    # this would find the libUSB module that is installed on the system.
+    # It requires "sudo apt-get install libusb-1.0-0-dev"
+    if(USE_SYSTEM_LIBUSB)
+      pkg_check_modules(USB_pkg libusb-1.0)
+      if(0)
+        message(FATAL_ERROR "libUSB not detected")
+      else()
+        include_directories(${USB_pkg_INCLUDE_DIRS})
+        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
+        set(USB_build FALSE)
+        set(usb_openphd ${USB_pkg_LIBRARIES})
+        message(STATUS "Using system's libUSB.")
+      endif()
+    else(USE_SYSTEM_LIBUSB)
+
+      # in case the library is not installed on the system (as I have on my machines)
+      # try by building the library ourselves
+
+      set(libUSB_SRC ${libUSB_SRC}
+
+        # platform specific configuration file
+        ${thirdparty_dir}/include/${LIBUSB}
+
+        # platform specific implementation
+        ${libusb_dir}/os/linux_usbfs.c
+        ${libusb_dir}/os/linux_usbfs.h
+        ${libusb_dir}/os/linux_netlink.c
+
+        ${libusb_dir}/os/threads_posix.h
+        ${libusb_dir}/os/threads_posix.c
+
+        ${libusb_dir}/os/poll_posix.c
+      )
+
+      set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
+      set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
+    endif(USE_SYSTEM_LIBUSB)
+
   else()
-    target_compile_definitions(usb_openphd PRIVATE LIBUSB_DESCRIBE "")
+    message(FATAL_ERROR "libUSB unsupported platform")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} usb_openphd)
-endif()
+
+  if(${USB_build})
+    include_directories(${libusb_dir})
+
+    # libUSB compilation if OSX or Win32 or not installed on Linux
+    if(LIBUSB_static)
+      add_library(usb_openphd ${libUSB_SRC})
+    else()
+      add_library(usb_openphd SHARED ${libUSB_SRC})
+      # target_link_options requires newer cmake, so fall back to the old LINK_FLAGS target property
+      #   target_link_options(usb_openphd -compatibility_version 2 -current_version 2)
+      set_target_properties(usb_openphd PROPERTIES LINK_FLAGS "-compatibility_version 2 -current_version 2")
+      target_link_libraries(usb_openphd
+        ${coreFoundationFramework}
+        ${iokitFramework}
+        ${libUSB_link_objc}
+      )
+    endif()
+    target_include_directories(usb_openphd PRIVATE ${${LIBUSB}_additional_include_dir})
+    target_compile_definitions(usb_openphd PUBLIC ${${LIBUSB}_additional_compile_definition})
+    set_property(TARGET usb_openphd PROPERTY FOLDER "Thirdparty/")
+
+    if(WIN32)
+      # silence the warnings on externals for win32
+      target_compile_definitions(usb_openphd PRIVATE _CRT_SECURE_NO_WARNINGS)
+    else()
+      target_compile_definitions(usb_openphd PRIVATE LIBUSB_DESCRIBE "")
+    endif()
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} usb_openphd)
+  endif()
 
 endif() # NOT WIN32
 
