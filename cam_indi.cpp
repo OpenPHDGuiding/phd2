@@ -864,9 +864,15 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
     int nhdus = 0;
     fits_get_num_hdus(fptr, &nhdus, &status);
 
+    if (naxis == 3)
+    {
+        pFrame->Alert(_("RGB images are not supported, please switch the INDI driver to Mono"));
+        PHD_fits_close_file(fptr);
+        return true;
+    }
     if (nhdus != 1 || naxis != 2)
     {
-        pFrame->Alert(_("Unsupported type or read error loading FITS file"));
+        pFrame->Alert(_("Unsupported FITS file"));
         PHD_fits_close_file(fptr);
         return true;
     }
