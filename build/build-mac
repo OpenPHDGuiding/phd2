@@ -113,5 +113,8 @@ make -j$cores
 
 check_library_dependencies
 
+# make sure tests all pass
+ctest
+
 zip -r "$ZIPFILE" PHD2.app
 chmod 644 "$ZIPFILE"
