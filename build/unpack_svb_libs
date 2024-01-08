@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -x
 
@@ -11,11 +11,22 @@ usage () {
 
 # === main ===
 
+TMP=$(mktemp -d --tmpdir)
+trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
+
 WIN=
 LINUX=
 MACOS=
 for f in "$@"; do
     case "${f##*/}" in
+        SVBONY_*.zip)
+            unzip -q -d "$TMP" "$f"
+            # assign to array to expand globs
+            files=($TMP/*/windows_*zip $TMP/*/linux_*.tar.gz $TMP/*/macos_*.tar.gz)
+            WIN=${files[0]}
+            LINUX=${files[1]}
+            MACOS=${files[2]}
+            ;;
         windows*.zip) WIN=$f ;;
         linux*.tar.gz) LINUX=$f ;;
         macos*.tar.gz) MACOS=$f ;;
@@ -32,9 +43,6 @@ set -e
 
 TOP=$(cd $(dirname "$0")/..; /bin/pwd)
 
-TMP=$(mktemp -d --tmpdir)
-trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
-
 # windows
 if [[ $WIN ]]; then
     F=SVBONY
@@ -50,7 +58,10 @@ if [[ $LINUX ]]; then
     tar xfz "$LINUX" -C "$TMP/linux/"
     (
         cd "$TMP/linux/SVBCameraSDK/lib"
-        find . -name '*.so' | cpio --quiet -pdmuv "$TOP"/cameras/svblibs/linux
+        # exclude libusb
+        find . -name '*.so' | \
+            grep -F -v libusb | \
+            cpio --quiet -pdmuv "$TOP"/cameras/svblibs/linux
         cp "../include/SVBCameraSDK.h" "$TOP"/cameras/
     )
 fi
@@ -61,7 +72,10 @@ if [[ $MACOS ]]; then
     tar xfz "$MACOS" -C "$TMP/mac/"
     (
         cd "$TMP/mac/SVBCameraSDK/lib"
-        find . -name '*.dylib' | cpio --quiet -pdmuv "$TOP"/cameras/svblibs/mac
+        # exclude libusb
+        find x64 -name '*.dylib' | \
+            grep -F -v libusb | \
+            cpio --quiet -pdmuv "$TOP"/cameras/svblibs/mac
         cp "../include/SVBCameraSDK.h" "$TOP"/cameras/
     )
 fi
