@@ -258,13 +258,14 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
         // grab the subframe
         wxBitmap dBmp(*img);
+        int scaledSize = 15 * scaleFactor;
         int lkx = ROUND(LockX);
-        int l = std::max(0, lkx - 15);
-        int r = std::min(dBmp.GetWidth() - 1, lkx + 15);
+        int l = std::max(0, lkx - scaledSize);
+        int r = std::min(dBmp.GetWidth() - 1, lkx + scaledSize);
         int w = std::min(lkx - l, r - lkx);
         int lky = ROUND(LockY);
-        int t = std::max(0, lky - 15);
-        int b = std::min(dBmp.GetHeight() - 1, lky + 15);
+        int t = std::max(0, lky - scaledSize);
+        int b = std::min(dBmp.GetHeight() - 1, lky + scaledSize);
         int h = std::min(lky - t, b - lky);
         int sz = std::min(w, h);
         // scale by 2
