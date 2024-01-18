@@ -221,8 +221,7 @@ static unsigned char *buildGammaLookupTable(int blevel, int wlevel, double power
     if (blevel > 0xffff) blevel = 0xffff;
     if (wlevel > 0xffff) blevel = 0xffff;
 
-    for (int i = 0; i <= blevel; ++i)
-        result[i] = 0;
+    memset(result, 0, blevel + 1);
 
     float range = wlevel - blevel;
     for (int i = blevel + 1; i < wlevel; ++i)
@@ -231,8 +230,8 @@ static unsigned char *buildGammaLookupTable(int blevel, int wlevel, double power
         result[i] = pow(d, (float) power) * 255.0;
     }
 
-    for (int i = wlevel; i < 0x10000; ++i)
-        result[i] = 255;
+    if (wlevel < 0x10000)
+        memset(result + wlevel, 255, 0x10000 - wlevel);
 
     return result;
 }
