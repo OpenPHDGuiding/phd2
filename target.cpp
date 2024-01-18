@@ -234,6 +234,7 @@ TargetClient::TargetClient(wxWindow *parent) :
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
+    memset(m_history, 0, sizeof(m_history));
     m_minLength = 50;
     m_maxLength = 400;
 
