@@ -441,6 +441,15 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
         {
             int blevel = m_pCurrentImage->FiltMin;
             int wlevel = m_pCurrentImage->FiltMax;
+
+            // Enhance contrast for very low contrast images. This adjustment prevents the frames
+            // from being displayed as all-white, which is a visually unpleasant artifact commonly
+            // encountered in dark frames. By slightly increasing the maximum value
+            // when the difference between min and max values is minimal, we improve the visibility
+            // of image details while avoiding the all-white display issue.
+            if (wlevel < 4096 && (wlevel - blevel) < 16)
+                wlevel += 16;
+
             m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
         }
 
