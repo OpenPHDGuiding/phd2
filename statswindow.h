@@ -48,10 +48,16 @@ class StatsWindow : public wxWindow
     int m_coolerRow;
     wxSize m_lastFrameSize;
 
+    // Original column/row sizes
+    int m_gridRowHeight;
+    std::vector<int> m_grid1ColSize;
+    std::vector<int> m_grid2ColSize;
+
     void OnButtonLength(wxCommandEvent&);
     void OnMenuLength(wxCommandEvent&);
     void OnButtonClear(wxCommandEvent&);
     void OnTimerCooler(wxTimerEvent&);
+    void OnGridResize(wxGridSizeEvent& event);
 
 public:
     StatsWindow(wxWindow *parent);

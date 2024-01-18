@@ -149,6 +149,19 @@ StatsWindow::StatsWindow(wxWindow *parent)
     sizer2->Add(m_grid2, wxSizerFlags(0).Border(wxALL, 10));
 
     SetSizerAndFit(sizer2);
+
+    // Save original grid sizes
+    m_gridRowHeight = m_grid1->GetRowHeight(0);
+    for (int j = 0; j < m_grid1->GetNumberCols(); ++j)
+        m_grid1ColSize.push_back(m_grid1->GetColSize(j));
+    for (int j = 0; j < m_grid2->GetNumberCols(); ++j)
+        m_grid2ColSize.push_back(m_grid2->GetColSize(j));
+
+    // Setup event handlers for keeping original grid sizes fixed
+    m_grid1->Bind(wxEVT_GRID_COL_SIZE, &StatsWindow::OnGridResize, this);
+    m_grid1->Bind(wxEVT_GRID_ROW_SIZE, &StatsWindow::OnGridResize, this);
+    m_grid2->Bind(wxEVT_GRID_COL_SIZE, &StatsWindow::OnGridResize, this);
+    m_grid2->Bind(wxEVT_GRID_ROW_SIZE, &StatsWindow::OnGridResize, this);
 }
 
 StatsWindow::~StatsWindow(void)
@@ -344,4 +357,22 @@ void StatsWindow::OnMenuLength(wxCommandEvent& evt)
 void StatsWindow::OnButtonClear(wxCommandEvent& evt)
 {
     pFrame->pGraphLog->OnButtonClear(evt);
+}
+
+// Prevent resizing of rows and columns
+void StatsWindow::OnGridResize(wxGridSizeEvent& event)
+{
+    wxGrid* grid = dynamic_cast<wxGrid*>(event.GetEventObject());
+    std::vector<int> colSize;
+    if (grid == m_grid1)
+        colSize = m_grid1ColSize;
+    else if (grid == m_grid2)
+        colSize = m_grid2ColSize;
+    else
+        return;
+
+    for (int i = 0; i < grid->GetNumberRows(); ++i)
+        grid->SetRowSize(i, m_gridRowHeight);
+    for (int j = 0; j < grid->GetNumberCols(); ++j)
+        grid->SetColSize(j, colSize[j]);
 }
