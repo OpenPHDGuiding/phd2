@@ -210,6 +210,7 @@ struct FileDropTarget : public wxFileDropTarget
 MyFrame::MyFrame()
     :
     wxFrame(nullptr, wxID_ANY, wxEmptyString),
+    pGuider(nullptr),
     m_showBookmarksAccel(0),
     m_bookmarkLockPosAccel(0),
     pStatsWin(nullptr)
