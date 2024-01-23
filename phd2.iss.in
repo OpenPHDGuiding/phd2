@@ -53,7 +53,7 @@ Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll
 Source: Release\msvcr120.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\msvcp120.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\msvcp140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\vcomp140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\vcruntime140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\cfitsio.dll; DestDir: {app}; Flags: replacesameversion
