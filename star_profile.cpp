@@ -150,10 +150,27 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int labelTextHeight;
 
     if (inFocusingMode) {
-        //todo: Tuning the scaling factor
-        int scale = ysize / 50;
-        largeFont = smallFont.Scaled(scale);
+        // To compute the scale factor, we use the following formula, which maximizes the use of all available
+        // window width (xsize) while displaying HFD metrics in the exact format. The scaling value is calculated
+        // on the premise that both large font digits are fixed-width, and that font scaling is linear.
+        // The variable 'sfw' represents the width of a single digit displayed using the small font
+        // and 'dotw' represents the width of a single '.' displayed using the small font.
+        // xsize = 10 + smallFontTextWidth + scale * (sfw * strlen(largeFontTextWithoutDot) + dotw);
+        // therefore, scale = (xsize - 10 - smallFontTextWidth) / (sfw * strlen(largeFontTextWithoutDot) + dotw)
+        const Star& star = pFrame->pGuider->PrimaryStar();
+        float hfd = star.HFD;
+        float sfw = (float)dc.GetTextExtent("0").GetWidth();
+        float dotw = (float)dc.GetTextExtent(".").GetWidth();
+        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
 
+        wxString smallFontText = wxString::Format("HFD: " /* ... */ "  %.2f\"", hfdArcSec);
+        int smallFontTextWidth = dc.GetTextExtent(smallFontText).GetWidth();
+        wxString largeDigitsText = wxString::Format("%.2f", hfd);
+        int largeLenWithoutDot = largeDigitsText.Length() - 1;
+        float scale = (xsize - 10 - smallFontTextWidth) / (sfw * largeLenWithoutDot + dotw);
+        scale = wxMax(1.0, scale);
+
+        largeFont = smallFont.Scaled(scale);
         dc.SetFont(largeFont);
         largeFontHeight = dc.GetTextExtent("0").GetHeight();
         dc.SetFont(smallFont);
@@ -354,6 +371,5 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
     }
-
 }
 
