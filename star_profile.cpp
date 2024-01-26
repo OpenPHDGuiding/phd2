@@ -56,6 +56,12 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
     rawMode = pConfig->Global.GetBoolean("/ProfileRawMode", false);
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
+
+    memset(midrow_profile, 0, sizeof(midrow_profile));
+    memset(vert_profile, 0, sizeof(vert_profile));
+    memset(horiz_profile, 0, sizeof(horiz_profile));
+    imageLeftMargin = 0;
+    imageBottom = 0;
 }
 
 ProfileWindow::~ProfileWindow()
