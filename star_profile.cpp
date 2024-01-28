@@ -56,6 +56,12 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
     rawMode = pConfig->Global.GetBoolean("/ProfileRawMode", false);
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
+
+    memset(midrow_profile, 0, sizeof(midrow_profile));
+    memset(vert_profile, 0, sizeof(vert_profile));
+    memset(horiz_profile, 0, sizeof(horiz_profile));
+    imageLeftMargin = 0;
+    imageBottom = 0;
 }
 
 ProfileWindow::~ProfileWindow()
@@ -144,10 +150,27 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int labelTextHeight;
 
     if (inFocusingMode) {
-        //todo: Tuning the scaling factor
-        int scale = ysize / 50;
-        largeFont = smallFont.Scaled(scale);
+        // To compute the scale factor, we use the following formula, which maximizes the use of all available
+        // window width (xsize) while displaying HFD metrics in the exact format. The scaling value is calculated
+        // on the premise that both large font digits are fixed-width, and that font scaling is linear.
+        // The variable 'sfw' represents the width of a single digit displayed using the small font
+        // and 'dotw' represents the width of a single '.' displayed using the small font.
+        // xsize = 10 + smallFontTextWidth + scale * (sfw * strlen(largeFontTextWithoutDot) + dotw);
+        // therefore, scale = (xsize - 10 - smallFontTextWidth) / (sfw * strlen(largeFontTextWithoutDot) + dotw)
+        const Star& star = pFrame->pGuider->PrimaryStar();
+        float hfd = star.HFD;
+        float sfw = (float)dc.GetTextExtent("0").GetWidth();
+        float dotw = (float)dc.GetTextExtent(".").GetWidth();
+        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
 
+        wxString smallFontText = wxString::Format("HFD: " /* ... */ "  %.2f\"", hfdArcSec);
+        int smallFontTextWidth = dc.GetTextExtent(smallFontText).GetWidth();
+        wxString largeDigitsText = wxString::Format("%.2f", hfd);
+        int largeLenWithoutDot = largeDigitsText.Length() - 1;
+        float scale = (xsize - 10 - smallFontTextWidth) / (sfw * largeLenWithoutDot + dotw);
+        scale = wxMax(1.0, scale);
+
+        largeFont = smallFont.Scaled(scale);
         dc.SetFont(largeFont);
         largeFontHeight = dc.GetTextExtent("0").GetHeight();
         dc.SetFont(smallFont);
@@ -233,55 +256,13 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawLines(FULLW, Prof);
     }
 
+    // Prioritize rendering star image before rendering text
     dc.SetTextForeground(wxColour(255,0,0));
-
-    const Star& star = pFrame->pGuider->PrimaryStar();
-    if (star.IsValid())
-    {
-        dc.DrawText(_("Peak"), 3, 3);
-        dc.DrawText(wxString::Format("%u", star.PeakVal), 3, 3 + smallFontHeight);
-    }
-
-    float hfd = star.HFD;
-    imageLeftMargin = (xsize - 15) / 2;
-    if (hfd != 0.f)
-    {
-        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
-        if (inFocusingMode)
-        {
-            wxString fwhmLine = wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm);
-            int fwhmLineWidth = dc.GetTextExtent(fwhmLine).GetWidth();
-            dc.DrawText(fwhmLine, 5, ysize - labelTextHeight + 5);
-            // Show X/Y of centroid if there's room
-            if (imageLeftMargin > fwhmLineWidth + 20)
-                dc.DrawText(wxString::Format("X: %0.2f, Y: %0.2f", pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y), imageLeftMargin, ysize - labelTextHeight + 5);
-            int x = 5;
-            wxString s(_("HFD: "));
-            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
-            x += dc.GetTextExtent(s).GetWidth();
-
-            dc.SetFont(largeFont);
-            s = wxString::Format(_T("%.2f"), hfd);
-            dc.DrawText(s, x, ysize - largeFontHeight);
-            x += dc.GetTextExtent(s).GetWidth();
-
-            dc.SetFont(smallFont);
-            s = wxString::Format(_T("  %.2f\""), hfdArcSec);
-            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
-        }
-        else
-        {
-            dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
-        }
-    }
-    else
-    {
-        dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
-    }
 
     // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
+    imageLeftMargin = (xsize - 15) / 2;
     if (img)
     {
         int width = xsize - imageLeftMargin - 5;
@@ -294,13 +275,14 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
         // grab the subframe
         wxBitmap dBmp(*img);
+        int scaledSize = 15 * scaleFactor;
         int lkx = ROUND(LockX);
-        int l = std::max(0, lkx - 15);
-        int r = std::min(dBmp.GetWidth() - 1, lkx + 15);
+        int l = std::max(0, lkx - scaledSize);
+        int r = std::min(dBmp.GetWidth() - 1, lkx + scaledSize);
         int w = std::min(lkx - l, r - lkx);
         int lky = ROUND(LockY);
-        int t = std::max(0, lky - 15);
-        int b = std::min(dBmp.GetHeight() - 1, lky + 15);
+        int t = std::max(0, lky - scaledSize);
+        int b = std::min(dBmp.GetHeight() - 1, lky + scaledSize);
         int h = std::min(lky - t, b - lky);
         int sz = std::min(w, h);
         // scale by 2
@@ -337,14 +319,57 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         if (sz > 0)
         {
             // and a small cross at the centroid
-            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2)) + 1, starY = midwidth - dStarY * (width / (sz * 2)) + 1 + imgTop;
+            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2.0)) + 1, starY = midwidth - dStarY * (width / (sz * 2.0)) + 1 + imgTop;
             if (starX >= imageLeftMargin)
             {
                 dc.SetPen(RedPen);
-                dc.DrawLine(starX - 3, starY, starX + 3, starY);
-                dc.DrawLine(starX, starY - 3, starX, starY + 3);
+                dc.DrawLine(starX - 5, starY, starX + 5, starY);
+                dc.DrawLine(starX, starY - 5, starX, starY + 5);
             }
         }
+    }
+
+    const Star& star = pFrame->pGuider->PrimaryStar();
+    if (star.IsValid())
+    {
+        dc.DrawText(_("Peak"), 3, 3);
+        dc.DrawText(wxString::Format("%u", star.PeakVal), 3, 3 + smallFontHeight);
+    }
+
+    float hfd = star.HFD;
+    if (hfd != 0.f)
+    {
+        float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
+        if (inFocusingMode)
+        {
+            wxString fwhmLine = wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm);
+            int fwhmLineWidth = dc.GetTextExtent(fwhmLine).GetWidth();
+            dc.DrawText(fwhmLine, 5, ysize - labelTextHeight + 5);
+            // Show X/Y of centroid if there's room
+            if ((imageLeftMargin > fwhmLineWidth + 20) && (ysize - labelTextHeight + 5 > imageBottom))
+                dc.DrawText(wxString::Format("X: %0.2f, Y: %0.2f", pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y), imageLeftMargin, ysize - labelTextHeight + 5);
+            int x = 5;
+            wxString s(_("HFD: "));
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(largeFont);
+            s = wxString::Format(_T("%.2f"), hfd);
+            dc.DrawText(s, x, ysize - largeFontHeight);
+            x += dc.GetTextExtent(s).GetWidth();
+
+            dc.SetFont(smallFont);
+            s = wxString::Format(_T("  %.2f\""), hfdArcSec);
+            dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
+        }
+        else
+        {
+            dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
+        }
+    }
+    else
+    {
+        dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
     }
 }
 
