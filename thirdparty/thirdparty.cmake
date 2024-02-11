@@ -634,6 +634,7 @@ else()
     else()
       find_library(LIBNOVA REQUIRED NAMES nova)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${LIBNOVA} z)
+      add_definitions("-DLIBNOVA")
     endif()
     ## Define LIBNOVA when building Indi from source.
     add_definitions("-DLIBNOVA")
