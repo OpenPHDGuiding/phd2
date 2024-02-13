@@ -178,7 +178,7 @@ AboutDialog::AboutDialog()
         "<td>ToupTek Photonics Co., Ltd</td>"
         "<td>Jarno Paananen</td>"
         "<td>Leo Shatz</td>"
-        "<td></td>"
+        "<td>Niels Rackwitz</td>"
         "</tr>"
         "</table><br>"
         "<br>"
