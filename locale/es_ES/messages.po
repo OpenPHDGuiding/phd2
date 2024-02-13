@@ -1,11 +1,11 @@
-# 
+#
 #  fr\messages.po
 #  PHD Guiding
-# 
+#
 #  Created by Sylvain Girard
 #  Copyright (c) 2013 Sylvain Girard
 #  All rights reserved.
-# 
+#
 #  This source code is distributed under the following "BSD" license
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 #     contributors may be used to endorse or promote products derived from
 #     this software without specific prior written permission.
-# 
+#
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 #  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,14 +29,14 @@
 #  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-26 20:37-0500\n"
-"PO-Revision-Date: 2023-10-19 08:48-0300\n"
+"PO-Revision-Date: 2024-02-06 21:10-0300\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team: <LL@li.org>\n"
 "Language: es\n"
@@ -44,7 +44,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: about_dialog.cpp:45 myframe.cpp:577
@@ -65,7 +65,7 @@ msgstr "Cámara"
 #: advanced_dialog.cpp:102 advanced_dialog.cpp:182 myframe.cpp:1675
 #: myframe.cpp:2230 scope_manual_pointing.cpp:66
 msgid "Guiding"
-msgstr "Guiando"
+msgstr "Guiado"
 
 #: advanced_dialog.cpp:104 advanced_dialog.cpp:187
 msgid "Algorithms"
@@ -1512,6 +1512,8 @@ msgid ""
 "Camera is not connected.  Property controls may change if you connect to it "
 "first."
 msgstr ""
+"Cámara no conectada.  Controles de propiedades pueden cambiar si se conecta "
+"primero."
 
 #: camera.cpp:875
 msgid "Use Subframes"
@@ -1530,7 +1532,7 @@ msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
-"Tamaño de pixel \"un-binned\" de la cámara guía en micrones. Usado con "
+"Tamaño de pixel sin binning de la cámara guía en micrones. Usado con "
 "longitud focal de telescopio guía para mostrar error en arcosegundos."
 
 #: camera.cpp:881
@@ -4300,7 +4302,7 @@ msgstr ""
 
 #: guider.cpp:1277
 msgid "Stopped Guiding"
-msgstr "Guiado Parado"
+msgstr "Guiado Detenido"
 
 #: guider.cpp:1289
 msgid ""
@@ -4517,7 +4519,7 @@ msgstr ""
 
 #: guider_multistar.cpp:1415
 msgid "Maximum star HFD (pixels)"
-msgstr ""
+msgstr "HFD máximo de estrella (píxeles)"
 
 #: guider_multistar.cpp:1416
 msgid ""
@@ -4526,6 +4528,10 @@ msgid ""
 "noise, adjacent faint stars, internal reflections, or comet heads as guide "
 "stars."
 msgstr ""
+"Máximo HFD para la estrella que será usado para identificar la estrella "
+"guía. Esta configuración puede ser usada para prevenir que PHD2 utilice un "
+"sector de ruido del sensor, estrellas cercanas más débiles, reflexiones "
+"internas o cabezas de cometas como estrellas guía."
 
 #: guider_multistar.cpp:1420 myframe.cpp:915 myframe.cpp:986 scope.cpp:261
 msgid "Auto"
@@ -4737,7 +4743,7 @@ msgstr "Revisar resultados de Asistente de Guiado anteriores"
 
 #: guiding_assistant.cpp:559
 msgid "Stop measuring and re-enable guiding"
-msgstr "Parar la medición y habilitar el guiado"
+msgstr "Detener la medición y habilitar el guiado"
 
 #: guiding_assistant.cpp:628
 msgid ""
@@ -4986,7 +4992,7 @@ msgstr "Midiendo backlash... "
 
 #: guiding_assistant.cpp:1760
 msgid "Guiding stopped"
-msgstr "Guiado Parado"
+msgstr "Guiado detenido"
 
 #: guiding_assistant.cpp:1804 guiding_assistant.cpp:1889 statswindow.cpp:279
 #: statswindow.cpp:282
@@ -5451,7 +5457,7 @@ msgstr "&Detener\tCtrl-S"
 
 #: myframe.cpp:501 myframe.cpp:1005
 msgid "Stop looping and guiding"
-msgstr "Parar el bucle y el guiado"
+msgstr "Detener el bucle y guiado"
 
 #: myframe.cpp:503
 msgid "&Advanced Settings\tCtrl-A"
@@ -6482,7 +6488,7 @@ msgstr ""
 "panel de  \n"
 "avanzado. Use el menú \"ver\" para vigilar el rendimiento del guiado. Si "
 "tiene algún\n"
-" problema, lea el documento de 'Best Practices' y archivos de ayuda! "
+" problema, lea el documento de 'Mejores Prácticas' y archivos de ayuda! "
 
 #: myframe_events.cpp:189 staticpa_toolwin.cpp:310 staticpa_toolwin.cpp:626
 msgid "Instructions"
@@ -6636,8 +6642,8 @@ msgid ""
 "fail altogether.  Run the Calibration Assistant and follow the instructions "
 "to eliminate these risks, "
 msgstr ""
-"falló totalmente. Ejecute el Asistente de Calibración y siga las "
-"instrucciones para eliminar estos riesgos."
+"falló por completo. Ejecute el Asistente de Calibración y siga las "
+"instrucciones para eliminar estos riesgos. "
 
 #: myframe_events.cpp:991
 msgid ""
@@ -6749,7 +6755,7 @@ msgid ""
 "restarted, or after calibration completes"
 msgstr ""
 "La posición de bloqueo superpuesta no seguirá a la estrella si el guiado se "
-"para y se reinicia, cuando la calibración se finaliza"
+"detiene y se reinicia, cuando la calibración finalice"
 
 #: nudge_lock.cpp:164
 msgid "Lock Pos:"
@@ -7250,13 +7256,15 @@ msgstr ""
 
 #: profile_wizard.cpp:266
 msgid "Choose this if your guide camera driver downloads 8-bit data"
-msgstr ""
+msgstr "Seleccione si el driver de su cámara guía utiliza datos de 8 bits"
 
 #: profile_wizard.cpp:268
 msgid ""
 "Choose this if your guide camera driver downoads 16-bit data.  Requires a "
 "camera with 10, 12, 14 or 16-bit ADC electronics"
 msgstr ""
+"Seleccione si el driver de su cámara guía utiliza datos de 16 bits.  "
+"Requiere una cámara con electrónica ADC de 10, 12, 14 o 16 bits"
 
 #: profile_wizard.cpp:270
 msgid "Binning level"
@@ -7264,7 +7272,7 @@ msgstr "Nivel Binning"
 
 #: profile_wizard.cpp:275
 msgid "Bit depth (bits/pixel)"
-msgstr ""
+msgstr "Profundidad de pixel (bits/pixel)"
 
 #: profile_wizard.cpp:285
 msgid ""
@@ -7416,7 +7424,7 @@ msgstr ""
 "Seleccione su montura de la lista.  Esto determina cómo PHD2 enviará "
 "comandos de guiado a la montura. Para la mayoría de monturas modernas, la "
 "interfaz ASCOM es una buena elección si está ejecutando MS Windows.  Las "
-"otras interfaces están disponibles para casos donde ASCOM noe stá disponible "
+"otras interfaces están disponibles para casos donde ASCOM no está disponible "
 "o no está bien soportado por el firmware de la montura.  Si ud sabe la "
 "velocidad de guiado de su montura, la puede especificar para que PHD2 pueda "
 "calibrar más eficientemente.  Si no conoce la velocidad de guiado, puede "
@@ -7450,7 +7458,7 @@ msgid ""
 "commands."
 msgstr ""
 "El interface de la montura que seleccionó en el paso previo no proporciona "
-"información de coordenads, por lo que PHD2 no puede ajustar automáticamente "
+"información de coordenadas, por lo que PHD2 no puede ajustar automáticamente "
 "en qué lado de la columna se encuentra y la declinación. Puede habilitar "
 "esta configuración seleccionando una conexión 'Montura Aux' que proporcione "
 "esta información. El interface 'Montura Aux' únicamente se utilizará con "
@@ -7512,10 +7520,10 @@ msgid ""
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
 "Esta configuración no le da a PHD2 ninguna información de a dónde apunta el "
-"telescopio..  Esto significa que va a necesitar recalibrar\n"
+"telescopio.  Esto significa que va a necesitar recalibrar\n"
 "si mueve el telescopio, y algunas características de PHD2 estarán "
 "deshabilitadas.  Ud debería elegir una conexión de montura ASCOM o INDI\n"
-"para cada 'montura' o 'monutra-auxiliar' a menos que no haya drivers "
+"para cada 'montura' o 'montura-auxiliar' a menos que no haya drivers "
 "disponibles para su montura.\n"
 "por favor, vea la Ayuda en 'Conexión de Equipo' para más detalles."
 
@@ -7548,6 +7556,8 @@ msgid ""
 "Please specify camera type, guider focal length, camera bit-depth, and guide "
 "camera pixel size"
 msgstr ""
+"Por favor especifique el tipo de cámara, longitud focal de tubo guía, "
+"profundidad de bits de la cámara y tamaño de pixel de la cámara guía"
 
 #: profile_wizard.cpp:612
 msgid "Please select a mount type to handle guider commands"
