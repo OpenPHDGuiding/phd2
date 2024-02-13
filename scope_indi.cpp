@@ -298,7 +298,49 @@ bool ScopeINDI::Connect()
     // Receive messages only for our mount.
     watchDevice(INDIMountName.mb_str(wxConvUTF8));
 
-    return !connectServer();
+    Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIMountName));
+
+    ///* Wait in foreground for driver to establish a device connection */
+    //if (connectServer())
+    //{
+    //    Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIMountName));
+    //    int i = 0;
+    //    while (!Connected && i++ < 300) 
+    //        wxMilliSleep(100);
+    //}
+    //
+    //// We need to return FALSE if we are successful???
+    //return !Connected;
+    
+    /* Wait in background for driver to establish a device connection */
+    struct ConnectInBg : public ConnectMountInBg
+    {
+        ScopeINDI *scope;
+        ConnectInBg(ScopeINDI *scope_) : scope(scope_) { }
+        bool Entry()
+        {
+
+            //Wait for driver to establish a device connection
+            if (scope->connectServer())
+            {
+                
+                int i = 0;
+                while (!scope->Connected && i++ < 300) 
+                {
+                    if (IsCanceled())
+                        break;
+                    
+                    wxMilliSleep(100);
+                }                
+            }
+
+            // We need to return FALSE if we are successful
+            return !scope->Connected;
+
+        }
+    };
+
+    return ConnectInBg(this).Run();    
 }
 
 bool ScopeINDI::Disconnect()

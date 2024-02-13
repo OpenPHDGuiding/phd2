@@ -349,7 +349,38 @@ bool StepGuiderSxAoINDI::Connect()
     watchDevice(INDIaoDeviceName.mb_str(wxConvUTF8)); // Receive messages only for our device.
     Debug.AddLine(wxString::Format("Connecting to INDI server %s on port %d, device %s", INDIhost.mb_str(wxConvUTF8), INDIport,
                                    INDIaoDeviceName.mb_str(wxConvUTF8)));
-    return !connectServer();
+    Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIaoDeviceName));
+    
+    /* Wait in background for driver to establish a device connection */
+    struct ConnectInBg : public ConnectAoInBg
+    {
+        StepGuiderSxAoINDI *ao;
+        ConnectInBg(StepGuiderSxAoINDI *ao_) : ao(ao_) { }
+        bool Entry()
+        {
+
+            //Wait for driver to establish a device connection
+            if (ao->connectServer())
+            {
+                
+                int i = 0;
+                while (!ao->Connected && i++ < 300) 
+                {
+                    if (IsCanceled())
+                        break;
+                    
+                    wxMilliSleep(100);
+                }
+                
+            }
+
+            // We need to return FALSE if we are successful???
+            return !ao->Connected;
+
+        }
+    };
+
+    return ConnectInBg(this).Run();
 }
 
 bool StepGuiderSxAoINDI::Disconnect()
