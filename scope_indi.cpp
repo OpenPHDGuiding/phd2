@@ -300,18 +300,6 @@ bool ScopeINDI::Connect()
 
     Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIMountName));
 
-    ///* Wait in foreground for driver to establish a device connection */
-    //if (connectServer())
-    //{
-    //    Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIMountName));
-    //    int i = 0;
-    //    while (!Connected && i++ < 300) 
-    //        wxMilliSleep(100);
-    //}
-    //
-    //// We need to return FALSE if we are successful???
-    //return !Connected;
-    
     /* Wait in background for driver to establish a device connection */
     struct ConnectInBg : public ConnectMountInBg
     {
