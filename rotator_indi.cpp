@@ -2,9 +2,8 @@
 *  rotator_indi.cpp
 *  PHD Guiding
 *
-*  Created by Philipp Weber
-*  Copyright (c) 2023 Philipp Weber
-*  Copyright (c) 2024 Kirill M. Skorobogatov
+*  Created by Philipp Weber and Kirill M. Skorobogatov
+*  Copyright (c) 2024 openphdguiding.org
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -160,6 +159,11 @@ bool RotatorINDI::Disconnect() {
 void RotatorINDI::serverDisconnected(int exit_code) {
     Rotator::Disconnect();
     ClearStatus();
+
+    if(pFrame) {
+        pFrame->UpdateStatsWindowScopePointing();
+    }
+
     if ( exit_code == -1 ) {
         pFrame->Alert(wxString(_("INDI server disconnected")));
         Disconnect();
@@ -240,6 +244,10 @@ void RotatorINDI::newProperty(INDI::Property property) {
         }
         angle_prop = property.getNumber();
         updateAngle();
+
+        if(pFrame) {
+            pFrame->UpdateStatsWindowScopePointing();
+        }
     }
     if ( Proptype == INDI_SWITCH && PropName == "CONNECTION" ) {
         if ( INDIConfig::Verbose() ) {
@@ -301,6 +309,10 @@ void RotatorINDI::updateProperty(INDI::Property property) {
             }
             if ( strcmp(nvp->name, "ABS_ROTATOR_ANGLE") == 0 ) {
                 updateAngle();
+
+                if(pFrame) {
+                    pFrame->UpdateStatsWindowScopePointing();
+                }
             }
         } break;
         default:
