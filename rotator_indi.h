@@ -4,6 +4,7 @@
 *
 *  Created by Philipp Weber
 *  Copyright (c) 2023 Philipp Weber
+*  Copyright (c) 2024 Kirill M. Skorobogatov
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license

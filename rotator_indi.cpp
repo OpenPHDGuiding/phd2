@@ -4,6 +4,7 @@
 *
 *  Created by Philipp Weber
 *  Copyright (c) 2023 Philipp Weber
+*  Copyright (c) 2024 Kirill M. Skorobogatov
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -71,7 +72,6 @@ class RotatorINDI : public Rotator, public INDI::BaseClient {
         wxString INDIRotatorName;
         wxString m_Name;
 
-        bool ConnectToDriver(RunInBg *ctx);
         void ClearStatus();
         void CheckState();
         void RotatorDialog();
@@ -79,15 +79,13 @@ class RotatorINDI : public Rotator, public INDI::BaseClient {
         void updateAngle();
 
     protected:
-        // void serverConnected() override;
+        void serverConnected() override;
         void serverDisconnected(int exit_code) override;
         void newDevice(INDI::BaseDevice dp) override;
         void removeDevice(INDI::BaseDevice dp) override;
         void newProperty(INDI::Property property) override;
         void updateProperty(INDI::Property property) override;
         void newMessage(INDI::BaseDevice dp, int messageID) override;
-
-        void removeProperty(INDI::Property property) override {};
 
     private:
         void ShowPropertyDialog() override;
@@ -118,35 +116,6 @@ void RotatorINDI::CheckState() {
     }
 }
 
-bool RotatorINDI::Connect() {
-    if ( INDIRotatorName == wxT("INDI Rotator") ) {
-        RotatorSetup();
-    }
-
-    if(isServerConnected()) {
-        return false;
-    }
-
-    Debug.Write(wxString::Format("INDI Rotator connecting to device [%s]\n", INDIRotatorName));
-    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-    watchDevice(INDIRotatorName.mb_str(wxConvUTF8));
-
-    return !connectServer();
-/*
-    if ( connectServer() ) {
-        Debug.Write(wxString::Format("INDI Rotator: connectServer done ready = %d\n", m_ready));
-        return !m_ready;
-    }
-    RotatorSetup();
-    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-    watchDevice(INDIRotatorName.mb_str(wxConvUTF8));
-    if ( connectServer() ) {
-        Debug.Write(wxString::Format("INDI Rotator: connectServer [2] done ready = %d\n", m_ready));
-    }
-    return true;
-*/
-}
-
 RotatorINDI::RotatorINDI() : m_gui(nullptr) {
     ClearStatus();
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
@@ -162,29 +131,34 @@ RotatorINDI::~RotatorINDI() {
     disconnectServer();
 }
 
-/*
-void RotatorINDI::serverConnected() {
-    struct ConnectInBg : public ConnectRotatorInBg {
-        RotatorINDI *rotator;
-        ConnectInBg(RotatorINDI *rotator_) : rotator(rotator_) { }
-        bool Entry() {
-            return ! rotator->ConnectToDriver(this);
-        }
-    };
-    ConnectInBg bg(this);
-
-    if ( bg.Run() ) {
-        Debug.Write(wxString::Format("INDI Rotator bg connection failed canceled=%d\n", bg.IsCanceled()));
-        pFrame->Alert(wxString::Format(_("Cannot connect to rotator %s: %s"), INDIRotatorName, bg.GetErrorMsg()));
-        Disconnect();
-    } else {
-        Debug.Write("INDI Rotator bg connection succeeded\n");
-        Rotator::Connect();
+bool RotatorINDI::Connect() {
+    if ( INDIRotatorName == wxT("INDI Rotator") ) {
+        RotatorSetup();
     }
+
+    if(isServerConnected()) {
+        return false;
+    }
+
+    Debug.Write(wxString::Format("INDI Rotator connecting to device [%s]\n", INDIRotatorName));
+    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    watchDevice(INDIRotatorName.mb_str(wxConvUTF8));
+
+    return !connectServer();
 }
-*/
+
+void RotatorINDI::serverConnected() {
+    Debug.Write("INDI Rotator connection succeeded\n");
+    Rotator::Connect();
+}
+
+bool RotatorINDI::Disconnect() {
+    disconnectServer();
+    return false;
+}
 
 void RotatorINDI::serverDisconnected(int exit_code) {
+    Rotator::Disconnect();
     ClearStatus();
     if ( exit_code == -1 ) {
         pFrame->Alert(wxString(_("INDI server disconnected")));
@@ -242,61 +216,15 @@ float RotatorINDI::Position() const {
 }
 
 void RotatorINDI::updateAngle() {
-    if ( ! IsConnected() ) {
+    if (!IsConnected()) {
         m_angle = POSITION_UNKNOWN;
+        return;
     }
+    if(!angle_prop) {
+        return;
+    }
+
     m_angle = IUFindNumber(angle_prop, "ANGLE")->value;
-}
-
-bool RotatorINDI::ConnectToDriver(RunInBg *r) {
-    modal = true;
-    wxLongLong msec = wxGetUTCTimeMillis();
-
-    while ( ! connection_prop && wxGetUTCTimeMillis() - msec < 15 * 1000 ) {
-        if ( r->IsCanceled() ) {
-            modal = false;
-            return false;
-        }
-        wxMilliSleep(20);
-    }
-    if ( ! connection_prop ) {
-        r->SetErrorMsg(_("connection timed-out"));
-        modal = false;
-        return false;
-    }
-    connectDevice(INDIRotatorName.mb_str(wxConvUTF8));
-
-    // If the ABS_ROTATOR_ANGLE property comes already when connecting to the
-    // server (like an already connected simulator) we're ready early. If we
-    // don't bail out here the 30 seconds below will just pass for no apparent
-    // reason
-    if ( m_ready ) {
-        modal = false;
-        updateAngle();
-        return m_ready;
-    }
-
-    msec = wxGetUTCTimeMillis();
-    while ( modal && wxGetUTCTimeMillis() - msec < 30 * 1000 ) {
-        if ( r->IsCanceled() ) {
-            modal = false;
-            return false;
-        }
-        wxMilliSleep(20);
-    }
-    if ( ! m_ready ) {
-        r->SetErrorMsg(_("connection timed-out"));
-    }
-    modal = false;
-    updateAngle();
-    return m_ready;
-}
-
-bool RotatorINDI::Disconnect() {
-    disconnectServer();
-    ClearStatus();
-    Rotator::Disconnect();
-    return false;
 }
 
 void RotatorINDI::newProperty(INDI::Property property) {
@@ -311,6 +239,7 @@ void RotatorINDI::newProperty(INDI::Property property) {
                             property.getDeviceName(), PropName));
         }
         angle_prop = property.getNumber();
+        updateAngle();
     }
     if ( Proptype == INDI_SWITCH && PropName == "CONNECTION" ) {
         if ( INDIConfig::Verbose() ) {
