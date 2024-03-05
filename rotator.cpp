@@ -44,8 +44,8 @@ const float Rotator::POSITION_UNKNOWN = -888.f;
 Rotator *pRotator;
 
 static wxString INDIRotatorName() {
-	wxString indirotator = pConfig->Profile.GetString("/indi/INDIrotator", wxEmptyString);
-	return indirotator.empty() ? _T("INDI Rotator") : wxString::Format("INDI Rotator [%s]", indirotator);
+    wxString indirotator = pConfig->Profile.GetString("/indi/INDIrotator", wxEmptyString);
+    return indirotator.empty() ? _T("INDI Rotator") : wxString::Format("INDI Rotator [%s]", indirotator);
 }
 
 wxArrayString Rotator::RotatorList()
@@ -59,7 +59,7 @@ wxArrayString Rotator::RotatorList()
         rotatorList.Add(ascomRotators[i]);
 #endif
 #ifdef ROTATOR_INDI
-	rotatorList.Add(INDIRotatorName());
+    rotatorList.Add(INDIRotatorName());
 #endif
 #ifdef ROTATOR_SIMULATOR
     rotatorList.Add(_T("Simulator"));
@@ -92,8 +92,8 @@ Rotator *Rotator::Factory(const wxString& choice)
 #endif
 #ifdef ROTATOR_INDI
         else if (choice.Contains(_T("INDI"))) {
-			rotator = INDIRotatorFactory::MakeINDIRotator();
-		}
+            rotator = INDIRotatorFactory::MakeINDIRotator();
+        }
 #endif
         else if (choice.Find(_("None")) != wxNOT_FOUND) {
         }

@@ -38,8 +38,8 @@
 class Rotator;
 
 class INDIRotatorFactory {
-	public:
-		static Rotator *MakeINDIRotator();
+    public:
+        static Rotator *MakeINDIRotator();
 };
 
 #endif
