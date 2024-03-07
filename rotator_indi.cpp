@@ -139,11 +139,34 @@ bool RotatorINDI::Connect() {
         return false;
     }
 
-    Debug.Write(wxString::Format("INDI Rotator connecting to device [%s]\n", INDIRotatorName));
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     watchDevice(INDIRotatorName.mb_str(wxConvUTF8));
 
-    return !connectServer();
+    Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIRotatorName));
+
+    /* Wait in background for driver to establish a device connection */
+    struct ConnectInBg : public ConnectRotatorInBg {
+        RotatorINDI* rotator {nullptr};
+        ConnectInBg(RotatorINDI* rotator_) : rotator(rotator_) {}
+
+        bool Entry() {
+            //Wait for driver to establish a device connection
+            if(rotator->connectServer()) {
+                int i = 0;
+                while(!rotator->IsConnected() && i++ < 300) {
+                    if(IsCanceled()) {
+                        break;
+                    }
+                    wxMilliSleep(100);
+                }
+            }
+
+            // We need to return FALSE if we are successful
+            return !rotator->IsConnected();
+        }
+    };
+
+    return ConnectInBg(this).Run();
 }
 
 void RotatorINDI::serverConnected() {
@@ -165,7 +188,9 @@ void RotatorINDI::serverDisconnected(int exit_code) {
     }
 
     if ( exit_code == -1 ) {
-        pFrame->Alert(wxString(_("INDI server disconnected")));
+        if(pFrame) {
+            pFrame->Alert(wxString(_("INDI server disconnected")));
+        }
         Disconnect();
     }
 }
