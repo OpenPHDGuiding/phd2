@@ -1284,7 +1284,24 @@ void MyFrame::DoAlert(const alert_params& params)
         m_infoBar->AddButton(BUTTON_ALERT_HELP, _("Help"));
         buttonSpace += 80;
     }
-    m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
+    wxString wrappedText;
+    if (pFrame && pFrame->pGuider)
+    {
+        int textWidth = wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100);
+        wrappedText = WrapText(m_infoBar, params.msg, textWidth);
+    }
+    else
+    {
+        wrappedText = params.msg;
+    }
+    int showMessageFlags = params.flags;
+#ifdef __APPLE__
+    // starting with MacOS Sonoma 14.3 wxWidgets (3.1.7 and 3.2.4) crashes in
+    // wxBitmapBundle::FromSVG when the wxInfoBar tries to display an icon. As a
+    // workaround, do not display any icon on Mac.
+    showMessageFlags = wxICON_NONE;
+#endif
+    m_infoBar->ShowMessage(wrappedText, showMessageFlags);
     m_statusbar->UpdateStates();        // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
