@@ -64,6 +64,7 @@ class Camera_ZWO : public GuideCamera
     void *m_buffer;
     size_t m_buffer_size;
     wxByte m_bpp;  // bits per pixel: 8 or 16
+    bool m_ignoreBayerMatrix;
     CaptureMode m_mode;
     bool m_capturing;
     int m_cameraId;
@@ -117,6 +118,7 @@ Camera_ZWO::Camera_ZWO()
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ZWO/bpp", 8);
     m_bpp = value == 8 ? 8 : 16;
+    m_ignoreBayerMatrix = pConfig->Profile.GetBoolean("/camera/ZWO/ignoreBayerMatrix", false);
 }
 
 Camera_ZWO::~Camera_ZWO()
@@ -141,6 +143,7 @@ struct ZWOCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
+    wxCheckBox *m_ignoreBayerMatrix;
     ZWOCameraDlg();
 };
 
@@ -157,6 +160,11 @@ ZWOCameraDlg::ZWOCameraDlg()
     sbSizer3->Add(m_bpp8, 0, wxALL, 5);
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    wxStaticBoxSizer *sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Image Options")), wxVERTICAL);
+    m_ignoreBayerMatrix = new wxCheckBox(this, wxID_ANY, _("Ignore Bayer matrix"));
+    sbSizer4->Add(m_ignoreBayerMatrix, 0, wxALL, 5);
+    bSizer12->Add(sbSizer4, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -176,15 +184,22 @@ ZWOCameraDlg::ZWOCameraDlg()
 void Camera_ZWO::ShowPropertyDialog()
 {
     ZWOCameraDlg dlg;
-    int value = pConfig->Profile.GetInt("/camera/ZWO/bpp", m_bpp);
-    if (value == 8)
+    int bppValue = pConfig->Profile.GetInt("/camera/ZWO/bpp", m_bpp);
+    if (bppValue == 8)
         dlg.m_bpp8->SetValue(true);
     else
         dlg.m_bpp16->SetValue(true);
+
+    int ignoreBayerMatrixValue = pConfig->Profile.GetBoolean("/camera/ZWO/ignoreBayerMatrix", m_ignoreBayerMatrix);
+    dlg.m_ignoreBayerMatrix->SetValue(ignoreBayerMatrixValue);
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
         pConfig->Profile.SetInt("/camera/ZWO/bpp", m_bpp);
+
+        m_ignoreBayerMatrix = dlg.m_ignoreBayerMatrix->GetValue();
+        pConfig->Profile.SetBoolean("/camera/ZWO/ignoreBayerMatrix", m_ignoreBayerMatrix);
     }
 }
 
@@ -955,7 +970,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+    if (m_isColor && Binning == 1 && !m_ignoreBayerMatrix && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;
