@@ -1520,12 +1520,19 @@ void MyFrame::UpdateStatusBarCalibrationStatus()
     if (wxThread::IsMain())
     {
         m_statusbar->UpdateStates();
-        if (pStatsWin)
-            pStatsWin->UpdateScopePointing();
+        UpdateStatsWindowScopePointing();
     }
     else
     {
         QueueStatusBarUpdateMsg(this, THR_SB_CALIBRATION);
+    }
+}
+
+void MyFrame::UpdateStatsWindowScopePointing()
+{
+    if(pStatsWin)
+    {
+        pStatsWin->UpdateScopePointing();
     }
 }
 

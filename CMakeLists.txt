@@ -443,6 +443,9 @@ set(phd2_SRC
   ${phd_src_dir}/rotator_ascom.cpp
   ${phd_src_dir}/rotator_ascom.h
 
+  ${phd_src_dir}/rotator_indi.cpp
+  ${phd_src_dir}/rotator_indi.h
+
   ###
 
   ${phd_src_dir}/runinbg.cpp

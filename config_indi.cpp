@@ -117,6 +117,8 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
         devlabel->SetLabel(_("Aux Mount"));
     else if (dev_type == INDI_TYPE_AO)
         devlabel->SetLabel(_("AO"));
+    else if (dev_type == INDI_TYPE_ROTATOR)
+        devlabel->SetLabel(_("Rotator"));
 
     gbs->Add(devlabel, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
 
@@ -415,12 +417,17 @@ void INDIConfig::newProperty(INDI::Property property)
             include = (di & INDI::BaseDevice::TELESCOPE_INTERFACE) != 0;
         else if (dev_type == INDI_TYPE_AO)
             include = (di & INDI::BaseDevice::AO_INTERFACE) != 0;
+        else if (dev_type == INDI_TYPE_ROTATOR)
+            include = (di & INDI::BaseDevice::ROTATOR_INTERFACE) != 0;
 
         if (!include)
         {
             Debug.Write(wxString::Format("exclude device %s not a valid %s\n", devname,
-                                         dev_type == INDI_TYPE_CAMERA ? "camera" : dev_type == INDI_TYPE_MOUNT ? "mount" : dev_type == INDI_TYPE_AUX_MOUNT ?
-                                         "aux mount" : "AO"));
+                dev_type == INDI_TYPE_CAMERA ? "camera" :
+                dev_type == INDI_TYPE_MOUNT ? "mount" :
+                dev_type == INDI_TYPE_AUX_MOUNT ? "aux mount" :
+                dev_type == INDI_TYPE_AO ? "AO" :
+                "rotator"));
 
             int n = dev->FindString(devname, true);
             if (n != wxNOT_FOUND)
