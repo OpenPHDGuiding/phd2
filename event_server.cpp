@@ -1887,7 +1887,7 @@ static void set_variable_delay_settings(JObj& response, const json_value* params
         return;
     }
     VarDelayCfg currParams;
-    pFrame->SetVariableDelayConfig(enabled, (int)shortDelay * 1000, (int)longDelay * 1000);
+    pFrame->SetVariableDelayConfig(enabled, (int)(shortDelay * 1000.), (int)(longDelay * 1000.));
     response << jrpc_result(0);
 }
 
