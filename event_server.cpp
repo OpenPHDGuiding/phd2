@@ -1867,27 +1867,28 @@ static void get_variable_delay_settings(JObj& response, const json_value* params
 
     VarDelayCfg delayParams = pFrame->GetVariableDelayConfig();
     rslt << NV("Enabled", delayParams.enabled)
-        << NV("ShortDelay", delayParams.shortDelay / 1000)
-        << NV("LongDelay", delayParams.longDelay / 1000);
+        << NV("ShortDelaySeconds", delayParams.shortDelay / 1000)
+        << NV("LongDelaySeconds", delayParams.longDelay / 1000);
     response << jrpc_result(rslt);
 }
 
+// set_variable_delay values are in units of seconds to match the UI convention in the Advanced Settings dialog
 static void set_variable_delay_settings(JObj& response, const json_value* params)
 {
-    Params p("Enabled", "ShortDelay", "LongDelay", params);
+    Params p("Enabled", "ShortDelaySeconds", "LongDelaySeconds", params);
     const json_value* p0 = p.param("Enabled");
-    const json_value* p1 = p.param("ShortDelay");
-    const json_value* p2 = p.param("LongDelay");
+    const json_value* p1 = p.param("ShortDelaySeconds");
+    const json_value* p2 = p.param("LongDelaySeconds");
     bool enabled;
-    double shortDelay;
-    double longDelay;
-    if (!p0 || !p1 || !p2 || !bool_param(p0, &enabled) || !float_param(p1, &shortDelay) || !float_param(p2, &longDelay))
+    double shortDelaySec;
+    double longDelaySec;
+    if (!p0 || !p1 || !p2 || !bool_param(p0, &enabled) || !float_param(p1, &shortDelaySec) || !float_param(p2, &longDelaySec))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected Enabled, ShortDelay, LongDelay params)");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected Enabled, ShortDelaySeconds, LongDelaySeconds params)");
         return;
     }
     VarDelayCfg currParams;
-    pFrame->SetVariableDelayConfig(enabled, (int)(shortDelay * 1000.), (int)(longDelay * 1000.));
+    pFrame->SetVariableDelayConfig(enabled, (int)shortDelaySec * 1000, (int)longDelaySec * 1000);
     response << jrpc_result(0);
 }
 
