@@ -1861,6 +1861,37 @@ static void get_settling(JObj& response, const json_value *params)
     response << jrpc_result(settling);
 }
 
+static void get_variable_delay_settings(JObj& response, const json_value* params)
+{
+    JObj rslt;
+
+    VarDelayCfg delayParams = pFrame->GetVariableDelayConfig();
+    rslt << NV("Enabled", delayParams.enabled)
+        << NV("ShortDelaySeconds", delayParams.shortDelay / 1000)
+        << NV("LongDelaySeconds", delayParams.longDelay / 1000);
+    response << jrpc_result(rslt);
+}
+
+// set_variable_delay values are in units of seconds to match the UI convention in the Advanced Settings dialog
+static void set_variable_delay_settings(JObj& response, const json_value* params)
+{
+    Params p("Enabled", "ShortDelaySeconds", "LongDelaySeconds", params);
+    const json_value* p0 = p.param("Enabled");
+    const json_value* p1 = p.param("ShortDelaySeconds");
+    const json_value* p2 = p.param("LongDelaySeconds");
+    bool enabled;
+    double shortDelaySec;
+    double longDelaySec;
+    if (!p0 || !p1 || !p2 || !bool_param(p0, &enabled) || !float_param(p1, &shortDelaySec) || !float_param(p2, &longDelaySec))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected Enabled, ShortDelaySeconds, LongDelaySeconds params)");
+        return;
+    }
+    VarDelayCfg currParams;
+    pFrame->SetVariableDelayConfig(enabled, (int)shortDelaySec * 1000, (int)longDelaySec * 1000);
+    response << jrpc_result(0);
+}
+
 static GUIDE_DIRECTION dir_param(const json_value *p)
 {
     if (!p || p->type != JSON_STRING)
@@ -2184,6 +2215,8 @@ static bool handle_request(JRpcCall& call)
         { "get_cooler_status", &get_cooler_status, },
         { "get_ccd_temperature", &get_sensor_temperature, },
         { "export_config_settings", &export_config_settings, },
+        { "get_variable_delay_settings", &get_variable_delay_settings},
+        { "set_variable_delay_settings", &set_variable_delay_settings}
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
