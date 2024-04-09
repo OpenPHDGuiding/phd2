@@ -51,7 +51,7 @@ class HistogramBuilder {
         }
 
         ~HistogramBuilder() {
-            delete histo;
+            delete[] histo;
         }
 
         unsigned short median() const
@@ -66,7 +66,6 @@ class HistogramBuilder {
             }
             return MaxADU;
         }
-
 
         void scan(const unsigned short *t, int len)
         {
