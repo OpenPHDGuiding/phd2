@@ -1,10 +1,10 @@
 # fr\messages.po
 # PHD Guiding
-# 
+#
 # Created by Sylvain Girard
 # Copyright (c) 2013 Sylvain Girard
 # All rights reserved.
-# 
+#
 # This source code is distributed under the following "BSD" license
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 # Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,14 +28,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-23 17:22-0400\n"
-"PO-Revision-Date: 2023-06-29 14:18+0800\n"
+"PO-Revision-Date: 2024-04-12 13:48+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -43,7 +43,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: about_dialog.cpp:45 myframe.cpp:577
@@ -1423,7 +1423,7 @@ msgstr "沒有指定相機"
 msgid ""
 "Camera is not connected.  Property controls may change if you connect to it "
 "first."
-msgstr ""
+msgstr "相機未連接,  如果您先連接到屬性控件，則屬性控件可能會變更。"
 
 #: camera.cpp:875
 msgid "Use Subframes"
@@ -1717,11 +1717,11 @@ msgstr "該 FITS 檔案不是影像檔"
 
 #: cam_indi.cpp:899
 msgid "RGB images are not supported, please switch the INDI driver to Mono"
-msgstr ""
+msgstr "不支援RGB影像，請將INDI驅動程式切換為 MONO (單色模式)"
 
 #: cam_indi.cpp:905
 msgid "Unsupported FITS file"
-msgstr ""
+msgstr "不支援的 FITS 檔案"
 
 #: cam_indi.cpp:936 cam_indi.cpp:966 gear_simulator.cpp:728
 #: gear_simulator.cpp:1562
@@ -4331,7 +4331,7 @@ msgstr ""
 
 #: guider_multistar.cpp:1415
 msgid "Maximum star HFD (pixels)"
-msgstr ""
+msgstr "星點 HFD (像素) 最大值"
 
 #: guider_multistar.cpp:1416
 msgid ""
@@ -4340,6 +4340,8 @@ msgid ""
 "noise, adjacent faint stars, internal reflections, or comet heads as guide "
 "stars."
 msgstr ""
+"最大星點 HFD 值用於識別導星星體, 此設定值用於防止 PHD2 選擇感光元件雜訊、相鄰"
+"的微弱恆星、內部反射或彗星頭部來作為導星星體."
 
 #: guider_multistar.cpp:1420 myframe.cpp:915 myframe.cpp:986 scope.cpp:261
 msgid "Auto"
@@ -6921,13 +6923,15 @@ msgstr ""
 
 #: profile_wizard.cpp:266
 msgid "Choose this if your guide camera driver downloads 8-bit data"
-msgstr ""
+msgstr "如果你的導星相機驅動程式下載 8位元資料, 請選用此設定值"
 
 #: profile_wizard.cpp:268
 msgid ""
 "Choose this if your guide camera driver downoads 16-bit data.  Requires a "
 "camera with 10, 12, 14 or 16-bit ADC electronics"
 msgstr ""
+"如果你的導星相機驅動程式下載 16 位元資料, 請選用此設定值, 相機需具備 10,12 "
+"或 16 位元 ADC 功能"
 
 #: profile_wizard.cpp:270
 msgid "Binning level"
@@ -6935,7 +6939,7 @@ msgstr "併合程度"
 
 #: profile_wizard.cpp:275
 msgid "Bit depth (bits/pixel)"
-msgstr ""
+msgstr "位元深度 (位元/像素)"
 
 #: profile_wizard.cpp:285
 msgid ""
@@ -7186,7 +7190,7 @@ msgstr "不再詢問"
 msgid ""
 "Please specify camera type, guider focal length, camera bit-depth, and guide "
 "camera pixel size"
-msgstr ""
+msgstr "請指定相機種類, 導星鏡焦長, 相機位元深度及導星相機的像素大小"
 
 #: profile_wizard.cpp:612
 msgid "Please select a mount type to handle guider commands"
@@ -7617,35 +7621,35 @@ msgstr "角度的反向標記"
 
 #: rotator_indi.cpp:111
 msgid "INDI Rotator is ready\n"
-msgstr ""
+msgstr "INDI 相旋器已備妥\n"
 
 #: rotator_indi.cpp:220
 msgid "INDI Rotator Selection"
-msgstr ""
+msgstr "選取 INDI 相旋器"
 
 #: rotator_indi.cpp:267
 #, c-format
 msgid "INDI Rotator found ABS_ROTATOR_ANGLE for %s %s\n"
-msgstr ""
+msgstr "INDI Rotator found ABS_ROTATOR_ANGLE for %s %s\n"
 
 #: rotator_indi.cpp:279
 #, c-format
 msgid "INDI Rotator found CONNECTION for %s %s\n"
-msgstr ""
+msgstr "找到連接在 %s %s  的 INDI 相旋器\n"
 
 #: rotator_indi.cpp:293
 #, c-format
 msgid "INDI Rotator received message: %s\n"
-msgstr ""
+msgstr "INDI 相旋器接收到訊息: %s\n"
 
 #: rotator_indi.cpp:322
 msgid "INDI rotator was disconnected"
-msgstr ""
+msgstr "INDI 相旋器失連"
 
 #: rotator_indi.cpp:333
 #, c-format
 msgid "INDI Rotator: New number: %s\n"
-msgstr ""
+msgstr "INDI 相旋器: 新數值: %s\n"
 
 #: runinbg.cpp:118
 msgid "The operation was canceled"
@@ -8333,11 +8337,11 @@ msgstr "Avg col"
 
 #: star_profile.cpp:303
 msgid "Click image for raw view"
-msgstr ""
+msgstr "點擊影像以檢視 RAW 內容"
 
 #: star_profile.cpp:308
 msgid "Click image for interpolated view"
-msgstr ""
+msgstr "點擊影像以檢視影像內插內容"
 
 #: star_profile.cpp:340
 msgid "Peak"
