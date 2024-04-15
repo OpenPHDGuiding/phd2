@@ -3,7 +3,7 @@
  *  Open PHD Guiding
  *
  *  Created by Andy Galasso
- *  Copyright (c) 2018 Andy Galasso.
+ *  Copyright (c) 2018-2024 openphdguiding.org
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -38,97 +38,13 @@
 
 #include "cam_touptek.h"
 #include "cameras/toupcam.h"
+#include "image_math.h"
 
 // Touptek API uses these Windows definitions even on non-Windows platforms
 #ifndef S_OK
 #define S_OK    ((HRESULT)0L)
 #define S_FALSE ((HRESULT)1L)
 #endif
-
-template<typename T>
-static void BinPixels(T *dst, const T *src, const wxSize& srcsize, unsigned int binning)
-{
-    int const srcw = srcsize.x;
-    int const srch = srcsize.y;
-
-    T *dstp = dst;
-
-    if (binning == 2)
-    {
-        for (int srcy = 0; srcy < srch; srcy += 2)
-        {
-            for (int srcx = 0; srcx < srcw; srcx += 2)
-            {
-                *dstp++ =
-                    ((unsigned int) src[srcy * srcw + srcx] +
-                     (unsigned int) src[srcy * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1]) / 4;
-            }
-        }
-    }
-    else if (binning == 3)
-    {
-        int tw = (srcw / binning) * binning;
-        int th = (srch / binning) * binning;
-        for (int srcy = 0; srcy < th; srcy += 3)
-        {
-            for (int srcx = 0; srcx < tw; srcx += 3)
-            {
-                *dstp++ =
-                    ((unsigned int) src[srcy * srcw + srcx] +
-                     (unsigned int) src[srcy * srcw + srcx + 1] +
-                     (unsigned int) src[srcy * srcw + srcx + 2] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 2] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx + 2]) / 9;
-            }
-        }
-    }
-    else if (binning == 4)
-    {
-        for (int srcy = 0; srcy < srch; srcy += 4)
-        {
-            for (int srcx = 0; srcx < srcw; srcx += 4)
-            {
-                *dstp++ =
-                    ((unsigned int) src[srcy * srcw + srcx] +
-                     (unsigned int) src[srcy * srcw + srcx + 1] +
-                     (unsigned int) src[srcy * srcw + srcx + 2] +
-                     (unsigned int) src[srcy * srcw + srcx + 3] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 2] +
-                     (unsigned int) src[(srcy + 1) * srcw + srcx + 3] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx + 2] +
-                     (unsigned int) src[(srcy + 2) * srcw + srcx + 3] +
-                     (unsigned int) src[(srcy + 3) * srcw + srcx] +
-                     (unsigned int) src[(srcy + 3) * srcw + srcx + 1] +
-                     (unsigned int) src[(srcy + 3) * srcw + srcx + 2] +
-                     (unsigned int) src[(srcy + 3) * srcw + srcx + 3]) / 16;
-            }
-        }
-    }
-}
-
-inline static void BinPixels8(void *dst, const void *src, const wxSize& srcsize, unsigned int binning)
-{
-    BinPixels(static_cast<unsigned char *>(dst),
-              static_cast<const unsigned char *>(src),
-              srcsize, binning);
-}
-
-inline static void BinPixels16(void *dst, const void *src, const wxSize& srcsize, unsigned int binning)
-{
-    BinPixels(static_cast<unsigned short *>(dst),
-              static_cast<const unsigned short *>(src),
-              srcsize, binning);
-}
 
 struct ToupCam
 {
