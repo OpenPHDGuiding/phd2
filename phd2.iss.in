@@ -35,6 +35,7 @@ Source: Release\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\gXusb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\inpout32.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ogmacam.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_core4.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_highgui4.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\opencv_imgproc4.dll; DestDir: {app}; Flags: replacesameversion

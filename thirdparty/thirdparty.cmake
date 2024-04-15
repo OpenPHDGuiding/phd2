@@ -714,6 +714,18 @@ if(WIN32)
   )
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+  OGMAcamSDK
+  GIT_REPOSITORY https://github.com/OGMAvision/OGMAcamSDK.git
+  GIT_TAG be02a7317194e28e5b4f5f0d735eae729d096752
+)
+FetchContent_MakeAvailable(OGMAcamSDK)
+include_directories(${ogmacamsdk_SOURCE_DIR}/inc)
+if (WIN32)
+  list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.dll)
+endif()
 
 # Various camera libraries
 if(WIN32)
@@ -896,6 +908,15 @@ if(APPLE)
   add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
 
+  find_library( ogmacam
+                NAMES ogmacam
+                PATHS ${ogmacamsdk_SOURCE_DIR}/mac/x64+x86)
+  if(NOT ogmacam)
+    message(FATAL_ERROR "Cannot find the ogmacam drivers")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ogmacam})
+  add_definitions(-DHAVE_OGMA_CAMERA=1)
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${ogmacam})
 
   ### does not work on x64
   #find_library( openssag
@@ -1007,6 +1028,19 @@ if(UNIX AND NOT APPLE)
       add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
       set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
+
+      find_library(ogmacam
+             NAMES ogmacam
+             NO_DEFAULT_PATHS
+             NO_CMAKE_SYSTEM_PATH
+             PATHS ${ogmacamsdk_SOURCE_DIR}/linux/${toupcam_arch})
+      if(NOT ogmacam)
+        message(FATAL_ERROR "Cannot find the ogmacam drivers")
+      endif()
+      message(STATUS "Found ogmacam lib ${ogmacam}")
+      add_definitions(-DHAVE_OGMA_CAMERA=1)
+      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ogmacam})
+      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${ogmacam})
 
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK
