@@ -35,9 +35,11 @@ Source: Release\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\gXusb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\inpout32.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\opencv_core2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\opencv_highgui2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Release\opencv_imgproc2.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_core4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_highgui4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_imgproc4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_videoio4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_imgcodecs4.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
@@ -60,6 +62,9 @@ Source: Release\cfitsio.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\jpeg62.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libcurl.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\liblzma.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebp.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebpdecoder.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libsharpyuv.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libpng16.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\tiff.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\zlib1.dll; DestDir: {app}; Flags: replacesameversion
