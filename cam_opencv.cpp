@@ -40,15 +40,13 @@
 
 #include "cam_opencv.h"
 
-#include <opencv/cv.h>
-
-using namespace cv;
+#include <opencv2/opencv.hpp>
 
 CameraOpenCV::CameraOpenCV(int devNumber)
 {
     Connected = false;
     Name=_T("OpenCV");
-    FullSize = wxSize(640,480);
+    FullSize = wxSize(640, 480);
     m_hasGuideOutput = false;
     pCapDev = NULL;
     DeviceNum = devNumber;
@@ -74,7 +72,7 @@ bool CameraOpenCV::Connect(const wxString& camId)
     {
         if (!pCapDev)
         {
-            pCapDev = new VideoCapture(DeviceNum);
+            pCapDev = new cv::VideoCapture(DeviceNum);
         }
 
         if (!pCapDev)
@@ -122,7 +120,7 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
     try
     {
         wxStopWatch swatch;
-        Mat captured_frame;
+        cv::Mat captured_frame;
 
         if (!pCapDev)
         {
@@ -136,11 +134,11 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
 
         // Grab at least one frame...
         pCapDev->read(captured_frame);
-        cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
+        cv::cvtColor(captured_frame, captured_frame, cv::COLOR_RGB2GRAY);
 
         cv::Size sz = captured_frame.size();
 
-        if (img.Init(sz.width,sz.height))
+        if (img.Init(sz.width, sz.height))
         {
             pFrame->Alert(_("Memory allocation error"));
             throw ERROR_INFO("img.Init failed");
@@ -154,7 +152,7 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
         {
             nframes++;
             pCapDev->read(captured_frame);
-            cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
+            cv::cvtColor(captured_frame, captured_frame, cv::COLOR_RGB2GRAY);
             dptr = captured_frame.data;
             for (unsigned int i = 0; i < img.NPixels; i++)
             {
