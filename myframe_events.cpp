@@ -1050,15 +1050,16 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
                 return;
         }
 
-        if (!TheScope()->IsCalibrated())  // Either cleared above or not calibrated for other reasons
+
+
+        if (interactive && pPointingSource && pPointingSource->IsConnected() &&
+            pPointingSource->CanReportPosition())
         {
-            if (interactive && pPointingSource && pPointingSource->IsConnected() &&
-                pPointingSource->CanReportPosition())
+            // If it's being used, the ask-for-coordinates dialog will populate scope position info needed for UseCalibrationAssistant() and StartGuiding()
+            if (pPointingSource->PreparePositionInteractive())  // Returns true only if user cancels ask-for-coordinates dialog
+                return;
+            if (!TheScope()->IsCalibrated())  // Either cleared above or not calibrated for other reasons
             {
-
-                if (pPointingSource->PreparePositionInteractive())
-                    return;
-
                 if (UseCalibrationAssistant())
                 {
                     proceed = false;
