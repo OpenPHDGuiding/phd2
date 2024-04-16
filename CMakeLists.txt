@@ -768,7 +768,10 @@ elseif(UNIX)
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  target_link_libraries(phd2 X11)
+
+  find_package( OpenCV REQUIRED )
+
+  target_link_libraries(phd2 X11 ${OpenCV_LIBS})
 
   set_target_properties(
     phd2
