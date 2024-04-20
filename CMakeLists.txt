@@ -187,6 +187,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_moravian.h
   ${phd_src_dir}/cam_NebSBIG.cpp
   ${phd_src_dir}/cam_NebSBIG.h
+  ${phd_src_dir}/cam_ogma.cpp
+  ${phd_src_dir}/cam_ogma.h
   ${phd_src_dir}/cam_opencv.cpp
   ${phd_src_dir}/cam_opencv.h
   ${phd_src_dir}/cam_openssag.cpp
@@ -693,6 +695,18 @@ if(APPLE)
       COMMAND install_name_tool -change @rpath/libtoupcam.dylib
                    @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libtoupcam.dylib"
+    )
+  endif()
+
+  if(ogmacam)
+    set_source_files_properties(${ogmacam} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    # there's got to be a better way, but damfino. This works though.
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change @rpath/libogmacam.dylib
+                   @executable_path/../Frameworks/libogmacam.dylib $<TARGET_FILE:phd2>
+      COMMENT "Updating dylib path for libogmacam.dylib"
     )
   endif()
 
