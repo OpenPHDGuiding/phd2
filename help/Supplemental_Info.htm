@@ -264,9 +264,15 @@ your mount.&nbsp; A sensible approach is to look at your past performance to
 see how well your mount responds under typical seeing conditions with the size
 of dithering you want to use.&nbsp; If your mount has a lot of Dec backlash,
 you should see how long it takes for guiding to settle down when the direction
-of the Dec guide command is reversed.&nbsp; The <b>ET</b> and <b>PT</b> values
-should reflect the guiding performance you normally get with your setup with a
-little bit of slack to avoid wasting time.<o:p></o:p></span></p>
+of the Dec guide command is reversed.&nbsp; The <b>ET</b> and <b>PT</b>
+values
+should reflect the guiding performance you normally get with your setup
+with a
+little bit of slack to avoid wasting time. &nbsp;Occasional timeouts
+during settling are fairly common and typically don't cause problems
+but you should check your guide logs using the LogViewer tool to be
+sure the main camera exposure isn't being started while large
+corrections are still being done by PHD2.<o:p></o:p></span></p>
 
 <p class="MsoNormal" style="line-height: normal;"><span style="">PHD2 also supports different choices
 for how the star is moved in RA and Dec.<span style="">
@@ -277,9 +283,18 @@ that eventually produces a spiral pattern around the original lock-point.<span s
 reversals and can be a good choice if your mount has substantial backlash. In
 this mode, there is no randomizing process involved, each dither has the size
 specified by the imaging app.<span style="">&nbsp; </span>Alternatively,
-you can choose the RA-only option and eliminate Dec reversals altogether, but
-this may not be a good choice if your imaging camera has a lot of fixed-pattern
-noise.<o:p></o:p></span></p>
+you can choose the RA-only option and eliminate Dec reversals
+altogether, but
+this may not be a good choice if your imaging camera has a lot of
+fixed-pattern
+noise. When deciding &nbsp;how to specify the size of the
+dithers, you need to take into account the image scales of both your
+guiding setup and your main imaging system. For CMOS imaging
+cameras, you may find advice to do large dithers, perhaps 10-20 pixels.
+&nbsp;But this means 10-20 pixels on the main camera sensor, not the
+guide camera sensor, so you need to calculate how much movement
+is needed on the guide camera to achieve the desired displacement on
+the imaging camera. &nbsp;It will quite often be less.<o:p></o:p></span></p>
 
 <p class="MsoNormal" style="line-height: normal;">If your mount has a substantial amount of declination
 backlash in the mount, you may be guiding in only the north or south Dec
@@ -787,7 +802,12 @@ that profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span>
 session. Finally, you can import and export
 profiles for purposes of debugging, backup, or&nbsp;exchange
-between computers.<br>
+between computers. &nbsp;When you export a profile to a new computer,
+remember that the dark library and bad-pixel maps will not be migrated
+automatically because they are stored in the file system - in the
+'AppData\Local\PHD2' logical directory used by your operating system.
+&nbsp;You will need to transfer that directory and all of its files to
+the new computer manually.<br>
 <br>
 <h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount
 Connection using "Ask for coordinates"</h3>

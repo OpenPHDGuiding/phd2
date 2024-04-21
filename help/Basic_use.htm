@@ -46,7 +46,9 @@ default or otherwise, are automatically stored as part of an equipment
 profile. This includes calibration data and the last three Guiding
 Assistant reports. &nbsp;The only significant data not stored in the
 profiles are the dark libraries and bad-pixel maps which are stored in
-the file system.&nbsp; If you have only one guiding setup - you use the
+the file system. Even so, the dark libraries and bad-pixel maps are
+logically linked to each profile.&nbsp;If you have only one guiding
+setup - you use the
 same
 camera and guide scope combination each time - you will only need one
 profile. &nbsp;But you
@@ -56,7 +58,7 @@ off-axis-guiding arrangement for a long focal length scope and a
 separate guide scope/camera configuration for a shorter focal length
 imaging scope. &nbsp;The <span style="font-style: italic;">PHD2</span>
 guide settings for those configurations will be different, so you should use separate equipment
-profiles<a href="Supplemental_info.htm#Managing_Equipment_Profiles"></a>. &nbsp;The controls at the top of the 'Connect Equipment'
+profiles. &nbsp;The controls at the top of the 'Connect Equipment'
 dialog let you choose the profile you want to use and to
 create/edit/remove profiles as you see fit. &nbsp;When you select a
 profile and connect to its associated equipment, all of the
@@ -279,7 +281,11 @@ you that the camera sensor geometry has changed and you need to
 re-build your dark library, the likely source of the problem is that
 PHD2 has been connected to the imaging camera. &nbsp;These problems are
 caused by the camera drivers, there's nothing PHD2 can do to prevent
-them.
+them. &nbsp;Of course, you need to be sure you are running the latest
+version of the camera driver and PHD2. &nbsp;If you can't successfully
+prevent this "camera switching", you can try using different drivers
+for the cameras - for example, ASCOM for the imaging application and
+the native driver for PHD2 (or vice versa).
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -395,7 +401,7 @@ the 'Advanced Settings' dialog that provide access to various
 device-related properties. Adaptive optics (AO) devices generally
 require some study before use and you should familiarize yourself with
 their operation before trying to use them. &nbsp;Some background
-information can be found here:&nbsp;<a href="Supplemental_Info.htm#AO_Devices">Using an AO</a> .&nbsp; PHD2 does not control a rotator, but
+information can be found here:&nbsp;<a href="Supplemental_Info.htm#AO_Devices">Using an AO</a> .&nbsp; <br><br>PHD2 does not control a rotator, but
 it will read the current angle setting from the rotator and&nbsp;adjust
 the guiding calibration if needed. &nbsp;Rotators are used to control
 the orientation of the imaging camera with respect to the sky - perhaps
@@ -404,7 +410,33 @@ create a favorable composition of the objects in the field of view.
 &nbsp;If the rotator is part of an off-axis-guider assembly, its
 rotation will affect the PHD2 calibration. &nbsp;In this situation,
 PHD2 should be connected to the rotator so the calibration can be
-adjusted automatically.<br>
+adjusted automatically.<br><br>The
+rotator position is controlled by the imaging application, usually for
+purposes of framing the target. &nbsp;In order for PHD2 to make
+automatic adjustments to its calibration based on the rotator position,
+it has to know the direction of rotation as will any other applications
+that use the rotator.&nbsp; By default,&nbsp; PHD2 assumes the
+direction of rotation complies with the ASCOM standard, but it may not.
+&nbsp;For that reason, there is a "reverse angle" parameter on the
+rotator tab of the Advanced Settings dialog. &nbsp;However, most other
+applications have similar options, so you need to be systematic about
+changing these settings so that all of the software components have a
+common view. It's usually best to work through the software components
+one at a time starting at the driver level and working up::<ul><li>1.&nbsp;
+Look at the documentation for the rotator driver (or its controller
+software) and see if it has a "reversal" option.&nbsp; If so, choose
+the option you want, then <b>leave it alone.</b></li><li>2.&nbsp;
+Run PHD2 manually, connect to your gear including the rotator, slew to
+a star field, set the rotator angle to zero, calibrate PHD2, and guide
+until things have stabilized.&nbsp; Stop guiding, then use the rotator
+software to rotate the device by 45 degrees.&nbsp; The direction
+doesn't matter.</li><li>3.&nbsp;
+Restart guiding and see if things look right - you have a 50% change
+they will be.&nbsp; If the guide corrections are wrong:</li><li>&nbsp;&nbsp;&nbsp; a.&nbsp; Stop guiding</li><li>&nbsp;&nbsp;&nbsp; b.&nbsp; On the Advanced Settings/Other Devices tab in PHD2, change the setting for 'Reverse sign of angle'.</li><li>&nbsp;&nbsp;&nbsp; c.&nbsp;&nbsp; Recalibrate PHD2</li><li>&nbsp;&nbsp;&nbsp; d.&nbsp; Restart guiding and let it stabilize.</li><li>&nbsp;&nbsp;&nbsp;
+e.&nbsp;&nbsp; Stop guiding, rotate the device again to a new position,
+and restart guiding.&nbsp; At this point guiding should be correct.</li><li>4.&nbsp; Once guiding reacts correctly to rotator position changes, <b>leave the PHD2 'reverse sign of angle' setting alone</b>.</li><li>5.&nbsp;&nbsp;
+Connect your image automation software and repeat these tests. Leave
+the previous settings alone, only change, if necessary, whatever 'reverse angle' option is presented in the imaging app.</li></ul>
 <h4><a name="Simulators"></a>Simulators</h4>
 All
 of the <span style="font-style: italic;">PHD2</span>
