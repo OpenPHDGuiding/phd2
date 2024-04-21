@@ -12,8 +12,7 @@
 // Interface functions for Artemis CCD Camera Library
 //
 
-
-//Error codes
+// Error codes
 
 enum ARTEMISERROR
 {
@@ -33,7 +32,7 @@ enum ARTEMISCOLOURTYPE
     ARTEMIS_COLOUR_RGGB
 };
 
-//Other enumeration types
+// Other enumeration types
 enum ARTEMISPRECHARGEMODE
 {
     PRECHARGE_NONE = 0,     // Precharge ignored
@@ -102,7 +101,7 @@ enum ARTEMISPROPERTIESCAMERAFLAGS
     ARTEMIS_PROPERTIES_CAMERAFLAGS_DUMMY=0x7FFFFFFF // force size to 4 bytes
 };
 
-//Structures
+// Structures
 
 // camera/CCD properties
 struct ARTEMISPROPERTIES
@@ -135,7 +134,6 @@ public:
 #else
 #define artfn extern
 #endif
-
 
 // interface functions
 
@@ -248,7 +246,7 @@ artfn  int ArtemisGetGpioInformation(ArtemisHandle hCam, int* lineCount, int* li
 // (nth line is set as an input (output) if nth bit of directionMask is 1 (0)
 artfn  int  ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask);
 
-//Set GPIO output line values
+// Set GPIO output line values
 // (nth line (if it's an output) is set to high (low) if nth bit of lineValues is 1 (0)
 artfn  int ArtemisSetGpioValues(ArtemisHandle hCam, int lineValues);
 
@@ -453,5 +451,3 @@ artfn void ArtemisUnLoadDLL();
 }; // class CArtemisAPI
 #endif
 #undef artfn
-
-
