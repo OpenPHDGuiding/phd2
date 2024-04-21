@@ -535,7 +535,7 @@ struct SimCamState
     BacklashVal dec_ofs;     // simulate backlash in DEC
     double cum_dec_drift;    // cumulative dec drift
     wxStopWatch timer;       // platform-independent timer
-    long last_exposure_time; // last expoure time, milliseconds
+    long last_exposure_time; // last exposure time, milliseconds
     Cooler cooler;           // simulated cooler
     StictionSim stictionSim;
 
