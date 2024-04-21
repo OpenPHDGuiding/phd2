@@ -1131,8 +1131,8 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
         double hyp   = cameraVectorEndpoint.Distance();
         double cameraTheta = cameraVectorEndpoint.Angle();
 
-        double xAngle = cameraTheta - m_cal.xAngle;
-        double yAngle = cameraTheta - (m_cal.xAngle + m_yAngleError);
+        double xAngle = cameraTheta - m_cal.xAngle;                   // xAngle measures RA axis rotation vs camera X axis, positive is CW from x axis
+        double yAngle = cameraTheta - (m_cal.xAngle + m_yAngleError); // m_yAngleError is the orthogonality error
 
         // Convert theta and hyp into X and Y
 
