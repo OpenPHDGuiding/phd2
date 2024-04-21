@@ -915,7 +915,6 @@ static void render_clouds(usImage& img, const wxRect& subframe, int exptime, int
             // Compute a randomized brightness contribution from clouds, then overlay that on the guide frame
              cloud_amt = (unsigned short)(SimCamParams::clouds_inten * ((double)gain / 10.0 * offset * exptime / 100.0 + ((rand() % (gain * 100)) / 30.0)));
              *p = (unsigned short) (SimCamParams::clouds_opacity * cloud_amt + (1 - SimCamParams::clouds_opacity) * *p);
-
         }
     }
 }
@@ -1407,8 +1406,6 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     return false;
 }
 
-
-
 bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
 {
     // Following must take into account how the render_star function works.  Render_star uses camera binning explicitly, so
@@ -1854,7 +1851,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
         new wxButton( this, wxID_CANCEL, _("Cancel") ),
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
 
-     //position the buttons centered with no border
+    // position the buttons centered with no border
     pVSizer->Add(
         pButtonSizer,
         wxSizerFlags(0).Center() );

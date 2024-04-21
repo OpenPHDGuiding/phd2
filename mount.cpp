@@ -1096,7 +1096,7 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
  * will either be 0 or 180, depending on whether the axis motion was reversed
  * during calibration.
  *
- * I put this quote in when I was trying to fix the cos/cos code.  Hopefully
+ * I put this quote in when I was trying to fix the cos/cos code. Hopefully
  * since  completely rewrote that code, I underand the new code. But I'm going
  * to leave it hear as it still seems relevant, given the amount of trouble
  * I had getting this code to work.

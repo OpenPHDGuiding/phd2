@@ -571,7 +571,7 @@ int artfn ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask)
 }
 
 
-//Set GPIO output line values
+// Set GPIO output line values
 // (nth line (if it's an output) is set to high (low) if nth bit of lineValues is 1 (0)
 typedef int (__stdcall * TYPE_ARTEMISSETGPIOVALUES)(ArtemisHandle hCam, int lineValues);
 int artfn ArtemisSetGpioValues(ArtemisHandle hCam, int lineValues)
