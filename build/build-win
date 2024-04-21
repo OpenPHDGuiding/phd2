@@ -59,7 +59,7 @@ if [[ $use_worktree ]]; then
         git worktree remove --force "$worktree"
         exit
     fi
-    git fetch -q
+    git fetch -q origin
     git worktree add --force "$worktree" "$branch"
     cd "$worktree"
 fi
