@@ -551,12 +551,16 @@ void AdvancedDialog::SetPixelSize(double val)
         m_pCameraCtrlSet->SetPixelSize(val);
 }
 
+inline static double SiderealRateFromGuideSpeed(double guideSpeed)
+{
+    double const siderealSecsPerSec = 0.9973;
+    return guideSpeed * 3600.0 / (15.0 * siderealSecsPerSec);
+}
+
 // Get the best estimate for the current mount guide speeds
 double AdvancedDialog::DetermineGuideSpeed()
 {
-    double const siderealSecsPerSec = 0.9973;
     double sidRate = 0.5;
-    #define RateX(spd)  (spd * 3600.0 / (15.0 * siderealSecsPerSec))
 
     if (pPointingSource && pPointingSource->IsConnected())
     {
@@ -572,7 +576,7 @@ double AdvancedDialog::DetermineGuideSpeed()
                     minSpd = wxMin(raSpd, decSpd);
                 else
                     minSpd = raSpd;
-                sidRate = RateX(minSpd);
+                sidRate = SiderealRateFromGuideSpeed(minSpd);
 
             }
         }
@@ -584,7 +588,7 @@ double AdvancedDialog::DetermineGuideSpeed()
             {
                 if (TheScope()->ValidGuideRates(calDetails.raGuideSpeed, calDetails.decGuideSpeed))
                 {
-                    sidRate = RateX(wxMin(calDetails.raGuideSpeed, calDetails.decGuideSpeed));
+                    sidRate = SiderealRateFromGuideSpeed(wxMin(calDetails.raGuideSpeed, calDetails.decGuideSpeed));
                 }
             }
         }
