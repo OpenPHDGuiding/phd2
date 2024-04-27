@@ -483,7 +483,7 @@ static wxString SlewWarningEnabledKey()
 
 static void SuppressSlewAlert(long)
 {
-    //If the user doesn't want to see these, we shouldn't be checking for the condition
+    // If the user doesn't want to see these, we shouldn't be checking for the condition
     TheScope()->EnableStopGuidingWhenSlewing(false);
 }
 
