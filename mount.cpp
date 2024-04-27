@@ -1311,11 +1311,7 @@ void Mount::AdjustCalibrationForScopePointing()
     if (fabs(scaleAdjustment - 1.0) >= 0.01)
     {
         Debug.Write("Mount::AdjustCalibrationForScopePointing: imageScaleRatio changed\n");
-
-        // Device-specified pixel size and binning will be reflected in AD when LoadValues() occurs
-        pFrame->HandleImageScaleChange(scaleAdjustment);          // Revert the guide params, get the various UIs sorted out
-        // Force a fresh calibration when guiding is started next
-        ClearCalibration();
+        pFrame->HandleImageScaleChange();          // Clear calibration, get the various UIs sorted out
     }
 
     if (IsOppositeSide(newPierSide, m_cal.pierSide))

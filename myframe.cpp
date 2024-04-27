@@ -2821,22 +2821,15 @@ void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
 }
 
 // Reset the guiding parameters and the various graphical displays when image scale is changed outside the AD UI.  Goal is to restore basic guiding behavior
-// until a fresh calibration is done.  Ratio of image scales is used because 1) info like mount guide speed may not be available and 2) the user may have already
-// adjusted the calibration step-size in the profile to get the results he wants.
-void MyFrame::HandleImageScaleChange(double NewToOldRatio)
+// until a fresh calibration is done.
+void MyFrame::HandleImageScaleChange()
 {
-    // Adjust the calibration step-size to facilitate a reasonable calibration of the real mount
     Scope *scope = TheScope();
     if (scope)
     {
-        int stepSize = scope->GetCalibrationDuration();
-        stepSize *= NewToOldRatio;              // Larger scale => larger step-size because calibration is targeted on fixed-size total pixel displacements
-        scope->SetCalibrationDuration(stepSize);
-
+        // Adjust calibration step-size, clear existing calibrations, set reasonable MinMoves
+        pFrame->pAdvancedDialog->MakeImageScaleAdjustments();
     }
-
-    // Leave the algo choices in place but force a reversion to default guiding params for in-use algos
-    pAdvancedDialog->ResetGuidingParams();
 
     wxCommandEvent dummyEvt;
     if (pGraphLog)
@@ -2855,7 +2848,7 @@ void MyFrame::HandleImageScaleChange(double NewToOldRatio)
         pTarget->UpdateControls();
     }
 
-    Alert(_("Guiding parameters have been reset because the binning or pixel size changed unexpectedly. "
+    Alert(_("Binning or camera pixel size changed unexpectedly. "
 	    "You should use separate profiles for different image scales."));
 }
 
@@ -2907,13 +2900,12 @@ struct FocalLengthValidator : public wxIntegerValidator<int>
             long val;
             wxTextCtrl *ctrl = static_cast<wxTextCtrl *>(GetWindow());
             if (ctrl->GetValue().ToLong(&val))
-                ok = val <= AdvancedDialog::MAX_FOCAL_LENGTH && (val == 0 || val >= AdvancedDialog::MIN_FOCAL_LENGTH);
+                ok = val <= AdvancedDialog::MAX_FOCAL_LENGTH && val >= AdvancedDialog::MIN_FOCAL_LENGTH;
         }
         if (!ok)
         {
             m_dlg->ShowInvalid(GetWindow(),
-                wxString::Format(_("Enter a focal length in millimeters, between %.f and %.f,\n"
-                "or enter 0 if the focal length is not known"),
+                wxString::Format(_("Enter a focal length in millimeters, between %.f and %.f"),
                 AdvancedDialog::MIN_FOCAL_LENGTH, AdvancedDialog::MAX_FOCAL_LENGTH));
         }
         return ok;
@@ -3316,8 +3308,8 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         pFrame->SetVariableDelayConfig(m_varExposureDelayEnabled->GetValue(), m_varExpDelayShort->GetValue() * 1000, m_varExpDelayLong->GetValue() * 1000);
         int oldFL = m_pFrame->GetFocalLength();
         int newFL = GetFocalLength();               // From UI control
-        if (oldFL != newFL)
-            m_pFrame->pAdvancedDialog->MakeImageScaleAdjustments();
+        if (oldFL != newFL)                         // Validator insures fl is generally reasonable and non-zero
+            m_pFrame->pAdvancedDialog->FlagImageScaleChange();
         m_pFrame->SetFocalLength(GetFocalLength());
 
         int idx = m_pLanguage->GetSelection();
