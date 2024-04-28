@@ -79,6 +79,7 @@ class AdvancedDialog : public wxDialog
     wxPanel *m_pDevicesSettingsPanel;
     wxTipWindow *m_tip;
     wxTimer *m_tipTimer;
+    bool m_imageScaleChanged;
 
 public:
 
@@ -102,7 +103,7 @@ public:
 
     bool Validate() override;
     void ShowInvalid(wxWindow *ctrl, const wxString& message);
-
+    void FlagImageScaleChange() { m_imageScaleChanged = true; }     // Allows image scale adjustment to be made only once when AD is closed
     int GetFocalLength();
     void SetFocalLength(int val);
     double GetPixelSize();
@@ -110,7 +111,6 @@ public:
     int GetBinning();
     void SetBinning(int binning);
     void MakeImageScaleAdjustments();
-    void ResetGuidingParams();
     Mount::MountConfigDialogPane* GetCurrentMountPane() { return m_pMountPane; }
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
@@ -125,6 +125,7 @@ private:
     void BuildCtrlSets();
     void CleanupCtrlSets();
     void ConfirmLayouts();
+    double DetermineGuideSpeed();
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED

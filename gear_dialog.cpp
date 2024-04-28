@@ -580,7 +580,7 @@ void GearDialog::EndModal(int retCode)
     if (fabs(m_imageScaleRatio - 1.0) >= 0.01)
     {
         Debug.Write("GearDialog::EndModal: imageScaleRatio changed\n");
-        pFrame->HandleImageScaleChange(m_imageScaleRatio);                  // Must be done after preceding updates to AD pane
+        pFrame->HandleImageScaleChange();
     }
 
     if (m_showDarksDialog)

@@ -453,7 +453,7 @@ public:
     void SetDitherMode(DitherMode mode);
     DitherMode GetDitherMode() const;
 
-    void HandleImageScaleChange(double NewToOldRatio);
+    void HandleImageScaleChange();
 
     void NotifyGuidingParam(const wxString& name, double val);
     void NotifyGuidingParam(const wxString& name, int val);

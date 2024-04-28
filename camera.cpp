@@ -1191,7 +1191,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         int oldBin = m_pCamera->Binning;
         int newBin = m_binning->GetSelection() + 1;
         if (oldBin != newBin)
-            pFrame->pAdvancedDialog->MakeImageScaleAdjustments();           // Do this now to preserve old (device value) and new (UI value) for scale adjustment
+            pFrame->pAdvancedDialog->FlagImageScaleChange();
         m_pCamera->SetBinning(m_binning->GetSelection() + 1);
     }
 
@@ -1234,7 +1234,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     double oldPxSz = m_pCamera->GetCameraPixelSize();
     double newPxSz = m_pPixelSize->GetValue();
     if (oldPxSz != newPxSz)
-        pFrame->pAdvancedDialog->MakeImageScaleAdjustments();       // Preserve old (device value) and new (UI value) for scale adjustment
+        pFrame->pAdvancedDialog->FlagImageScaleChange();
     m_pCamera->SetCameraPixelSize(m_pPixelSize->GetValue());
 
     bool saturationByADU = m_SaturationByADU->GetValue();
