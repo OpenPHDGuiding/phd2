@@ -714,17 +714,19 @@ if(WIN32)
   )
 endif()
 
-include(FetchContent)
-FetchContent_Declare(
-  OGMAcamSDK
-  GIT_REPOSITORY https://github.com/OGMAvision/OGMAcamSDK.git
-  GIT_TAG be02a7317194e28e5b4f5f0d735eae729d096752
-)
-FetchContent_MakeAvailable(OGMAcamSDK)
-include_directories(${ogmacamsdk_SOURCE_DIR}/inc)
-if (WIN32)
-  list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.dll)
+if (NOT OPENSOURCE_ONLY)
+  include(FetchContent)
+  FetchContent_Declare(
+    OGMAcamSDK
+    GIT_REPOSITORY https://github.com/OGMAvision/OGMAcamSDK.git
+    GIT_TAG be02a7317194e28e5b4f5f0d735eae729d096752
+  )
+  FetchContent_MakeAvailable(OGMAcamSDK)
+  include_directories(${ogmacamsdk_SOURCE_DIR}/inc)
+  if (WIN32)
+    list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.lib)
+    list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.dll)
+  endif()
 endif()
 
 # Various camera libraries

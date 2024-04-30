@@ -28,5 +28,5 @@ include /usr/share/dpkg/default.mk
 #	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
 
 override_dh_auto_configure:
-	dh_auto_configure --  -DUSE_SYSTEM_LIBINDI=1 -DUSE_SYSTEM_GTEST=1 -DUSE_SYSTEM_LIBUSB=1
+	dh_auto_configure --  -DUSE_SYSTEM_LIBINDI=1 -DUSE_SYSTEM_GTEST=1 -DUSE_SYSTEM_LIBUSB=1 -DOPENSOURCE_ONLY=1
 
