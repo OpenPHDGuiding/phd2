@@ -337,7 +337,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     // Draw labels
     int d_width, d_height;
-    dc.GetTextExtent(_("0"), &d_width, &d_height);
+    dc.GetTextExtent(_T("0"), &d_width, &d_height);
     dc.DrawText(_("RA"), leftEdge, center.y - 3 - d_height);
     dc.DrawText(_("Dec"), center.x + 5, center.y - radius_max - d_height);
 
