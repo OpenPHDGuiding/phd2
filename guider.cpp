@@ -900,7 +900,9 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
         m_avgDistanceRA += distRA;
         m_avgDistanceLongRA += distRA;
 
-        if (IsFastRecenterEnabled())
+        // Zero-length dithers result in div-by-zero in calculation of 'f'.  We can still allow zero-length dithers as a way of
+        // triggering a settling period if we temporarily ignore the 'fast re-center' option
+        if (IsFastRecenterEnabled() && dist != 0)
         {
             m_ditherRecenterRemaining.SetXY(fabs(mountDelta.X), fabs(mountDelta.Y));
             m_ditherRecenterDir.x = mountDelta.X < 0.0 ? 1 : -1;
