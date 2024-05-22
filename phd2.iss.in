@@ -59,6 +59,7 @@ Source: Release\msvcr120.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\msvcp140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\vcomp140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\vcruntime140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\concrt140.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\cfitsio.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\jpeg62.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libcurl.dll; DestDir: {app}; Flags: replacesameversion
