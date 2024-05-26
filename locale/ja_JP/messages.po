@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-21 12:53-0400\n"
+"POT-Creation-Date: 2024-05-26 16:18-0400\n"
 "PO-Revision-Date: 2015-08-27 22:56+0900\n"
 "Last-Translator: Watanabe Toshihito (渡部 俊仁)\n"
 "Language-Team: Japanese\n"
@@ -272,7 +272,7 @@ msgstr ""
 #: calibration_assistant.cpp:145 calstep_dialog.cpp:196
 #: camcal_import_dialog.cpp:46 camera.cpp:896 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:52 gear_simulator.cpp:1652
-#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:3163
+#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:3155
 #: Refine_DefMap.cpp:59 starcross_test.cpp:51
 msgid ": "
 msgstr ": "
@@ -1359,7 +1359,7 @@ msgstr "ダークライブラリをもつプロファイルを選んでくださ
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:3025 profile_wizard.cpp:368 profile_wizard.cpp:369
+#: mount.cpp:872 myframe.cpp:3017 profile_wizard.cpp:368 profile_wizard.cpp:369
 #: profile_wizard.cpp:370 profile_wizard.cpp:584 profile_wizard.cpp:589
 #: profile_wizard.cpp:617 profile_wizard.cpp:789 profile_wizard.cpp:963
 #: profile_wizard.cpp:978 profile_wizard.cpp:1009 profile_wizard.cpp:1014
@@ -2426,12 +2426,12 @@ msgstr ""
 "開始をクリックするとトレーニングが始まる。"
 
 #: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:327
-#: guide_algorithm.cpp:50 scope.cpp:671 statswindow.cpp:73 target.cpp:339
+#: guide_algorithm.cpp:50 scope.cpp:671 statswindow.cpp:73 target.cpp:341
 msgid "RA"
 msgstr "赤経"
 
 #: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:671
-#: statswindow.cpp:77 target.cpp:340
+#: statswindow.cpp:77 target.cpp:342
 msgid "Dec"
 msgstr "赤緯"
 
@@ -4158,87 +4158,87 @@ msgstr ""
 msgid "Guide output DISABLED"
 msgstr "ガイド出力OFF"
 
-#: guider.cpp:1149
+#: guider.cpp:1151
 msgid "Calibration manually stopped"
 msgstr "キャリブレーション手動停止"
 
-#: guider.cpp:1203
+#: guider.cpp:1205
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr ""
 "プロファイルを使用するたびに、このキャリブレーションを自動的に復元しますか？"
 
-#: guider.cpp:1277
+#: guider.cpp:1279
 msgid "Stopped Guiding"
 msgstr "ガイド停止"
 
-#: guider.cpp:1289
+#: guider.cpp:1291
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr "許容範囲外へのロック位置の移動。ロック位置を移動できません。"
 
-#: guider.cpp:1325
+#: guider.cpp:1327
 msgid "star lost"
 msgstr "ガイド星を見失いました"
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "Paused"
 msgstr "一時停止"
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "/full"
 msgstr ""
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "/looping"
 msgstr ""
 
-#: guider.cpp:1395
+#: guider.cpp:1397
 msgid "Static PA rotation failed"
 msgstr ""
 
-#: guider.cpp:1401
+#: guider.cpp:1403
 msgid "Polar Drift PA drift failed"
 msgstr ""
 
-#: guider.cpp:1411
+#: guider.cpp:1413
 msgid "AO calibration failed"
 msgstr ""
 
-#: guider.cpp:1411 guider.cpp:1444
+#: guider.cpp:1413 guider.cpp:1446
 msgid "calibration failed"
 msgstr ""
 
-#: guider.cpp:1678
+#: guider.cpp:1680
 msgid "Guider Settings"
 msgstr "ガイダー設定"
 
-#: guider.cpp:1687
+#: guider.cpp:1689
 msgid "Guide star tracking"
 msgstr "ガイド星追跡"
 
-#: guider.cpp:1688 log_uploader.cpp:700
+#: guider.cpp:1690 log_uploader.cpp:700
 msgid "Calibration"
 msgstr "キャリブレーション"
 
-#: guider.cpp:1689
+#: guider.cpp:1691
 msgid "Shared Parameters"
 msgstr "共有ガイドパラメータ"
 
-#: guider.cpp:1733
+#: guider.cpp:1735
 msgid "Always scale images"
 msgstr "画像を常に拡大縮小する"
 
-#: guider.cpp:1734
+#: guider.cpp:1736
 msgid "Always scale images to fill window"
 msgstr "常にウィンドウいっぱいに画像サイズを調整する"
 
-#: guider.cpp:1736
+#: guider.cpp:1738
 msgid "Fast recenter after calibration or dither"
 msgstr "キャリブレーションやディザー後に素早く中央に戻す"
 
-#: guider.cpp:1737
+#: guider.cpp:1739
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -4248,7 +4248,7 @@ msgstr ""
 "キャリブレーション やディザリングをスピードアップします。\n"
 "古くて遅い方法を使う場合はチェックを外します。"
 
-#: guider.cpp:1859
+#: guider.cpp:1861
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "本当にブックマークをすべて削除しますか？"
 
@@ -4719,8 +4719,8 @@ msgstr ""
 msgid "Apply"
 msgstr "適用"
 
-#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3106
-#: myframe.cpp:3116
+#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3098
+#: myframe.cpp:3108
 msgid " "
 msgstr ""
 
@@ -5192,11 +5192,11 @@ msgid ""
 "to restore correct guiding."
 msgstr ""
 
-#: mount.cpp:1333
+#: mount.cpp:1329
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "ローテータ位置が変化。再キャリブレーションが必要。"
 
-#: mount.cpp:1369
+#: mount.cpp:1365
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
@@ -5865,39 +5865,34 @@ msgstr "ダーク読込み"
 msgid "Error saving darks FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2858
+#: myframe.cpp:2851
 msgid ""
-"Guiding parameters have been reset because the binning or pixel size changed "
-"unexpectedly. You should use separate profiles for different image scales."
+"Binning or camera pixel size changed unexpectedly. You should use separate "
+"profiles for different image scales."
 msgstr ""
-"ビニングまたはピクセルサイズが予期せず変更されたため、ガイドパラメータがリ"
-"セットされました。異なる画像スケールには、別々のプロファイルを使用する必要が"
-"あります。"
 
-#: myframe.cpp:2868
+#: myframe.cpp:2861
 msgid "Global Settings"
 msgstr "全体設定"
 
-#: myframe.cpp:2915
+#: myframe.cpp:2908
 #, c-format
-msgid ""
-"Enter a focal length in millimeters, between %.f and %.f,\n"
-"or enter 0 if the focal length is not known"
+msgid "Enter a focal length in millimeters, between %.f and %.f"
 msgstr ""
 
-#: myframe.cpp:2967 myframe.cpp:3050
+#: myframe.cpp:2959 myframe.cpp:3042
 msgid "System default"
 msgstr "システムデフォルト"
 
-#: myframe.cpp:2979
+#: myframe.cpp:2971
 msgid "Language-Name"
 msgstr "日本語"
 
-#: myframe.cpp:3018
+#: myframe.cpp:3010
 msgid "Reset Configuration"
 msgstr "設定リセット"
 
-#: myframe.cpp:3019
+#: myframe.cpp:3011
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
@@ -5905,11 +5900,11 @@ msgstr ""
 "すべての設定とプログラム設定をリセットして、新規インストール状態にします。"
 "PHD2を再起動する必要があります。"
 
-#: myframe.cpp:3020
+#: myframe.cpp:3012
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "「次回から表示しない」メッセージをリセットする"
 
-#: myframe.cpp:3021
+#: myframe.cpp:3013
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
@@ -5917,27 +5912,27 @@ msgstr ""
 "「このページを表示しない」をチェックしたときに表示されなかったメッセージを 復"
 "元します。"
 
-#: myframe.cpp:3025
+#: myframe.cpp:3017
 msgid "2x2 mean"
 msgstr "2x2 平均値"
 
-#: myframe.cpp:3025
+#: myframe.cpp:3017
 msgid "3x3 median"
 msgstr "3x3 中央値"
 
-#: myframe.cpp:3032
+#: myframe.cpp:3024
 msgid "Noise Reduction"
 msgstr "ノイズ低減"
 
-#: myframe.cpp:3033
+#: myframe.cpp:3025
 msgid "Technique to reduce noise in images"
 msgstr "画像のノイズを低減する手法"
 
-#: myframe.cpp:3039
+#: myframe.cpp:3031
 msgid "Time Lapse (ms)"
 msgstr "間欠動作(ms)"
 
-#: myframe.cpp:3040
+#: myframe.cpp:3032
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -5947,11 +5942,11 @@ msgstr ""
 "露出時間の短さに対してガイドコマンドの送出頻度が低く待ち時間が発生する場合に"
 "有用。"
 
-#: myframe.cpp:3047
+#: myframe.cpp:3039
 msgid "Focal length (mm)"
 msgstr "焦点距離(mm)"
 
-#: myframe.cpp:3048
+#: myframe.cpp:3040
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -5959,73 +5954,73 @@ msgstr ""
 "ガイド鏡の焦点距離。ガイドエラーの量を秒角で表示するために、カメラのピクセル"
 "サイズとともに使用。"
 
-#: myframe.cpp:3054
+#: myframe.cpp:3046
 msgid "Language"
 msgstr "言語"
 
-#: myframe.cpp:3055
+#: myframe.cpp:3047
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s で使う言語。反映させるにはPHDを再起動する必要があります。"
 
-#: myframe.cpp:3060 phdupdate.cpp:947 phdupdate.cpp:953
+#: myframe.cpp:3052 phdupdate.cpp:947 phdupdate.cpp:953
 msgid "Software Update"
 msgstr "ソフトウェア更新"
 
-#: myframe.cpp:3061
+#: myframe.cpp:3053
 msgid "Automatically check for updates"
 msgstr "アップデートを自動的にチェック"
 
-#: myframe.cpp:3062
+#: myframe.cpp:3054
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr "PHD2起動時にソフトウェアアップデートを確認する（推奨）"
 
-#: myframe.cpp:3064
+#: myframe.cpp:3056
 msgid "Only check for major releases"
 msgstr "主要なリリースのみチェック"
 
-#: myframe.cpp:3065
+#: myframe.cpp:3057
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr "アップデートをチェックする際、開発リリースを除外する。"
 
-#: myframe.cpp:3072
+#: myframe.cpp:3064
 msgid "Log File Location"
 msgstr "ログファイルの場所"
 
-#: myframe.cpp:3075
+#: myframe.cpp:3067
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "ガイドおよびデバッグログ保存フォルダを指定します。"
 
-#: myframe.cpp:3076
+#: myframe.cpp:3068
 msgid "Browse..."
 msgstr "参照..."
 
-#: myframe.cpp:3089
+#: myframe.cpp:3081
 msgid "Enable diagnostic image logging"
 msgstr "診断画像ログの有効化"
 
-#: myframe.cpp:3090
+#: myframe.cpp:3082
 msgid "Save guider images based on options below"
 msgstr "以下のオプションに基づき、ガイダー画像を保存します。"
 
-#: myframe.cpp:3093
+#: myframe.cpp:3085
 msgid "Save Guider Images"
 msgstr "ガイダー画像の保存"
 
-#: myframe.cpp:3096
+#: myframe.cpp:3088
 msgid "For all lost-star frames"
 msgstr "全て失われた星のフレーム"
 
-#: myframe.cpp:3097
+#: myframe.cpp:3089
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr "失われた星の発生時にガイダー画像を保存する"
 
-#: myframe.cpp:3099
+#: myframe.cpp:3091
 msgid "For all Auto-select Star frames"
 msgstr "全てのスターフレームの自動選択"
 
-#: myframe.cpp:3100
+#: myframe.cpp:3092
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
@@ -6033,11 +6028,11 @@ msgstr ""
 "星の自動選択時にガイダー画像を保存する。注意：この設定 に関係なく、星の自動選"
 "択に失敗した場合は常に画像が保存されます。"
 
-#: myframe.cpp:3103
+#: myframe.cpp:3095
 msgid "When relative error exceeds"
 msgstr "相対誤差が次の値を超えた場合"
 
-#: myframe.cpp:3104
+#: myframe.cpp:3096
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
@@ -6047,18 +6042,18 @@ msgstr ""
 "ます。例えば、平均（RMS）誤差が0.5ピクセルで、現在のフレームの誤差が1.5ピクセ"
 "ルの場合、相対誤差は3"
 
-#: myframe.cpp:3108
+#: myframe.cpp:3100
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr ""
 "相対誤差のしきい値。相対誤差とは、現在のフレームの誤差 と平均誤差の比率です。"
 
-#: myframe.cpp:3113
+#: myframe.cpp:3105
 msgid "When absolute error exceeds (pixels)"
 msgstr "絶対誤差が次の値を超えた場合(pix)"
 
-#: myframe.cpp:3114
+#: myframe.cpp:3106
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
@@ -6066,69 +6061,69 @@ msgstr ""
 "ガイド星とロック位置の間の距離がこのピクセル数を超えると、ガイダー画像を保存"
 "します"
 
-#: myframe.cpp:3118
+#: myframe.cpp:3110
 msgid "Absolute error threshold in pixels"
 msgstr "絶対誤差しきい値（ピクセル単位）"
 
-#: myframe.cpp:3123
+#: myframe.cpp:3115
 msgid "Until this count is reached"
 msgstr "このカウントに達するまで"
 
-#: myframe.cpp:3124
+#: myframe.cpp:3116
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr "指定された枚数まで、各ガイダー画像を保存する"
 
-#: myframe.cpp:3126
+#: myframe.cpp:3118
 msgid "Number of images to save"
 msgstr "保存する画像枚数"
 
-#: myframe.cpp:3141
+#: myframe.cpp:3133
 msgid "Dither Settings"
 msgstr "ディザ設定"
 
-#: myframe.cpp:3142
+#: myframe.cpp:3134
 msgid "Random"
 msgstr "ランダム"
 
-#: myframe.cpp:3143
+#: myframe.cpp:3135
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "各ディザコマンドは、各軸のロック位置をランダムに移動させる"
 
-#: myframe.cpp:3144
+#: myframe.cpp:3136
 msgid "Spiral"
 msgstr "スパイラル"
 
-#: myframe.cpp:3145
+#: myframe.cpp:3137
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "各ディザコマンドは、スパイラル状のパスに沿ってロック位置を移動します。"
 
-#: myframe.cpp:3147
+#: myframe.cpp:3139
 msgid "Mode: "
 msgstr "モード : "
 
-#: myframe.cpp:3152
+#: myframe.cpp:3144
 msgid "RA only"
 msgstr "赤経のみ"
 
-#: myframe.cpp:3153
+#: myframe.cpp:3145
 msgid "Constrain dither to RA only"
 msgstr "ディザリングを赤経にのみ限定する"
 
-#: myframe.cpp:3159
+#: myframe.cpp:3151
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
 msgstr "ディザコマンドの調整、既定値 = 1.0 (0.1-100.0)"
 
-#: myframe.cpp:3163 testguide.cpp:119
+#: myframe.cpp:3155 testguide.cpp:119
 msgid "Scale"
 msgstr "スケール"
 
-#: myframe.cpp:3170 profile_wizard.cpp:330
+#: myframe.cpp:3162 profile_wizard.cpp:330
 msgid "Auto restore calibration"
 msgstr "自動的にキャリブレーションを読込"
 
-#: myframe.cpp:3171
+#: myframe.cpp:3163
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
@@ -6136,39 +6131,39 @@ msgstr ""
 "この機器プロファイルでは、機器を接続した後、最後に成功したキャリブレーション"
 "から自動的にデータを復元します。"
 
-#: myframe.cpp:3188 scope.cpp:1987
+#: myframe.cpp:3180 scope.cpp:1987
 msgid "Min"
 msgstr "最小"
 
-#: myframe.cpp:3188
+#: myframe.cpp:3180
 msgid "Auto exposure minimum duration"
 msgstr "自動露出の最小時間"
 
-#: myframe.cpp:3189 scope.cpp:1989
+#: myframe.cpp:3181 scope.cpp:1989
 msgid "Max"
 msgstr "最大"
 
-#: myframe.cpp:3189
+#: myframe.cpp:3181
 msgid "Auto exposure maximum duration"
 msgstr "自動露出の最大時間"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3182
 msgid "Target SNR"
 msgstr "ターゲットのS/N比"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3182
 msgid "Auto exposure target SNR value"
 msgstr "自動露出における目標S/N比"
 
-#: myframe.cpp:3191
+#: myframe.cpp:3183
 msgid "Auto Exposure"
 msgstr "自動露出"
 
-#: myframe.cpp:3198
+#: myframe.cpp:3190
 msgid "Use Variable Exposure Delays"
 msgstr "可変露出遅延を使用"
 
-#: myframe.cpp:3199
+#: myframe.cpp:3191
 msgid ""
 "Use \"short\" delay for calibration, looping, dithering, GA, \"long\" delay "
 "for normal guiding"
@@ -6176,41 +6171,41 @@ msgstr ""
 "キャリブレーション、ループ、ディザリング、GA には「短い」遅延を使用し、通常の"
 "ガイドには「長い」遅延を使用します"
 
-#: myframe.cpp:3204
+#: myframe.cpp:3196
 msgid "Short delay (sec)"
 msgstr "短時間遅延(秒)"
 
-#: myframe.cpp:3204
+#: myframe.cpp:3196
 msgid "Short delay for calibration, looping, dithering, GA"
 msgstr "キャリブレーション、ループ、ディザリング、GA用の短時間遅延"
 
-#: myframe.cpp:3205
+#: myframe.cpp:3197
 msgid "Long delay (sec)"
 msgstr "長時間遅延(秒)"
 
-#: myframe.cpp:3205
+#: myframe.cpp:3197
 msgid "Long delay for normal guiding"
 msgstr "通常のガイドに長時間遅延"
 
-#: myframe.cpp:3206
+#: myframe.cpp:3198
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
 msgstr "可変露出遅延（高精度エンコーダ搭載）"
 
-#: myframe.cpp:3297
+#: myframe.cpp:3289
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr ""
 
-#: myframe.cpp:3297
+#: myframe.cpp:3289
 msgid "Confirmation"
 msgstr "確認"
 
-#: myframe.cpp:3328
+#: myframe.cpp:3320
 msgid "Restart PHD2"
 msgstr ""
 
-#: myframe.cpp:3329
+#: myframe.cpp:3321
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
@@ -8949,11 +8944,11 @@ msgstr "半径:"
 msgid "Reference circle radius"
 msgstr "参照円半径"
 
-#: target.cpp:362 target.cpp:364
+#: target.cpp:364 target.cpp:366
 msgid "SkyE"
 msgstr ""
 
-#: target.cpp:368 target.cpp:370
+#: target.cpp:370 target.cpp:372
 msgid "SkyN"
 msgstr ""
 
@@ -9072,6 +9067,15 @@ msgstr "カメラと接続中..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "ローテータと接続中..."
+
+#~ msgid ""
+#~ "Guiding parameters have been reset because the binning or pixel size "
+#~ "changed unexpectedly. You should use separate profiles for different "
+#~ "image scales."
+#~ msgstr ""
+#~ "ビニングまたはピクセルサイズが予期せず変更されたため、ガイドパラメータがリ"
+#~ "セットされました。異なる画像スケールには、別々のプロファイルを使用する必要"
+#~ "があります。"
 
 #~ msgid "Error capturing data from camera"
 #~ msgstr "カメラからのデータキャプチャエラー"

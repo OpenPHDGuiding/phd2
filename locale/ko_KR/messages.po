@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-21 12:53-0400\n"
+"POT-Creation-Date: 2024-05-26 16:18-0400\n"
 "PO-Revision-Date: 2020-01-19 14:09+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -303,7 +303,7 @@ msgstr "측정이 중단됨"
 #: calibration_assistant.cpp:145 calstep_dialog.cpp:196
 #: camcal_import_dialog.cpp:46 camera.cpp:896 configdialog.cpp:61
 #: configdialog.cpp:236 darks_dialog.cpp:52 gear_simulator.cpp:1652
-#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:3163
+#: guide_algorithm_gaussian_process.cpp:178 myframe.cpp:3155
 #: Refine_DefMap.cpp:59 starcross_test.cpp:51
 msgid ": "
 msgstr ""
@@ -1323,7 +1323,7 @@ msgstr "사용하려는 다크 라이브러리가있는 프로필을 선택하�
 #: gear_dialog.cpp:452 gear_dialog.cpp:456 gear_dialog.cpp:695
 #: gear_dialog.cpp:1115 gear_dialog.cpp:1881 gear_dialog.cpp:1882
 #: gear_dialog.cpp:1883 log_uploader.cpp:190 mount.cpp:144 mount.cpp:169
-#: mount.cpp:872 myframe.cpp:3025 profile_wizard.cpp:368 profile_wizard.cpp:369
+#: mount.cpp:872 myframe.cpp:3017 profile_wizard.cpp:368 profile_wizard.cpp:369
 #: profile_wizard.cpp:370 profile_wizard.cpp:584 profile_wizard.cpp:589
 #: profile_wizard.cpp:617 profile_wizard.cpp:789 profile_wizard.cpp:963
 #: profile_wizard.cpp:978 profile_wizard.cpp:1009 profile_wizard.cpp:1014
@@ -2394,12 +2394,12 @@ msgstr ""
 "그런 다음 시작을 클릭하여 교육을 시작하십시오."
 
 #: comet_tool.cpp:325 graph.cpp:158 graph.cpp:185 graph.cpp:327
-#: guide_algorithm.cpp:50 scope.cpp:671 statswindow.cpp:73 target.cpp:339
+#: guide_algorithm.cpp:50 scope.cpp:671 statswindow.cpp:73 target.cpp:341
 msgid "RA"
 msgstr "적경"
 
 #: comet_tool.cpp:326 graph.cpp:163 graph.cpp:198 graph.cpp:328 scope.cpp:671
-#: statswindow.cpp:77 target.cpp:340
+#: statswindow.cpp:77 target.cpp:342
 msgid "Dec"
 msgstr "적위"
 
@@ -4134,88 +4134,88 @@ msgstr "일시 중지 됨"
 msgid "Guide output DISABLED"
 msgstr "가이드 출력 비활성화"
 
-#: guider.cpp:1149
+#: guider.cpp:1151
 msgid "Calibration manually stopped"
 msgstr "교정을 수동으로 중지 시킴"
 
-#: guider.cpp:1203
+#: guider.cpp:1205
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr "프로필을 사용할 때마다 이 교정을 자동으로 복원 하시겠습니까?"
 
-#: guider.cpp:1277
+#: guider.cpp:1279
 msgid "Stopped Guiding"
 msgstr "가이딩이 중지 됨"
 
-#: guider.cpp:1289
+#: guider.cpp:1291
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 "잠금 위치가 허용된 영역을 벗어나 이동 됨 . 잠금 위치 이동이 비활성화되었습니"
 "다."
 
-#: guider.cpp:1325
+#: guider.cpp:1327
 msgid "star lost"
 msgstr "별을 잃어버림"
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "Paused"
 msgstr "일시 중지 됨"
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "/full"
 msgstr ""
 
-#: guider.cpp:1378 myframe.cpp:1920
+#: guider.cpp:1380 myframe.cpp:1920
 msgid "/looping"
 msgstr ""
 
-#: guider.cpp:1395
+#: guider.cpp:1397
 msgid "Static PA rotation failed"
 msgstr "정적 극축정렬 회전 실패"
 
-#: guider.cpp:1401
+#: guider.cpp:1403
 msgid "Polar Drift PA drift failed"
 msgstr "극축 표류 정렬 표류 실패"
 
-#: guider.cpp:1411
+#: guider.cpp:1413
 msgid "AO calibration failed"
 msgstr "AO 교정 실패"
 
-#: guider.cpp:1411 guider.cpp:1444
+#: guider.cpp:1413 guider.cpp:1446
 msgid "calibration failed"
 msgstr "교정 실패"
 
-#: guider.cpp:1678
+#: guider.cpp:1680
 msgid "Guider Settings"
 msgstr "가이드 설정"
 
-#: guider.cpp:1687
+#: guider.cpp:1689
 msgid "Guide star tracking"
 msgstr "가이드 별 추척"
 
-#: guider.cpp:1688 log_uploader.cpp:700
+#: guider.cpp:1690 log_uploader.cpp:700
 msgid "Calibration"
 msgstr "교정"
 
-#: guider.cpp:1689
+#: guider.cpp:1691
 msgid "Shared Parameters"
 msgstr "공유 매개변수"
 
-#: guider.cpp:1733
+#: guider.cpp:1735
 msgid "Always scale images"
 msgstr "항상 이미지 크기 조정"
 
-#: guider.cpp:1734
+#: guider.cpp:1736
 msgid "Always scale images to fill window"
 msgstr "창크기에 맞게 항상 이미지 크기 조정"
 
-#: guider.cpp:1736
+#: guider.cpp:1738
 msgid "Fast recenter after calibration or dither"
 msgstr "교정 또는 디더링 후 빠르게 중앙으로 복귀"
 
-#: guider.cpp:1737
+#: guider.cpp:1739
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -4225,7 +4225,7 @@ msgstr ""
 "입니다. 교정 또는 디더링 후 더 느린 방법으로 중앙으로 복귀하는 이전 방법을 사"
 "용하려면 선택을 취소하십시오."
 
-#: guider.cpp:1859
+#: guider.cpp:1861
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "모든 북마크를 삭제 하시겠습니까?"
 
@@ -4693,8 +4693,8 @@ msgstr "밀리초(테스트 장애)"
 msgid "Apply"
 msgstr "적용"
 
-#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3106
-#: myframe.cpp:3116
+#: guiding_assistant.cpp:1296 guiding_assistant.cpp:1939 myframe.cpp:3098
+#: myframe.cpp:3108
 msgid " "
 msgstr ""
 
@@ -5171,11 +5171,11 @@ msgstr ""
 "프로필 픽셀 크기와 카메라의 픽셀 크기가 일치하지 않습니다.  올바른 가이딩을 "
 "복원하려면 다시 교정하십시오."
 
-#: mount.cpp:1333
+#: mount.cpp:1329
 msgid "Rotator position has changed, recalibration is needed."
 msgstr "Rotator 위치가 변경되었기 땨문에 재교정을 해야 합니다."
 
-#: mount.cpp:1369
+#: mount.cpp:1365
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr "교정이 적도에서 너무 멀기 때문에 재교정을 해야 합니다."
 
@@ -5845,40 +5845,34 @@ msgstr "다크 로드 됨"
 msgid "Error saving darks FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2858
+#: myframe.cpp:2851
 msgid ""
-"Guiding parameters have been reset because the binning or pixel size changed "
-"unexpectedly. You should use separate profiles for different image scales."
+"Binning or camera pixel size changed unexpectedly. You should use separate "
+"profiles for different image scales."
 msgstr ""
-"비닝 또는 픽셀 크기가 예기치 않게 변경되어 가이딩 매개 변수가 재설정되었습니"
-"다. 이미지 스케일마다 다른 프로필을 사용해야합니다."
 
-#: myframe.cpp:2868
+#: myframe.cpp:2861
 msgid "Global Settings"
 msgstr "글로블 설정"
 
-#: myframe.cpp:2915
+#: myframe.cpp:2908
 #, c-format
-msgid ""
-"Enter a focal length in millimeters, between %.f and %.f,\n"
-"or enter 0 if the focal length is not known"
+msgid "Enter a focal length in millimeters, between %.f and %.f"
 msgstr ""
-"초점 거리를 다음 범위에서 밀리미터 단위로 입력하십시오(%.f 와 %.f 사이).\n"
-"초점 거리를 모르는 경우 0을 입력하십시오"
 
-#: myframe.cpp:2967 myframe.cpp:3050
+#: myframe.cpp:2959 myframe.cpp:3042
 msgid "System default"
 msgstr "시스템 기본값"
 
-#: myframe.cpp:2979
+#: myframe.cpp:2971
 msgid "Language-Name"
 msgstr "언어-이름"
 
-#: myframe.cpp:3018
+#: myframe.cpp:3010
 msgid "Reset Configuration"
 msgstr "구성 재설정"
 
-#: myframe.cpp:3019
+#: myframe.cpp:3011
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
@@ -5886,37 +5880,37 @@ msgstr ""
 "모든 구성 및 프로그램 설정을 초기 상태로 재설정하십시오. PHD2를 다시 시작해야"
 "합니다"
 
-#: myframe.cpp:3020
+#: myframe.cpp:3012
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "\"다시 표시하지 않음\" 메시지 재설정"
 
-#: myframe.cpp:3021
+#: myframe.cpp:3013
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
 msgstr "\"다시 표시하지 않음\"을 체크한 경우 이 설정을 해제합니다."
 
-#: myframe.cpp:3025
+#: myframe.cpp:3017
 msgid "2x2 mean"
 msgstr "2x2 평균"
 
-#: myframe.cpp:3025
+#: myframe.cpp:3017
 msgid "3x3 median"
 msgstr "3x3 중간값"
 
-#: myframe.cpp:3032
+#: myframe.cpp:3024
 msgid "Noise Reduction"
 msgstr "노이즈 감소"
 
-#: myframe.cpp:3033
+#: myframe.cpp:3025
 msgid "Technique to reduce noise in images"
 msgstr "이미지에서 노이즈를 줄이기 위한 기술"
 
-#: myframe.cpp:3039
+#: myframe.cpp:3031
 msgid "Time Lapse (ms)"
 msgstr "경과 시간(밀리초)"
 
-#: myframe.cpp:3040
+#: myframe.cpp:3032
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -5926,11 +5920,11 @@ msgstr ""
 "다. 매우 짧은 노출(예: 비디오 카메라 사용)을 사용할 때 유용합니다. 그러나 가"
 "이드 명령을 덜 자주 보내기를 원하는 경우도 있습니다"
 
-#: myframe.cpp:3047
+#: myframe.cpp:3039
 msgid "Focal length (mm)"
 msgstr "초점거리(mm)"
 
-#: myframe.cpp:3048
+#: myframe.cpp:3040
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -5938,73 +5932,73 @@ msgstr ""
 "가이드 망원경의 초점거리, 카메라의 픽셀 크기와 함께 가이딩 오류(아크초)를 표"
 "시하는데 사용됩니다."
 
-#: myframe.cpp:3054
+#: myframe.cpp:3046
 msgid "Language"
 msgstr "언어"
 
-#: myframe.cpp:3055
+#: myframe.cpp:3047
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s 언어. PHD를 다시 시작해야 합니다."
 
-#: myframe.cpp:3060 phdupdate.cpp:947 phdupdate.cpp:953
+#: myframe.cpp:3052 phdupdate.cpp:947 phdupdate.cpp:953
 msgid "Software Update"
 msgstr "프로그램 업데이트"
 
-#: myframe.cpp:3061
+#: myframe.cpp:3053
 msgid "Automatically check for updates"
 msgstr "자동으로 업데이트 확인"
 
-#: myframe.cpp:3062
+#: myframe.cpp:3054
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr "PHD2가 시작되면 프로그램 업데이트를 체크 합니다(권장)"
 
-#: myframe.cpp:3064
+#: myframe.cpp:3056
 msgid "Only check for major releases"
 msgstr "주요 릴리즈만 체크 합니다"
 
-#: myframe.cpp:3065
+#: myframe.cpp:3057
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr "업데이트를 체크할 때 마이너 릴리즈(개발버전)는 무시합니다"
 
-#: myframe.cpp:3072
+#: myframe.cpp:3064
 msgid "Log File Location"
 msgstr "로그 파일 위치"
 
-#: myframe.cpp:3075
+#: myframe.cpp:3067
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "가이드와 디버그 로그를 위한 폴더; 기본 위치를 복원할 빈 문자열"
 
-#: myframe.cpp:3076
+#: myframe.cpp:3068
 msgid "Browse..."
 msgstr "검색..."
 
-#: myframe.cpp:3089
+#: myframe.cpp:3081
 msgid "Enable diagnostic image logging"
 msgstr "진단 이미지 로깅 사용"
 
-#: myframe.cpp:3090
+#: myframe.cpp:3082
 msgid "Save guider images based on options below"
 msgstr "아래 옵션을 기반으로 가이드 이미지 저장"
 
-#: myframe.cpp:3093
+#: myframe.cpp:3085
 msgid "Save Guider Images"
 msgstr "가이드 이미지 저장"
 
-#: myframe.cpp:3096
+#: myframe.cpp:3088
 msgid "For all lost-star frames"
 msgstr "잃어버린 별 모두 저장"
 
-#: myframe.cpp:3097
+#: myframe.cpp:3089
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr "잃어버린 별이 발생할 때마다 가이드 이미지 저장"
 
-#: myframe.cpp:3099
+#: myframe.cpp:3091
 msgid "For all Auto-select Star frames"
 msgstr "자동 선택된 별 모두 저장"
 
-#: myframe.cpp:3100
+#: myframe.cpp:3092
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
@@ -6012,11 +6006,11 @@ msgstr ""
 "별 자동 선택시 가이드 이미지를 저장합니다. 참고: 이 설정에 관계없이 별 자동 "
 "선택에 실패하면 이미지가 항상 저장됩니다."
 
-#: myframe.cpp:3103
+#: myframe.cpp:3095
 msgid "When relative error exceeds"
 msgstr "상대 오류가 초과될 경우"
 
-#: myframe.cpp:3104
+#: myframe.cpp:3096
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
@@ -6026,87 +6020,87 @@ msgstr ""
 "합니다 예를 들어 평균 (RMS) 오류가 0.5픽셀이고 현재 프레임 오류가 1.5픽셀 인 "
 "경우 상대 오류는 3입니다"
 
-#: myframe.cpp:3108
+#: myframe.cpp:3100
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr ""
 "상대 오류 임계값. 상대 오류는 현재 프레임의 오류와 평균 오류의 비율입니다"
 
-#: myframe.cpp:3113
+#: myframe.cpp:3105
 msgid "When absolute error exceeds (pixels)"
 msgstr "절대 오류를 초과한 경우(필셀)"
 
-#: myframe.cpp:3114
+#: myframe.cpp:3106
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
 msgstr ""
 "가이드 별과 잠금 위치 사이의 거리가 이 픽셀 수를 초과하면 가이드 이미지 저장"
 
-#: myframe.cpp:3118
+#: myframe.cpp:3110
 msgid "Absolute error threshold in pixels"
 msgstr "절대 오류 임계값은 픽셀 단위입니다"
 
-#: myframe.cpp:3123
+#: myframe.cpp:3115
 msgid "Until this count is reached"
 msgstr "이 수에 도달 할 때까지"
 
-#: myframe.cpp:3124
+#: myframe.cpp:3116
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr "지정된 수의 이미지가 저장 될 때까지 각 가이드 이미지를 저장합니다"
 
-#: myframe.cpp:3126
+#: myframe.cpp:3118
 msgid "Number of images to save"
 msgstr "저장할 이미지 수"
 
-#: myframe.cpp:3141
+#: myframe.cpp:3133
 msgid "Dither Settings"
 msgstr "디더 설정"
 
-#: myframe.cpp:3142
+#: myframe.cpp:3134
 msgid "Random"
 msgstr "랜덤"
 
-#: myframe.cpp:3143
+#: myframe.cpp:3135
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "각 디더 명령은 잠금 위치를 각 축에서 임의의 거리로 이동시킵니다"
 
-#: myframe.cpp:3144
+#: myframe.cpp:3136
 msgid "Spiral"
 msgstr "나선"
 
-#: myframe.cpp:3145
+#: myframe.cpp:3137
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "각 디더 명령은 잠금 위치를 나선 경로를 따라 이동시킵니다"
 
-#: myframe.cpp:3147
+#: myframe.cpp:3139
 msgid "Mode: "
 msgstr "방법: "
 
-#: myframe.cpp:3152
+#: myframe.cpp:3144
 msgid "RA only"
 msgstr "적경 전용"
 
-#: myframe.cpp:3153
+#: myframe.cpp:3145
 msgid "Constrain dither to RA only"
 msgstr "디더를 적경에만 제한 함"
 
-#: myframe.cpp:3159
+#: myframe.cpp:3151
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
 msgstr ""
 
-#: myframe.cpp:3163 testguide.cpp:119
+#: myframe.cpp:3155 testguide.cpp:119
 msgid "Scale"
 msgstr "스케일"
 
-#: myframe.cpp:3170 profile_wizard.cpp:330
+#: myframe.cpp:3162 profile_wizard.cpp:330
 msgid "Auto restore calibration"
 msgstr "교정 자동 복원"
 
-#: myframe.cpp:3171
+#: myframe.cpp:3163
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
@@ -6114,79 +6108,79 @@ msgstr ""
 "이 장비 프로필의 경우 장비가 연결된 후 마지막으로 성공한 교정에서 데이터를 자"
 "동으로 복원합니다."
 
-#: myframe.cpp:3188 scope.cpp:1987
+#: myframe.cpp:3180 scope.cpp:1987
 msgid "Min"
 msgstr "최소"
 
-#: myframe.cpp:3188
+#: myframe.cpp:3180
 msgid "Auto exposure minimum duration"
 msgstr "자동 노출 최소 기간"
 
-#: myframe.cpp:3189 scope.cpp:1989
+#: myframe.cpp:3181 scope.cpp:1989
 msgid "Max"
 msgstr "최대"
 
-#: myframe.cpp:3189
+#: myframe.cpp:3181
 msgid "Auto exposure maximum duration"
 msgstr "자동 노출 최대 기간"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3182
 msgid "Target SNR"
 msgstr "목표 SNR"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3182
 msgid "Auto exposure target SNR value"
 msgstr "자동 노출 대상 SNR 값"
 
-#: myframe.cpp:3191
+#: myframe.cpp:3183
 msgid "Auto Exposure"
 msgstr "자동 노출"
 
-#: myframe.cpp:3198
+#: myframe.cpp:3190
 msgid "Use Variable Exposure Delays"
 msgstr ""
 
-#: myframe.cpp:3199
+#: myframe.cpp:3191
 msgid ""
 "Use \"short\" delay for calibration, looping, dithering, GA, \"long\" delay "
 "for normal guiding"
 msgstr ""
 
-#: myframe.cpp:3204
+#: myframe.cpp:3196
 msgid "Short delay (sec)"
 msgstr ""
 
-#: myframe.cpp:3204
+#: myframe.cpp:3196
 msgid "Short delay for calibration, looping, dithering, GA"
 msgstr ""
 
-#: myframe.cpp:3205
+#: myframe.cpp:3197
 msgid "Long delay (sec)"
 msgstr ""
 
-#: myframe.cpp:3205
+#: myframe.cpp:3197
 msgid "Long delay for normal guiding"
 msgstr ""
 
-#: myframe.cpp:3206
+#: myframe.cpp:3198
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
 msgstr ""
 
-#: myframe.cpp:3297
+#: myframe.cpp:3289
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr "모든 PHD2 구성 값이 재설정되고 프로그램이 다시 시작됩니다. 확실합니까?"
 
-#: myframe.cpp:3297
+#: myframe.cpp:3289
 msgid "Confirmation"
 msgstr "확인"
 
-#: myframe.cpp:3328
+#: myframe.cpp:3320
 msgid "Restart PHD2"
 msgstr "PHD2 재시작"
 
-#: myframe.cpp:3329
+#: myframe.cpp:3321
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
@@ -8967,11 +8961,11 @@ msgstr "반경:"
 msgid "Reference circle radius"
 msgstr "참조 서클 반경"
 
-#: target.cpp:362 target.cpp:364
+#: target.cpp:364 target.cpp:366
 msgid "SkyE"
 msgstr "스카이E"
 
-#: target.cpp:368 target.cpp:370
+#: target.cpp:370 target.cpp:372
 msgid "SkyN"
 msgstr "스카이N"
 
@@ -9090,6 +9084,22 @@ msgstr "카메라 연결중..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Rotator 연결중..."
+
+#~ msgid ""
+#~ "Guiding parameters have been reset because the binning or pixel size "
+#~ "changed unexpectedly. You should use separate profiles for different "
+#~ "image scales."
+#~ msgstr ""
+#~ "비닝 또는 픽셀 크기가 예기치 않게 변경되어 가이딩 매개 변수가 재설정되었습"
+#~ "니다. 이미지 스케일마다 다른 프로필을 사용해야합니다."
+
+#, c-format
+#~ msgid ""
+#~ "Enter a focal length in millimeters, between %.f and %.f,\n"
+#~ "or enter 0 if the focal length is not known"
+#~ msgstr ""
+#~ "초점 거리를 다음 범위에서 밀리미터 단위로 입력하십시오(%.f 와 %.f 사이).\n"
+#~ "초점 거리를 모르는 경우 0을 입력하십시오"
 
 #, c-format
 #~ msgid "Cannot connect to camera %s: %s"
