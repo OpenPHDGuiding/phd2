@@ -432,6 +432,20 @@
 
 #define DEVICETYPE_QHY630T                 4132
 
+#define DEVICETYPE_QHY268_OEM              4133
+#define DEVICETYPE_QHY268M_OEM             4134
+#define DEVICETYPE_QHY268C_OEM             4135
+
+#define DEVICETYPE_QHY5III568M             4136
+#define DEVICETYPE_QHY5III568C             4137
+
+#define DEVICETYPE_QHYMINICAM8M            4138
+#define DEVICETYPE_QHYMINICAM8C            4139
+
+#define DEVICETYPE_QHY533M_OEM             4140
+#define DEVICETYPE_QHY533C_OEM             4141
+
+#define DEVICETYPE_QHY487              4142
 /**
  * Type define for QHY5IIIEND*/
 #define DEVICETYPE_QHY5IIIEND   	4999
@@ -602,6 +616,7 @@
 #define DEVICETYPE_QHY991PCIE      		0X6618d992
 #define DEVICETYPE_QHY461PCIE      		0X6618c462
 #define DEVICETYPE_QHY342PCIE      		0X66180345
+#define DEVICETYPE_QHY487PCIE			0X6618c488
 
 
 
@@ -1084,9 +1099,6 @@
 #define QHY4040PRO_MAX_WIDTH        	4096
 #define QHY4040PRO_MAX_HEIGHT        	4118
 
-#define QHY342PRO_MAX_WIDTH        	6488
-#define QHY342PRO_MAX_HEIGHT        	4870
-
 
 #define QHY550_MAX_WIDTH        	2496
 #define QHY550_MAX_HEIGHT        	2080
@@ -1157,8 +1169,8 @@
 #define QHY268C_MAX_WIDTH        6288
 #define QHY268C_MAX_HEIGHT       4210
 
-#define QHY410C_MAX_WIDTH        6112
-#define QHY410C_MAX_HEIGHT       4140-100
+//#define QHY410C_MAX_WIDTH        6112
+//#define QHY410C_MAX_HEIGHT       4140-100
 
 #define QHY432_MAX_WIDTH        1624
 #define QHY432_MAX_HEIGHT       1136
