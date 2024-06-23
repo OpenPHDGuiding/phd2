@@ -720,7 +720,7 @@ if (NOT OPENSOURCE_ONLY)
   FetchContent_Declare(
     OGMAcamSDK
     GIT_REPOSITORY https://github.com/OGMAvision/OGMAcamSDK.git
-    GIT_TAG be02a7317194e28e5b4f5f0d735eae729d096752
+    GIT_TAG 4314639b289636425821d0bb4d47aa3d652e790e
   )
   FetchContent_MakeAvailable(OGMAcamSDK)
   include_directories(${ogmacamsdk_SOURCE_DIR}/inc)
