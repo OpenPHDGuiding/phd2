@@ -868,8 +868,12 @@ bool CameraOgma::SetCoolerOn(bool on)
 bool CameraOgma::SetCoolerSetpoint(double temperature)
 {
     int val = (int)(temperature * 10.);
+#if defined(OGMACAM_TEC_TARGET_MIN)
     val = wxMax(val, OGMACAM_TEC_TARGET_MIN);
+#endif
+#if defined(OGMACAM_TEC_TARGET_MAX)
     val = wxMin(val, OGMACAM_TEC_TARGET_MAX);
+#endif
 
     return m_cam.SetOption(OGMACAM_OPTION_TECTARGET, val) ? false : true;
 }
