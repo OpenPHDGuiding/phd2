@@ -36,7 +36,7 @@ cd "$tmp"
 
 cmake -G "Unix Makefiles" \
     -DwxWidgets_PREFIX_DIRECTORY="$WXWIN" \
-    -DAPPLE_ARCH="$APPLE_ARCH" \
+    -DCMAKE_OSX_ARCHITECTURES="$APPLE_ARCH" \
     -DCMAKE_BUILD_TYPE="$buildtype" \
     "${cmake_extra_args[@]}" \
     "$@" \
