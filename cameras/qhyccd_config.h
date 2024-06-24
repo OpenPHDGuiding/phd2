@@ -10,15 +10,16 @@
 #define	IMAGEQUEUE_ORIG_MODE		1
 
 
-#define version_year                23
-#define version_month               4
-#define version_day                 24
-#define version_subday              13
-#define SDK_SVN_REVISION            1
+#define version_year                24
+#define version_month               3
+#define version_day                 29
+#define version_subday              10
+#define SDK_SVN_REVISION            13662
 
 #if defined (_WIN32)
 #define CCM6000_SUPPORT             0
-#define QHYCCD_OPENCV_SUPPORT
+//#define QHYCCD_OPENCV_SUPPORT
+//#define QHYCCD_CFITSIO_SUPPORT
 #define WINDOWS_PTHREAD_SUPPORT		1
 #define WINPCAP_MODE_SUPPORT		0
 #define PCIE_MODE_SUPPORT			1
@@ -27,7 +28,7 @@
 #define LIBUSB_MODE_SUPPORT  		0
 #define PCIE_MODE_TEST  			1
 #else
-#undef  QHYCCD_OPENCV_SUPPORT
+//#undef  QHYCCD_OPENCV_SUPPORT
 #define WINDOWS_PTHREAD_SUPPORT		0
 #define WINPCAP_MODE_SUPPORT		0
 

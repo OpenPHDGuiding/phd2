@@ -668,13 +668,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
-      COMMAND install_name_tool -change @rpath/libqhyccd.4.dylib
-                   @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
-      COMMAND install_name_tool -change @rpath/libqhyccd.5.dylib
-                   @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
-      COMMAND install_name_tool -change @rpath/libqhyccd.6.dylib
-                   @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
-      COMMAND install_name_tool -change @loader_path/libqhyccd.20.dylib
+      COMMAND install_name_tool -change @rpath/libqhyccd.20.dylib
                    @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change /usr/local/lib/libusb-1.0.0.dylib
                    @executable_path/../Frameworks/libusb_openphd.dylib
