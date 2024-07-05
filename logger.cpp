@@ -35,8 +35,8 @@
 
 #include "phd.h"
 #include "logger.h"
-#include "wx/dir.h"
-#include "wx/filefn.h"
+#include <wx/dir.h>
+#include <wx/filefn.h>
 
 Logger::Logger()
 {

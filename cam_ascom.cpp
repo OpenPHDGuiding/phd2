@@ -41,7 +41,7 @@
 #include "comdispatch.h"
 #include "time.h"
 #include "image_math.h"
-#include "wx/stopwatch.h"
+#include <wx/stopwatch.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/stdpaths.h>

@@ -38,7 +38,7 @@
 
 #include "phd.h"
 #include "camcal_import_dialog.h"
-#include "wx/file.h"
+#include <wx/file.h>
 
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)

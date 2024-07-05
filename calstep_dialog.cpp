@@ -35,7 +35,7 @@
 
 #include "phd.h"
 #include "calstep_dialog.h"
-#include "wx/valnum.h"
+#include <wx/valnum.h>
 #include <cmath>
 
 #define MIN_PIXELSIZE 0.1
