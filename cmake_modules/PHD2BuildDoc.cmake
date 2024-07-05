@@ -46,7 +46,7 @@ set(_default_locale "en_EN")
 #    `VERSION_MAJOR`, `VERSION_MINOR` and `VERSION_PATCH`.
 #    Raises an error if the version cannot be extracted
 function(get_phd_version)
-  set(filename_to_extract_from ${PHD_PROJECT_ROOT_DIR}/phd.h)
+  set(filename_to_extract_from ${PHD_PROJECT_ROOT_DIR}/src/phd.h)
   file(STRINGS ${filename_to_extract_from} file_content
        #REGEX "PHDVERSION[ _T\\(]+\"(.*)\""
   )

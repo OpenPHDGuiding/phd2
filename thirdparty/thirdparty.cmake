@@ -1126,8 +1126,8 @@ if(WIN32)
 elseif(UNIX OR APPLE)
   add_definitions(-DHAVE_SXV_CAMERA=1)
   set(SXV_PLATFORM_SRC
-      ${phd_src_dir}/cameras/SXMacLib.h
-      ${phd_src_dir}/cameras/SXMacLib.c)
+      ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.h
+      ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.c)
 endif()
 
 
@@ -1137,13 +1137,13 @@ endif()
 
 if(APPLE)
   add_definitions(-DHAVE_KWIQGUIDER_CAMERA=1)
-  include_directories(${phd_src_dir}/cam_KWIQGuider/)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/)
   set(KWIQGuider_PLATFORM_SRC
-    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
-    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.h
-    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_firmware.h
-    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_loader.cpp
-    ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_priv.h
+    ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider.cpp
+    ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider.h
+    ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider_firmware.h
+    ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider_loader.cpp
+    ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider_priv.h
   )
 endif()
 

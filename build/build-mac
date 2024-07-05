@@ -84,7 +84,7 @@ fi
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
- /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
+ /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' src/phd.h)
 
 [[ $V ]] || {
     echo "could not get version from phd.h!" >&2
