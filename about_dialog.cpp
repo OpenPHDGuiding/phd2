@@ -37,9 +37,11 @@
 #include <wx/fs_mem.h>
 #include <wx/html/htmlwin.h>
 
-BEGIN_EVENT_TABLE(AboutDialog, wxDialog)
+// clang-format off
+wxBEGIN_EVENT_TABLE(AboutDialog, wxDialog)
     EVT_HTML_LINK_CLICKED(ABOUT_LINK,AboutDialog::OnLink)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 AboutDialog::AboutDialog()
     : wxDialog(pFrame, wxID_ANY, wxString::Format(_("About %s"), APPNAME),

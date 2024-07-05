@@ -73,14 +73,16 @@ public:
     void SetLimits(unsigned int xMax, unsigned int yMax, unsigned int xBump, unsigned int yBump);
     void AppendData(const wxPoint& pos, const PHD_Point& avgPos);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
-BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphStepguiderWindow::OnButtonLength)
     EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, GraphStepguiderWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphStepguiderWindow::OnButtonClear)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("AO Position"))
@@ -232,9 +234,11 @@ void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump)
     }
 }
 
-BEGIN_EVENT_TABLE(GraphStepguiderClient, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(GraphStepguiderClient, wxWindow)
   EVT_PAINT(GraphStepguiderClient::OnPaint)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE)

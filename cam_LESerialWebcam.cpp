@@ -258,13 +258,15 @@ struct LEWebcamDialog : public wxDialog
     void OnDefaults(wxCommandEvent& evt);
     void OnVidCapClick(wxCommandEvent& evt);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
-BEGIN_EVENT_TABLE(LEWebcamDialog, wxDialog)
+// clang-format off
+wxBEGIN_EVENT_TABLE(LEWebcamDialog, wxDialog)
     EVT_BUTTON(wxID_DEFAULT, LEWebcamDialog::OnDefaults)
     EVT_BUTTON(wxID_CONVERT, LEWebcamDialog::OnVidCapClick)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 void LEWebcamDialog::OnDefaults(wxCommandEvent& evt)
 {

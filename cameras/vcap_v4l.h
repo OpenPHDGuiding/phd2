@@ -226,7 +226,7 @@ protected:
     void print_video_mbuf();
 
 private:
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
     DECLARE_DYNAMIC_CLASS(wxVideoCaptureWindowV4L)
 };
 

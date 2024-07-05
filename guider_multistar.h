@@ -152,7 +152,7 @@ private:
 
     void SaveStarFITS();
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 inline int

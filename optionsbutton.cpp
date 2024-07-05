@@ -38,13 +38,15 @@
 #include "icons/down_arrow.xpm"
 #include "icons/down_arrow_bold.xpm"
 
-BEGIN_EVENT_TABLE(OptionsButton, wxPanel)
+// clang-format off
+wxBEGIN_EVENT_TABLE(OptionsButton, wxPanel)
     EVT_ENTER_WINDOW(OptionsButton::OnMouseEnter)
     EVT_MOTION(OptionsButton::OnMouseMove)
     EVT_LEAVE_WINDOW(OptionsButton::OnMouseLeave)
     EVT_PAINT(OptionsButton::OnPaint)
     EVT_LEFT_UP(OptionsButton::OnClick)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 enum
 {

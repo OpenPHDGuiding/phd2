@@ -38,7 +38,7 @@ class WXDLLEXPORT wxLed : public wxWindow
 
 	private :
 
-		DECLARE_EVENT_TABLE ()
+		wxDECLARE_EVENT_TABLE();
 } ;
 
 #endif // _WX_LED_H_

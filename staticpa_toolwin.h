@@ -77,7 +77,7 @@ struct StaticPaToolWin : public wxFrame
         void OnClick(wxMouseEvent &evt);
         void OnPaint(wxPaintEvent &evt);
         void Paint();
-        DECLARE_EVENT_TABLE()
+        wxDECLARE_EVENT_TABLE();
     };
     PolePanel *m_polePanel; // Panel for drawing of pole stars
 
@@ -181,7 +181,7 @@ struct StaticPaToolWin : public wxFrame
     PHD_Point Radec2Px(const PHD_Point& radec);
     PHD_Point J2000Now(const PHD_Point& radec);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif

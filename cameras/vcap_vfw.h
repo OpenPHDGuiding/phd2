@@ -479,7 +479,7 @@ protected:
 
 private:
     void Init();
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
     DECLARE_DYNAMIC_CLASS(wxVideoCaptureWindowVFW)
 };
 

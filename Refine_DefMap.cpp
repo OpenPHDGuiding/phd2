@@ -40,10 +40,12 @@ enum {
     ID_PREVIEW = 10001,
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
     EVT_CHECKBOX(ID_PREVIEW, RefineDefMap::OnPreview)
     EVT_CLOSE(RefineDefMap::OnClose)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 static const double DefDMSigmaX = 75;
 

@@ -41,10 +41,12 @@
 
 EventServer EvtServer;
 
-BEGIN_EVENT_TABLE(EventServer, wxEvtHandler)
+// clang-format off
+wxBEGIN_EVENT_TABLE(EventServer, wxEvtHandler)
     EVT_SOCKET(EVENT_SERVER_ID, EventServer::OnEventServerEvent)
     EVT_SOCKET(EVENT_SERVER_CLIENT_ID, EventServer::OnEventServerClientEvent)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 enum
 {

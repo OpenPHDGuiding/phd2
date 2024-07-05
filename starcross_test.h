@@ -57,7 +57,7 @@ struct SCT_StepInfo
 
 class StarCrossDialog : public wxDialog
 {
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 
 public:
     StarCrossDialog(wxWindow *parent);

@@ -53,7 +53,7 @@ public:
     void OnDither(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAppStateNotify(wxCommandEvent& evt);
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 enum
@@ -66,6 +66,7 @@ enum
     ID_DITHER,
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
     EVT_BUTTON(MGUIDE1_UP,TestGuideDialog::OnButton)
     EVT_BUTTON(MGUIDE1_DOWN,TestGuideDialog::OnButton)
@@ -81,7 +82,8 @@ wxBEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
     EVT_SPINCTRLDOUBLE(ID_DITHERSCALE, TestGuideDialog::OnDitherScaleChange)
     EVT_CHECKBOX(ID_RAONLY, TestGuideDialog::OnRAOnlyChecked)
     EVT_BUTTON(ID_DITHER, TestGuideDialog::OnDither)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 wxSizer *TestGuideDialog::InitMountControls()
 {

@@ -61,7 +61,7 @@ private:
     void OnMouseLeave(wxMouseEvent& evt);
     void OnClick(wxMouseEvent& evt);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif

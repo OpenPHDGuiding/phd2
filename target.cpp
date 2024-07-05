@@ -37,7 +37,8 @@
 
 static double const MIN_ZOOM = 0.25;
 
-BEGIN_EVENT_TABLE(TargetWindow, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(TargetWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,TargetWindow::OnButtonLength)
     EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, TargetWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,TargetWindow::OnButtonClear)
@@ -45,7 +46,8 @@ BEGIN_EVENT_TABLE(TargetWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_ZOOMOUT,TargetWindow::OnButtonZoomOut)
     EVT_CHECKBOX(TARGET_ENABLE_REF_CIRCLE, TargetWindow::OnCheckBoxRefCircle)
     EVT_SPINCTRLDOUBLE(TARGET_REF_CIRCLE_RADIUS, TargetWindow::OnRefCircleRadius)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 TargetWindow::TargetWindow(wxWindow *parent) :
     wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, 0,_("Target"))
@@ -225,9 +227,11 @@ void TargetWindow::OnRefCircleRadius(wxSpinDoubleEvent& event)
     }
 }
 
-BEGIN_EVENT_TABLE(TargetClient, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(TargetClient, wxWindow)
     EVT_PAINT(TargetClient::OnPaint)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 TargetClient::TargetClient(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE )

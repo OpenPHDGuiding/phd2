@@ -175,7 +175,7 @@ private:
     void OnPaint(wxPaintEvent& evt);
     void OnLeftBtnDown(wxMouseEvent& evt);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 inline unsigned int GraphLogClientWindow::GetItemCount() const
@@ -263,7 +263,7 @@ public:
     const SummaryStats& Stats() const { return m_pClient->m_stats; }
     void ResetData();
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 class GraphControlPane : public wxWindow

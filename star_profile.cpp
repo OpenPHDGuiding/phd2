@@ -35,10 +35,12 @@
 
 #include "phd.h"
 
-BEGIN_EVENT_TABLE(ProfileWindow, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(ProfileWindow, wxWindow)
     EVT_PAINT(ProfileWindow::OnPaint)
     EVT_LEFT_DOWN(ProfileWindow::OnLClick)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 enum
 {

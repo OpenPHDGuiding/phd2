@@ -101,7 +101,7 @@ class IndiGui : public wxDialog, public INDI::BaseClient
         bool m_deleted;
         IndiGui **m_holder;
 
-        DECLARE_EVENT_TABLE()
+        wxDECLARE_EVENT_TABLE();
 
         IndiGui();
 

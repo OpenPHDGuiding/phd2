@@ -69,7 +69,7 @@ struct NudgeLockDialog : public wxDialog
     void UpdateSliderLabel();
     void UpdateLockPosCtrls();
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 enum
@@ -86,6 +86,7 @@ enum
     ID_RESTORE_LOCK_POS,
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(NudgeLockDialog, wxDialog)
     EVT_CHECKBOX(ID_STAY_ON_TOP, NudgeLockDialog::OnStayOnTopClicked)
     EVT_BUTTON(ID_UP_BTN, NudgeLockDialog::OnButton)
@@ -99,7 +100,8 @@ wxBEGIN_EVENT_TABLE(NudgeLockDialog, wxDialog)
     EVT_BUTTON(ID_RESTORE_LOCK_POS, NudgeLockDialog::OnRestoreLockPosClicked)
     EVT_COMMAND(wxID_ANY, APPSTATE_NOTIFY_EVENT, NudgeLockDialog::OnAppStateNotify)
     EVT_CLOSE(NudgeLockDialog::OnClose)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 static double NudgeIncrements[] = { 0.01, 0.03, 0.1, 0.3, 1, 3, 10, };
 

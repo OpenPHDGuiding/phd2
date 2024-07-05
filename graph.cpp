@@ -42,6 +42,7 @@
 #include <wx/utils.h>
 #include <wx/colordlg.h>
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
     EVT_BUTTON(BUTTON_GRAPH_SETTINGS,GraphLogWindow::OnButtonSettings)
@@ -59,7 +60,8 @@ wxBEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
     EVT_CHECKBOX(CHECKBOX_GRAPH_TRENDLINES,GraphLogWindow::OnCheckboxTrendlines)
     EVT_CHECKBOX(CHECKBOX_GRAPH_CORRECTIONS,GraphLogWindow::OnCheckboxCorrections)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 #ifdef __WXOSX__
 # define OSX_SMALL_FONT(lbl) do { (lbl)->SetFont(*wxSMALL_FONT); } while (0)
@@ -747,10 +749,12 @@ void GraphLogWindow::UpdateHeightButtonLabel()
     }
 }
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
     EVT_PAINT(GraphLogClientWindow::OnPaint)
     EVT_LEFT_DOWN(GraphLogClientWindow::OnLeftBtnDown)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE),

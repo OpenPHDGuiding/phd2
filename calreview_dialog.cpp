@@ -38,11 +38,11 @@
 #include "scope.h"
 
 // Event handling for base class - derived classes handle their own bindings
-BEGIN_EVENT_TABLE( CalReviewDialog, wxDialog )
-
-EVT_CLOSE(CalReviewDialog::OnCloseWindow)
-
-END_EVENT_TABLE()
+// clang-format off
+wxBEGIN_EVENT_TABLE( CalReviewDialog, wxDialog )
+  EVT_CLOSE(CalReviewDialog::OnCloseWindow)
+wxEND_EVENT_TABLE();
+// clang-format on
 
 #define NA_STR _("N/A")
 #define CALREVIEW_BITMAP_SIZE 250
