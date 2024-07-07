@@ -1,0 +1,29 @@
+﻿---
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+BasedOnStyle: WebKit
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeColon
+ColumnLimit: 128
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^"phd.h"$'
+    Priority:        -1
+    SortPriority:    0
+  - Regex:           '.*'
+    Priority:        1
+    SortPriority:    0
+IndentPPDirectives: AfterHash
+PPIndentWidth: 1
+PointerAlignment: Right
+ReferenceAlignment: Left
+RemoveParentheses: ReturnStatement
+# TODO: enable SortIncludes - needs work
+# SortIncludes: CaseInsensitive
+SortIncludes: Never
+SpaceAfterCStyleCast: true
+SpaceAfterTemplateKeyword: false
+UseTab: Never
+...
