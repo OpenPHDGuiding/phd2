@@ -869,8 +869,12 @@ bool CameraToupTek::SetCoolerOn(bool on)
 bool CameraToupTek::SetCoolerSetpoint(double temperature)
 {
     int val = (int)(temperature * 10.);
+#if defined(TOUPCAM_TEC_TARGET_MIN)
     val = wxMax(val, TOUPCAM_TEC_TARGET_MIN);
+#endif
+#if defined(TOUPCAM_TEC_TARGET_MAX)
     val = wxMin(val, TOUPCAM_TEC_TARGET_MAX);
+#endif
 
     return m_cam.SetOption(TOUPCAM_OPTION_TECTARGET, val) ? false : true;
 }
