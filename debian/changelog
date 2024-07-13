@@ -1,3 +1,142 @@
+phd2 (2.6.13dev4) unstable; urgency=low
+
+  * Improved handling of image scale changes
+  * Improved layout of text labels in the Target window
+  * Fix a potential error when an imaging app sends a command for a zero-pixel dither
+  * Touptek cameras: update Touptek SDK lib to version 55.25633.20240519
+  * Windows: add missing DLL file
+  * Updated Czech translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 26 May 2024 21:00:00 -0400
+
+phd2 (2.6.13dev3) unstable; urgency=low
+
+  * OGMA cameras: OGMA cameras are now supported in PHD2
+  * Svbony cameras: SDK updated to version v1.12.6
+  * opencv cameras: Opencv updated to version 4
+  * opencv cameras: now available on Mac and Linux
+  * ask-for-coordinates aux mount is working again
+  * updated translation: Traditional Chinese
+  * ra-only guiding: more accurate display of ra error value when RA-only guiding is in effect
+  * event server: added interfaces to get/set variable delay parameters
+  * Help file updates
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 21 Apr 2024 21:00:00 -0400
+
+phd2 (2.6.13dev2) unstable; urgency=low
+
+  * Mac: Fix crash on Sonoma when a status alert message is displayed
+  * Windows installer: add missing required dll msvcp140.dll
+  * Star profile window: improved layout, better font size, and more accurate display of crosshairs
+  * Performance improvement displaying camera images
+  * Prevent resizing of rows and columns in stats window grids
+  * Touptek cameras: update to SDK version 55.24621.20240204
+  * INDI: Rotator support added
+  * INDI: Wait for Indi devices to be ready when connecting
+  * INDI: Better error message for RGB FITS file
+  * Updated Czech and Spanish translations
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 23 Mar 2024 21:00:00 -0400
+
+phd2 (2.6.13dev1) unstable; urgency=low
+
+  * Windows: remove cameras with obsolete SDKs: Fishcamp, Meade-DSI, SAC4-2, SSAG. To use these cameras, stick with an older version of PHD2.
+  * Mac: no longer building for 32-bit Macs. To use 32-bit Macs, stick with an older version of PHD2.
+  * INDI: update to INDI 2.0
+  * Touptek cameras: update SDK lib to version 55.24239.20231224
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Wed, 27 Dec 2023 21:00:00 -0500
+
+phd2 (2.6.13) stable; urgency=low
+
+  * fix a problem where the camera settings are not displayed properly on some computers
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 22 Dec 2023 21:00:00 -0500
+
+phd2 (2.6.12) stable; urgency=low
+
+  * Star profile: add option to toggle between raw and interpolated views of the star
+  * Multistar guiding: better tolerance of passing clouds
+  * Calibration Assistant: some small improvements to the assessment
+  * New Profile Wizard: add ability to set saturation ADU based on camera bit depth
+  * Fix a possible crash after closing the ASCOM Mount properties window
+  * INDI: compute LST in PHD2 if INDI driver does not provide it
+  * Altair cameras: update SDK to version 54.23860.20231112
+  * Touptek cameras: update SDK to version 54.23926.20231119
+  * ZWO ASI cameras: update SDK to v1.30 (2023-07-18)
+  * Svbony cameras: update SDK to v1.11.4
+  * Moravian cameras: update SDK to v4.15
+  * Updated translations: Spanish, Japanese, Traditional Chinese, Czech
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 20 Nov 2023 21:00:00 -0500
+
+phd2 (2.6.11dev6) unstable; urgency=low
+
+  * Svbony Cameras: update SDK to version v1.11.2 (2023-04-24)
+  * Touptek Cameras: update Touptek lib to version 54.22587.20230516
+  * Calibration Assistant: minor UI tweaks and help file updates
+  * Updated Japanese translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Mon, 29 May 2023 21:00:00 -0400
+
+phd2 (2.6.11dev5) unstable; urgency=low
+
+  * New Calibration Assistant tool
+  * Multi-star guiding: fix possible loss of secondary stars after a huge dither
+  * QHY cameras: update to SDK version 2023-05-10
+  * Touptek cameras: update SDK to version 53.22412.20230409
+  * Updated Czech, Japanese, Simplified Chinese and Traditional Chinese translations
+  * PHD2 now compatible with INDI 2.0
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 14 May 2023 21:00:00 -0400
+
+phd2 (2.6.11dev4) unstable; urgency=low
+
+  * Improved alert messages for camera geometry mismatches
+  * Fix problem launching PHD2 on some Windows computers (missing vcomp140.dll)
+  * Updated Czech translation from Stanislav
+  * Updated Japanese translation from nabePla
+  * Updated Simplified Chinese translation from Linkage
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 15 Jan 2023 21:00:00 -0500
+
+phd2 (2.6.11dev3) unstable; urgency=low
+
+  * Protect against mount drivers that report invalid guide speeds
+  * Clarify some error messages
+  * New profile wizard now asks for a Rotator selection (optional)
+  * Svbony Cameras: update SDK to v1.10.0
+  * ZWO ASI Cameras: update SDK to version V1.27
+  * Updated Japanese translation
+  * Help file updates
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Fri, 30 Dec 2022 21:00:00 -0500
+
+phd2 (2.6.11dev2) unstable; urgency=low
+
+  * Reduced CPU utilization when rendering the camera image on the screen
+  * Help content overhaul and restructuring
+  * INDI Cameras: reduced CPU utilization
+  * ZWO ASI Cameras: reset colour balance to unity on connection
+  * ZWO ASI Cameras: update SDK to v1.26
+  * Moravian cameras: update SDK to version v4.11
+  * Svbony Cameras: update SDK to v1.9.4
+  * Svbony Cameras: native support enabled for Linux and Mac
+  * Svbony Cameras: wait for ST4 guide pulse to complete before starting the next exposure
+  * Updated Traditional Chinese translation
+  * Updated Portuguese (Brazilian) translation
+  * New Czech translation
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 30 Aug 2022 21:00:00 -0400
+
+phd2 (2.6.11dev1) unstable; urgency=low
+
+  * New option for variable exposure delays -- helpful for very accurate mounts
+  * New Profile Wizard and Guiding Assistant: improved for mounts with high precision encoders
+  * Allow selecting lower values of the minimum HFD setting
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 19 Apr 2022 21:00:00 -0400
+
 phd2 (2.6.11) stable; urgency=low
 
   * bump rev to 2.6.11
