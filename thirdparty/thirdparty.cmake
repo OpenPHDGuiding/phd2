@@ -71,7 +71,7 @@ if(WIN32)
   FetchContent_Declare(
     vcpkg
     GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
-    GIT_TAG 61f610845fb206298a69f708104a51d651872877
+    GIT_TAG f7423ee180c4b7f40d43402c2feb3859161ef625
     UPDATE_COMMAND bootstrap-vcpkg.bat -disableMetrics
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg cfitsio"
     COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:x86-windows
