@@ -135,7 +135,26 @@ bump_rev () (
     # normalize line endings
     dos2unix phd.h
     unix2dos phd.h
-    git commit -m "bump rev to $rev" phd.h
+    git add phd.h
+    # update the debian changelog
+    if is_full_release; then
+        changelog=ChangeLog-full
+        label=stable
+    else
+        changelog=ChangeLog-dev
+        label=unstable
+    fi
+    (
+        printf "%s\n\n" "phd2 (${rev}) ${label}; urgency=low"
+        while IFS= read -r line; do
+            printf "  * %s\n" "$line"
+        done <"$changelog"
+        printf "\n -- Andy Galasso <andy.galasso@gmail.com>  %s\n\n" "$(date -R)"
+        cat debian/changelog
+    ) >"$TMP"
+    mv "$TMP" debian/changelog
+    git add debian/changelog
+    git commit -m "bump rev to $rev"
     echo "adding tag v$rev"
     git tag -f -a -m "v${rev}" "v${rev}"
 )
