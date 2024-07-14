@@ -1,3 +1,12 @@
+phd2 (2.6.13dev5) unstable; urgency=low
+
+  * Update Windows VC runtime redistributable DLLs to version 14.40.33810.0, 32-bit
+  * Touptek cameras: update SDK to version 56.25996.20240707
+  * QHY cameras: update SDK to version 24.03.29
+  * OGMA cameras: update SDK to version 2024-06-20
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 13 Jul 2024 20:19:50 -0400
+
 phd2 (2.6.13dev4) unstable; urgency=low
 
   * Improved handling of image scale changes
