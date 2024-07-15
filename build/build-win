@@ -73,7 +73,7 @@ CMAKE_W=$(cygpath -w "$CMAKE")
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
- /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
+ /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' src/phd.h)
 
 INSTALLER=phd2-${V}-installer
 

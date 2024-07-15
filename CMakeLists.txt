@@ -60,21 +60,21 @@ endif()
 
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR}/src)
 
 # Additional files in the workspace, To improve maintainability
 add_custom_target(CmakeAdditionalFiles
   SOURCES
-  ${phd_src_dir}/thirdparty/thirdparty.cmake
-  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
-  ${phd_src_dir}/cmake_modules/FindCFITSIO.cmake
-  ${phd_src_dir}/cmake_modules/FindINDI.cmake
-  ${phd_src_dir}/cmake_modules/FindNova.cmake
-  ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake
-  ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake
-  ${phd_src_dir}/cmake_modules/PHD2Removegettextwarning.cmake
-  ${phd_src_dir}/cmake_modules/compiler_options.cmake
-  ${phd_src_dir}/cmake_modules/PHD2Packaging.cmake)
+  ${PHD_PROJECT_ROOT_DIR}/thirdparty/thirdparty.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindASCOM_INTERFACE.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindCFITSIO.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindINDI.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindNova.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2BuildDoc.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2GenerateDocScript.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2Removegettextwarning.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/compiler_options.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2Packaging.cmake)
 
 # compiler options
 include(cmake_modules/compiler_options.cmake)
@@ -146,10 +146,12 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 #################################################################################
 #
 # Global include directories
-# WxWidgets inclusion narrowed to PHD2 project only
-# include_directories(${wxWidgets_INCLUDE_DIRS})
-include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
+include_directories(${PHD_PROJECT_ROOT_DIR}/cameras)
+# PROJECT_ROOT_DIR is added as in include directory file code that
+# uses: #include "cameras/some_camera.h"
+# TODO: would be better to separate cameras/ into per-camera directories
+include_directories(${PHD_PROJECT_ROOT_DIR})
 
 
 
@@ -245,8 +247,8 @@ if(WIN32)
     ${phd_src_dir}/cam_atik16.cpp
     ${phd_src_dir}/cam_atik16.h
 
-    ${phd_src_dir}/cameras/ArtemisHSCAPI.h
-    ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
+    ${PHD_PROJECT_ROOT_DIR}/cameras/ArtemisHSCAPI.h
+    ${PHD_PROJECT_ROOT_DIR}/cameras/ArtemisHSCAPI.cpp
   )
 elseif(UNIX AND (NOT APPLE))
   set(cam_SRC
@@ -572,17 +574,17 @@ if(APPLE)
     ${phd2_SRC}
 
     # resources of the bundle
-    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
+    ${PHD_PROJECT_ROOT_DIR}/icons/${MACOSX_BUNDLE_ICON_FILE}
 
     # extra frameworks
     ${phd2_OSX_FRAMEWORKS}
 
-    ${phd_src_dir}/run_phd2_macos
+    ${PHD_PROJECT_ROOT_DIR}/run_phd2_macos
   )
   set_target_properties(
     phd2
     PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/MacOSXBundleInfo.plist.in
+    MACOSX_BUNDLE_INFO_PLIST ${PHD_PROJECT_ROOT_DIR}/MacOSXBundleInfo.plist.in
     OUTPUT_NAME PHD2  # upper case on OSX
   )
   target_include_directories(
@@ -591,13 +593,13 @@ if(APPLE)
   )
 
   set_source_files_properties(
-    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
+    ${PHD_PROJECT_ROOT_DIR}/icons/${MACOSX_BUNDLE_ICON_FILE}
       PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
-    ${phd_src_dir}/run_phd2_macos
+    ${PHD_PROJECT_ROOT_DIR}/run_phd2_macos
     PROPERTIES
       MACOSX_PACKAGE_LOCATION MacOS
   )
@@ -736,10 +738,10 @@ elseif(WIN32)
     ${phd2_SRC}
   )
 
-  ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
+  ADD_MSVC_PRECOMPILED_HEADER("phd.h" "src/precompiled_header.cpp" phd2_WIN_SRC)
 
   # resource file, some VC do not like the options provided by the precompiled headers
-  set(phd2_WIN_SRC ${phd2_WIN_SRC} ${phd_src_dir}/phd.rc)
+  set(phd2_WIN_SRC ${phd2_WIN_SRC} ${PHD_PROJECT_ROOT_DIR}/phd.rc)
   source_group(src FILES precompiled_header.cpp)
 
   link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
