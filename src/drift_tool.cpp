@@ -116,7 +116,7 @@ struct DriftToolWin : public wxFrame
 
     void UpdateScopeCoordinates(void);
 
-    void SetStatusText(const wxString &text, int number = 0) override;
+    void SetStatusText(const wxString& text, int number = 0) override;
 
     wxDECLARE_EVENT_TABLE();
 };
@@ -136,9 +136,9 @@ wxEND_EVENT_TABLE();
 
 DriftToolWin::DriftToolWin()
     : wxFrame(pFrame, wxID_ANY, _("Drift Align"), wxDefaultPosition, wxDefaultSize,
-              wxCAPTION|wxCLOSE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL|wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR),
-        m_need_end_dec_drift(false),
-        m_slewing(false)
+              wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxSYSTEM_MENU | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT |
+                  wxFRAME_NO_TASKBAR),
+      m_need_end_dec_drift(false), m_slewing(false)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -148,20 +148,21 @@ DriftToolWin::DriftToolWin()
     // a horizontal box sizer for the bitmap and the instructions
     wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
 
-#   include "icons/AzArrow.xpm"
+#include "icons/AzArrow.xpm"
     m_azArrowBmp = new wxBitmap(AzArrow);
-#   include "icons/AltArrow.xpm"
+#include "icons/AltArrow.xpm"
     m_altArrowBmp = new wxBitmap(AltArrow);
 
     m_bmp = new wxStaticBitmap(this, wxID_ANY, *m_azArrowBmp, wxDefaultPosition, wxSize(80, 100));
-    instrSizer->Add(m_bmp, 0, wxALIGN_CENTER_VERTICAL|wxFIXED_MINSIZE, 5);
+    instrSizer->Add(m_bmp, 0, wxALIGN_CENTER_VERTICAL | wxFIXED_MINSIZE, 5);
 
-    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400,120), wxALIGN_LEFT|wxST_NO_AUTORESIZE);
+    m_instructions =
+        new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400, 120), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
 #ifdef __WXOSX__
     m_instructions->SetFont(*wxSMALL_FONT);
 #endif
     m_instructions->Wrap(-1);
-    instrSizer->Add(m_instructions, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    instrSizer->Add(m_instructions, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     topSizer->Add(instrSizer);
 
@@ -219,14 +220,14 @@ DriftToolWin::DriftToolWin()
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
 
     // add static sizer to top-level sizer
-    topSizer->Add(sbSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    topSizer->Add(sbSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     // add some padding below the static sizer
     topSizer->Add(0, 3, 0, wxEXPAND, 3);
 
     m_notesLabel = new wxStaticText(this, wxID_ANY, _("Altitude adjustment notes"));
     m_notesLabel->Wrap(-1);
-    topSizer->Add(m_notesLabel, 0, wxEXPAND|wxTOP|wxLEFT, 8);
+    topSizer->Add(m_notesLabel, 0, wxEXPAND | wxTOP | wxLEFT, 8);
 
     m_notes = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
     pFrame->RegisterTextCtrl(m_notes);
@@ -240,22 +241,22 @@ DriftToolWin::DriftToolWin()
     hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
     m_drift = new wxButton(this, ID_DRIFT, _("Drift"));
-    hSizer->Add(m_drift, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    hSizer->Add(m_drift, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     // proportional pad on right of Drift button
     hSizer->Add(0, 0, 1, wxEXPAND, 5);
 
     m_adjust = new wxButton(this, ID_ADJUST, _("Adjust"));
-    hSizer->Add(m_adjust, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    hSizer->Add(m_adjust, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     // proportional pad on right of Align button
     hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
     m_phaseBtn = new wxButton(this, ID_PHASE, wxT("???"));
-    hSizer->Add(m_phaseBtn, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    hSizer->Add(m_phaseBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
     // add button sizer to top level sizer
-    topSizer->Add(hSizer, 1, wxEXPAND|wxALL, 5);
+    topSizer->Add(hSizer, 1, wxEXPAND | wxALL, 5);
 
     SetSizer(topSizer);
 
@@ -282,7 +283,10 @@ DriftToolWin::DriftToolWin()
     m_timer = NULL;
     if (m_can_slew || (pPointingSource && pPointingSource->CanReportPosition()))
     {
-        enum { SCOPE_POS_POLL_MS = 1500 };
+        enum
+        {
+            SCOPE_POS_POLL_MS = 1500
+        };
         m_timer = new wxTimer(this, ID_TIMER);
         m_timer->Start(SCOPE_POS_POLL_MS, false /* continuous */);
     }
@@ -374,12 +378,11 @@ void DriftToolWin::UpdatePhaseState()
     {
         SetTitle(_("Drift Align - Azimuth Adjustment"));
         m_bmp->SetBitmap(*m_azArrowBmp);
-        m_instructions->SetLabel(
-            _("Slew to near the Meridian and the Equator.\n"
-              "Press Drift to measure drift, watch the Dec trend line.\n"
-              "Press Adjust and adjust your mount's azimuth.\n"
-              "Repeat Drift/Adjust until alignment is complete.\n"
-              "Then, click Altitude to begin Altitude adjustment."));
+        m_instructions->SetLabel(_("Slew to near the Meridian and the Equator.\n"
+                                   "Press Drift to measure drift, watch the Dec trend line.\n"
+                                   "Press Adjust and adjust your mount's azimuth.\n"
+                                   "Repeat Drift/Adjust until alignment is complete.\n"
+                                   "Then, click Altitude to begin Altitude adjustment."));
         m_notesLabel->SetLabel(_("Azimuth adjustment notes"));
         m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Az/Notes", wxEmptyString));
         m_phaseBtn->SetLabel(_("> Altitude"));
@@ -388,12 +391,11 @@ void DriftToolWin::UpdatePhaseState()
     {
         SetTitle(_("Drift Align - Altitude Adjustment"));
         m_bmp->SetBitmap(*m_altArrowBmp);
-        m_instructions->SetLabel(
-            _("Slew to a location near the Equator and the Eastern or Western horizon.\n"
-              "Press Drift to measure drift, watch the Dec trend line.\n"
-              "Press Adjust and adjust your mount's altitude.\n"
-              "Repeat Drift/Adjust until alignment is complete.\n"
-              "Click Azimuth to repeat Azimuth adjustment."));
+        m_instructions->SetLabel(_("Slew to a location near the Equator and the Eastern or Western horizon.\n"
+                                   "Press Drift to measure drift, watch the Dec trend line.\n"
+                                   "Press Adjust and adjust your mount's altitude.\n"
+                                   "Repeat Drift/Adjust until alignment is complete.\n"
+                                   "Click Azimuth to repeat Azimuth adjustment."));
         m_notesLabel->SetLabel(_("Altitude adjustment notes"));
         m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Alt/Notes", wxEmptyString));
         m_phaseBtn->SetLabel(_("< Azimuth"));
@@ -420,8 +422,7 @@ repeat:
 
         if (!m_drifting)
         {
-            if (!pCamera->Connected ||
-                !pMount || !pMount->IsConnected())
+            if (!pCamera->Connected || !pMount || !pMount->IsConnected())
             {
                 idleStatus = _("Please connect a camera and a mount");
                 m_mode = MODE_IDLE;
@@ -465,7 +466,8 @@ repeat:
                 SetStatusText(_("Start guiding..."));
                 pFrame->GuideButtonClick(false, _T("DriftTool:drift"));
                 return;
-            case STATE_GUIDING: {
+            case STATE_GUIDING:
+            {
                 // turn of dec guiding
                 if (!m_need_end_dec_drift)
                 {
@@ -491,8 +493,8 @@ repeat:
         m_adjust->Enable(false);
         m_drifting = false;
         EnableSlew(m_can_slew);
-        SetStatusText(m_phase == PHASE_ADJUST_AZ ? _("Adjust azimuth, click Drift when done") :
-            _("Adjust altitude, click Drift when done"));
+        SetStatusText(m_phase == PHASE_ADJUST_AZ ? _("Adjust azimuth, click Drift when done")
+                                                 : _("Adjust altitude, click Drift when done"));
 
         // use full frames for adjust phase
         pCamera->UseSubframes = false;
@@ -504,9 +506,10 @@ repeat:
 
             // Set the lock position to the where the star has drifted to. This will be the center of the polar align circle.
             pFrame->pGuider->SetLockPosition(pFrame->pGuider->CurrentPosition());
-            // Make sure guider does not react to star lost (like by invalidating the lock position) while adjustment is in progress
+            // Make sure guider does not react to star lost (like by invalidating the lock position) while adjustment is in
+            // progress
             pFrame->pGuider->SetIgnoreLostStarLooping(true);
-            pFrame->pGraphLog->Refresh();  // polar align circle is updated in graph window's OnPaint handler
+            pFrame->pGraphLog->Refresh(); // polar align circle is updated in graph window's OnPaint handler
         }
     }
     else // MODE_IDLE
@@ -545,8 +548,8 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
 
     double slew_ra = norm_ra(cur_st + (raSlew * 24.0 / 360.0));
 
-    Debug.Write(wxString::Format("Drift tool: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f\n",
-        cur_ra, cur_dec, slew_ra, decSlew));
+    Debug.Write(
+        wxString::Format("Drift tool: slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f\n", cur_ra, cur_dec, slew_ra, decSlew));
 
     if (pPointingSource->CanSlewAsync())
     {
@@ -808,7 +811,7 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
     }
 }
 
-void DriftToolWin::SetStatusText(const wxString &text, int number)
+void DriftToolWin::SetStatusText(const wxString& text, int number)
 {
     Debug.Write(wxString::Format("Drift tool: status: %s\n", text));
     wxFrame::SetStatusText(text, number);
@@ -826,15 +829,14 @@ wxWindow *DriftTool::CreateDriftToolWindow()
 
     if (pFrame->GetCameraPixelScale() == 1.0)
     {
-        bool confirmed = ConfirmDialog::Confirm(_(
-            "The Drift Align tool is most effective when PHD2 knows your guide\n"
-            "scope focal length and camera pixel size.\n"
-            "\n"
-            "Enter your guide scope focal length on the Global tab in the Brain.\n"
-            "Enter your camera pixel size on the Camera tab in the Brain.\n"
-            "\n"
-            "Would you like to run the drift tool anyway?"),
-                "/drift_tool_without_pixscale");
+        bool confirmed = ConfirmDialog::Confirm(_("The Drift Align tool is most effective when PHD2 knows your guide\n"
+                                                  "scope focal length and camera pixel size.\n"
+                                                  "\n"
+                                                  "Enter your guide scope focal length on the Global tab in the Brain.\n"
+                                                  "Enter your camera pixel size on the Camera tab in the Brain.\n"
+                                                  "\n"
+                                                  "Would you like to run the drift tool anyway?"),
+                                                "/drift_tool_without_pixscale");
 
         if (!confirmed)
         {

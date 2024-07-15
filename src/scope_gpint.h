@@ -40,17 +40,13 @@ class ScopeGpInt : public Scope
     short port;
 
 public:
-
     ScopeGpInt(short port)
     {
         m_Name = wxString("GPINT");
         this->port = port;
     }
 
-    virtual ~ScopeGpInt(void)
-    {
-        Disconnect();
-    }
+    virtual ~ScopeGpInt(void) { Disconnect(); }
 
     bool Connect(void) override;
     bool Disconnect(void) override;

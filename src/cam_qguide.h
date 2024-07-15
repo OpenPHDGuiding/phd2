@@ -43,19 +43,19 @@ class CameraQGuider : public GuideCamera
 public:
     CameraQGuider();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    InitCapture() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void InitCapture() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-    void    ClearGuidePort();
-    bool    HasNonGuiCapture() override { return true; }
-    bool    ST4HasNonGuiMove() override { return true; }
-    wxByte  BitsPerPixel() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void ClearGuidePort();
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
 
 private:
     void RemoveLines(usImage& img);
 };
 
-#endif  //QGUIDEDEF
+#endif // QGUIDEDEF

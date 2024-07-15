@@ -34,12 +34,12 @@
 
 #include "phd.h"
 
-#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 
-#include <termios.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <errno.h>
+# include <termios.h>
+# include <unistd.h>
+# include <sys/ioctl.h>
+# include <errno.h>
 
 wxArrayString SerialPortPosix::GetSerialPortList(void)
 {
@@ -62,51 +62,57 @@ SerialPortPosix::SerialPortPosix(void)
 
 SerialPortPosix::~SerialPortPosix(void)
 {
-    if (m_fd > 0) {
+    if (m_fd > 0)
+    {
         close(m_fd);
         m_fd = -1;
     }
 }
 
-bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
+bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS,
+                              bool useDTR)
 {
     bool bError = false;
 
     try
     {
-        if ((m_fd = open(portName.mb_str(), O_RDWR|O_NOCTTY)) < 0) {
-            wxString exposeToUser = wxString::Format("open %s failed %s(%d)", portName, strerror((int)errno), (int)errno);
+        if ((m_fd = open(portName.mb_str(), O_RDWR | O_NOCTTY)) < 0)
+        {
+            wxString exposeToUser = wxString::Format("open %s failed %s(%d)", portName, strerror((int) errno), (int) errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + exposeToUser);
         }
 
         struct termios attr;
 
-        if (tcgetattr(m_fd, &attr) < 0) {
-            wxString errorWxs = wxString::Format("tcgetattr failed %s(%d)", strerror((int)errno), (int)errno);
+        if (tcgetattr(m_fd, &attr) < 0)
+        {
+            wxString errorWxs = wxString::Format("tcgetattr failed %s(%d)", strerror((int) errno), (int) errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + errorWxs);
         }
 
-#if defined (__APPLE__)
+# if defined(__APPLE__)
         m_originalAttrs = attr;
         cfmakeraw(&attr);
-#endif
+# endif
 
         attr.c_iflag = 0; // input modes
         attr.c_oflag = 0; // output modes
-        attr.c_cflag = CLOCAL;  // CLOCAL == Ignore modem control lines.
-        attr.c_cflag |= CREAD ; // CREAD == Enable receiver.
-        switch (dataBits) {
+        attr.c_cflag = CLOCAL; // CLOCAL == Ignore modem control lines.
+        attr.c_cflag |= CREAD; // CREAD == Enable receiver.
+        switch (dataBits)
+        {
         case 7:
-            attr.c_cflag |= CS7;    // 7 bit Character size mask.
+            attr.c_cflag |= CS7; // 7 bit Character size mask.
             break;
         case 8:
-            attr.c_cflag |= CS8;    // 8 bit Character size mask.
+            attr.c_cflag |= CS8; // 8 bit Character size mask.
             break;
         default:
             throw ERROR_INFO("SerialPortPosix::Connect unsupported amount of dataBits");
             break;
         }
-        switch (stopBits) {
+        switch (stopBits)
+        {
         case 1:
             break;
         case 2:
@@ -116,7 +122,8 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
             throw ERROR_INFO("SerialPortPosix::Connect invalid amount of stopBits");
             break;
         }
-        switch (Parity) {
+        switch (Parity)
+        {
         case ParityNone:
             break;
         case ParityOdd:
@@ -125,52 +132,71 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
         case ParityEven:
             attr.c_cflag |= PARENB; // Enable parity generation on output and parity checking for input.
             break;
-        case ParityMark:  // TODO, not in POSIX. CMSPAR
+        case ParityMark: // TODO, not in POSIX. CMSPAR
         case ParitySpace: // TODO, not in POSIX. CMSPAR
         default:
             throw ERROR_INFO("SerialPortPosix::Connect invalid parity");
             break;
         }
         attr.c_lflag &= ~ICANON; // Do not wait for a line delimiter. Work in noncanonical mode.
-        attr.c_lflag &= ~( ECHO | ECHOE | ISIG | IEXTEN | NOFLSH | TOSTOP); // local modes
-        attr.c_lflag |=  NOFLSH;
-        attr.c_cc[VTIME] = (uint8_t)0; // timeout in deciseconds
-        attr.c_cc[VMIN]  = (uint8_t)0; // minimum number of characters for noncanonical read
+        attr.c_lflag &= ~(ECHO | ECHOE | ISIG | IEXTEN | NOFLSH | TOSTOP); // local modes
+        attr.c_lflag |= NOFLSH;
+        attr.c_cc[VTIME] = (uint8_t) 0; // timeout in deciseconds
+        attr.c_cc[VMIN] = (uint8_t) 0; // minimum number of characters for noncanonical read
 
         unsigned int speed = B0;
-        switch (baud) {
-        case 9600:   speed =   B9600; break;
-        case 19200:  speed =  B19200; break;
-        case 38400:  speed =  B38400; break;
-        case 57600:  speed =  B57600; break;
-        case 115200: speed = B115200; break;
-        case 230400: speed = B230400; break;
+        switch (baud)
+        {
+        case 9600:
+            speed = B9600;
+            break;
+        case 19200:
+            speed = B19200;
+            break;
+        case 38400:
+            speed = B38400;
+            break;
+        case 57600:
+            speed = B57600;
+            break;
+        case 115200:
+            speed = B115200;
+            break;
+        case 230400:
+            speed = B230400;
+            break;
         default:
             throw ERROR_INFO("SerialPortPosix::Connect unsupported baudrate");
             break;
         }
-        if (cfsetispeed(&attr, speed) < 0 || cfsetospeed(&attr, speed) < 0) {
+        if (cfsetispeed(&attr, speed) < 0 || cfsetospeed(&attr, speed) < 0)
+        {
             throw ERROR_INFO("cfsetispeed failed");
         }
 
-        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0 ) {
-            wxString errowWxs = wxString::Format("tcsetattr failed %s(%d)", strerror((int)errno), (int)errno);
+        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0)
+        {
+            wxString errowWxs = wxString::Format("tcsetattr failed %s(%d)", strerror((int) errno), (int) errno);
             throw ERROR_INFO("SerialPortPosix::Connect " + errowWxs);
         }
 
         int ioctl_ret = 0;
         unsigned int argp;
 
-        if ((ioctl_ret = ioctl(m_fd, TIOCMGET, &argp)) < 0) {
+        if ((ioctl_ret = ioctl(m_fd, TIOCMGET, &argp)) < 0)
+        {
             throw ERROR_INFO("ioctl TIOCMGET");
         }
-        if (useDTR) {
+        if (useDTR)
+        {
             argp |= TIOCM_DTR;
         }
-        if (useRTS) {
+        if (useRTS)
+        {
             argp |= TIOCM_RTS;
         }
-        if ((ioctl_ret = ioctl(m_fd, TIOCMSET, &argp)) < 0) {
+        if ((ioctl_ret = ioctl(m_fd, TIOCMSET, &argp)) < 0)
+        {
             throw ERROR_INFO("ioctl TIOCMSET");
         }
     }
@@ -189,15 +215,18 @@ bool SerialPortPosix::Disconnect(void)
 
     try
     {
-#if defined (__APPLE__)
-        if (tcdrain(m_fd) == -1) {
-            fprintf(stderr,"Error waiting for drain - %s(%d).\n",strerror(errno), errno);
+# if defined(__APPLE__)
+        if (tcdrain(m_fd) == -1)
+        {
+            fprintf(stderr, "Error waiting for drain - %s(%d).\n", strerror(errno), errno);
         }
-        if (tcsetattr(m_fd, TCSANOW, &m_originalAttrs) == -1) {
-            fprintf(stderr,"Error resetting tty attributes - %s(%d).\n",strerror(errno),errno);
+        if (tcsetattr(m_fd, TCSANOW, &m_originalAttrs) == -1)
+        {
+            fprintf(stderr, "Error resetting tty attributes - %s(%d).\n", strerror(errno), errno);
         }
-#endif
-        if (close(m_fd) == -1) {
+# endif
+        if (close(m_fd) == -1)
+        {
             throw ERROR_INFO("SerialPortPosix: close failed");
         }
     }
@@ -222,12 +251,14 @@ bool SerialPortPosix::SetReceiveTimeout(int timeoutMilliSeconds)
     {
         struct termios attr;
 
-        if (tcgetattr(m_fd, &attr) < 0) {
+        if (tcgetattr(m_fd, &attr) < 0)
+        {
             throw ERROR_INFO("tcgetattr failed");
         }
         int timeoutDeciSeconds = (timeoutMilliSeconds + 99) / 100;
-        attr.c_cc[VTIME] = (uint8_t)timeoutDeciSeconds;
-        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0) {
+        attr.c_cc[VTIME] = (uint8_t) timeoutDeciSeconds;
+        if (tcsetattr(m_fd, TCSAFLUSH, &attr) < 0)
+        {
             throw ERROR_INFO("tcsetattr failed");
         }
     }
@@ -293,8 +324,10 @@ bool SerialPortPosix::Receive(unsigned char *pData, unsigned int count)
             pData += receiveCount;
         }
 
-        if (rem > 0) {
-            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"), rem) + " remaining bytes to read at eof " + ", expected total of " + wxString::Format(wxT("%i"), count));
+        if (rem > 0)
+        {
+            throw ERROR_INFO("SerialPortPosix: " + wxString::Format(wxT("%i"), rem) + " remaining bytes to read at eof " +
+                             ", expected total of " + wxString::Format(wxT("%i"), count));
         }
     }
     catch (const wxString& Msg)

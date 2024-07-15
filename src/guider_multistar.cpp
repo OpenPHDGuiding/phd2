@@ -46,12 +46,15 @@
 #include <algorithm>
 
 #if ((wxMAJOR_VERSION < 3) && (wxMINOR_VERSION < 9))
-#define wxPENSTYLE_DOT wxDOT
+# define wxPENSTYLE_DOT wxDOT
 #endif
 
 class MassChecker
 {
-    enum { DefaultTimeWindowMs = 22500 };
+    enum
+    {
+        DefaultTimeWindowMs = 22500
+    };
 
     struct Entry
     {
@@ -60,8 +63,8 @@ class MassChecker
     };
 
     std::deque<Entry> m_data;
-    double m_highMass;   // high-water mark
-    double m_lowMass;    // low-water mark
+    double m_highMass; // high-water mark
+    double m_lowMass; // low-water mark
     unsigned long m_timeWindow;
     double *m_tmp;
     size_t m_tmpSize;
@@ -69,22 +72,12 @@ class MassChecker
     bool m_isAutoExposure;
 
 public:
-
-    MassChecker()
-        : m_highMass(0.),
-          m_lowMass(9e99),
-          m_tmp(0),
-          m_tmpSize(0),
-          m_exposure(0),
-          m_isAutoExposure(false)
+    MassChecker() : m_highMass(0.), m_lowMass(9e99), m_tmp(0), m_tmpSize(0), m_exposure(0), m_isAutoExposure(false)
     {
         SetTimeWindow(DefaultTimeWindowMs);
     }
 
-    ~MassChecker()
-    {
-        delete[] m_tmp;
-    }
+    ~MassChecker() { delete[] m_tmp; }
 
     void SetTimeWindow(unsigned int milliseconds)
     {
@@ -110,10 +103,7 @@ public:
         }
     }
 
-    double AdjustedMass(double mass) const
-    {
-        return m_isAutoExposure ? mass / (double) m_exposure : mass;
-    }
+    double AdjustedMass(double mass) const { return m_isAutoExposure ? mass / (double) m_exposure : mass; }
 
     void AppendData(double mass)
     {
@@ -191,7 +181,8 @@ public:
 
 static const double DefaultMassChangeThreshold = 0.5;
 
-enum {
+enum
+{
     MIN_SEARCH_REGION = 7,
     DEFAULT_SEARCH_REGION = 15,
     MAX_SEARCH_REGION = 50,
@@ -209,13 +200,9 @@ wxEND_EVENT_TABLE();
 
 // Define a constructor for the guide canvas
 GuiderMultiStar::GuiderMultiStar(wxWindow *parent)
-    : Guider(parent, XWinSize, YWinSize),
-      m_massChecker(new MassChecker()),
-      m_stabilizing(false), m_multiStarMode(true), m_lastPrimaryDistance(0),
-      m_lockPositionMoved(false),
-      m_maxStars(DEFAULT_MAX_STAR_COUNT),
-      m_stabilitySigmaX(DEFAULT_STABILITY_SIGMAX),
-      m_lastStarsUsed(0)
+    : Guider(parent, XWinSize, YWinSize), m_massChecker(new MassChecker()), m_stabilizing(false), m_multiStarMode(true),
+      m_lastPrimaryDistance(0), m_lockPositionMoved(false), m_maxStars(DEFAULT_MAX_STAR_COUNT),
+      m_stabilitySigmaX(DEFAULT_STABILITY_SIGMAX), m_lastStarsUsed(0)
 {
     SetState(STATE_UNINITIALIZED);
     m_primaryDistStats = new DescriptiveStats();
@@ -235,7 +222,8 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     if (val && !oldVal)
     {
         m_primaryDistStats->ClearAll();
-        if (GetState() >= STATE_SELECTED)           // If we have a single star, need to force an auto-find to be sure we have the right secondary stars
+        if (GetState() >=
+            STATE_SELECTED) // If we have a single star, need to force an auto-find to be sure we have the right secondary stars
         {
             StopGuiding();
             InvalidateCurrentPosition(true);
@@ -270,11 +258,11 @@ void GuiderMultiStar::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
 
-    double massChangeThreshold = pConfig->Profile.GetDouble("/guider/onestar/MassChangeThreshold",
-            DefaultMassChangeThreshold);
+    double massChangeThreshold = pConfig->Profile.GetDouble("/guider/onestar/MassChangeThreshold", DefaultMassChangeThreshold);
     SetMassChangeThreshold(massChangeThreshold);
 
-    bool massChangeThreshEnabled = pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", massChangeThreshold != 1.0);
+    bool massChangeThreshEnabled =
+        pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", massChangeThreshold != 1.0);
     SetMassChangeThresholdEnabled(massChangeThreshEnabled);
 
     bool tolerateJumps = pConfig->Profile.GetBoolean("/guider/onestar/TolerateJumpsEnabled", false);
@@ -383,7 +371,7 @@ bool GuiderMultiStar::SetCurrentPosition(const usImage *pImage, const PHD_Point&
         double x = position.X;
         double y = position.Y;
 
-        Debug.Write(wxString::Format("SetCurrentPosition(%.2f,%.2f)\n", x, y ));
+        Debug.Write(wxString::Format("SetCurrentPosition(%.2f,%.2f)\n", x, y));
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {
@@ -396,8 +384,8 @@ bool GuiderMultiStar::SetCurrentPosition(const usImage *pImage, const PHD_Point&
         }
 
         m_massChecker->Reset();
-        bError = !m_primaryStar.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(),
-                              GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
+        bError = !m_primaryStar.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode(), GetMinStarHFD(), GetMaxStarHFD(),
+                                     pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
     }
     catch (const wxString& Msg)
     {
@@ -414,12 +402,18 @@ static wxString StarStatusStr(const Star& star)
 
     switch (star.GetError())
     {
-    case Star::STAR_LOWSNR:        return _("Star lost - low SNR");
-    case Star::STAR_LOWMASS:       return _("Star lost - low mass");
-    case Star::STAR_LOWHFD:        return _("Star lost - low HFD");
-    case Star::STAR_TOO_NEAR_EDGE: return _("Star too near edge");
-    case Star::STAR_MASSCHANGE:    return _("Star lost - mass changed");
-    default:                       return _("No star found");
+    case Star::STAR_LOWSNR:
+        return _("Star lost - low SNR");
+    case Star::STAR_LOWMASS:
+        return _("Star lost - low mass");
+    case Star::STAR_LOWHFD:
+        return _("Star lost - low HFD");
+    case Star::STAR_TOO_NEAR_EDGE:
+        return _("Star too near edge");
+    case Star::STAR_MASSCHANGE:
+        return _("Star lost - mass changed");
+    default:
+        return _("No star found");
     }
 }
 
@@ -479,8 +473,8 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
 
         m_massChecker->Reset();
 
-        if (!m_primaryStar.Find(image, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(), GetMaxStarHFD(),
-                         pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
+        if (!m_primaryStar.Find(image, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
+                                GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -535,30 +529,32 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
 
 inline static wxRect SubframeRect(const PHD_Point& pos, int halfwidth)
 {
-    return wxRect(ROUND(pos.X) - halfwidth,
-                  ROUND(pos.Y) - halfwidth,
-                  2 * halfwidth + 1,
-                  2 * halfwidth + 1);
+    return wxRect(ROUND(pos.X) - halfwidth, ROUND(pos.Y) - halfwidth, 2 * halfwidth + 1, 2 * halfwidth + 1);
 }
 
 wxRect GuiderMultiStar::GetBoundingBox() const
 {
-    enum { SUBFRAME_BOUNDARY_PX = 0 };
+    enum
+    {
+        SUBFRAME_BOUNDARY_PX = 0
+    };
 
     GUIDER_STATE state = GetState();
 
     bool subframe;
     PHD_Point pos;
 
-    switch (state) {
+    switch (state)
+    {
     case STATE_SELECTED:
     case STATE_CALIBRATING_PRIMARY:
     case STATE_CALIBRATING_SECONDARY:
         subframe = m_primaryStar.WasFound();
         pos = CurrentPosition();
         break;
-    case STATE_GUIDING: {
-        subframe = m_primaryStar.WasFound();  // true;
+    case STATE_GUIDING:
+    {
+        subframe = m_primaryStar.WasFound(); // true;
         // As long as the star is close to the lock position, keep the subframe
         // at the lock position. Otherwise, follow the star.
         double dist = CurrentPosition().Distance(LockPosition());
@@ -611,7 +607,10 @@ struct DistanceChecker
     wxLongLong_t m_expires;
     double m_forceTolerance;
 
-    enum { WAIT_INTERVAL_MS = 5000 };
+    enum
+    {
+        WAIT_INTERVAL_MS = 5000
+    };
 
     DistanceChecker() : m_state(ST_GUIDING) { }
 
@@ -628,7 +627,10 @@ struct DistanceChecker
 
     static bool _CheckDistance(double distance, bool raOnly, double tolerance)
     {
-        enum { MIN_FRAMES_FOR_STATS = 10 };
+        enum
+        {
+            MIN_FRAMES_FOR_STATS = 10
+        };
         Guider *guider = pFrame->pGuider;
         if (!guider->IsGuiding() || guider->IsPaused() || PhdController::IsSettling() ||
             guider->CurrentErrorFrameCount() < MIN_FRAMES_FOR_STATS)
@@ -760,12 +762,14 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                             {
                                 PHD_Point expectedLoc = m_primaryStar + pGS->offsetFromPrimary;
                                 bool found;
-                                if (IsValidSecondaryStarPosition (expectedLoc))
-                                    found = pGS->Find(pImage, m_searchRegion, expectedLoc.X, expectedLoc.Y, pFrame->GetStarFindMode(),
-                                        GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
+                                if (IsValidSecondaryStarPosition(expectedLoc))
+                                    found = pGS->Find(pImage, m_searchRegion, expectedLoc.X, expectedLoc.Y,
+                                                      pFrame->GetStarFindMode(), GetMinStarHFD(), GetMaxStarHFD(),
+                                                      pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
                                 else
                                     found = pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                                        GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE);
+                                                      GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(),
+                                                      Star::FIND_LOGGING_VERBOSE);
                                 if (found)
                                 {
                                     pGS->referencePoint.X = pGS->X;
@@ -775,18 +779,19 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                                 }
                                 else
                                 {
-                                    // Don't need to update reference point, lost star will continue to use the offsetFromPrimary location for possible recovery
+                                    // Don't need to update reference point, lost star will continue to use the
+                                    // offsetFromPrimary location for possible recovery
                                     pGS->wasLost = true;
                                     ++pGS;
                                 }
                             }
-                            return false;                 // All the secondary stars reference points reflect current positions
+                            return false; // All the secondary stars reference points reflect current positions
                         }
                     }
                 }
             }
             else
-                m_stabilizing = true;                       // get some data for primary star movement
+                m_stabilizing = true; // get some data for primary star movement
 
             if (!m_stabilizing && m_guideStars.size() > 1 && (sumX != 0 || sumY != 0))
             {
@@ -801,12 +806,13 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         // Look for it based on its original offset from the primary star
                         PHD_Point expectedLoc = m_primaryStar + pGS->offsetFromPrimary;
                         found = pGS->Find(pImage, m_searchRegion, expectedLoc.X, expectedLoc.Y, pFrame->GetStarFindMode(),
-                            GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL);
+                                          GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(),
+                                          Star::FIND_LOGGING_MINIMAL);
                     }
                     else
                         // Look for it where we last found it
-                        found = pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(),
-                            GetMinStarHFD(), GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL);
+                        found = pGS->Find(pImage, m_searchRegion, pGS->X, pGS->Y, pFrame->GetStarFindMode(), GetMinStarHFD(),
+                                          GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_MINIMAL);
                     if (found)
                     {
                         double dX = pGS->X - pGS->referencePoint.X;
@@ -844,7 +850,8 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                                     AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, 0, "R");
                                 }
                                 else
-                                    AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, 0, "M" + std::to_string(pGS->missCount));
+                                    AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, 0,
+                                                  "M" + std::to_string(pGS->missCount));
                                 ++pGS;
                                 continue;
                             }
@@ -863,7 +870,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
 
                             AppendStarUse(secondaryInfo, Iter_Inx(pGS), dX, dY, wt, "U");
                         }
-                        else                                          // exactly zero on both axes, probably a hot pixel, drop it
+                        else // exactly zero on both axes, probably a hot pixel, drop it
                         {
                             AppendStarUse(secondaryInfo, Iter_Inx(pGS), 0, 0, 0, "DZ");
                             pGS = m_guideStars.erase(pGS);
@@ -880,22 +887,22 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         ++pGS;
                     else
                         erasures = false;
-                }                                   // End of looping through secondary stars
+                } // End of looping through secondary stars
                 Debug.Write(secondaryInfo + "\n");
 
                 if (averaged)
                 {
                     sumX = sumX / sumWeights;
                     sumY = sumY / sumWeights;
-                    if (hypot(sumX, sumY) < primaryDistance)                                   // Apply average only if its smaller than single-star delta
+                    if (hypot(sumX, sumY) < primaryDistance) // Apply average only if its smaller than single-star delta
                     {
                         pOffset->cameraOfs.X = sumX;
                         pOffset->cameraOfs.Y = sumY;
                         refined = true;
                     }
-                    Debug.Write(wxString::Format("%s, %d included, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n", (refined ? "refined" : "single-star"),
-                        validStars, sumX, sumY,
-                        origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
+                    Debug.Write(wxString::Format("%s, %d included, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n",
+                                                 (refined ? "refined" : "single-star"), validStars, sumX, sumY,
+                                                 origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
                 }
             }
         }
@@ -932,8 +939,8 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
     {
         Star newStar(m_primaryStar);
 
-        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), GetMinStarHFD(),
-            GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
+        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode(), GetMinStarHFD(), GetMaxStarHFD(),
+                          pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
@@ -967,7 +974,8 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
                 errorInfo->status = StarStatusStr(m_primaryStar);
                 pFrame->StatusMsg(wxString::Format(_("Mass: %.f vs %.f"), newStar.Mass, limits[1]));
 
-                Debug.Write(wxString::Format("UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% limits=(%.1f, %.1f, %.1f)\n",
+                Debug.Write(wxString::Format(
+                    "UpdateCurrentPosition: star mass new=%.1f exp=%.1f thresh=%.0f%% limits=(%.1f, %.1f, %.1f)\n",
                     newStar.Mass, limits[1], m_massChangeThreshold * 100., limits[0], limits[2], limits[3]));
 
                 m_massChecker->AppendData(newStar.Mass);
@@ -1021,7 +1029,7 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
             if (m_multiStarMode && m_guideStars.size() > 1)
             {
                 if (RefineOffset(pImage, ofs))
-                    distance = hypot(ofs->cameraOfs.X, ofs->cameraOfs.Y);       // Distance is reported to server clients
+                    distance = hypot(ofs->cameraOfs.X, ofs->cameraOfs.Y); // Distance is reported to server clients
             }
             else
                 m_starsUsed = 1;
@@ -1070,9 +1078,7 @@ bool GuiderMultiStar::IsValidLockPosition(const PHD_Point& pt)
     if (!pImage)
         return false;
     // this is a bit ugly as it is tightly coupled to Star::Find
-    return pt.X >= 1 + m_searchRegion &&
-        pt.X + 1 + m_searchRegion < pImage->Size.GetX() &&
-        pt.Y >= 1 + m_searchRegion &&
+    return pt.X >= 1 + m_searchRegion && pt.X + 1 + m_searchRegion < pImage->Size.GetX() && pt.Y >= 1 + m_searchRegion &&
         pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
 }
 
@@ -1081,22 +1087,19 @@ bool GuiderMultiStar::IsValidSecondaryStarPosition(const PHD_Point& pt)
     const usImage *pImage = CurrentImage();
     if (!pImage)
         return false;
-    // As above, tightly coupled to Star::Find but with somewhat relaxed constraints. Find handles cases where search region is only partly within image
-    return pt.X >= 5 &&
-        pt.X + 5 < pImage->Size.GetX() &&
-        pt.Y >= 5 &&
-        pt.Y + 5 < pImage->Size.GetY();
+    // As above, tightly coupled to Star::Find but with somewhat relaxed constraints. Find handles cases where search region is
+    // only partly within image
+    return pt.X >= 5 && pt.X + 5 < pImage->Size.GetX() && pt.Y >= 5 && pt.Y + 5 < pImage->Size.GetY();
 }
 
-void GuiderMultiStar::OnLClick(wxMouseEvent &mevent)
+void GuiderMultiStar::OnLClick(wxMouseEvent& mevent)
 {
     try
     {
         if (mevent.GetModifiers() == wxMOD_CONTROL)
         {
             double const scaleFactor = ScaleFactor();
-            wxRealPoint pt((double) mevent.m_x / scaleFactor,
-                           (double) mevent.m_y / scaleFactor);
+            wxRealPoint pt((double) mevent.m_x / scaleFactor, (double) mevent.m_y / scaleFactor);
             ToggleBookmark(pt);
             m_showBookmarks = true;
             pFrame->bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, GetBookmarksShown());
@@ -1119,7 +1122,8 @@ void GuiderMultiStar::OnLClick(wxMouseEvent &mevent)
         }
         else
         {
-            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x + m_searchRegion >= XWinSize) || (mevent.m_y <= m_searchRegion) || (mevent.m_y + m_searchRegion >= YWinSize))
+            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x + m_searchRegion >= XWinSize) || (mevent.m_y <= m_searchRegion) ||
+                (mevent.m_y + m_searchRegion >= YWinSize))
             {
                 mevent.Skip();
                 throw THROW_INFO("Skipping event because click outside of search region");
@@ -1199,10 +1203,9 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
             dc.SetPen(wxPen(wxColour(0, 255, 255), 1, wxPENSTYLE_SOLID));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
-            for (std::vector<wxRealPoint>::const_iterator it = m_bookmarks.begin();
-                 it != m_bookmarks.end(); ++it)
+            for (std::vector<wxRealPoint>::const_iterator it = m_bookmarks.begin(); it != m_bookmarks.end(); ++it)
             {
-                wxPoint p((int)(it->x * m_scaleFactor), (int)(it->y * m_scaleFactor));
+                wxPoint p((int) (it->x * m_scaleFactor), (int) (it->y * m_scaleFactor));
                 dc.DrawCircle(p, 3);
                 dc.DrawCircle(p, 6);
                 dc.DrawCircle(p, 12);
@@ -1224,10 +1227,9 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
                     m_lastStarsUsed = wxMin(m_guideStars.size(), (size_t) DEFAULT_MAX_STAR_COUNT);
             }
 
-            for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1;
-                 it != m_guideStars.end(); ++it)
+            for (std::vector<GuideStar>::const_iterator it = m_guideStars.begin() + 1; it != m_guideStars.end(); ++it)
             {
-                wxPoint pt((int)(it->referencePoint.X * m_scaleFactor), (int)(it->referencePoint.Y * m_scaleFactor));
+                wxPoint pt((int) (it->referencePoint.X * m_scaleFactor), (int) (it->referencePoint.Y * m_scaleFactor));
                 dc.DrawCircle(pt, 6);
                 starsPlotted++;
                 if (starsPlotted == m_maxStars)
@@ -1243,24 +1245,24 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         if (state == STATE_SELECTED)
         {
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(100,255,90), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(100, 255, 90), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxPENSTYLE_DOT));
+                dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
         {
             // in the calibration process
-            dc.SetPen(wxPen(wxColour(32,196,32), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
+            dc.SetPen(wxPen(wxColour(32, 196, 32), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
         {
             // locked and guiding
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(32,196,32), 1, wxPENSTYLE_SOLID));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(32, 196, 32), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxPENSTYLE_DOT));
+                dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
     }
@@ -1278,20 +1280,20 @@ void GuiderMultiStar::SaveStarFITS()
     usImage tmpimg;
     wxString imgLogDirectory;
 
-    tmpimg.Init(60,60);
-    int start_x = ROUND(StarX)-30;
-    int start_y = ROUND(StarY)-30;
+    tmpimg.Init(60, 60);
+    int start_x = ROUND(StarX) - 30;
+    int start_y = ROUND(StarY) - 30;
     if ((start_x + 60) > pImage->Size.GetWidth())
         start_x = pImage->Size.GetWidth() - 60;
     if ((start_y + 60) > pImage->Size.GetHeight())
         start_y = pImage->Size.GetHeight() - 60;
-    int x,y, width;
+    int x, y, width;
     width = pImage->Size.GetWidth();
     unsigned short *usptr = tmpimg.ImageData;
     for (y = 0; y < 60; y++)
     {
         for (x = 0; x < 60; x++, usptr++)
-            *usptr = *(pImage->ImageData + (y + start_y)*width + (x + start_x));
+            *usptr = *(pImage->ImageData + (y + start_y) * width + (x + start_x));
     }
 
     imgLogDirectory = Debug.GetLogDir() + PATHSEPSTR + "PHD2_Stars";
@@ -1299,8 +1301,8 @@ void GuiderMultiStar::SaveStarFITS()
         wxFileName::Mkdir(imgLogDirectory, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
     wxString fname = imgLogDirectory + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".fit";
 
-    fitsfile *fptr;  // FITS file pointer
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+    fitsfile *fptr; // FITS file pointer
+    int status = 0; // CFITSIO status value MUST be initialized to zero!
 
     PHD_fits_create_file(&fptr, fname, false, &status);
 
@@ -1354,7 +1356,6 @@ Guider::GuiderConfigDialogPane *GuiderMultiStar::GetConfigDialogPane(wxWindow *p
 GuiderMultiStar::GuiderMultiStarConfigDialogPane::GuiderMultiStarConfigDialogPane(wxWindow *pParent, GuiderMultiStar *pGuider)
     : GuiderConfigDialogPane(pParent, pGuider)
 {
-
 }
 
 void GuiderMultiStar::GuiderMultiStarConfigDialogPane::LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap)
@@ -1362,12 +1363,14 @@ void GuiderMultiStar::GuiderMultiStarConfigDialogPane::LayoutControls(Guider *pG
     GuiderConfigDialogPane::LayoutControls(pGuider, CtrlMap);
 }
 
-GuiderConfigDialogCtrlSet* GuiderMultiStar::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+GuiderConfigDialogCtrlSet *GuiderMultiStar::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider,
+                                                                   AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new GuiderMultiStarConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
 }
 
-GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider,
+                                                                       AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
     : GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
 {
     assert(pGuider);
@@ -1376,26 +1379,34 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     int width;
 
     width = StringWidth(_T("0000"));
-    m_pSearchRegion = pFrame->MakeSpinCtrl(GetParentWindow(AD_szStarTracking), wxID_ANY, _T(" "), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, MIN_SEARCH_REGION, MAX_SEARCH_REGION, DEFAULT_SEARCH_REGION, _T("Search"));
-    wxSizer *pSearchRegion = MakeLabeledControl(AD_szStarTracking, _("Search region (pixels)"), m_pSearchRegion,
-        _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
+    m_pSearchRegion =
+        pFrame->MakeSpinCtrl(GetParentWindow(AD_szStarTracking), wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width, -1),
+                             wxSP_ARROW_KEYS, MIN_SEARCH_REGION, MAX_SEARCH_REGION, DEFAULT_SEARCH_REGION, _T("Search"));
+    wxSizer *pSearchRegion =
+        MakeLabeledControl(AD_szStarTracking, _("Search region (pixels)"), m_pSearchRegion,
+                           _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
-    wxStaticBoxSizer *pStarMass = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Star Mass Detection"));
+    wxStaticBoxSizer *pStarMass =
+        new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Star Mass Detection"));
     m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(AD_szStarTracking), STAR_MASS_ENABLE, _("Enable"));
-    m_pEnableStarMassChangeThresh->SetToolTip(_("Check to enable star mass change detection. When enabled, "
-        "PHD skips frames when the guide star mass changes by an amount greater than the setting for 'tolerance'."));
+    m_pEnableStarMassChangeThresh->SetToolTip(
+        _("Check to enable star mass change detection. When enabled, "
+          "PHD skips frames when the guide star mass changes by an amount greater than the setting for 'tolerance'."));
 
-    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
+    GetParentWindow(AD_szStarTracking)
+        ->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked, this,
+               STAR_MASS_ENABLE);
 
     width = StringWidth(_T("100.0"));
-    m_pMassChangeThreshold = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
+    m_pMassChangeThreshold =
+        pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
+                                   wxSize(width, -1), wxSP_ARROW_KEYS, 10.0, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
-    wxSizer *pTolerance = MakeLabeledControl(AD_szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
+    wxSizer *pTolerance = MakeLabeledControl(
+        AD_szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
         _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
-        "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
-        "If star mass change detection is not enabled then this setting is ignored."));
+          "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
+          "If star mass change detection is not enabled then this setting is ignored."));
     pStarMass->Add(m_pEnableStarMassChangeThresh, wxSizerFlags(0).Border(wxTOP, 3));
     pStarMass->Add(pTolerance, wxSizerFlags(0).Border(wxLEFT, 40));
 
@@ -1403,44 +1414,52 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
 
     double minHFD = pGuider->GetMinStarHFDFloor();
     m_MinHFD = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDFloor(), 0.5);
+                                          wxSize(width, -1), wxSP_ARROW_KEYS, minHFD, 10.0, pGuider->GetMinStarHFDFloor(), 0.5);
     m_MinHFD->SetDigits(1);
-    wxSizer *pHFD = MakeLabeledControl(AD_szStarTracking, _("Minimum star HFD (pixels)"), m_MinHFD,
-        _("The minimum star HFD (size) that will be used for identifying a guide star. "
-        "This setting can be used to prevent PHD2 from guiding on a hot pixel. "
-        "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
-        "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
+    wxSizer *pHFD =
+        MakeLabeledControl(AD_szStarTracking, _("Minimum star HFD (pixels)"), m_MinHFD,
+                           _("The minimum star HFD (size) that will be used for identifying a guide star. "
+                             "This setting can be used to prevent PHD2 from guiding on a hot pixel. "
+                             "Use the Star Profile Tool to measure the HFD of a hot pixel and set the min HFD threshold "
+                             "a bit higher. When the HFD falls below this level, the hot pixel will be ignored."));
 
     m_MaxHFD = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, minHFD + 2.0, 10.0, 5.0, 0.5);
+                                          wxSize(width, -1), wxSP_ARROW_KEYS, minHFD + 2.0, 10.0, 5.0, 0.5);
     m_MaxHFD->SetDigits(1);
-    wxSizer *pMaxHFD = MakeLabeledControl(AD_szStarTracking, _("Maximum star HFD (pixels)"), m_MaxHFD,
+    wxSizer *pMaxHFD = MakeLabeledControl(
+        AD_szStarTracking, _("Maximum star HFD (pixels)"), m_MaxHFD,
         _("The maximum star HFD that will be used for identifying a guide star. "
-        "This setting can be used to prevent PHD2 from choosing a large clump of sensor noise, adjacent faint stars, "
-        "internal reflections, or comet heads as guide stars."));
+          "This setting can be used to prevent PHD2 from choosing a large clump of sensor noise, adjacent faint stars, "
+          "internal reflections, or comet heads as guide stars."));
 
     wxString ary[] = { _("Auto"), _T("1"), _T("2"), _T("3") };
-    m_autoSelDownsample = new wxChoice(GetParentWindow(AD_szStarTracking), wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
-    wxSizer *dsamp = MakeLabeledControl(AD_szStarTracking, _("Auto-selection frame downsample"), m_autoSelDownsample,
-        _("Downsampling factor for star auto-selection camera frames. Choose a value greater than 1 if star "
-        "auto-selection is failing to recognize misshapen guide stars."));
+    m_autoSelDownsample =
+        new wxChoice(GetParentWindow(AD_szStarTracking), wxID_ANY, wxDefaultPosition, wxDefaultSize, WXSIZEOF(ary), ary);
+    wxSizer *dsamp =
+        MakeLabeledControl(AD_szStarTracking, _("Auto-selection frame downsample"), m_autoSelDownsample,
+                           _("Downsampling factor for star auto-selection camera frames. Choose a value greater than 1 if star "
+                             "auto-selection is failing to recognize misshapen guide stars."));
 
     m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
     m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
 
     m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), MULTI_STAR_ENABLE, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
-    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this, MULTI_STAR_ENABLE);
+    GetParentWindow(AD_szStarTracking)
+        ->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked, this,
+               MULTI_STAR_ENABLE);
     width = StringWidth(_T("100.0"));
 
     m_MinSNR = pFrame->MakeSpinCtrlDouble(GetParentWindow(AD_szStarTracking), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 6.0, 200.0, 6.0, 2.0);
+                                          wxSize(width, -1), wxSP_ARROW_KEYS, 6.0, 200.0, 6.0, 2.0);
     m_MinSNR->SetDigits(0);
-    wxSizer *pSNR = MakeLabeledControl(AD_szStarTracking, _("Minimum star SNR for AutoFind"), m_MinSNR,
+    wxSizer *pSNR = MakeLabeledControl(
+        AD_szStarTracking, _("Minimum star SNR for AutoFind"), m_MinSNR,
         _("The minimum star SNR that will be used for auto-selecting guide stars. "
-        "This setting can be used to discourage PHD2 from choosing a guide star you know will be too faint for sustained guiding. "
-        "This setting applies to both the primary guide star and candidate secondary stars in multi-star guiding. "
-        "If this constraint cannot be met, a saturated or near-saturated star may be selected."));
+          "This setting can be used to discourage PHD2 from choosing a guide star you know will be too faint for sustained "
+          "guiding. "
+          "This setting applies to both the primary guide star and candidate secondary stars in multi-star guiding. "
+          "If this constraint cannot be met, a saturated or near-saturated star may be selected."));
 
     wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(3, 2, 8, 15);
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 12));
@@ -1455,10 +1474,7 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 }
 
-GuiderMultiStarConfigDialogCtrlSet::~GuiderMultiStarConfigDialogCtrlSet()
-{
-
-}
+GuiderMultiStarConfigDialogCtrlSet::~GuiderMultiStarConfigDialogCtrlSet() { }
 
 void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
 {
@@ -1492,10 +1508,7 @@ void GuiderMultiStarConfigDialogCtrlSet::UnloadValues()
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
 
-void GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked(wxCommandEvent& evt)
-{
-
-}
+void GuiderMultiStarConfigDialogCtrlSet::OnMultiStarChecked(wxCommandEvent& evt) { }
 void GuiderMultiStarConfigDialogCtrlSet::OnStarMassEnableChecked(wxCommandEvent& event)
 {
     m_pMassChangeThreshold->Enable(event.IsChecked());

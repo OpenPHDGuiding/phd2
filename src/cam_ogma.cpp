@@ -36,21 +36,21 @@
 
 #if defined(OGMA_CAMERA)
 
-#include "cam_ogma.h"
-#include "ogmacam.h"
+# include "cam_ogma.h"
+# include "ogmacam.h"
 
 // Touptek API uses these Windows definitions even on non-Windows platforms
-#ifndef S_OK
-#define S_OK    ((HRESULT)0L)
-#define S_FALSE ((HRESULT)1L)
-#endif
+# ifndef S_OK
+#  define S_OK ((HRESULT) 0L)
+#  define S_FALSE ((HRESULT) 1L)
+# endif
 
 struct OgmaCam
 {
     HOgmacam m_h;
     void *m_buffer;
     void *m_tmpbuf;
-    wxByte m_bpp;  // bits per pixel: 8 or 16
+    wxByte m_bpp; // bits per pixel: 8 or 16
     bool m_isColor;
     bool m_hasGuideOutput;
     double m_devicePixelSize;
@@ -65,13 +65,7 @@ struct OgmaCam
     wxMutex m_lock;
     wxCondition m_cond;
 
-    OgmaCam() :
-        m_h(nullptr),
-        m_buffer(nullptr),
-        m_tmpbuf(nullptr),
-        m_started(false),
-        m_cond(m_lock)
-    { }
+    OgmaCam() : m_h(nullptr), m_buffer(nullptr), m_tmpbuf(nullptr), m_started(false), m_cond(m_lock) { }
 
     ~OgmaCam()
     {
@@ -79,21 +73,15 @@ struct OgmaCam
         ::free(m_tmpbuf);
     }
 
-    int gain_pct(int val) const
-    {
-        return (val - m_minGain) * 100 / (m_maxGain - m_minGain);
-    }
+    int gain_pct(int val) const { return (val - m_minGain) * 100 / (m_maxGain - m_minGain); }
 
-    int cam_gain(int pct) const
-    {
-        return m_minGain + pct * (m_maxGain - m_minGain) / 100;
-    }
+    int cam_gain(int pct) const { return m_minGain + pct * (m_maxGain - m_minGain) / 100; }
 
     void StopCapture()
     {
         if (m_started)
         {
-            //Debug.Write("OGMA: stopcapture\n");
+            // Debug.Write("OGMA: stopcapture\n");
             HRESULT hr;
             if (FAILED(hr = Ogmacam_Stop(m_h)))
                 Debug.Write(wxString::Format("OGMA: Ogmacam_Stop failed with status 0x%x\n", hr));
@@ -113,7 +101,7 @@ struct OgmaCam
         case OGMACAM_EVENT_NOFRAMETIMEOUT:
         case OGMACAM_EVENT_NOPACKETTIMEOUT:
         case OGMACAM_EVENT_TRIGGERFAIL:
-            //Debug.Write(wxString::Format("OGMA: cam event 0x%x\n", event));
+            // Debug.Write(wxString::Format("OGMA: cam event 0x%x\n", event));
             {
                 wxMutexLocker lck(cam->m_lock);
                 cam->m_captureResult = event;
@@ -131,7 +119,7 @@ struct OgmaCam
         if (m_started)
             return;
 
-        //Debug.Write("OGMA: startcapture\n");
+        // Debug.Write("OGMA: startcapture\n");
 
         HRESULT hr;
         if (FAILED(hr = Ogmacam_StartPullModeWithCallback(m_h, &CamEventCb, this)))
@@ -208,15 +196,9 @@ struct OgmaCam
         }
     }
 
-    bool SoftwareBinning() const
-    {
-        return m_isColor;
-    }
+    bool SoftwareBinning() const { return m_isColor; }
 
-    bool SetHwBinning(unsigned int binning)
-    {
-        return SetOption(OGMACAM_OPTION_BINNING, OgmacamBinning(binning));
-    }
+    bool SetHwBinning(unsigned int binning) { return SetOption(OGMACAM_OPTION_BINNING, OgmacamBinning(binning)); }
 
     bool SetBinning(unsigned int binning)
     {
@@ -261,7 +243,6 @@ class CameraOgma : public GuideCamera
     OgmaCam m_cam;
 
 public:
-
     CameraOgma();
     ~CameraOgma();
 
@@ -293,16 +274,15 @@ CameraOgma::CameraOgma()
     Connected = false;
     m_cam.m_hasGuideOutput = true;
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     m_cam.m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ogma/bpp", 8);
     m_cam.m_bpp = value == 8 ? 8 : 16;
     MaxBinning = 4;
 }
 
-CameraOgma::~CameraOgma()
-{
-}
+CameraOgma::~CameraOgma() { }
 
 bool CameraOgma::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
@@ -376,8 +356,8 @@ bool CameraOgma::Connect(const wxString& camIdArg)
     HasCooler = (info->model->flag & OGMACAM_FLAG_TEC) != 0;
     m_cam.m_hasGuideOutput = (info->model->flag & OGMACAM_FLAG_ST4) != 0;
 
-    Debug.Write(wxString::Format("OGMA: isColor = %d, hasCooler = %d, hasST4 = %d\n",
-        m_cam.m_isColor, HasCooler, m_cam.m_hasGuideOutput));
+    Debug.Write(wxString::Format("OGMA: isColor = %d, hasCooler = %d, hasST4 = %d\n", m_cam.m_isColor, HasCooler,
+                                 m_cam.m_hasGuideOutput));
 
     if (FAILED(Ogmacam_get_Resolution(m_cam.m_h, 0, &m_cam.m_maxSize.x, &m_cam.m_maxSize.y)))
     {
@@ -444,7 +424,8 @@ bool CameraOgma::Connect(const wxString& camIdArg)
         m_cam.m_maxGain = maxGain;
         HasGainControl = maxGain > minGain;
         m_cam.m_defaultGainPct = m_cam.gain_pct(defaultGain);
-        Debug.Write(wxString::Format("OGMA: gain range %d .. %d, default = %d (%d%%)\n", minGain, maxGain, defaultGain, m_cam.m_defaultGainPct));
+        Debug.Write(wxString::Format("OGMA: gain range %d .. %d, default = %d (%d%%)\n", minGain, maxGain, defaultGain,
+                                     m_cam.m_defaultGainPct));
     }
     else
     {
@@ -469,14 +450,14 @@ bool CameraOgma::Connect(const wxString& camIdArg)
     m_cam.SetOption(OGMACAM_OPTION_RAW, 1);
     m_cam.SetOption(OGMACAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
     m_cam.SetOption(OGMACAM_OPTION_LINEAR, 0);
-    //m_cam.SetOption(OGMACAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
+    // m_cam.SetOption(OGMACAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
     m_cam.SetOption(OGMACAM_OPTION_COLORMATIX, 0);
     m_cam.SetOption(OGMACAM_OPTION_WBGAIN, 0);
-    m_cam.SetOption(OGMACAM_OPTION_TRIGGER, 1);  // software trigger
+    m_cam.SetOption(OGMACAM_OPTION_TRIGGER, 1); // software trigger
     m_cam.SetOption(OGMACAM_OPTION_AUTOEXP_POLICY, 0); // 0="Exposure Only" 1="Exposure Preferred"
     m_cam.SetOption(OGMACAM_OPTION_ROTATE, 0);
     m_cam.SetOption(OGMACAM_OPTION_UPSIDE_DOWN, 0);
-    //m_cam.SetOption(OGMACAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
+    // m_cam.SetOption(OGMACAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
     m_cam.SetOption(OGMACAM_OPTION_FFC, 0);
     m_cam.SetOption(OGMACAM_OPTION_DFC, 0);
     m_cam.SetOption(OGMACAM_OPTION_SHARPENING, 0);
@@ -501,12 +482,8 @@ bool CameraOgma::Connect(const wxString& camIdArg)
     unsigned int fourcc, bpp;
     if (SUCCEEDED(hr = Ogmacam_get_RawFormat(m_cam.m_h, &fourcc, &bpp)))
     {
-        Debug.Write(wxString::Format("OGMA: raw format = %c%c%c%c bit depth = %u\n",
-            fourcc & 0xff,
-            (fourcc >> 8) & 0xff,
-            (fourcc >> 16) & 0xff,
-            fourcc >> 24,
-            bpp));
+        Debug.Write(wxString::Format("OGMA: raw format = %c%c%c%c bit depth = %u\n", fourcc & 0xff, (fourcc >> 8) & 0xff,
+                                     (fourcc >> 16) & 0xff, fourcc >> 24, bpp));
     }
     else
         Debug.Write(wxString::Format("OGMA: Ogmacam_get_RawFormat failed with status 0x%x\n", hr));
@@ -560,7 +537,7 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
 
     unsigned int const binning = m_cam.m_curBin;
 
-    wxRect roi;     // un-binned coordinates
+    wxRect roi; // un-binned coordinates
 
     if (useSubframe)
     {
@@ -605,7 +582,7 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
 
     m_cam.StartCapture();
 
-    //Debug.Write("OGMA: capture: trigger\n");
+    // Debug.Write("OGMA: capture: trigger\n");
     if (FAILED(hr = Ogmacam_Trigger(m_cam.m_h, 1)))
         Debug.Write(wxString::Format("OGMA: Ogmacam_Trigger(1) failed with status 0x%x\n", hr));
 
@@ -658,7 +635,7 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
         return true;
     }
 
-    //Debug.Write("OGMA: capture: image ready\n");
+    // Debug.Write("OGMA: capture: image ready\n");
 
     void *buf;
     wxSize sz;
@@ -724,7 +701,7 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
         }
     }
 
-    //Debug.Write("OGMA: capture: pull done\n");
+    // Debug.Write("OGMA: capture: pull done\n");
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
@@ -749,10 +726,14 @@ inline static int GetOgmacamDirection(int direction)
     switch (direction)
     {
     default:
-    case NORTH: return 0;
-    case EAST:  return 2;
-    case WEST:  return 3;
-    case SOUTH: return 1;
+    case NORTH:
+        return 0;
+    case EAST:
+        return 2;
+    case WEST:
+        return 3;
+    case SOUTH:
+        return 1;
     }
 }
 
@@ -795,8 +776,7 @@ struct OgmaCameraDlg : public wxDialog
     OgmaCameraDlg();
 };
 
-OgmaCameraDlg::OgmaCameraDlg()
-    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Ogma Camera Properties"))
+OgmaCameraDlg::OgmaCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Ogma Camera Properties"))
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -811,7 +791,7 @@ OgmaCameraDlg::OgmaCameraDlg()
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -867,13 +847,13 @@ bool CameraOgma::SetCoolerOn(bool on)
 
 bool CameraOgma::SetCoolerSetpoint(double temperature)
 {
-    int val = (int)(temperature * 10.);
-#if defined(OGMACAM_TEC_TARGET_MIN)
+    int val = (int) (temperature * 10.);
+# if defined(OGMACAM_TEC_TARGET_MIN)
     val = wxMax(val, OGMACAM_TEC_TARGET_MIN);
-#endif
-#if defined(OGMACAM_TEC_TARGET_MAX)
+# endif
+# if defined(OGMACAM_TEC_TARGET_MAX)
     val = wxMin(val, OGMACAM_TEC_TARGET_MAX);
-#endif
+# endif
 
     return m_cam.SetOption(OGMACAM_OPTION_TECTARGET, val) ? false : true;
 }
@@ -893,8 +873,7 @@ bool CameraOgma::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
     else
         err = true;
 
-    if (m_cam.GetOption(OGMACAM_OPTION_TEC_VOLTAGE, &vcur) &&
-        m_cam.GetOption(OGMACAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
+    if (m_cam.GetOption(OGMACAM_OPTION_TEC_VOLTAGE, &vcur) && m_cam.GetOption(OGMACAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
         vmax > 0)
     {
         *power = vcur * 100.0 / vmax;

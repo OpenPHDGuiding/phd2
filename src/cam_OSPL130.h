@@ -36,15 +36,15 @@
 
 class CameraOpticstarPL130 : public GuideCamera
 {
-    bool    Color;
+    bool Color;
 
 public:
     CameraOpticstarPL130();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    wxByte  BitsPerPixel() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    wxByte BitsPerPixel() override;
 };
 
-#endif  //OSPL130DEF
+#endif // OSPL130DEF

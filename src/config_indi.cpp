@@ -40,16 +40,16 @@
 #include "camera.h"
 #include "scope.h"
 
-#if defined (INDI_CAMERA) || defined (GUIDE_INDI)
+#if defined(INDI_CAMERA) || defined(GUIDE_INDI)
 
-#include "config_indi.h"
+# include "config_indi.h"
 
-#include <wx/sizer.h>
-#include <wx/gbsizer.h>
-#include <wx/combobox.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/dialog.h>
+# include <wx/sizer.h>
+# include <wx/gbsizer.h>
+# include <wx/combobox.h>
+# include <wx/stattext.h>
+# include <wx/textctrl.h>
+# include <wx/dialog.h>
 
 enum
 {
@@ -60,18 +60,16 @@ enum
     FORCEVIDEO = 105,
 };
 
-#define POS(r, c)        wxGBPosition(r,c)
-#define SPAN(r, c)       wxGBSpan(r,c)
+# define POS(r, c) wxGBPosition(r, c)
+# define SPAN(r, c) wxGBSpan(r, c)
 
 bool INDIConfig::s_verbose;
 
 INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devtype)
-    :
-    wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-    m_gui(nullptr),
-    dev_type(devtype)
+    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+      m_gui(nullptr), dev_type(devtype)
 {
-    auto sizerLabelFlags  = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL;
+    auto sizerLabelFlags = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL;
     auto sizerButtonFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
     auto sizerSectionFlags = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL;
     auto sizerTextFlags = wxALIGN_LEFT | wxALL | wxEXPAND;
@@ -82,18 +80,15 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     wxBoxSizer *sizer;
 
     pos = 0;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("INDI Server")),
-             POS(pos, 0), SPAN(1, 1), sizerSectionFlags, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("INDI Server")), POS(pos, 0), SPAN(1, 1), sizerSectionFlags, border);
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Hostname")),
-             POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Hostname")), POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     host = new wxTextCtrl(this, wxID_ANY);
     gbs->Add(host, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Port")),
-             POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Port")), POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     port = new wxTextCtrl(this, wxID_ANY);
     gbs->Add(port, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
@@ -104,8 +99,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     gbs->Add(connect, POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("========")),
-             POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("========")), POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
     devlabel = new wxStaticText(this, wxID_ANY, _("Device"));
 
     if (dev_type == INDI_TYPE_CAMERA)
@@ -122,8 +116,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     gbs->Add(devlabel, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL, border);
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Driver")),
-             POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Driver")), POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     dev = new wxComboBox(this, MDEV, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_READONLY);
     gbs->Add(dev, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
 
@@ -131,8 +124,7 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     if (dev_type == INDI_TYPE_CAMERA)
     {
         ++pos;
-        gbs->Add(new wxStaticText(this, wxID_ANY, _("Dual CCD")),
-                 POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+        gbs->Add(new wxStaticText(this, wxID_ANY, _("Dual CCD")), POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
         ccd = new wxComboBox(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_READONLY);
         gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), sizerTextFlags, border);
     }
@@ -143,19 +135,18 @@ INDIConfig::INDIConfig(wxWindow *parent, const wxString& title, IndiDevType devt
     {
         ++pos;
         forcevideo = new wxCheckBox(this, FORCEVIDEO, _("Camera does not support exposure time"));
-        forcevideo->SetToolTip(
-            _("Force the use of streaming and frame stacking for cameras that do not support setting an absolute exposure time."));
-        gbs->Add(forcevideo,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
+        forcevideo->SetToolTip(_("Force the use of streaming and frame stacking for cameras that do not support setting an "
+                                 "absolute exposure time."));
+        gbs->Add(forcevideo, POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
 
         ++pos;
         forceexposure = new wxCheckBox(this, wxID_ANY, _("Camera does not support streaming"));
         forceexposure->SetToolTip(_("Force the use of exposure time for cameras that do not support streaming."));
-        gbs->Add(forceexposure,  POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
+        gbs->Add(forceexposure, POS(pos, 0), SPAN(1, 2), sizerTextFlags, border);
     }
 
     ++pos;
-    gbs->Add(new wxStaticText(this, wxID_ANY, _("Other options")),
-             POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
+    gbs->Add(new wxStaticText(this, wxID_ANY, _("Other options")), POS(pos, 0), SPAN(1, 1), sizerLabelFlags, border);
     guiBtn = new wxButton(this, MINDIGUI, _("INDI"));
     gbs->Add(guiBtn, POS(pos, 1), SPAN(1, 1), sizerButtonFlags, border);
 
@@ -377,9 +368,9 @@ static wxString formatInterface(unsigned int ifs)
 
     wxString s;
 
-#define F(t) \
-    if (ifs & INDI::BaseDevice:: t ## _INTERFACE) \
-        _append(s, #t)
+# define F(t)                                                                                                                  \
+     if (ifs & INDI::BaseDevice::t##_INTERFACE)                                                                                \
+     _append(s, #t)
 
     F(TELESCOPE);
     F(CCD);
@@ -394,7 +385,7 @@ static wxString formatInterface(unsigned int ifs)
     F(LIGHTBOX);
     F(AUX);
 
-#undef F
+# undef F
 
     return s;
 }
@@ -424,11 +415,11 @@ void INDIConfig::newProperty(INDI::Property property)
         if (!include)
         {
             Debug.Write(wxString::Format("exclude device %s not a valid %s\n", devname,
-                dev_type == INDI_TYPE_CAMERA ? "camera" :
-                dev_type == INDI_TYPE_MOUNT ? "mount" :
-                dev_type == INDI_TYPE_AUX_MOUNT ? "aux mount" :
-                dev_type == INDI_TYPE_AO ? "AO" :
-                "rotator"));
+                                         dev_type == INDI_TYPE_CAMERA          ? "camera"
+                                             : dev_type == INDI_TYPE_MOUNT     ? "mount"
+                                             : dev_type == INDI_TYPE_AUX_MOUNT ? "aux mount"
+                                             : dev_type == INDI_TYPE_AO        ? "AO"
+                                                                               : "rotator"));
 
             int n = dev->FindString(devname, true);
             if (n != wxNOT_FOUND)

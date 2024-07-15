@@ -45,4 +45,4 @@ public:
     static GuideCamera *MakeLESerialWebcamCamera();
 };
 
-#endif //CAM_LESERIALWEBCAM_H_INCLUDED
+#endif // CAM_LESERIALWEBCAM_H_INCLUDED

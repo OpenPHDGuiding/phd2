@@ -35,7 +35,7 @@
 
 #ifdef GUIDE_ONSTEPGUIDER
 
-#include "scope_onboard_st4.h"
+# include "scope_onboard_st4.h"
 
 class ScopeOnStepGuider : public ScopeOnboardST4
 {

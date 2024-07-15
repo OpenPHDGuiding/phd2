@@ -38,25 +38,26 @@
 
 #if defined(LE_LXUSB_CAMERA)
 
-#include "cam_LELXUSBWebcam.h"
-#include "cam_wdm_base.h"
-#include "cameras/ShoestringLXUSB_DLL.h"
+# include "cam_LELXUSBWebcam.h"
+# include "cam_wdm_base.h"
+# include "cameras/ShoestringLXUSB_DLL.h"
 
 class CameraLELxUsbWebcam : public CameraLEWebcam
 {
     bool m_isOpen;
+
 public:
     CameraLELxUsbWebcam();
     virtual ~CameraLELxUsbWebcam();
 
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
+
 private:
     virtual bool LEControl(int actions);
 };
 
-CameraLELxUsbWebcam::CameraLELxUsbWebcam(void)
-    : CameraLEWebcam()
+CameraLELxUsbWebcam::CameraLELxUsbWebcam(void) : CameraLEWebcam()
 {
     m_isOpen = false;
     Name = _T("Usb USB Webcam");
@@ -178,15 +179,15 @@ bool CameraLELxUsbWebcam::LEControl(int actions)
 
         if (actions & LECAMERA_LED_OFF)
         {
-            ledState  = LXUSB_LED_OFF_RED;
+            ledState = LXUSB_LED_OFF_RED;
         }
         else if (actions & LECAMERA_LED_RED)
         {
-            ledState  = LXUSB_LED_ON_RED;
+            ledState = LXUSB_LED_ON_RED;
         }
         else if (actions & LECAMERA_LED_GREEN)
         {
-            ledState  = LXUSB_LED_ON_GREEN;
+            ledState = LXUSB_LED_ON_GREEN;
         }
 
         LXUSB_SetAll(frame1State, frame2State, shutterState, ampState, ledState);

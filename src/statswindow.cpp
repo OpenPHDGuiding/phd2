@@ -1,41 +1,42 @@
 /*
-*  statswindow.cpp
-*  PHD Guiding
-*
-*  Created by Andy Galasso
-*  Copyright (c) 2014 Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  statswindow.cpp
+ *  PHD Guiding
+ *
+ *  Created by Andy Galasso
+ *  Copyright (c) 2014 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 #include "statswindow.h"
 
-enum {
+enum
+{
     TIMER_ID_COOLER = 101,
 };
 
@@ -49,10 +50,7 @@ wxEND_EVENT_TABLE();
 // clang-format on
 
 StatsWindow::StatsWindow(wxWindow *parent)
-    : wxWindow(parent, wxID_ANY),
-    m_visible(false),
-    m_coolerTimer(this, TIMER_ID_COOLER),
-    m_lastFrameSize(wxDefaultSize)
+    : wxWindow(parent, wxID_ANY), m_visible(false), m_coolerTimer(this, TIMER_ID_COOLER), m_lastFrameSize(wxDefaultSize)
 {
     SetBackgroundColour(*wxBLACK);
 
@@ -155,9 +153,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     SetSizerAndFit(sizer2);
 }
 
-StatsWindow::~StatsWindow(void)
-{
-}
+StatsWindow::~StatsWindow(void) { }
 
 void StatsWindow::SetState(bool is_active)
 {
@@ -219,13 +215,15 @@ void StatsWindow::UpdateStats(void)
         m_grid2->SetCellTextColour(row, col, wxColour(185, 20, 0));
     else
         m_grid2->SetCellTextColour(row, col, *wxLIGHT_GREY);
-    m_grid2->SetCellValue(row++, col, wxString::Format(" %u (%.f%%)", stats.ra_limit_cnt, stats.ra_limit_cnt * 100. / historyItems));
+    m_grid2->SetCellValue(row++, col,
+                          wxString::Format(" %u (%.f%%)", stats.ra_limit_cnt, stats.ra_limit_cnt * 100. / historyItems));
 
     if (stats.dec_limit_cnt > 0)
         m_grid2->SetCellTextColour(row, col, wxColour(185, 20, 0));
     else
         m_grid2->SetCellTextColour(row, col, *wxLIGHT_GREY);
-    m_grid2->SetCellValue(row++, col, wxString::Format(" %u (%.f%%)", stats.dec_limit_cnt, stats.dec_limit_cnt * 100. / historyItems));
+    m_grid2->SetCellValue(row++, col,
+                          wxString::Format(" %u (%.f%%)", stats.dec_limit_cnt, stats.dec_limit_cnt * 100. / historyItems));
 
     m_grid2->SetCellValue(row++, col, wxString::Format(" %u", stats.star_lost_cnt));
 
@@ -259,7 +257,10 @@ void StatsWindow::UpdateCooler()
         if (pCamera->HasCooler)
         {
             s = CamCoolerStatus();
-            enum { COOLER_POLL_INTERVAL_MS = 10000 };
+            enum
+            {
+                COOLER_POLL_INTERVAL_MS = 10000
+            };
             m_coolerTimer.StartOnce(COOLER_POLL_INTERVAL_MS);
         }
         else
@@ -271,7 +272,8 @@ void StatsWindow::UpdateCooler()
 static wxString fov(const wxSize& sensorFormat, double sampling)
 {
     if (sampling != 1.0)
-        return wxString::Format("%4.1f x %4.1f %s", sensorFormat.x * sampling / 60.0, sensorFormat.y * sampling / 60.0, _("arc-min"));
+        return wxString::Format("%4.1f x %4.1f %s", sensorFormat.x * sampling / 60.0, sensorFormat.y * sampling / 60.0,
+                                _("arc-min"));
     else
         return " ";
 }
@@ -335,7 +337,7 @@ void StatsWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
     wxMenu *menu = pFrame->pGraphLog->GetLengthMenu();
 
     PopupMenu(menu, m_pLengthButton->GetPosition().x,
-        m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
+              m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
 
     delete menu;
 }

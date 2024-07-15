@@ -36,11 +36,11 @@
 
 #ifdef GUIDE_GPUSB
 
-#if defined (__WINDOWS__)
-#include "ShoestringGPUSB_DLL.h"
-#elif defined (__APPLE__) // ------------------------------  Apple routines ----------------------------
+# if defined(__WINDOWS__)
+#  include "ShoestringGPUSB_DLL.h"
+# elif defined(__APPLE__) // ------------------------------  Apple routines ----------------------------
 
-#include <IOKit/hid/IOHIDLib.h>
+#  include <IOKit/hid/IOHIDLib.h>
 
 static IOHIDDeviceRef pGPUSB;
 static int GPUSB_Model;
@@ -68,21 +68,18 @@ static bool FindDevice(long vendorId, long productId)
         }
     }
 
-#if 1 // workaround problem with crash on re-connect
+#  if 1 // workaround problem with crash on re-connect
     if (!first)
     {
         pFrame->Alert(_("Please restart PHD2 to re-connect to the GPUSB"));
         return false;
     }
-#endif
+#  endif
 
     // setup dictionary
 
-    CFMutableDictionaryRef dictionary = CFDictionaryCreateMutable(
-                                              kCFAllocatorDefault,
-                                              2,
-                                              &kCFTypeDictionaryKeyCallBacks,
-                                              &kCFTypeDictionaryValueCallBacks);
+    CFMutableDictionaryRef dictionary =
+        CFDictionaryCreateMutable(kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 
     CFNumberRef cfVendorId = CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &vendorId);
     CFStringRef cfVendorSt = CFStringCreateWithCString(kCFAllocatorDefault, kIOHIDVendorIDKey, kCFStringEncodingUTF8);
@@ -149,10 +146,10 @@ static IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
     IOHIDElementRef output = NULL;
     CFArrayRef arrayElements = IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
     CFIndex elementCount = CFArrayGetCount(arrayElements);
-    for(CFIndex i = 0; i < elementCount; i++)
+    for (CFIndex i = 0; i < elementCount; i++)
     {
         IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef) CFArrayGetValueAtIndex(arrayElements, i);
-        if(!tIOHIDElementRef)
+        if (!tIOHIDElementRef)
         {
             continue;
         }
@@ -160,13 +157,13 @@ static IOHIDElementRef GetFirstOutputElement(IOHIDDeviceRef device)
 
         switch (type)
         {
-            case kIOHIDElementTypeOutput:
-            {
-                output = tIOHIDElementRef;
-                break;
-            }
-            default:
-                break;
+        case kIOHIDElementTypeOutput:
+        {
+            output = tIOHIDElementRef;
+            break;
+        }
+        default:
+            break;
         }
 
         if (output)
@@ -195,7 +192,7 @@ static IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementR
 
         if (!found)
         {
-            if(previousElement == tIOHIDElementRef)
+            if (previousElement == tIOHIDElementRef)
             {
                 CFRelease(previousElement); // do we need this ?
                 found = true;
@@ -207,13 +204,13 @@ static IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementR
 
         switch (type)
         {
-            case kIOHIDElementTypeOutput:
-            {
-                output = tIOHIDElementRef;
-                break;
-            }
-            default:
-                break;
+        case kIOHIDElementTypeOutput:
+        {
+            output = tIOHIDElementRef;
+            break;
+        }
+        default:
+            break;
         }
 
         if (output)
@@ -228,7 +225,8 @@ static IOHIDElementRef GetNextOutputElement(IOHIDDeviceRef device, IOHIDElementR
 
 static bool GPUSB_Open()
 {
-    enum {
+    enum
+    {
         VID = 4938,
         PID = 36896
     };
@@ -252,7 +250,7 @@ static bool GPUSB_Open()
         }
         IOHIDElementType type = IOHIDElementGetType(tIOHIDElementRef);
 
-        switch ( type )
+        switch (type)
         {
         case kIOHIDElementTypeInput_Misc:
         case kIOHIDElementTypeInput_Button:
@@ -298,7 +296,7 @@ static void GPUSB_SetBit(int bit, int val)
     IOHIDElementRef pCurrentHIDElement = NULL;
 
     int i;
-    static int bitarray[8]={0,0,0,0,1,1,0,0};
+    static int bitarray[8] = { 0, 0, 0, 0, 1, 1, 0, 0 };
     static unsigned char GPUSB_reg = 0x30;
 
     if (GPUSB_Model)
@@ -333,12 +331,8 @@ static void GPUSB_SetBit(int bit, int val)
 
         assert(IOHIDValueGetLength(valueToSend) == 1);
 
-        IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithBytes(
-                                        kCFAllocatorDefault,
-                                        pCurrentHIDElement,
-                                        IOHIDValueGetTimeStamp(valueToSend),
-                                        &GPUSB_reg,
-                                        1);
+        IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithBytes(kCFAllocatorDefault, pCurrentHIDElement,
+                                                                    IOHIDValueGetTimeStamp(valueToSend), &GPUSB_reg, 1);
 
         tIOReturn = IOHIDDeviceSetValue(pGPUSB, pCurrentHIDElement, valueToSendCopied);
         if (tIOReturn != kIOReturnSuccess)
@@ -350,15 +344,13 @@ static void GPUSB_SetBit(int bit, int val)
 
         CFRelease(pCurrentHIDElement);
     }
-    else {
+    else
+    {
         // Generic bit-set routine.  For older adapters, we can't send a whole
         // byte and things are setup as SInt32's per bit with 8 bits total...
 
-        IOHIDTransactionRef transaction = IOHIDTransactionCreate(
-                          kCFAllocatorDefault,
-                          pGPUSB,
-                          kIOHIDTransactionDirectionTypeOutput,
-                          kIOHIDOptionsTypeNone);
+        IOHIDTransactionRef transaction =
+            IOHIDTransactionCreate(kCFAllocatorDefault, pGPUSB, kIOHIDTransactionDirectionTypeOutput, kIOHIDOptionsTypeNone);
 
         if (transaction == NULL)
         {
@@ -388,10 +380,7 @@ static void GPUSB_SetBit(int bit, int val)
             }
 
             IOHIDValueRef valueToSendCopied = IOHIDValueCreateWithIntegerValue(
-                                                  kCFAllocatorDefault,
-                                                  pCurrentHIDElement,
-                                                  IOHIDValueGetTimeStamp(valueToSend),
-                                                  bitarray[i]);
+                kCFAllocatorDefault, pCurrentHIDElement, IOHIDValueGetTimeStamp(valueToSend), bitarray[i]);
 
             IOHIDTransactionAddElement(transaction, pCurrentHIDElement);
             IOHIDTransactionSetValue(transaction, pCurrentHIDElement, valueToSendCopied, 0);
@@ -407,7 +396,7 @@ static bool GPUSB_LEDOn()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(5,1);
+    GPUSB_SetBit(5, 1);
     return true;
 }
 
@@ -418,7 +407,7 @@ static bool GPUSB_LEDOff()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(5,0);
+    GPUSB_SetBit(5, 0);
     return true;
 }
 
@@ -429,7 +418,7 @@ static bool GPUSB_LEDRed()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(4,1);
+    GPUSB_SetBit(4, 1);
     return true;
 }
 
@@ -440,7 +429,7 @@ static bool GPUSB_LEDGreen()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(4,0);
+    GPUSB_SetBit(4, 0);
     return true;
 }
 
@@ -449,7 +438,7 @@ static bool GPUSB_DecPAssert()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(3,1);
+    GPUSB_SetBit(3, 1);
     return true;
 }
 
@@ -458,7 +447,7 @@ static bool GPUSB_DecMAssert()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(2,1);
+    GPUSB_SetBit(2, 1);
     return true;
 }
 
@@ -467,7 +456,7 @@ static bool GPUSB_RAPAssert()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(1,1);
+    GPUSB_SetBit(1, 1);
     return true;
 }
 
@@ -476,7 +465,7 @@ static bool GPUSB_RAMAssert()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(0,1);
+    GPUSB_SetBit(0, 1);
     return true;
 }
 
@@ -485,15 +474,15 @@ static bool GPUSB_AllDirDeassert()
     if (!pGPUSB)
         return false;
 
-    GPUSB_SetBit(0,0);
-    GPUSB_SetBit(1,0);
-    GPUSB_SetBit(2,0);
-    GPUSB_SetBit(3,0);
+    GPUSB_SetBit(0, 0);
+    GPUSB_SetBit(1, 0);
+    GPUSB_SetBit(2, 0);
+    GPUSB_SetBit(3, 0);
 
     return true;
 }
 
-#endif // ------------------------------  Apple routines ----------------------------
+# endif // ------------------------------  Apple routines ----------------------------
 
 bool ScopeGpUsb::Connect()
 {
@@ -521,12 +510,22 @@ Mount::MOVE_RESULT ScopeGpUsb::Guide(GUIDE_DIRECTION direction, int duration)
 {
     GPUSB_AllDirDeassert();
     GPUSB_LEDGreen();
-    switch (direction) {
-        case NORTH: GPUSB_DecPAssert(); break;
-        case SOUTH: GPUSB_DecMAssert(); break;
-        case EAST: GPUSB_RAMAssert(); break;
-        case WEST: GPUSB_RAPAssert(); break;
-        case NONE: break;
+    switch (direction)
+    {
+    case NORTH:
+        GPUSB_DecPAssert();
+        break;
+    case SOUTH:
+        GPUSB_DecMAssert();
+        break;
+    case EAST:
+        GPUSB_RAMAssert();
+        break;
+    case WEST:
+        GPUSB_RAPAssert();
+        break;
+    case NONE:
+        break;
     }
     WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     GPUSB_AllDirDeassert();

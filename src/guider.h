@@ -91,9 +91,9 @@ struct OverlaySlitCoords
 
 enum PauseType
 {
-    PAUSE_NONE,     // not paused
-    PAUSE_GUIDING,  // pause guide corrections but continue looping exposures
-    PAUSE_FULL,     // pause guide corrections and pause looping exposures
+    PAUSE_NONE, // not paused
+    PAUSE_GUIDING, // pause guide corrections but continue looping exposures
+    PAUSE_FULL, // pause guide corrections and pause looping exposures
 };
 
 struct LockPosShiftParams
@@ -122,11 +122,10 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxCheckBox *m_pScaleImage;
 
 public:
-    GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderConfigDialogCtrlSet() {};
     virtual void LoadValues();
     virtual void UnloadValues();
-
 };
 
 struct GuiderOffset
@@ -149,11 +148,11 @@ class Guider : public wxWindow
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
     PHD_Point m_ditherRecenterRemaining;
-    time_t m_starFoundTimestamp;  // timestamp when star was last found
-    double m_avgDistance;         // averaged distance for distance reporting
-    double m_avgDistanceRA;       // averaged distance, RA only
-    double m_avgDistanceLong;     // averaged distance, more smoothed
-    double m_avgDistanceLongRA;   // averaged distance, more smoothed, RA only
+    time_t m_starFoundTimestamp; // timestamp when star was last found
+    double m_avgDistance; // averaged distance for distance reporting
+    double m_avgDistanceRA; // averaged distance, RA only
+    double m_avgDistanceLong; // averaged distance, more smoothed
+    double m_avgDistanceLongRA; // averaged distance, more smoothed, RA only
     unsigned int m_avgDistanceCnt;
     bool m_avgDistanceNeedReset;
     GUIDER_STATE m_state;
@@ -167,7 +166,7 @@ class Guider : public wxWindow
     double m_minStarHFD;
     double m_minAFStarSNR;
     double m_maxStarHFD;
-    unsigned int m_autoSelDownsample;  // downsample factor for star auto-selection, 0=Auto
+    unsigned int m_autoSelDownsample; // downsample factor for star auto-selection, 0=Auto
 
 protected:
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
@@ -194,8 +193,9 @@ public:
     OVERLAY_MODE GetOverlayMode() const;
 
 public:
-    virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;
-    virtual GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider,
+                                                              AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
 protected:
     Guider(wxWindow *parent, int xSize, int ySize);
@@ -246,7 +246,7 @@ public:
 
     void StartGuiding();
     void StopGuiding();
-    void UpdateGuideState(usImage *pImage, bool bStopping=false);
+    void UpdateGuideState(usImage *pImage, bool bStopping = false);
     void DisplayImage(usImage *img);
 
     bool SetScaleImage(bool newScaleValue);
@@ -272,7 +272,8 @@ public:
     void SetMinStarHFD(double val);
     double GetMaxStarHFD() const;
     void SetMaxStarHFD(double val);
-    // 'AF' methods deal with SNR threshold used only during Auto-Find - lets user specify a higher than default SNR floor for populating a multi-star list. Normal 'find' methods do not use this property
+    // 'AF' methods deal with SNR threshold used only during Auto-Find - lets user specify a higher than default SNR floor for
+    // populating a multi-star list. Normal 'find' methods do not use this property
     void SetAFMinStarSNR(double val);
     double GetAFMinStarSNR() const;
 
@@ -284,6 +285,7 @@ public:
     // their operation
 private:
     virtual void InvalidateLockPosition();
+
 public:
     virtual void LoadProfileSettings();
 
@@ -292,6 +294,7 @@ public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
     virtual bool IsValidSecondaryStarPosition(const PHD_Point& pt) = 0;
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
+
 private:
     virtual bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) = 0;
     virtual bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) = 0;

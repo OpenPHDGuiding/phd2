@@ -71,12 +71,12 @@ struct S_HISTORY
     bool decLimited;
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
-        : timestamp(::wxGetUTCTimeMillis().GetValue()),
-        dx(step.cameraOffset.X), dy(step.cameraOffset.Y), ra(step.mountOffset.X), dec(step.mountOffset.Y),
-        starSNR(step.starSNR), starMass(step.starMass),
-        raDur(step.durationRA), decDur(step.durationDec),
-        raDir(step.directionRA), decDir(step.directionDec),
-        raLimited(step.raLimited), decLimited(step.decLimited) { }
+        : timestamp(::wxGetUTCTimeMillis().GetValue()), dx(step.cameraOffset.X), dy(step.cameraOffset.Y),
+          ra(step.mountOffset.X), dec(step.mountOffset.Y), starSNR(step.starSNR), starMass(step.starMass),
+          raDur(step.durationRA), decDur(step.durationDec), raDir(step.directionRA), decDir(step.directionDec),
+          raLimited(step.raLimited), decLimited(step.decLimited)
+    {
+    }
 };
 
 struct DitherInfo
@@ -209,8 +209,8 @@ class GraphLogWindow : public wxWindow
     void UpdateRADecDxDyLabels();
 
 public:
-
-    enum {
+    enum
+    {
         DefaultMinLength = 50,
         DefaultMaxLength = 400,
         DefaultMinHeight = 1,
@@ -234,7 +234,7 @@ public:
     void SetHeight(int height);
     wxMenu *GetLengthMenu();
     unsigned int GetHistoryItemCount() const;
-    void EnableDecControls(bool enable);        // For changes to Dec mode made outside of graph pane (e.g. AD)
+    void EnableDecControls(bool enable); // For changes to Dec mode made outside of graph pane (e.g. AD)
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
@@ -273,6 +273,7 @@ public:
     ~GraphControlPane();
     virtual void UpdateControls();
     virtual void EnableDecControls(bool enable);
+
 protected:
     wxBoxSizer *m_pControlSizer;
 

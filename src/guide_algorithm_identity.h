@@ -46,6 +46,7 @@ protected:
     class GuideAlgorithmIdentityConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmIdentity *m_pGuideAlgorithm;
+
     public:
         GuideAlgorithmIdentityConfigDialogPane(wxWindow *pParent, GuideAlgorithmIdentity *pGuideAlgorithm);
         ~GuideAlgorithmIdentityConfigDialogPane();

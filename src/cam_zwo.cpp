@@ -1,54 +1,54 @@
 /*
-*  cam_zwo.cpp
-*  PHD Guiding
-*
-*  Created by Robin Glover.
-*  Copyright (c) 2014 Robin Glover.
-*  Copyright (c) 2017-2018 Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_zwo.cpp
+ *  PHD Guiding
+ *
+ *  Created by Robin Glover.
+ *  Copyright (c) 2014 Robin Glover.
+ *  Copyright (c) 2017-2018 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 #include "phd.h"
 
 #ifdef ZWO_ASI
 
-#include "cam_zwo.h"
-#include "cameras/ASICamera2.h"
+# include "cam_zwo.h"
+# include "cameras/ASICamera2.h"
 
-#ifdef __WINDOWS__
+# ifdef __WINDOWS__
 
-#ifdef OS_WINDOWS
+#  ifdef OS_WINDOWS
 // troubleshooting with the libusb definitions
-#  undef OS_WINDOWS
-#endif
+#   undef OS_WINDOWS
+#  endif
 
-# include <Shlwapi.h>
-# include <DelayImp.h>
-#endif
+#  include <Shlwapi.h>
+#  include <DelayImp.h>
+# endif
 
 enum CaptureMode
 {
@@ -63,7 +63,7 @@ class Camera_ZWO : public GuideCamera
     unsigned short m_prevBinning;
     void *m_buffer;
     size_t m_buffer_size;
-    wxByte m_bpp;  // bits per pixel: 8 or 16
+    wxByte m_bpp; // bits per pixel: 8 or 16
     CaptureMode m_mode;
     bool m_capturing;
     int m_cameraId;
@@ -104,16 +104,15 @@ private:
     wxSize BinnedFrameSize(unsigned int binning);
 };
 
-Camera_ZWO::Camera_ZWO()
-    :
-    m_buffer(nullptr)
+Camera_ZWO::Camera_ZWO() : m_buffer(nullptr)
 {
     Name = _T("ZWO ASI Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ZWO/bpp", 8);
     m_bpp = value == 8 ? 8 : 16;
@@ -132,9 +131,7 @@ wxByte Camera_ZWO::BitsPerPixel()
 inline wxSize Camera_ZWO::BinnedFrameSize(unsigned int binning)
 {
     // ASI cameras require width % 8 == 0 and height % 2 == 0
-    return wxSize(
-        (m_maxSize.x / binning) & ~(8U - 1),
-        (m_maxSize.y / binning) & ~(2U - 1));
+    return wxSize((m_maxSize.x / binning) & ~(8U - 1), (m_maxSize.y / binning) & ~(2U - 1));
 }
 
 struct ZWOCameraDlg : public wxDialog
@@ -144,8 +141,7 @@ struct ZWOCameraDlg : public wxDialog
     ZWOCameraDlg();
 };
 
-ZWOCameraDlg::ZWOCameraDlg()
-    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ZWO Camera Properties"))
+ZWOCameraDlg::ZWOCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ZWO Camera Properties"))
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -160,7 +156,7 @@ ZWOCameraDlg::ZWOCameraDlg()
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -198,14 +194,14 @@ inline static int gain_pct(int minval, int maxval, int val)
     return (val - minval) * 100 / (maxval - minval);
 }
 
-#ifdef __WINDOWS__
+# ifdef __WINDOWS__
 
-#if !defined(FACILITY_VISUALCPP)
-# define FACILITY_VISUALCPP  ((LONG)0x6d)
-#endif
-#ifndef VcppException
-# define VcppException(sev,err)  ((sev) | ((FACILITY_VISUALCPP)<<16) | (err))
-#endif
+#  if !defined(FACILITY_VISUALCPP)
+#   define FACILITY_VISUALCPP ((LONG) 0x6d)
+#  endif
+#  ifndef VcppException
+#   define VcppException(sev, err) ((sev) | ((FACILITY_VISUALCPP) << 16) | (err))
+#  endif
 
 static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers, wxString *err)
 {
@@ -214,7 +210,8 @@ static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers,
 
     switch (pExcPointers->ExceptionRecord->ExceptionCode)
     {
-    case VcppException(ERROR_SEVERITY_ERROR, ERROR_MOD_NOT_FOUND): {
+    case VcppException(ERROR_SEVERITY_ERROR, ERROR_MOD_NOT_FOUND):
+    {
         // ASICamera2.dll depends on the VC++ 2008 runtime, check for that
         HMODULE hm = LoadLibraryEx(_T("MSVCR90.DLL"), NULL, LOAD_LIBRARY_AS_DATAFILE);
         if (hm)
@@ -223,7 +220,8 @@ static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers,
             *err = wxString::Format(_("Could not load DLL %s"), pdli->szDll);
         }
         else
-            *err = _("The ASI camera library requires the Microsoft Visual C++ 2008 Redistributable Package (x86), available at http://www.microsoft.com/en-us/download/details.aspx?id=29");
+            *err = _("The ASI camera library requires the Microsoft Visual C++ 2008 Redistributable Package (x86), available "
+                     "at http://www.microsoft.com/en-us/download/details.aspx?id=29");
         break;
     }
 
@@ -245,23 +243,25 @@ static LONG WINAPI DelayLoadDllExceptionFilter(PEXCEPTION_POINTERS pExcPointers,
 
 static bool DoTryLoadDll(wxString *err)
 {
-    __try {
+    __try
+    {
         ASIGetNumOfConnectedCameras();
         return true;
     }
-    __except (DelayLoadDllExceptionFilter(GetExceptionInformation(), err)) {
+    __except (DelayLoadDllExceptionFilter(GetExceptionInformation(), err))
+    {
         return false;
     }
 }
 
-#else // __WINDOWS__
+# else // __WINDOWS__
 
 static bool DoTryLoadDll(wxString *err)
 {
     return true;
 }
 
-#endif // __WINDOWS__
+# endif // __WINDOWS__
 
 static bool TryLoadDll(wxString *err)
 {
@@ -536,7 +536,6 @@ bool Camera_ZWO::Connect(const wxString& camId)
                 break;
             }
         }
-
     }
 
     if (HasGainControl)
@@ -620,12 +619,12 @@ int Camera_ZWO::GetDefaultCameraGain()
 
 bool Camera_ZWO::SetCoolerOn(bool on)
 {
-    return (ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS);
+    return ASISetControlValue(m_cameraId, ASI_COOLER_ON, on ? 1 : 0, ASI_FALSE) != ASI_SUCCESS;
 }
 
 bool Camera_ZWO::SetCoolerSetpoint(double temperature)
 {
-    return (ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS);
+    return ASISetControlValue(m_cameraId, ASI_TARGET_TEMP, (int) temperature, ASI_FALSE) != ASI_SUCCESS;
 }
 
 bool Camera_ZWO::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
@@ -693,7 +692,10 @@ inline static int round_up(int v, int m)
 
 static void flush_buffered_image(int cameraId, void *buf, size_t size)
 {
-    enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
+    enum
+    {
+        NUM_IMAGE_BUFFERS = 2
+    }; // camera has 2 internal frame buffers
 
     // clear buffered frames if any
 
@@ -751,8 +753,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     long exposureUS = duration * 1000;
     ASI_BOOL tmp;
     long cur_exp;
-    if (ASIGetControlValue(m_cameraId, ASI_EXPOSURE, &cur_exp, &tmp) == ASI_SUCCESS &&
-        cur_exp != exposureUS)
+    if (ASIGetControlValue(m_cameraId, ASI_EXPOSURE, &cur_exp, &tmp) == ASI_SUCCESS && cur_exp != exposureUS)
     {
         Debug.Write(wxString::Format("ZWO: set CONTROL_EXPOSURE %d\n", exposureUS));
         ASISetControlValue(m_cameraId, ASI_EXPOSURE, exposureUS, ASI_FALSE);
@@ -760,8 +761,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     long cur_gain;
-    if (ASIGetControlValue(m_cameraId, ASI_GAIN, &cur_gain, &tmp) == ASI_SUCCESS &&
-        new_gain != cur_gain)
+    if (ASIGetControlValue(m_cameraId, ASI_GAIN, &cur_gain, &tmp) == ASI_SUCCESS && new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("ZWO: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
         ASISetControlValue(m_cameraId, ASI_GAIN, new_gain, ASI_FALSE);
@@ -780,9 +780,11 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         StopCapture();
 
-        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, m_bpp == 8 ? ASI_IMG_RAW8 : ASI_IMG_RAW16);
+        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning,
+                                                m_bpp == 8 ? ASI_IMG_RAW8 : ASI_IMG_RAW16);
         if (status != ASI_SUCCESS)
-            Debug.Write(wxString::Format("ZWO: setImageFormat(%d,%d,%hu) => %d\n", frame.GetWidth(), frame.GetHeight(), Binning, status));
+            Debug.Write(wxString::Format("ZWO: setImageFormat(%d,%d,%hu) => %d\n", frame.GetWidth(), frame.GetHeight(), Binning,
+                                         status));
     }
 
     if (pos_change)
@@ -794,8 +796,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     int poll = wxMin(duration, 100);
 
-    unsigned char *const buffer =
-        m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
+    unsigned char *const buffer = m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
 
     if (m_mode == CM_VIDEO)
     {
@@ -848,7 +849,8 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
             ASIStartExposure(m_cameraId, is_dark);
 
-            CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
+            CameraWatchdog watchdog(duration,
+                                    duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
             if (duration > 100)
             {
@@ -987,7 +989,7 @@ bool Camera_ZWO::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void  Camera_ZWO::ClearGuidePort()
+void Camera_ZWO::ClearGuidePort()
 {
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_NORTH);
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_SOUTH);
@@ -1000,10 +1002,13 @@ GuideCamera *ZWOCameraFactory::MakeZWOCamera()
     return new Camera_ZWO();
 }
 
-#if defined(__APPLE__)
+# if defined(__APPLE__)
 // workaround link error for missing symbol ___exp10 from libASICamera2.a
-#include <math.h>
-extern "C" double __exp10(double x) { return pow(10.0, x); }
-#endif
+#  include <math.h>
+extern "C" double __exp10(double x)
+{
+    return pow(10.0, x);
+}
+# endif
 
 #endif // ZWO_ASI

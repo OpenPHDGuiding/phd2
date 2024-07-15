@@ -57,6 +57,7 @@ protected:
         GuideAlgorithmLowpass2 *m_pGuideAlgorithm;
         wxSpinCtrl *m_pAggressiveness;
         wxSpinCtrlDouble *m_pMinMove;
+
     public:
         GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm);
         ~GuideAlgorithmLowpass2ConfigDialogPane();
@@ -70,7 +71,8 @@ protected:
     class GuideAlgorithmLowpass2GraphControlPane : public GraphControlPane
     {
     public:
-        GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm, const wxString& label);
+        GuideAlgorithmLowpass2GraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm,
+                                               const wxString& label);
         ~GuideAlgorithmLowpass2GraphControlPane();
         void EnableDecControls(bool enable) override;
 

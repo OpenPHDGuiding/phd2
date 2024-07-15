@@ -39,7 +39,6 @@
 class CalstepDialog : public wxDialog
 {
 private:
-
     // wx UI controls
     wxBoxSizer *m_pVSizer;
     wxFlexGridSizer *m_pInputTableSizer;
@@ -72,8 +71,11 @@ private:
     void OnReset(wxCommandEvent& evt);
 
 public:
-
-    enum { DEFAULT_STEPS = 12, DEFAULT_DISTANCE = 25 };
+    enum
+    {
+        DEFAULT_STEPS = 12,
+        DEFAULT_DISTANCE = 25
+    };
     static const double DEFAULT_GUIDESPEED;
 
     CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning);
@@ -81,8 +83,8 @@ public:
     bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize, int *distance);
 
     static int GetCalibrationDistance(int focalLength, double pixelSize, int binning);
-    static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed,
-        int desiredSteps, double declination, int distance, double *imageScale, int *stepSize);
+    static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed, int desiredSteps,
+                                       double declination, int distance, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);

@@ -48,7 +48,7 @@ class GuideAlgorithmResistSwitch : public GuideAlgorithm
     double m_minMove;
     double m_aggression;
     bool m_fastSwitchEnabled;
-    int    m_currentSide;
+    int m_currentSide;
 
 protected:
     class GuideAlgorithmResistSwitchConfigDialogPane : public ConfigDialogPane
@@ -71,7 +71,8 @@ protected:
     class GuideAlgorithmResistSwitchGraphControlPane : public GraphControlPane
     {
     public:
-        GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label);
+        GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm,
+                                                   const wxString& label);
         ~GuideAlgorithmResistSwitchGraphControlPane();
         void EnableDecControls(bool enable) override;
 

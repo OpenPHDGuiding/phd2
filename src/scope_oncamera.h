@@ -35,7 +35,7 @@
 
 #ifdef GUIDE_ONCAMERA
 
-#include "scope_onboard_st4.h"
+# include "scope_onboard_st4.h"
 
 class ScopeOnCamera : public ScopeOnboardST4
 {

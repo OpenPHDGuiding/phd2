@@ -36,12 +36,12 @@
 
 #ifdef OPENSSAG_CAMERA
 
-#include "camera.h"
-#include "image_math.h"
-#include "cam_openssag.h"
+# include "camera.h"
+# include "image_math.h"
+# include "cam_openssag.h"
 
-#include <openssag.h>
-#include <libusb.h>
+# include <openssag.h>
+# include <libusb.h>
 
 using namespace OpenSSAG;
 
@@ -71,9 +71,9 @@ CameraOpenSSAG::CameraOpenSSAG()
 {
     Connected = false;
     Name = _T("StarShoot Autoguider (OpenSSAG)");
-    FullSize = wxSize(1280,1024);  // Current size of a full frame
-    m_hasGuideOutput = true;  // Do we have an ST4 port?
-    HasGainControl = true;  // Can we adjust gain?
+    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    m_hasGuideOutput = true; // Do we have an ST4 port?
+    HasGainControl = true; // Can we adjust gain?
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
 
     ssag = new SSAG();
@@ -131,27 +131,29 @@ bool CameraOpenSSAG::Connect(const wxString& camId)
         return CamConnectFailed(_("Could not connect to StarShoot Autoguider"));
     }
 
-    Connected = true;  // Set global flag for being connected
+    Connected = true; // Set global flag for being connected
 
     return false;
 }
 
 bool CameraOpenSSAG::ST4PulseGuideScope(int direction, int duration)
 {
-    switch (direction) {
-        case WEST:
-            ssag->Guide(guide_west, duration);
-            break;
-        case NORTH:
-            ssag->Guide(guide_north, duration);
-            break;
-        case SOUTH:
-            ssag->Guide(guide_south, duration);
-            break;
-        case EAST:
-            ssag->Guide(guide_east, duration);
-            break;
-        default: return true; // bad direction passed in
+    switch (direction)
+    {
+    case WEST:
+        ssag->Guide(guide_west, duration);
+        break;
+    case NORTH:
+        ssag->Guide(guide_north, duration);
+        break;
+    case SOUTH:
+        ssag->Guide(guide_south, duration);
+        break;
+    case EAST:
+        ssag->Guide(guide_east, duration);
+        break;
+    default:
+        return true; // bad direction passed in
     }
 
     wxMilliSleep(duration + 10);
@@ -174,7 +176,7 @@ bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRe
         return true;
     }
 
-    ssag->SetGain((int)(GuideCameraGain / 24));
+    ssag->SetGain((int) (GuideCameraGain / 24));
     struct raw_image *raw = ssag->Expose(duration);
 
     if (!raw)
@@ -183,13 +185,15 @@ bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRe
         return true;
     }
 
-    for (unsigned int i = 0; i < raw->width * raw->height; i++) {
+    for (unsigned int i = 0; i < raw->width * raw->height; i++)
+    {
         img.ImageData[i] = (unsigned short) raw->data[i];
     }
 
     ssag->FreeRawImage(raw);
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return false;
 }
@@ -217,8 +221,7 @@ static int TextWidth(wxWindow *win, const wxString& s)
     return w;
 }
 
-PropertiesDlg::PropertiesDlg(wxWindow *parent)
-    : wxDialog(parent, wxID_ANY, _("SSAG Camera Settings"))
+PropertiesDlg::PropertiesDlg(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("SSAG Camera Settings"))
 {
     int vid, pid;
     GetLoaderVidPid(&vid, &pid);
@@ -231,7 +234,8 @@ PropertiesDlg::PropertiesDlg(wxWindow *parent)
     wxBoxSizer *sz0 = new wxBoxSizer(wxVERTICAL);
 
     wxWindow *label = new wxStaticText(this, wxID_ANY, _("Loader VID:"));
-    m_vid = new wxTextCtrl(this, wxID_ANY, wxString::Format("0x%04x", vid), wxDefaultPosition, wxSize(TextWidth(this, "0x88888"), -1));
+    m_vid = new wxTextCtrl(this, wxID_ANY, wxString::Format("0x%04x", vid), wxDefaultPosition,
+                           wxSize(TextWidth(this, "0x88888"), -1));
     m_vid->SetToolTip(wxString::Format(_("SSAG Loader USB Vendor ID. Default = 0x%04x"), default_loader_vid));
 
     wxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
@@ -241,7 +245,8 @@ PropertiesDlg::PropertiesDlg(wxWindow *parent)
     sz0->Add(sz1, 1, wxEXPAND, 5);
 
     label = new wxStaticText(this, wxID_ANY, _("Loader PID:"));
-    m_pid = new wxTextCtrl(this, wxID_ANY, wxString::Format("0x%04x", pid), wxDefaultPosition, wxSize(TextWidth(this, "0x88888"), -1));
+    m_pid = new wxTextCtrl(this, wxID_ANY, wxString::Format("0x%04x", pid), wxDefaultPosition,
+                           wxSize(TextWidth(this, "0x88888"), -1));
     m_pid->SetToolTip(wxString::Format(_("SSAG Loader USB Product ID. Default = 0x%04x"), default_loader_pid));
 
     sz1 = new wxBoxSizer(wxHORIZONTAL);
@@ -270,8 +275,7 @@ void CameraOpenSSAG::ShowPropertyDialog()
     if (dlg.ShowModal() == wxID_OK)
     {
         long vid, pid;
-        if (dlg.m_vid->GetValue().ToLong(&vid, 0) &&
-            dlg.m_pid->GetValue().ToLong(&pid, 0))
+        if (dlg.m_vid->GetValue().ToLong(&vid, 0) && dlg.m_pid->GetValue().ToLong(&pid, 0))
         {
             SetLoaderVidPid(vid, pid);
         }

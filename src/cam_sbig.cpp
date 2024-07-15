@@ -36,20 +36,20 @@
 
 #if defined(SBIG)
 
-#include "cam_sbig.h"
-#include "camera.h"
-#include "image_math.h"
+# include "cam_sbig.h"
+# include "camera.h"
+# include "image_math.h"
 
-#include <time.h>
-#include <wx/textdlg.h>
+# include <time.h>
+# include <wx/textdlg.h>
 
-#if defined (__APPLE__)
-#include <SBIGUDrv/sbigudrv.h>
-#elif defined(__LINUX__)
-#include <sbigudrv.h>
-#else
-#include "cameras/Sbigudrv.h"
-#endif
+# if defined(__APPLE__)
+#  include <SBIGUDrv/sbigudrv.h>
+# elif defined(__LINUX__)
+#  include <sbigudrv.h>
+# else
+#  include "cameras/Sbigudrv.h"
+# endif
 
 class CameraSBIG : public GuideCamera
 {
@@ -85,7 +85,8 @@ static unsigned long bcd2long(unsigned long bcd)
     int digit;
     unsigned long val = 0;
 
-    do {
+    do
+    {
         pos -= 4;
         digit = (bcd >> pos) & 0xf;
         val = val * 10 + digit;
@@ -94,13 +95,12 @@ static unsigned long bcd2long(unsigned long bcd)
     return val;
 }
 
-CameraSBIG::CameraSBIG()
-    : m_driverLoaded(false)
+CameraSBIG::CameraSBIG() : m_driverLoaded(false)
 {
     Connected = false;
     Name = _T("SBIG");
-    //FullSize = wxSize(1280,1024);
-    //HasGainControl = true;
+    // FullSize = wxSize(1280,1024);
+    // HasGainControl = true;
     m_hasGuideOutput = true;
     m_useTrackingCCD = false;
     HasShutter = true;
@@ -123,16 +123,18 @@ static bool _LoadDriver()
 {
     short err;
 
-#if defined (__WINDOWS__)
-    __try {
+# if defined(__WINDOWS__)
+    __try
+    {
         err = SBIGUnivDrvCommand(CC_OPEN_DRIVER, NULL, NULL);
     }
-    __except (EXCEPTION_EXECUTE_HANDLER) {
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
         err = CE_DRIVER_NOT_FOUND;
     }
-#else
+# else
     err = SBIGUnivDrvCommand(CC_OPEN_DRIVER, NULL, NULL);
-#endif
+# endif
 
     return err == CE_NO_ERROR;
 }
@@ -158,20 +160,19 @@ static bool SelectInterfaceAndDevice()
 
     interf.Add("USB");
     interf.Add("Ethernet");
-#if defined (__WINDOWS__)
+# if defined(__WINDOWS__)
     interf.Add("LPT 0x378");
     interf.Add("LPT 0x278");
     interf.Add("LPT 0x3BC");
-#else
+# else
     interf.Add("USB1 direct");
     interf.Add("USB2 direct");
     interf.Add("USB3 direct");
-#endif
+# endif
 
     int resp = pConfig->Profile.GetInt("/camera/sbig/interface", 0);
-    resp = wxGetSingleChoiceIndex(_("Select interface"), _("Interface"), interf,
-        NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
-        resp);
+    resp = wxGetSingleChoiceIndex(_("Select interface"), _("Interface"), interf, NULL, wxDefaultCoord, wxDefaultCoord, true,
+                                  wxCHOICE_WIDTH, wxCHOICE_HEIGHT, resp);
 
     if (resp == -1)
     {
@@ -185,7 +186,8 @@ static bool SelectInterfaceAndDevice()
 
     short err;
 
-    switch (resp) {
+    switch (resp)
+    {
     case 0:
         odp.deviceType = DEV_USB;
         QueryUSBResults2 usbp;
@@ -207,10 +209,11 @@ static bool SelectInterfaceAndDevice()
             odp.deviceType = DEV_USB1 + i;
         }
         break;
-    case 1: {
+    case 1:
+    {
         odp.deviceType = DEV_ETH;
         wxString IPstr = wxGetTextFromUser(_("IP address"), _("Enter IP address"),
-            pConfig->Profile.GetString("/camera/sbig/ipaddr", _T("")));
+                                           pConfig->Profile.GetString("/camera/sbig/ipaddr", _T("")));
         Debug.Write(wxString::Format("SBIG: selected ipaddr %s\n", IPstr));
         if (IPstr.length() == 0)
             return true;
@@ -234,7 +237,7 @@ static bool SelectInterfaceAndDevice()
         odp.ipAddress = ip;
         break;
     }
-#ifdef __WINDOWS__
+# ifdef __WINDOWS__
     case 2:
         Debug.Write("SBIG: selected LPT1\n");
         odp.deviceType = DEV_LPT1;
@@ -250,7 +253,7 @@ static bool SelectInterfaceAndDevice()
         odp.deviceType = DEV_LPT3;
         odp.lptBaseAddress = 0x3BC;
         break;
-#else
+# else
     case 2:
         Debug.Write("SBIG: selected USB1\n");
         odp.deviceType = DEV_USB1;
@@ -263,7 +266,7 @@ static bool SelectInterfaceAndDevice()
         Debug.Write("SBIG: selected USB3\n");
         odp.deviceType = DEV_USB3;
         break;
-#endif
+# endif
     }
 
     pConfig->Profile.SetInt("/camera/sbig/deviceType", odp.deviceType);
@@ -349,7 +352,7 @@ bool CameraSBIG::Connect(const wxString& camId)
         if (val == -1)
         {
             int resp = wxMessageBox(wxString::Format(_("Tracking CCD found, use it?\n\nNo = use main image CCD")),
-                _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
+                                    _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
             if (resp == wxYES)
                 m_useTrackingCCD = true;
             pConfig->Profile.SetInt("/camera/sbig/useTrackingCCD", m_useTrackingCCD ? 1 : 0);
@@ -406,7 +409,7 @@ bool CameraSBIG::Connect(const wxString& camId)
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir6);
         if (err == CE_NO_ERROR)
         {
-            IsColor = gcir6.ccdBits & 1;  // b0 set indicates color CCD
+            IsColor = gcir6.ccdBits & 1; // b0 set indicates color CCD
         }
     }
 
@@ -416,9 +419,10 @@ bool CameraSBIG::Connect(const wxString& camId)
         IsColor = true;
     }
 
-    Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
-        gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y,
-        IsColor));
+    Debug.Write(
+        wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
+                         gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y,
+                         m_imageSize[1].x, m_imageSize[1].y, IsColor));
 
     Connected = true;
     return false;
@@ -459,7 +463,8 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
     FullSize = m_imageSize[Binning - 1];
 
-    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FullSize.GetWidth() || subframe.GetBottom() >= FullSize.GetHeight())
+    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FullSize.GetWidth() ||
+        subframe.GetBottom() >= FullSize.GetHeight())
     {
         TakeSubframe = false;
     }
@@ -473,7 +478,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (m_useTrackingCCD)
     {
-        sep.ccd      = CCD_TRACKING;
+        sep.ccd = CCD_TRACKING;
         sep.abgState = ABG_CLK_LOW7;
         eep.ccd = CCD_TRACKING;
         rlp.ccd = CCD_TRACKING;
@@ -481,7 +486,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else
     {
-        sep.ccd      = CCD_IMAGING;
+        sep.ccd = CCD_IMAGING;
         sep.abgState = ABG_LOW7;
         eep.ccd = CCD_IMAGING;
         rlp.ccd = CCD_IMAGING;
@@ -490,8 +495,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
     sep.exposureTime = (unsigned long) duration / 10;
     sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
-    sep.readoutMode = rlp.readoutMode = dlp.readoutMode =
-        Binning == 1 ? RM_1X1 : RM_2X2;
+    sep.readoutMode = rlp.readoutMode = dlp.readoutMode = Binning == 1 ? RM_1X1 : RM_2X2;
 
     if (TakeSubframe)
     {
@@ -582,7 +586,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
         SBIGUnivDrvCommand(CC_DUMP_LINES, &dlp, NULL);
 
         // set up to read the part of the lines we do want
-        rlp.pixelStart  = subframe.x;
+        rlp.pixelStart = subframe.x;
         rlp.pixelLength = subframe.width;
 
         img.Clear();
@@ -600,7 +604,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else
     {
-        rlp.pixelStart  = 0;
+        rlp.pixelStart = 0;
         rlp.pixelLength = (unsigned short) FullSize.GetWidth();
         unsigned short *dataptr = img.ImageData;
         for (int y = 0; y < FullSize.GetHeight(); y++)
@@ -628,28 +632,41 @@ bool CameraSBIG::ST4PulseGuideScope(int direction, int duration)
     ActivateRelayParams rp;
     rp.tXMinus = rp.tXPlus = rp.tYMinus = rp.tYPlus = 0;
     unsigned short dur = duration / 10;
-    switch (direction) {
-        case WEST: rp.tXMinus = dur; break;
-        case EAST: rp.tXPlus = dur; break;
-        case NORTH: rp.tYMinus = dur; break;
-        case SOUTH: rp.tYPlus = dur; break;
+    switch (direction)
+    {
+    case WEST:
+        rp.tXMinus = dur;
+        break;
+    case EAST:
+        rp.tXPlus = dur;
+        break;
+    case NORTH:
+        rp.tYMinus = dur;
+        break;
+    case SOUTH:
+        rp.tYPlus = dur;
+        break;
     }
 
     short err = SBIGUnivDrvCommand(CC_ACTIVATE_RELAY, &rp, NULL);
-    if (err != CE_NO_ERROR) return true;
+    if (err != CE_NO_ERROR)
+        return true;
 
-    if (duration > 60) wxMilliSleep(duration - 50);
+    if (duration > 60)
+        wxMilliSleep(duration - 50);
 
     QueryCommandStatusParams qcsp;
     qcsp.command = CC_ACTIVATE_RELAY;
 
     MountWatchdog watchdog(duration, 5000);
 
-    while (true) {  // wait for pulse to finish
+    while (true)
+    { // wait for pulse to finish
         wxMilliSleep(10);
         QueryCommandStatusResults qcsr;
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
-        if (err != CE_NO_ERROR) {
+        if (err != CE_NO_ERROR)
+        {
             pFrame->Alert(_("Cannot check SBIG relay status"));
             return true;
         }

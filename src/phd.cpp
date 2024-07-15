@@ -42,11 +42,11 @@
 #include <wx/evtloop.h>
 #include <wx/snglinst.h>
 
-#ifdef  __linux__
+#ifdef __linux__
 # include <X11/Xlib.h>
 #endif // __linux__
 
-//#define DEVBUILD
+// #define DEVBUILD
 
 // Globals
 
@@ -63,10 +63,10 @@ GuidingLog GuideLog;
 int XWinSize = 640;
 int YWinSize = 512;
 
-static const wxCmdLineEntryDesc cmdLineDesc[] =
-{
+static const wxCmdLineEntryDesc cmdLineDesc[] = {
     { wxCMD_LINE_SWITCH, "?", "help", "display this help and exit" },
-    { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
+    { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER,
+      wxCMD_LINE_PARAM_OPTIONAL },
     { wxCMD_LINE_OPTION, "l", "load", "load settings from file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
     { wxCMD_LINE_SWITCH, "R", "Reset", "Reset all PHD2 settings to default values" },
     { wxCMD_LINE_OPTION, "s", "save", "save settings to file and exit", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
@@ -91,17 +91,18 @@ static void DisableOSXAppNap()
     // this is obsolete (2020-02-04) now that we disable AppNap in a
     // launcher script (run_phd2_macos), but it is harmless so we can
     // leave it in for a release or two
-# define  APPKEY "org.openphdguiding.phd2"
+# define APPKEY "org.openphdguiding.phd2"
     int major = wxPlatformInfo::Get().GetOSMajorVersion();
     int minor = wxPlatformInfo::Get().GetOSMinorVersion();
-    if (major > 10 || (major == 10 && minor >= 9))  // Mavericks or later -- deal with App Nap
+    if (major > 10 || (major == 10 && minor >= 9)) // Mavericks or later -- deal with App Nap
     {
         wxArrayString out, err;
         wxExecute("defaults read " APPKEY " NSAppSleepDisabled", out, err);
         if (err.GetCount() > 0 || (out.GetCount() > 0 && out[0].Contains("0"))) // it's not there or disabled
         {
             wxExecute("defaults write " APPKEY " NSAppSleepDisabled -bool YES");
-            wxMessageBox("OSX 10.9's App Nap feature causes problems.  Please quit and relaunch PHD to finish disabling App Nap.");
+            wxMessageBox(
+                "OSX 10.9's App Nap feature causes problems.  Please quit and relaunch PHD to finish disabling App Nap.");
         }
     }
 # undef APPKEY
@@ -116,16 +117,14 @@ wxDEFINE_EVENT(EXEC_IN_MAIN_THREAD_EVENT, ExecFuncThreadEvent);
 struct ExecFuncThreadEvent : public wxThreadEvent
 {
     std::function<void()> func;
-    ExecFuncThreadEvent(std::function<void()> func_)
-            : wxThreadEvent(EXEC_IN_MAIN_THREAD_EVENT), func(func_)
-    { }
+    ExecFuncThreadEvent(std::function<void()> func_) : wxThreadEvent(EXEC_IN_MAIN_THREAD_EVENT), func(func_) { }
 };
 
 PhdApp::PhdApp()
 {
     m_resetConfig = false;
     m_instanceNumber = 1;
-#ifdef  __linux__
+#ifdef __linux__
     XInitThreads();
 #endif // __linux__
 
@@ -137,14 +136,15 @@ void PhdApp::HandleRestart()
     // wait until prev instance (parent) terminates
     while (true)
     {
-        std::unique_ptr<wxSingleInstanceChecker> si(new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber)));
+        std::unique_ptr<wxSingleInstanceChecker> si(
+            new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber)));
         if (!si->IsAnotherRunning())
             break;
         wxMilliSleep(200);
     }
 
     // copy command-line args skipping "restart"
-    wchar_t **targv = new wchar_t*[argc * sizeof(*targv)];
+    wchar_t **targv = new wchar_t *[argc * sizeof(*targv)];
     targv[0] = wxStrdup(argv[0].wc_str());
     int src = 2, dst = 1;
     while (src < argc)
@@ -161,7 +161,7 @@ void PhdApp::HandleRestart()
 void PhdApp::RestartApp()
 {
     // copy command-line args inserting "restart" as the first arg
-    wchar_t **targv = new wchar_t*[(argc + 2) * sizeof(*targv)];
+    wchar_t **targv = new wchar_t *[(argc + 2) * sizeof(*targv)];
     targv[0] = wxStrdup(argv[0].wc_str());
     targv[1] = wxStrdup(_T("restart"));
     int src = 1, dst = 2;
@@ -210,9 +210,9 @@ void PhdApp::TerminateApp()
 
 #ifdef __WINDOWS__
 # if wxCHECK_VERSION(3, 1, 0)
-#  pragma message ("FIXME: obsolete code -- remove and use wxGetOsDescription()")
+#  pragma message("FIXME: obsolete code -- remove and use wxGetOsDescription()")
 # endif
-#include <wx/dynlib.h>
+# include <wx/dynlib.h>
 static OSVERSIONINFOEXW wx_3_1_wxGetWindowsVersionInfo()
 {
     OSVERSIONINFOEXW info;
@@ -221,52 +221,51 @@ static OSVERSIONINFOEXW wx_3_1_wxGetWindowsVersionInfo()
 
     // The simplest way to get the version is to call the kernel
     // RtlGetVersion() directly, if it is available.
-#if wxUSE_DYNLIB_CLASS
+# if wxUSE_DYNLIB_CLASS
     wxDynamicLibrary dllNtDll;
-    if ( dllNtDll.Load(wxS("ntdll.dll"), wxDL_VERBATIM | wxDL_QUIET) )
+    if (dllNtDll.Load(wxS("ntdll.dll"), wxDL_VERBATIM | wxDL_QUIET))
     {
-        typedef LONG /* NTSTATUS */ (WINAPI *RtlGetVersion_t)(OSVERSIONINFOEXW*);
+        typedef LONG /* NTSTATUS */ (WINAPI * RtlGetVersion_t)(OSVERSIONINFOEXW *);
 
         RtlGetVersion_t wxDL_INIT_FUNC(pfn, RtlGetVersion, dllNtDll);
-        if ( pfnRtlGetVersion &&
-             (pfnRtlGetVersion(&info) == 0 /* STATUS_SUCCESS */) )
+        if (pfnRtlGetVersion && (pfnRtlGetVersion(&info) == 0 /* STATUS_SUCCESS */))
         {
             return info;
         }
     }
-#endif // wxUSE_DYNLIB_CLASS
+# endif // wxUSE_DYNLIB_CLASS
 
-#ifdef __VISUALC__
-#pragma warning(push)
-#pragma warning(disable:4996) // 'xxx': was declared deprecated
-#endif
+# ifdef __VISUALC__
+#  pragma warning(push)
+#  pragma warning(disable : 4996) // 'xxx': was declared deprecated
+# endif
 
-    if ( !::GetVersionExW(reinterpret_cast<OSVERSIONINFOW *>(&info)) )
+    if (!::GetVersionExW(reinterpret_cast<OSVERSIONINFOW *>(&info)))
     {
         // This really shouldn't ever happen.
-        wxFAIL_MSG( "GetVersionEx() unexpectedly failed" );
+        wxFAIL_MSG("GetVersionEx() unexpectedly failed");
     }
 
-#ifdef __VISUALC__
-#pragma warning(pop)
-#endif
+# ifdef __VISUALC__
+#  pragma warning(pop)
+# endif
 
     return info;
 }
 
 static int wxIsWindowsServer()
 {
-#ifdef VER_NT_WORKSTATION
-    switch ( wx_3_1_wxGetWindowsVersionInfo().wProductType )
+# ifdef VER_NT_WORKSTATION
+    switch (wx_3_1_wxGetWindowsVersionInfo().wProductType)
     {
-        case VER_NT_WORKSTATION:
-            return false;
+    case VER_NT_WORKSTATION:
+        return false;
 
-        case VER_NT_SERVER:
-        case VER_NT_DOMAIN_CONTROLLER:
-            return true;
+    case VER_NT_SERVER:
+    case VER_NT_DOMAIN_CONTROLLER:
+        return true;
     }
-#endif // VER_NT_WORKSTATION
+# endif // VER_NT_WORKSTATION
 
     return -1;
 }
@@ -286,8 +285,7 @@ static wxString wx_3_1_wxGetOsDescription()
         switch (info.dwMinorVersion)
         {
         case 0:
-            if (info.szCSDVersion[1] == 'B' ||
-                info.szCSDVersion[1] == 'C')
+            if (info.szCSDVersion[1] == 'B' || info.szCSDVersion[1] == 'C')
             {
                 str = _("Windows 95 OSR2");
             }
@@ -297,8 +295,7 @@ static wxString wx_3_1_wxGetOsDescription()
             }
             break;
         case 10:
-            if (info.szCSDVersion[1] == 'B' ||
-                info.szCSDVersion[1] == 'C')
+            if (info.szCSDVersion[1] == 'B' || info.szCSDVersion[1] == 'C')
             {
                 str = _("Windows 98 SE");
             }
@@ -311,9 +308,7 @@ static wxString wx_3_1_wxGetOsDescription()
             str = _("Windows ME");
             break;
         default:
-            str.Printf(_("Windows 9x (%d.%d)"),
-                info.dwMajorVersion,
-                info.dwMinorVersion);
+            str.Printf(_("Windows 9x (%d.%d)"), info.dwMajorVersion, info.dwMinorVersion);
             break;
         }
         if (!wxIsEmpty(info.szCSDVersion))
@@ -341,7 +336,7 @@ static wxString wx_3_1_wxGetOsDescription()
                     str = _("Windows Server 2003");
                     break;
                 }
-                //else: must be XP, fall through
+                // else: must be XP, fall through
 
             case 1:
                 str = _("Windows XP");
@@ -353,47 +348,34 @@ static wxString wx_3_1_wxGetOsDescription()
             switch (info.dwMinorVersion)
             {
             case 0:
-                str = wxIsWindowsServer() == 1
-                    ? _("Windows Server 2008")
-                    : _("Windows Vista");
+                str = wxIsWindowsServer() == 1 ? _("Windows Server 2008") : _("Windows Vista");
                 break;
 
             case 1:
-                str = wxIsWindowsServer() == 1
-                    ? _("Windows Server 2008 R2")
-                    : _("Windows 7");
+                str = wxIsWindowsServer() == 1 ? _("Windows Server 2008 R2") : _("Windows 7");
                 break;
 
             case 2:
-                str = wxIsWindowsServer() == 1
-                    ? _("Windows Server 2012")
-                    : _("Windows 8");
+                str = wxIsWindowsServer() == 1 ? _("Windows Server 2012") : _("Windows 8");
                 break;
 
             case 3:
-                str = wxIsWindowsServer() == 1
-                    ? _("Windows Server 2012 R2")
-                    : _("Windows 8.1");
+                str = wxIsWindowsServer() == 1 ? _("Windows Server 2012 R2") : _("Windows 8.1");
                 break;
             }
             break;
 
         case 10:
-            str = wxIsWindowsServer() == 1
-                ? _("Windows Server 2016")
-                : _("Windows 10");
+            str = wxIsWindowsServer() == 1 ? _("Windows Server 2016") : _("Windows 10");
             break;
         }
 
         if (str.empty())
         {
-            str.Printf(_("Windows NT %lu.%lu"),
-                info.dwMajorVersion,
-                info.dwMinorVersion);
+            str.Printf(_("Windows NT %lu.%lu"), info.dwMajorVersion, info.dwMinorVersion);
         }
 
-        str << wxT(" (")
-            << wxString::Format(_("build %lu"), info.dwBuildNumber);
+        str << wxT(" (") << wxString::Format(_("build %lu"), info.dwBuildNumber);
         if (!wxIsEmpty(info.szCSDVersion))
         {
             str << wxT(", ") << info.szCSDVersion;
@@ -426,8 +408,7 @@ static void OpenLogs(bool rollover)
     bool forceDebugOpen = rollover ? true : false;
     Debug.InitDebugLog(debugEnabled, forceDebugOpen);
 
-    Debug.Write(wxString::Format("PHD2 version %s %s execution with:\n", FULLVER,
-                                 rollover ? "continues" : "begins"));
+    Debug.Write(wxString::Format("PHD2 version %s %s execution with:\n", FULLVER, rollover ? "continues" : "begins"));
     Debug.Write(wxString::Format("   %s\n", GetOsDescription()));
 #if defined(__linux__)
     Debug.Write(wxString::Format("   %s\n", wxGetLinuxDistributionInfo().Description));
@@ -452,14 +433,8 @@ static void OpenLogs(bool rollover)
 struct LogToStderr
 {
     wxLog *m_prev;
-    LogToStderr()
-    {
-        m_prev = wxLog::SetActiveTarget(new wxLogStderr());
-    }
-    ~LogToStderr()
-    {
-        delete wxLog::SetActiveTarget(m_prev);
-    }
+    LogToStderr() { m_prev = wxLog::SetActiveTarget(new wxLogStderr()); }
+    ~LogToStderr() { delete wxLog::SetActiveTarget(m_prev); }
 };
 
 // A log class for duplicating wxWidgets error messages to the debug log
@@ -469,17 +444,13 @@ struct EarlyLogger : public wxLog
     bool m_closed;
     wxLog *m_prev;
     wxString m_buf;
-    EarlyLogger()
-        : m_closed(false)
+    EarlyLogger() : m_closed(false)
     {
         wxASSERT(wxThread::IsMain());
         m_prev = wxLog::SetActiveTarget(this);
         DisableTimestamp();
     }
-    ~EarlyLogger()
-    {
-        Close();
-    }
+    ~EarlyLogger() { Close(); }
     void Close()
     {
         if (m_closed)
@@ -538,7 +509,8 @@ bool PhdApp::OnInit()
     if (m_instanceChecker->IsAnotherRunning())
     {
         wxLogError(wxString::Format(_("PHD2 instance %ld is already running. Use the "
-            "-i INSTANCE_NUM command-line option to start a different instance."), m_instanceNumber));
+                                      "-i INSTANCE_NUM command-line option to start a different instance."),
+                                    m_instanceNumber));
         delete m_instanceChecker; // OnExit() won't be called if we return false
         m_instanceChecker = 0;
         return false;
@@ -580,7 +552,8 @@ bool PhdApp::OnInit()
         return false;
     }
 
-    m_logFileTime = DebugLog::GetLogFileTime();     // GetLogFileTime implements grouping by imaging-day, the 24-hour period starting at 09:00 am local time
+    m_logFileTime = DebugLog::GetLogFileTime(); // GetLogFileTime implements grouping by imaging-day, the 24-hour period
+                                                // starting at 09:00 am local time
     OpenLogs(false /* not for rollover */);
 
     logger.Close(); // writes any deferrred error messages to the debug log
@@ -626,7 +599,7 @@ bool PhdApp::OnInit()
     }
     wxSetlocale(LC_NUMERIC, "C");
 
-    wxTranslations::Get()->SetLanguage((wxLanguage)langid);
+    wxTranslations::Get()->SetLanguage((wxLanguage) langid);
     Debug.Write(wxString::Format("locale: wxTranslations language set to %d\n", langid));
 
     Debug.RemoveOldFiles();
@@ -647,7 +620,7 @@ bool PhdApp::OnInit()
 
     if (pConfig->IsNewInstance() || (pConfig->NumProfiles() == 1 && pFrame->pGearDialog->IsEmptyProfile()))
     {
-        pFrame->pGearDialog->ShowProfileWizard();               // First-light version of profile wizard
+        pFrame->pGearDialog->ShowProfileWizard(); // First-light version of profile wizard
     }
 
     PHD2Updater::InitUpdater();

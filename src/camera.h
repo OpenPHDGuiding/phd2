@@ -41,7 +41,7 @@ class DefectMap;
 enum PropDlgType
 {
     PROPDLG_NONE = 0,
-    PROPDLG_WHEN_CONNECTED = (1 << 0),    // property dialog available when connected
+    PROPDLG_WHEN_CONNECTED = (1 << 0), // property dialog available when connected
     PROPDLG_WHEN_DISCONNECTED = (1 << 1), // property dialog available when disconnected
     PROPDLG_ANY = (PROPDLG_WHEN_CONNECTED | PROPDLG_WHEN_DISCONNECTED),
 };
@@ -68,7 +68,7 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxSpinCtrl *m_pCameraGain;
     wxButton *m_resetGain;
     wxSpinCtrl *m_timeoutVal;
-    wxChoice   *m_pPortNum;
+    wxChoice *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxChoice *m_binning;
@@ -81,7 +81,8 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     int m_prevBinning;
 
 public:
-    CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog,
+                              BrainCtrlIdMap& CtrlMap);
     virtual ~CameraConfigDialogCtrlSet() {};
     virtual void LoadValues();
     virtual void UnloadValues();
@@ -96,7 +97,7 @@ public:
 enum CaptureOptionBits
 {
     CAPTURE_SUBTRACT_DARK = 1 << 0,
-    CAPTURE_RECON         = 1 << 1,    // debayer and/or deinterlace as required
+    CAPTURE_RECON = 1 << 1, // debayer and/or deinterlace as required
 
     CAPTURE_LIGHT = CAPTURE_SUBTRACT_DARK | CAPTURE_RECON,
     CAPTURE_DARK = 0,
@@ -108,40 +109,39 @@ class GuideCamera : public wxMessageBoxProxy, public OnboardST4
     friend class CameraConfigDialogPane;
     friend class CameraConfigDialogCtrlSet;
 
-    double          m_pixelSize;
+    double m_pixelSize;
 
 protected:
-    bool            m_hasGuideOutput;
-    int             m_timeoutMs;
-    bool            m_saturationByADU;
-    unsigned short  m_saturationADU;
+    bool m_hasGuideOutput;
+    int m_timeoutMs;
+    bool m_saturationByADU;
+    unsigned short m_saturationADU;
 
 public:
-
     static const double UnknownPixelSize;
 
-    int             GuideCameraGain;
-    wxString        Name;                   // User-friendly name
-    wxSize          FullSize;           // Size of current image
-    bool            Connected;
-    PropDlgType     PropertyDialogType;
-    bool            HasPortNum;
-    bool            HasDelayParam;
-    bool            HasGainControl;
-    bool            HasShutter;
-    bool            HasSubframes;
-    wxByte          MaxBinning;
-    wxByte          Binning;
-    short           Port;
-    int             ReadDelay;
-    bool            ShutterClosed;  // false=light, true=dark
-    bool            UseSubframes;
-    bool            HasCooler;
+    int GuideCameraGain;
+    wxString Name; // User-friendly name
+    wxSize FullSize; // Size of current image
+    bool Connected;
+    PropDlgType PropertyDialogType;
+    bool HasPortNum;
+    bool HasDelayParam;
+    bool HasGainControl;
+    bool HasShutter;
+    bool HasSubframes;
+    wxByte MaxBinning;
+    wxByte Binning;
+    short Port;
+    int ReadDelay;
+    bool ShutterClosed; // false=light, true=dark
+    bool UseSubframes;
+    bool HasCooler;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
-    usImage        *CurrentDarkFrame;
-    ExposureImgMap  Darks; // map exposure => dark frame
-    DefectMap      *CurrentDefectMap;
+    usImage *CurrentDarkFrame;
+    ExposureImgMap Darks; // map exposure => dark frame
+    DefectMap *CurrentDefectMap;
 
     static wxArrayString GuideCameraList();
     static GuideCamera *Factory(const wxString& choice);
@@ -153,7 +153,10 @@ public:
     virtual wxByte BitsPerPixel() = 0;
 
     static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
-    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions) { return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
+    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions)
+    {
+        return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0));
+    }
 
     virtual bool CanSelectCamera() const { return false; }
     virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
@@ -162,41 +165,42 @@ public:
 
     // Opens up and connects to camera. cameraId identifies which camera to connect to if
     // there is more than one camera present
-    virtual bool    Connect(const wxString& cameraId) = 0;
-    virtual bool    Disconnect() = 0;               // Disconnects, unloading any DLLs loaded by Connect
-    virtual void    InitCapture();                  // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
+    virtual bool Connect(const wxString& cameraId) = 0;
+    virtual bool Disconnect() = 0; // Disconnects, unloading any DLLs loaded by Connect
+    virtual void InitCapture(); // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 
-    virtual bool    ST4HasGuideOutput();
-    virtual bool    ST4HostConnected();
-    virtual bool    ST4HasNonGuiMove();
-    virtual bool    ST4PulseGuideScope(int direction, int duration);
+    virtual bool ST4HasGuideOutput();
+    virtual bool ST4HostConnected();
+    virtual bool ST4HasNonGuiMove();
+    virtual bool ST4PulseGuideScope(int direction, int duration);
 
     CameraConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog,
+                                                   BrainCtrlIdMap& CtrlMap);
 
     static void GetBinningOpts(int maxBin, wxArrayString *opts);
     void GetBinningOpts(wxArrayString *opts);
     bool SetBinning(int binning);
 
-    virtual void    ShowPropertyDialog() { return; }
-    bool            SetCameraPixelSize(double pixel_size);
-    double          GetCameraPixelSize() const;
-    virtual bool    GetDevicePixelSize(double *devPixelSize);           // Value from device/driver or error return
+    virtual void ShowPropertyDialog() { return; }
+    bool SetCameraPixelSize(double pixel_size);
+    double GetCameraPixelSize() const;
+    virtual bool GetDevicePixelSize(double *devPixelSize); // Value from device/driver or error return
 
-    virtual bool    SetCoolerOn(bool on);
-    virtual bool    SetCoolerSetpoint(double temperature);
-    virtual bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
-    virtual bool    GetSensorTemperature(double *temperature);
+    virtual bool SetCoolerOn(bool on);
+    virtual bool SetCoolerSetpoint(double temperature);
+    virtual bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
+    virtual bool GetSensorTemperature(double *temperature);
 
     virtual wxString GetSettingsSummary();
-    void            AddDark(usImage *dark);
-    void            SelectDark(int exposureDuration);
-    void            SetDefectMap(DefectMap *newMap);
-    void            ClearDefectMap();
-    void            ClearDarks();
+    void AddDark(usImage *dark);
+    void SelectDark(int exposureDuration);
+    void SetDefectMap(DefectMap *newMap);
+    void ClearDefectMap();
+    void ClearDarks();
 
-    void            SubtractDark(usImage& img);
-    void            GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
+    void SubtractDark(usImage& img);
+    void GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
     virtual const wxSize& DarkFrameSize() { return FullSize; }
 
@@ -213,17 +217,18 @@ public:
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
 
 protected:
-
     int GetTimeoutMs() const;
     void SetTimeoutMs(int timeoutMs);
 
     static bool CamConnectFailed(const wxString& errorMessage);
 
-    enum CaptureFailType {
+    enum CaptureFailType
+    {
         CAPT_FAIL_MEMORY,
         CAPT_FAIL_TIMEOUT,
     };
-    enum ReconnectType {
+    enum ReconnectType
+    {
         NO_RECONNECT,
         RECONNECT,
     };
@@ -248,7 +253,7 @@ inline double GuideCamera::GetCameraPixelSize() const
 
 inline bool GuideCamera::GetDevicePixelSize(double *devPixelSize)
 {
-    return true;                // Return an error, the device/driver can't report pixel size
+    return true; // Return an error, the device/driver can't report pixel size
 }
 
 inline bool GuideCamera::IsSaturationByADU() const

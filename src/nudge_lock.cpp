@@ -103,7 +103,9 @@ wxBEGIN_EVENT_TABLE(NudgeLockDialog, wxDialog)
 wxEND_EVENT_TABLE();
 // clang-format on
 
-static double NudgeIncrements[] = { 0.01, 0.03, 0.1, 0.3, 1, 3, 10, };
+static double NudgeIncrements[] = {
+    0.01, 0.03, 0.1, 0.3, 1, 3, 10,
+};
 
 static int IncrIdx(double incr)
 {
@@ -115,8 +117,7 @@ static int IncrIdx(double incr)
     return 0;
 }
 
-NudgeLockDialog::NudgeLockDialog()
-    : wxDialog(pFrame, wxID_ANY, _("Adjust Lock Position"), wxPoint(-1,-1), wxSize(300,300))
+NudgeLockDialog::NudgeLockDialog() : wxDialog(pFrame, wxID_ANY, _("Adjust Lock Position"), wxPoint(-1, -1), wxSize(300, 300))
 {
     stayOnTop = new wxCheckBox(this, ID_STAY_ON_TOP, _("Always on top"));
     stayOnTop->SetToolTip(_("Keep this window on top of all others"));
@@ -129,15 +130,15 @@ NudgeLockDialog::NudgeLockDialog()
     wxGridSizer *sz1 = new wxGridSizer(3, 3, 0, 0);
 
     sz1->AddStretchSpacer();
-    sz1->Add(upButton, wxSizerFlags().Expand().Border(wxALL,1));
+    sz1->Add(upButton, wxSizerFlags().Expand().Border(wxALL, 1));
     sz1->AddStretchSpacer();
 
-    sz1->Add(leftButton, wxSizerFlags().Expand().Border(wxALL,1));
+    sz1->Add(leftButton, wxSizerFlags().Expand().Border(wxALL, 1));
     sz1->AddStretchSpacer();
-    sz1->Add(rightButton, wxSizerFlags().Expand().Border(wxALL,1));
+    sz1->Add(rightButton, wxSizerFlags().Expand().Border(wxALL, 1));
 
     sz1->AddStretchSpacer();
-    sz1->Add(downButton, wxSizerFlags().Expand().Border(wxALL,1));
+    sz1->Add(downButton, wxSizerFlags().Expand().Border(wxALL, 1));
 
     wxBoxSizer *sz0 = new wxBoxSizer(wxHORIZONTAL);
     sz0->AddStretchSpacer();
@@ -146,11 +147,13 @@ NudgeLockDialog::NudgeLockDialog()
 
     wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
 
-    sz2->Add(new wxStaticText(this, wxID_ANY, _("Step")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz2->Add(new wxStaticText(this, wxID_ANY, _("Step")),
+             wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     double incr = pConfig->Global.GetDouble("/NudgeLock/Amount", NudgeIncrements[2]);
     int idx = IncrIdx(incr);
-    nudgeAmountSlider = new wxSlider(this, ID_NUDGE_AMOUNT, idx, 0, WXSIZEOF(NudgeIncrements) - 1, wxDefaultPosition, wxSize(100, -1));
+    nudgeAmountSlider =
+        new wxSlider(this, ID_NUDGE_AMOUNT, idx, 0, WXSIZEOF(NudgeIncrements) - 1, wxDefaultPosition, wxSize(100, -1));
     nudgeAmountSlider->SetToolTip(_("Adjust how far the lock position moves when you click the Up/Down/Left/Right buttons"));
     sz2->Add(nudgeAmountSlider, wxSizerFlags().Expand().Border(wxALL, 0));
 
@@ -158,22 +161,26 @@ NudgeLockDialog::NudgeLockDialog()
     sz2->Add(nudgeAmountText, wxSizerFlags().Border(wxLEFT, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     stickyLockPos = new wxCheckBox(this, ID_STICKY, _("Sticky Lock Position"));
-    stickyLockPos->SetToolTip(_("Sticky lock position will not follow the star when guiding is stopped and restarted, or after calibration completes"));
+    stickyLockPos->SetToolTip(_(
+        "Sticky lock position will not follow the star when guiding is stopped and restarted, or after calibration completes"));
     sz2->Add(0, 0, 1, wxEXPAND, 5);
     sz2->Add(stickyLockPos, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     wxSizer *sz3 = new wxBoxSizer(wxHORIZONTAL);
-    sz3->Add(new wxStaticText(this, wxID_ANY, _("Lock Pos:")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz3->Add(new wxStaticText(this, wxID_ANY, _("Lock Pos:")),
+             wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     wxFloatingPointValidator<double> valX(2, &lockPosX, wxNUM_VAL_ZERO_AS_BLANK);
     valX.SetMin(0.0);
-    lockPosCtrlX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, StringSize(this, _T("12345.67"), 10), 0, valX);
+    lockPosCtrlX =
+        new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, StringSize(this, _T("12345.67"), 10), 0, valX);
     lockPosCtrlX->SetToolTip(_("Lock position X coordinate"));
     sz3->Add(lockPosCtrlX, wxSizerFlags().Border(wxALL, 0).Align(wxALIGN_CENTER_VERTICAL));
 
     wxFloatingPointValidator<double> valY(2, &lockPosY, wxNUM_VAL_ZERO_AS_BLANK);
     valY.SetMin(0.0);
-    lockPosCtrlY = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, StringSize(this, _T("12345.67"), 10), 0, valY);
+    lockPosCtrlY =
+        new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, StringSize(this, _T("12345.67"), 10), 0, valY);
     lockPosCtrlY->SetToolTip(_("Lock position Y coordinate"));
     sz3->Add(lockPosCtrlY, wxSizerFlags().Border(wxLEFT, 5).Align(wxALIGN_CENTER_VERTICAL));
 
@@ -197,9 +204,9 @@ NudgeLockDialog::NudgeLockDialog()
     wxBoxSizer *outerSizer = new wxBoxSizer(wxVERTICAL);
     outerSizer->Add(stayOnTop, wxSizerFlags().Border(wxALL, 5));
     outerSizer->AddSpacer(5);
-    outerSizer->Add(sz0, wxSizerFlags().Border(wxALL,3).Expand());
-    outerSizer->Add(sz2, wxSizerFlags().Border(wxALL,3).Expand());
-    outerSizer->Add(sz3, wxSizerFlags().Border(wxALL,3));
+    outerSizer->Add(sz0, wxSizerFlags().Border(wxALL, 3).Expand());
+    outerSizer->Add(sz2, wxSizerFlags().Border(wxALL, 3).Expand());
+    outerSizer->Add(sz3, wxSizerFlags().Border(wxALL, 3));
 
     UpdateSliderLabel();
     UpdateLockPosCtrls();
@@ -276,7 +283,7 @@ void NudgeLockDialog::OnStayOnTopClicked(wxCommandEvent& evt)
         SetWindowStyle(style & ~wxSTAY_ON_TOP);
 }
 
-void NudgeLockDialog::OnButton(wxCommandEvent &evt)
+void NudgeLockDialog::OnButton(wxCommandEvent& evt)
 {
     if (!lockPosIsValid)
         return;
@@ -286,18 +293,18 @@ void NudgeLockDialog::OnButton(wxCommandEvent &evt)
 
     switch (evt.GetId())
     {
-        case ID_UP_BTN:
-            DoMove(0.0, -incr);
-            break;
-        case ID_DOWN_BTN:
-            DoMove(0.0, +incr);
-            break;
-        case ID_RIGHT_BTN:
-            DoMove(+incr, 0.0);
-            break;
-        case ID_LEFT_BTN:
-            DoMove(-incr, 0.0);
-            break;
+    case ID_UP_BTN:
+        DoMove(0.0, -incr);
+        break;
+    case ID_DOWN_BTN:
+        DoMove(0.0, +incr);
+        break;
+    case ID_RIGHT_BTN:
+        DoMove(+incr, 0.0);
+        break;
+    case ID_LEFT_BTN:
+        DoMove(-incr, 0.0);
+        break;
     }
 }
 
@@ -346,7 +353,7 @@ void NudgeLockDialog::OnRestoreLockPosClicked(wxCommandEvent& evt)
         return;
 
     if (ConfirmDialog::Confirm(wxString::Format(_("Set lock position to saved value (%.2f,%.2f)?"), x, y),
-        "/RestoreSavedLockPosOK", _("Restore saved Lock Pos")))
+                               "/RestoreSavedLockPosOK", _("Restore saved Lock Pos")))
     {
         UpdateLockPos(PHD_Point(x, y));
     }

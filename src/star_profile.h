@@ -45,6 +45,7 @@ public:
     void OnPaint(wxPaintEvent& evt);
     void SetState(bool is_active);
     void OnLClick(wxMouseEvent& evt);
+
 private:
     int mode; // 0= 2D profile of mid-row, 1=2D of avg_row, 2=2D of avg_col
     bool rawMode;

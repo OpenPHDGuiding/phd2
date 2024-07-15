@@ -63,10 +63,10 @@ public:
     void RemoveOldFiles();
 };
 
-extern DebugLog& operator<< (DebugLog& out, const wxString& str);
-extern DebugLog& operator<< (DebugLog& out, const char *str);
-extern DebugLog& operator<< (DebugLog& out, const int i);
-extern DebugLog& operator<< (DebugLog& out, const double d);
+extern DebugLog& operator<<(DebugLog& out, const wxString& str);
+extern DebugLog& operator<<(DebugLog& out, const char *str);
+extern DebugLog& operator<<(DebugLog& out, const int i);
+extern DebugLog& operator<<(DebugLog& out, const double d);
 
 inline bool DebugLog::IsEnabled() const
 {

@@ -123,7 +123,8 @@ static double hfr(std::vector<R2M>& vec, double cx, double cy, double mass)
     return hfr;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD, double maxHFD, unsigned short maxADU, StarFindLogType loggingControl)
+bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD, double maxHFD,
+                unsigned short maxADU, StarFindLogType loggingControl)
 {
     FindResult Result = STAR_OK;
     double newX = base_x;
@@ -132,8 +133,9 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
     try
     {
         if (loggingControl == FIND_LOGGING_VERBOSE)
-            Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %0.1f, %hu) frame %u\n", searchRegion, base_x, base_y, mode,
-            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
+            Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %0.1f, %hu) frame %u\n", searchRegion,
+                                         base_x, base_y, mode, pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width,
+                                         pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
 
         int minx, miny, maxx, maxy;
 
@@ -153,9 +155,9 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
         // search region bounds
         int start_x = wxMax(base_x - searchRegion, minx);
-        int end_x   = wxMin(base_x + searchRegion, maxx);
+        int end_x = wxMin(base_x + searchRegion, maxx);
         int start_y = wxMax(base_y - searchRegion, miny);
-        int end_y   = wxMin(base_y + searchRegion, maxy);
+        int end_y = wxMin(base_y + searchRegion, maxy);
 
         if (end_x <= start_x || end_y <= start_y)
         {
@@ -198,15 +200,10 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                 for (int x = start_x + 1; x <= end_x - 1; x++)
                 {
                     unsigned short p = imgdata[y * rowsize + x];
-                    unsigned int val =
-                        4 * (unsigned int) p +
-                        imgdata[(y - 1) * rowsize + (x - 1)] +
-                        imgdata[(y - 1) * rowsize + (x + 1)] +
-                        imgdata[(y + 1) * rowsize + (x - 1)] +
-                        imgdata[(y + 1) * rowsize + (x + 1)] +
-                        2 * imgdata[(y - 1) * rowsize + (x + 0)] +
-                        2 * imgdata[(y + 0) * rowsize + (x - 1)] +
-                        2 * imgdata[(y + 0) * rowsize + (x + 1)] +
+                    unsigned int val = 4 * (unsigned int) p + imgdata[(y - 1) * rowsize + (x - 1)] +
+                        imgdata[(y - 1) * rowsize + (x + 1)] + imgdata[(y + 1) * rowsize + (x - 1)] +
+                        imgdata[(y + 1) * rowsize + (x + 1)] + 2 * imgdata[(y - 1) * rowsize + (x + 0)] +
+                        2 * imgdata[(y + 0) * rowsize + (x - 1)] + 2 * imgdata[(y + 0) * rowsize + (x + 1)] +
                         2 * imgdata[(y + 1) * rowsize + (x + 0)];
 
                     if (val > peak_val)
@@ -225,13 +222,13 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                 }
             }
 
-            PeakVal = max3[0];   // raw peak val
+            PeakVal = max3[0]; // raw peak val
             peak_val /= 16; // smoothed peak value
         }
 
         // measure noise in the annulus with inner radius A and outer radius B
-        int const A = 7;   // inner radius
-        int const B = 12;  // outer radius
+        int const A = 7; // inner radius
+        int const B = 12; // outer radius
         int const A2 = A * A;
         int const B2 = B * B;
 
@@ -285,8 +282,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
             if (nbg < 10) // only possible after the first iteration
             {
-                Debug.Write(wxString::Format("Star::Find: too few background points! nbg=%u mean=%.1f sigma=%.1f\n",
-                    nbg, mean_bg, sigma_bg));
+                Debug.Write(wxString::Format("Star::Find: too few background points! nbg=%u mean=%.1f sigma=%.1f\n", nbg,
+                                             mean_bg, sigma_bg));
                 break;
             }
 
@@ -316,7 +313,7 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
         else
         {
-            thresh = (unsigned short)(mean_bg + 3.0 * sigma_bg + 0.5);
+            thresh = (unsigned short) (mean_bg + 3.0 * sigma_bg + 0.5);
 
             // find pixels over threshold within aperture; compute mass and centroid
 
@@ -362,7 +359,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
         Mass = mass;
 
-        // SNR estimate from: Measuring the Signal-to-Noise Ratio S/N of the CCD Image of a Star or Nebula, J.H.Simonetti, 2004 January 8
+        // SNR estimate from: Measuring the Signal-to-Noise Ratio S/N of the CCD Image of a Star or Nebula, J.H.Simonetti, 2004
+        // January 8
         //     http://www.phys.vt.edu/~jhs/phys3154/snr20040108.pdf
         double const gain = .5; // electrons per ADU, nominal
         SNR = n > 0 ? mass / sqrt(mass / gain + sigma2_bg * (double) n * (1.0 + 1.0 / (double) nbg)) : 0.0;
@@ -373,7 +371,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         // avoid this by requiring the smoothed peak value to be above the threshold
         if (peak_val <= thresh && SNR >= LOW_SNR)
         {
-            Debug.Write(wxString::Format("Star::Find false star n=%u nbg=%u bg=%.1f sigma=%.1f thresh=%u peak=%u\n", n, nbg, mean_bg, sigma_bg, thresh, peak_val));
+            Debug.Write(wxString::Format("Star::Find false star n=%u nbg=%u bg=%.1f sigma=%.1f thresh=%u peak=%u\n", n, nbg,
+                                         mean_bg, sigma_bg, thresh, peak_val));
             SNR = LOW_SNR - 0.1;
         }
 
@@ -472,12 +471,13 @@ done:
 
     if (loggingControl == FIND_LOGGING_VERBOSE)
         Debug.Write(wxString::Format("Star::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n",
-        wasFound, Result, newX, newY, Mass, SNR, PeakVal, HFD));
+                                     wasFound, Result, newX, newY, Mass, SNR, PeakVal, HFD));
 
     return wasFound;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, double maxHFD, unsigned short saturation, StarFindLogType loggingControl)
+bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode, double minHFD, double maxHFD, unsigned short saturation,
+                StarFindLogType loggingControl)
 {
     return Find(pImg, searchRegion, X, Y, mode, minHFD, maxHFD, saturation, loggingControl);
 }
@@ -490,14 +490,26 @@ struct FloatImg
 
     FloatImg() : px(0) { }
     FloatImg(const wxSize& size) : px(0) { Init(size); }
-    FloatImg(const usImage& img) : px(0) {
+    FloatImg(const usImage& img) : px(0)
+    {
         Init(img.Size);
         for (unsigned int i = 0; i < NPixels; i++)
             px[i] = (float) img.ImageData[i];
     }
     ~FloatImg() { delete[] px; }
-    void Init(const wxSize& sz) { delete[] px;  Size = sz; NPixels = Size.GetWidth() * Size.GetHeight(); px = new float[NPixels]; }
-    void Swap(FloatImg& other) { std::swap(px, other.px); std::swap(Size, other.Size); std::swap(NPixels, other.NPixels); }
+    void Init(const wxSize& sz)
+    {
+        delete[] px;
+        Size = sz;
+        NPixels = Size.GetWidth() * Size.GetHeight();
+        px = new float[NPixels];
+    }
+    void Swap(FloatImg& other)
+    {
+        std::swap(px, other.px);
+        std::swap(Size, other.Size);
+        std::swap(NPixels, other.NPixels);
+    }
 };
 
 static void GetStats(double *mean, double *stdev, const FloatImg& img, const wxRect& win)
@@ -532,7 +544,7 @@ static void GetStats(double *mean, double *stdev, const FloatImg& img, const wxR
 }
 
 // un-comment to save the intermediate autofind image
-//#define SAVE_AUTOFIND_IMG
+// #define SAVE_AUTOFIND_IMG
 
 static void SaveImage(const FloatImg& img, const char *name)
 {
@@ -552,7 +564,7 @@ static void SaveImage(const FloatImg& img, const char *name)
     tmp.Init(img.Size);
     for (unsigned int i = 0; i < tmp.NPixels; i++)
     {
-        tmp.ImageData[i] = (unsigned short)(((double) img.px[i] - minv) * 65535.0 / (maxv - minv));
+        tmp.ImageData[i] = (unsigned short) (((double) img.px[i] - minv) * 65535.0 / (maxv - minv));
     }
 
     tmp.Save(wxFileName(Debug.GetLogDir(), name).GetFullPath());
@@ -597,7 +609,7 @@ static void psf_conv(FloatImg& dst, const FloatImg& src)
             float A, B1, B2, C1, C2, C3, D1, D2, D3;
 
 #define PX(dx, dy) *(src.px + width * (y + (dy)) + x + (dx))
-            A =  PX(+0, +0);
+            A = PX(+0, +0);
             B1 = PX(+0, -1) + PX(+0, +1) + PX(+1, +0) + PX(-1, +0);
             B2 = PX(-1, -1) + PX(+1, -1) + PX(-1, +1) + PX(+1, +1);
             C1 = PX(+0, -2) + PX(-2, +0) + PX(+2, +0) + PX(+0, +2);
@@ -605,7 +617,8 @@ static void psf_conv(FloatImg& dst, const FloatImg& src)
             C3 = PX(-2, -2) + PX(+2, -2) + PX(-2, +2) + PX(+2, +2);
             D1 = PX(+0, -3) + PX(-3, +0) + PX(+3, +0) + PX(+0, +3);
             D2 = PX(-1, -3) + PX(+1, -3) + PX(-3, -1) + PX(+3, -1) + PX(-3, +1) + PX(+3, +1) + PX(-1, +3) + PX(+1, +3);
-            D3 = PX(-4, -2) + PX(-3, -2) + PX(+3, -2) + PX(+4, -2) + PX(-4, -1) + PX(+4, -1) + PX(-4, +0) + PX(+4, +0) + PX(-4, +1) + PX(+4, +1) + PX(-4, +2) + PX(-3, +2) + PX(+3, +2) + PX(+4, +2);
+            D3 = PX(-4, -2) + PX(-3, -2) + PX(+3, -2) + PX(+4, -2) + PX(-4, -1) + PX(+4, -1) + PX(-4, +0) + PX(+4, +0) +
+                PX(-4, +1) + PX(+4, +1) + PX(-4, +2) + PX(-3, +2) + PX(+3, +2) + PX(+4, +2);
 #undef PX
             int i;
             const float *uptr;
@@ -703,7 +716,7 @@ static bool CloseToReference(const GuideStar& referencePoint, const GuideStar& o
 
 // Multi-star version of AutoFind.
 bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
-    std::vector<GuideStar>& foundStars, int maxStars)
+                         std::vector<GuideStar>& foundStars, int maxStars)
 {
     if (!image.Subframe.IsEmpty())
     {
@@ -714,9 +727,8 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     wxBusyCursor busy;
 
     Debug.Write(wxString::Format("Star::AutoFind called with edgeAllowance = %d "
-        "searchRegion = %d roi = %dx%d@%d,%d\n",
-        extraEdgeAllowance, searchRegion, roi.width, roi.height,
-        roi.x, roi.y));
+                                 "searchRegion = %d roi = %dx%d@%d,%d\n",
+                                 extraEdgeAllowance, searchRegion, roi.width, roi.height, roi.x, roi.y));
 
     // run a 3x3 median first to eliminate hot pixels
     usImage smoothed;
@@ -728,16 +740,12 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         smoothed.Subframe = roi;
         smoothed.Subframe.Intersect(wxRect(smoothed.Size));
 
-        Debug.Write(wxString::Format("AutoFind: using ROI %dx%d@%d,%d\n",
-            smoothed.Subframe.width, smoothed.Subframe.height,
-            smoothed.Subframe.x, smoothed.Subframe.y));
+        Debug.Write(wxString::Format("AutoFind: using ROI %dx%d@%d,%d\n", smoothed.Subframe.width, smoothed.Subframe.height,
+                                     smoothed.Subframe.x, smoothed.Subframe.y));
 
-        if (smoothed.Subframe.width < searchRegion ||
-            smoothed.Subframe.height < searchRegion)
+        if (smoothed.Subframe.width < searchRegion || smoothed.Subframe.height < searchRegion)
         {
-            Debug.Write(wxString::Format("AutoFind: bad ROI %dx%d\n",
-                smoothed.Subframe.width,
-                smoothed.Subframe.height));
+            Debug.Write(wxString::Format("AutoFind: bad ROI %dx%d\n", smoothed.Subframe.width, smoothed.Subframe.height));
             return false;
         }
     }
@@ -775,15 +783,21 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         conv.Swap(tmp);
     }
 
-    enum { CONV_RADIUS = 4 };
-    int dw = conv.Size.GetWidth();      // width of the downsampled image
-    int dh = conv.Size.GetHeight();     // height of the downsampled image
-    wxRect convRect(CONV_RADIUS, CONV_RADIUS, dw - 2 * CONV_RADIUS, dh - 2 * CONV_RADIUS);  // region containing valid data
+    enum
+    {
+        CONV_RADIUS = 4
+    };
+    int dw = conv.Size.GetWidth(); // width of the downsampled image
+    int dh = conv.Size.GetHeight(); // height of the downsampled image
+    wxRect convRect(CONV_RADIUS, CONV_RADIUS, dw - 2 * CONV_RADIUS, dh - 2 * CONV_RADIUS); // region containing valid data
 
     SaveImage(conv, "PHD2_AutoFind.fit");
 
-    enum { TOP_N = 100 };  // keep track of the brightest stars
-    std::set<Peak> stars;  // sorted by ascending intensity
+    enum
+    {
+        TOP_N = 100
+    }; // keep track of the brightest stars
+    std::set<Peak> stars; // sorted by ascending intensity
 
     double global_mean, global_stdev;
     GetStats(&global_mean, &global_stdev, conv, convRect);
@@ -866,7 +880,8 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 if (d2 < minlimitsq)
                 {
                     // very close, treat as single star
-                    Debug.Write(wxString::Format("AutoFind: merge [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y, a->val, b->x, b->y, b->val));
+                    Debug.Write(wxString::Format("AutoFind: merge [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y, a->val, b->x,
+                                                 b->y, b->val));
                     // erase the dimmer one
                     stars.erase(a);
                     goto repeat;
@@ -895,11 +910,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                     // but do not let a very dim star eliminate a very bright star
                     if (b->val / a->val >= 5.0)
                     {
-                        Debug.Write(wxString::Format("AutoFind: close dim-bright [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y, a->val, b->x, b->y, b->val));
+                        Debug.Write(wxString::Format("AutoFind: close dim-bright [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y,
+                                                     a->val, b->x, b->y, b->val));
                     }
                     else
                     {
-                        Debug.Write(wxString::Format("AutoFind: too close [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y, a->val, b->x, b->y, b->val));
+                        Debug.Write(wxString::Format("AutoFind: too close [%d, %d] %.1f - [%d, %d] %.1f\n", a->x, a->y, a->val,
+                                                     b->x, b->y, b->val));
                         to_erase.insert(std::distance(stars.begin(), a));
                         to_erase.insert(std::distance(stars.begin(), b));
                     }
@@ -918,8 +935,8 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         {
             std::set<Peak>::iterator next = it;
             ++next;
-            if (it->x <= edgeDist || it->x >= image.Size.GetWidth() - edgeDist ||
-                it->y <= edgeDist || it->y >= image.Size.GetHeight() - edgeDist)
+            if (it->x <= edgeDist || it->x >= image.Size.GetWidth() - edgeDist || it->y <= edgeDist ||
+                it->y >= image.Size.GetHeight() - edgeDist)
             {
                 Debug.Write(wxString::Format("AutoFind: too close to edge [%d, %d] %.1f\n", it->x, it->y, it->val));
                 stars.erase(it);
@@ -946,21 +963,23 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         //  first, find the peak pixel overall
         unsigned short maxVal = 0;
         for (unsigned int i = 0; i < image.NPixels; i++)
-        if (image.ImageData[i] > maxVal)
-            maxVal = image.ImageData[i];
+            if (image.ImageData[i] > maxVal)
+                maxVal = image.ImageData[i];
 
         // next see if any of the stars has a flat-top
         bool foundSaturated = false;
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), pFrame->pGuider->GetMaxStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(),
+                     pFrame->pGuider->GetMaxStarHFD(), pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
             if (tmp.WasFound() && tmp.GetError() == STAR_SATURATED)
             {
                 if ((maxVal - tmp.PeakVal) * 255U > maxVal)
                 {
                     // false positive saturation, flat top but below maxVal
-                    Debug.Write(wxString::Format("AutoFind: false positive saturation peak = %hu, max = %hu\n", tmp.PeakVal, maxVal));
+                    Debug.Write(
+                        wxString::Format("AutoFind: false positive saturation peak = %hu, max = %hu\n", tmp.PeakVal, maxVal));
                 }
                 else
                 {
@@ -981,8 +1000,8 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         {
             // no saturated stars found, can't make any assumption about whether the max val is saturated
 
-            Debug.Write(wxString::Format("AutoFind: using saturation level from BPP %u and pedestal %hu\n",
-                image.BitsPerPixel, image.Pedestal));
+            Debug.Write(wxString::Format("AutoFind: using saturation level from BPP %u and pedestal %hu\n", image.BitsPerPixel,
+                                         image.Pedestal));
 
             sat_level = ((1U << image.BitsPerPixel) - 1) + image.Pedestal;
         }
@@ -990,12 +1009,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
 
     unsigned int range = sat_level > image.Pedestal ? sat_level - image.Pedestal : 0U;
     // "near-saturation" threshold at 90% saturation
-    unsigned int tmp = (unsigned int)image.Pedestal + 9 * range / 10;
-    if (tmp > 65535) tmp = 65535;
-    unsigned short sat_thresh = (unsigned short)tmp;
+    unsigned int tmp = (unsigned int) image.Pedestal + 9 * range / 10;
+    if (tmp > 65535)
+        tmp = 65535;
+    unsigned short sat_thresh = (unsigned short) tmp;
 
-    Debug.Write(wxString::Format("AutoFind: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n",
-        image.BitsPerPixel, sat_level, image.Pedestal, sat_thresh));
+    Debug.Write(wxString::Format("AutoFind: BPP = %u, saturation at %u, pedestal %hu, thresh = %hu\n", image.BitsPerPixel,
+                                 sat_level, image.Pedestal, sat_thresh));
 
     // Before sifting for the best star, collect all the viable candidates
     double minSNR = pFrame->pGuider->GetAFMinStarSNR();
@@ -1004,12 +1024,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
     {
         GuideStar tmp;
-        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD,
+                 pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
         // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
         if (tmp.WasFound() && tmp.SNR >= minSNR)
         {
-            bool duplicate = std::find_if(foundStars.begin(), foundStars.end(),
-                [&tmp](const GuideStar& other) { return CloseToReference(tmp, other); }) != foundStars.end();
+            bool duplicate = std::find_if(foundStars.begin(), foundStars.end(), [&tmp](const GuideStar& other)
+                                          { return CloseToReference(tmp, other); }) != foundStars.end();
 
             if (!duplicate)
             {
@@ -1033,14 +1054,16 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             GuideStar tmp;
-            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD, pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD,
+                     pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
             if (tmp.WasFound())
             {
                 if (pass == 1)
                 {
                     if (tmp.PeakVal > sat_thresh)
                     {
-                        Debug.Write(wxString::Format("AutoFind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
+                        Debug.Write(wxString::Format("AutoFind: near-saturated [%d, %d] %.1f Mass %.f SNR %.1f Peak %hu\n",
+                                                     it->x, it->y, it->val, tmp.Mass, tmp.SNR, tmp.PeakVal));
                         continue;
                     }
                     if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
@@ -1050,14 +1073,16 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                 {
                     if (tmp.GetError() == STAR_SATURATED || tmp.SNR < minSNR)
                     {
-                        Debug.Write(wxString::Format("AutoFind: star saturated or too dim [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                        Debug.Write(wxString::Format("AutoFind: star saturated or too dim [%d, %d] %.1f Mass %.f SNR %.1f\n",
+                                                     it->x, it->y, it->val, tmp.Mass, tmp.SNR));
                         continue;
                     }
                 }
 
                 // star accepted
                 SetXY(it->x, it->y);
-                Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y, it->val, tmp.Mass, tmp.SNR));
+                Debug.Write(wxString::Format("AutoFind returns star at [%d, %d] %.1f Mass %.f SNR %.1f\n", it->x, it->y,
+                                             it->val, tmp.Mass, tmp.SNR));
                 if (maxStars > 1)
                 {
                     // Find the chosen star in the list and compute the offsetFromPrimary for all secondary stars

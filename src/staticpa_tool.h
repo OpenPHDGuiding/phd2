@@ -37,6 +37,7 @@
 class StaticPaTool
 {
     StaticPaTool() = delete;
+
 public:
     static wxWindow *CreateStaticPaToolWindow();
     static void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);

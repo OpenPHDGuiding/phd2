@@ -37,8 +37,8 @@
 // windows only ASCOM helper code
 #if defined(__WINDOWS__)
 
-#include "comdispatch.h"
-#include <comdef.h>
+# include "comdispatch.h"
+# include <comdef.h>
 
 wxString ExcepMsg(const EXCEPINFO& excep)
 {
@@ -123,21 +123,11 @@ bool DispatchClass::dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *wname,
     return true;
 }
 
-DispatchObj::DispatchObj()
-    : m_class(0),
-      m_idisp(0)
-{
-}
+DispatchObj::DispatchObj() : m_class(0), m_idisp(0) { }
 
-DispatchObj::DispatchObj(DispatchClass *cls)
-    : m_class(cls),
-      m_idisp(0)
-{
-}
+DispatchObj::DispatchObj(DispatchClass *cls) : m_class(cls), m_idisp(0) { }
 
-DispatchObj::DispatchObj(IDispatch *idisp, DispatchClass *cls)
-    : m_class(cls),
-      m_idisp(idisp)
+DispatchObj::DispatchObj(IDispatch *idisp, DispatchClass *cls) : m_class(cls), m_idisp(idisp)
 {
     if (m_idisp)
         m_idisp->AddRef();
@@ -164,7 +154,7 @@ bool DispatchObj::Create(OLECHAR *progid)
         return false;
     IDispatch *idisp;
     HRESULT hr;
-    if (FAILED(hr = CoCreateInstance(clsid, NULL, CLSCTX_SERVER, IID_IDispatch, (LPVOID *)&idisp)))
+    if (FAILED(hr = CoCreateInstance(clsid, NULL, CLSCTX_SERVER, IID_IDispatch, (LPVOID *) &idisp)))
     {
         Debug.AddLine(wxString::Format("CoCreateInstance: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return false;
@@ -364,10 +354,7 @@ bool DispatchObj::InvokeMethod(Variant *res, OLECHAR *name)
     return InvokeMethod(res, dispid);
 }
 
-GITEntry::GITEntry()
-    : m_pIGlobalInterfaceTable(0), m_dwCookie(0)
-{
-}
+GITEntry::GITEntry() : m_pIGlobalInterfaceTable(0), m_dwCookie(0) { }
 
 GITEntry::~GITEntry()
 {
@@ -381,7 +368,7 @@ void GITEntry::Register(IDispatch *idisp)
         // first find the global table
         HRESULT hr;
         if (FAILED(hr = ::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
-            (void **)&m_pIGlobalInterfaceTable)))
+                                           (void **) &m_pIGlobalInterfaceTable)))
         {
             Debug.AddLine(wxString::Format("create global interface table: [%x] %s", hr, _com_error(hr).ErrorMessage()));
             throw ERROR_INFO("Cannot CoCreateInstance of Global Interface Table");

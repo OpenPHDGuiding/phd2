@@ -53,10 +53,11 @@ struct CalibrationStepInfo
     double dist;
     wxString msg;
 
-    CalibrationStepInfo(Mount *mount_, const wxString& dir_, int stepNumber_, double dx_,
-        double dy_, const PHD_Point& pos_, double dist_, const wxString& msg_ = wxEmptyString)
-        : mount(mount_), direction(dir_), stepNumber(stepNumber_), dx(dx_), dy(dy_), pos(pos_),
-        dist(dist_), msg(msg_) { }
+    CalibrationStepInfo(Mount *mount_, const wxString& dir_, int stepNumber_, double dx_, double dy_, const PHD_Point& pos_,
+                        double dist_, const wxString& msg_ = wxEmptyString)
+        : mount(mount_), direction(dir_), stepNumber(stepNumber_), dx(dx_), dy(dy_), pos(pos_), dist(dist_), msg(msg_)
+    {
+    }
 };
 
 struct GuideStepInfo
@@ -143,8 +144,8 @@ public:
     void StartCalibration(const Mount *pCalibrationMount);
     void CalibrationFailed(const Mount *pCalibrationMount, const wxString& msg);
     void CalibrationStep(const CalibrationStepInfo& info);
-    void CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction,
-        double angle, double rate, int parity);
+    void CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction, double angle, double rate,
+                                   int parity);
     void CalibrationComplete(const Mount *pCalibrationMount);
 
     void GuidingStarted();

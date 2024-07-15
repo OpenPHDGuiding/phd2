@@ -42,7 +42,7 @@
 #include "serialport_posix.h"
 
 #ifdef USE_LOOPBACK_SERIAL
-#include "serialport_loopback.h"
+# include "serialport_loopback.h"
 #endif
 
 #endif // SERIALPORTS_H_INCLUDED

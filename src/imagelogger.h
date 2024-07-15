@@ -47,16 +47,16 @@ struct ImageLoggerSettings
     double guideErrorThreshPx; // pixel error theshold
     unsigned int logNextNFramesCount;
 
-    ImageLoggerSettings() :
-        loggingEnabled(false), logFramesOverThreshRel(false), logFramesOverThreshPx(false),
-        logFramesDropped(false), logAutoSelectFrames(false), logNextNFrames(false)
-    { }
+    ImageLoggerSettings()
+        : loggingEnabled(false), logFramesOverThreshRel(false), logFramesOverThreshPx(false), logFramesDropped(false),
+          logAutoSelectFrames(false), logNextNFrames(false)
+    {
+    }
 };
 
 class ImageLogger
 {
 public:
-
     static void Init();
     static void Destroy();
 

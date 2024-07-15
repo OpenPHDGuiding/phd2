@@ -17,28 +17,26 @@
 
 class WXDLLEXPORT wxLed : public wxWindow
 {
-	public :
+public:
+    wxLed(wxWindow *parent, wxWindowID id, const char *disabledColor = "000000", const wxPoint& pos = wxDefaultPosition,
+          const wxSize& size = wxDefaultSize);
+    ~wxLed();
 
-		wxLed (wxWindow * parent, wxWindowID id, const char * disabledColor = "000000", const wxPoint & pos = wxDefaultPosition, const wxSize & size = wxDefaultSize) ;
-		~wxLed () ;
+    bool Enable(bool enable = true);
+    void SetColor(const char *rgb);
 
-		bool Enable (bool enable = true) ;
-		void SetColor (const char * rgb) ;
+protected:
+    char m_enabledColor[7];
+    char m_disabledColor[7];
+    char m_color[7];
+    wxBitmap *m_bitmap;
+    wxMutex m_mutex;
 
-	protected :
+    void OnPaint(wxPaintEvent& event);
+    virtual void SetBitmap(const char *color);
 
-		char m_enabledColor [7] ;
-		char m_disabledColor [7] ;
-		char m_color [7] ;
-		wxBitmap * m_bitmap ;
-		wxMutex m_mutex ;
-
-		void OnPaint (wxPaintEvent & event) ;
-		virtual void SetBitmap (const char * color) ;
-
-	private :
-
-		wxDECLARE_EVENT_TABLE();
-} ;
+private:
+    wxDECLARE_EVENT_TABLE();
+};
 
 #endif // _WX_LED_H_

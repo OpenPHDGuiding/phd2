@@ -42,10 +42,9 @@ class RunInBg
     RunInBgImpl *m_impl;
 
     RunInBg(const RunInBg&); // not implemented
-    RunInBg& operator= (const RunInBg&); // not implemented
+    RunInBg& operator=(const RunInBg&); // not implemented
 
 public:
-
     RunInBg(wxWindow *parent, const wxString& title, const wxString& message);
     virtual ~RunInBg(void);
     void SetPopupDelay(unsigned int millis);
@@ -82,7 +81,10 @@ inline static wxWindow *GetConnectGearParentWindow(void)
 class ConnectMountInBg : public RunInBg
 {
 public:
-    ConnectMountInBg(wxWindow *parent = GetConnectGearParentWindow()) : RunInBg(parent, _("Connect"), _("Connecting to Mount...")) { }
+    ConnectMountInBg(wxWindow *parent = GetConnectGearParentWindow())
+        : RunInBg(parent, _("Connect"), _("Connecting to Mount..."))
+    {
+    }
 };
 
 class ConnectAoInBg : public RunInBg
@@ -94,13 +96,19 @@ public:
 class ConnectCameraInBg : public RunInBg
 {
 public:
-    ConnectCameraInBg(wxWindow *parent = GetConnectGearParentWindow()) : RunInBg(parent, _("Connect"), _("Connecting to Camera...")) { }
+    ConnectCameraInBg(wxWindow *parent = GetConnectGearParentWindow())
+        : RunInBg(parent, _("Connect"), _("Connecting to Camera..."))
+    {
+    }
 };
 
 class ConnectRotatorInBg : public RunInBg
 {
 public:
-    ConnectRotatorInBg(wxWindow *parent = GetConnectGearParentWindow()) : RunInBg(parent, _("Connect"), _("Connecting to Rotator...")) { }
+    ConnectRotatorInBg(wxWindow *parent = GetConnectGearParentWindow())
+        : RunInBg(parent, _("Connect"), _("Connecting to Rotator..."))
+    {
+    }
 };
 
 #endif // RUNINBG_INLCUDED

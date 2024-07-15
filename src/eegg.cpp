@@ -45,7 +45,8 @@
 
 static wxString FlipCalEnabledKey()
 {
-    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
+    // to be per-profile
     return wxString::Format("/Confirm/%d/FlipCalWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
@@ -77,7 +78,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
         }
         else
         {
-            if (pCalReviewDlg)                                          // Review dialog is non-modal
+            if (pCalReviewDlg) // Review dialog is non-modal
                 pCalReviewDlg->Destroy();
             pCalReviewDlg = new CalReviewDialog(this);
             pCalReviewDlg->Show();
@@ -88,8 +89,8 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
         if (pMount)
         {
             Calibration cal;
-            cal.xRate  = pMount->xRate();
-            cal.yRate  = pMount->yRate();
+            cal.xRate = pMount->xRate();
+            cal.yRate = pMount->yRate();
             cal.xAngle = pMount->xAngle();
             cal.yAngle = pMount->yAngle();
             cal.declination = pPointingSource->GetDeclinationRadians();
@@ -101,15 +102,15 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
 
             if (!pMount->IsCalibrated())
             {
-                cal.xRate       = 1.0;
-                cal.yRate       = 1.0;
-                cal.xAngle      = 0.0;
-                cal.yAngle      = M_PI / 2.;
+                cal.xRate = 1.0;
+                cal.yRate = 1.0;
+                cal.xAngle = 0.0;
+                cal.yAngle = M_PI / 2.;
                 cal.declination = UNKNOWN_DECLINATION;
             }
 
             ManualCalDialog manualcal(cal);
-            if (manualcal.ShowModal () == wxID_OK)
+            if (manualcal.ShowModal() == wxID_OK)
             {
                 manualcal.GetValues(&cal);
                 pMount->SetCalibration(cal);
@@ -134,8 +135,10 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             }
             if (devicestr.Length() > 0)
             {
-                if (wxMessageBox(wxString::Format(_("%s calibration will be cleared - calibration will be re-done when guiding is started."), devicestr),
-                    _("Clear Calibration"), wxOK | wxCANCEL) == wxOK)
+                if (wxMessageBox(wxString::Format(
+                                     _("%s calibration will be cleared - calibration will be re-done when guiding is started."),
+                                     devicestr),
+                                 _("Clear Calibration"), wxOK | wxCANCEL) == wxOK)
                 {
                     if (pMount)
                         pMount->ClearCalibration();
@@ -167,23 +170,26 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                 if (pPointingSource->CanReportPosition() && pPointingSource->SideOfPier() != PIER_SIDE_UNKNOWN &&
                     lastCal.pierSide != PIER_SIDE_UNKNOWN)
                 {
-                    pFrame->SuppressableAlert(FlipCalEnabledKey(),
-                        _("This is unnecessary because PHD2 has pointing info from the mount.  If you are seeing run-away Dec guiding "
-                        "after a meridian flip, use Help and look in the index for 'Reverse Dec output'."),
+                    pFrame->SuppressableAlert(
+                        FlipCalEnabledKey(),
+                        _("This is unnecessary because PHD2 has pointing info from the mount.  If you are seeing run-away Dec "
+                          "guiding "
+                          "after a meridian flip, use Help and look in the index for 'Reverse Dec output'."),
                         SuppressFlipCalAlert, 0, true);
                 }
                 else
                 {
                     if (FlipCalibrationData())
                     {
-                        wxMessageBox(_("Failed to flip calibration - please upload debug log file to PHD2 forum for assistance."));
+                        wxMessageBox(
+                            _("Failed to flip calibration - please upload debug log file to PHD2 forum for assistance."));
                     }
                     else
                     {
                         double xnew = degrees(scope->xAngle());
                         double ynew = degrees(scope->yAngle());
-                        wxMessageBox(wxString::Format(_("Calibration angles flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
-                            xorig, yorig, xnew, ynew));
+                        wxMessageBox(wxString::Format(_("Calibration angles flipped: (%.2f, %.2f) to (%.2f, %.2f)"), xorig,
+                                                      yorig, xnew, ynew));
                     }
                 }
             }
@@ -287,13 +293,11 @@ void MyFrame::OnGuidingAssistant(wxCommandEvent& WXUNUSED(evt))
 
         if (pFrame->pGuider->IsGuiding())
         {
-            ok = ConfirmDialog::Confirm(_(
-                "The Guiding Assitant will disable guide output and\n"
-                "allow the guide star to drift.\n"
-                "\n"
-                "Ok to disable guide output?"
-                ),
-                "/guiding_assistant_while_guiding", _("Confirm Disable Guiding"));
+            ok = ConfirmDialog::Confirm(_("The Guiding Assitant will disable guide output and\n"
+                                          "allow the guide star to drift.\n"
+                                          "\n"
+                                          "Ok to disable guide output?"),
+                                        "/guiding_assistant_while_guiding", _("Confirm Disable Guiding"));
         }
 
         if (ok)

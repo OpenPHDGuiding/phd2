@@ -42,7 +42,8 @@
 
 static std::set<wxSocketBase *> s_clients;
 
-enum {
+enum
+{
     MSG_PAUSE = 1,
     MSG_RESUME,
     MSG_MOVE1,
@@ -57,19 +58,19 @@ enum {
     MSG_MOVE4,
     MSG_MOVE5,
     MSG_AUTOFINDSTAR,
-    MSG_SETLOCKPOSITION,    //15
-    MSG_FLIPRACAL,          //16
-    MSG_GETSTATUS,          //17
-    MSG_STOP,               //18
-    MSG_LOOP,               //19
-    MSG_STARTGUIDING,       //20
-    MSG_LOOPFRAMECOUNT,     //21
-    MSG_CLEARCAL,           //22
-    MSG_FLIP_SIM_CAMERA,    //23
-    MSG_DESELECT,           //24
+    MSG_SETLOCKPOSITION, // 15
+    MSG_FLIPRACAL, // 16
+    MSG_GETSTATUS, // 17
+    MSG_STOP, // 18
+    MSG_LOOP, // 19
+    MSG_STARTGUIDING, // 20
+    MSG_LOOPFRAMECOUNT, // 21
+    MSG_CLEARCAL, // 22
+    MSG_FLIP_SIM_CAMERA, // 23
+    MSG_DESELECT, // 24
 };
 
-void MyFrame::OnServerMenu(wxCommandEvent &evt)
+void MyFrame::OnServerMenu(wxCommandEvent& evt)
 {
     SetServerMode(evt.IsChecked());
     StartServer(GetServerMode());
@@ -120,7 +121,8 @@ bool MyFrame::StartServer(bool state)
         Debug.AddLine(wxString::Format("Server started, listening on port %u", port));
         StatusMsg(_("Server started"));
     }
-    else {
+    else
+    {
         if (!SocketServer)
         {
             Debug.AddLine("stop server, server already stopped");
@@ -148,8 +150,8 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
 
     if (event.GetSocketEvent() != wxSOCKET_CONNECTION)
     {
-        Debug.AddLine(wxString::Format("socket server event expected %d, got %d. ignoring it.",
-            wxSOCKET_CONNECTION, event.GetSocketEvent()));
+        Debug.AddLine(wxString::Format("socket server event expected %d, got %d. ignoring it.", wxSOCKET_CONNECTION,
+                                       event.GetSocketEvent()));
         return;
     }
 
@@ -175,12 +177,18 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
 
 double MyFrame::GetDitherAmount(int ditherType)
 {
-    switch (ditherType) {
-    case 1: return 0.5;
-    case 2: return 1.0;
-    case 3: return 2.0;
-    case 4: return 3.0;
-    case 5: return 5.0;
+    switch (ditherType)
+    {
+    case 1:
+        return 0.5;
+    case 2:
+        return 1.0;
+    case 3:
+        return 2.0;
+    case 4:
+        return 3.0;
+    case 5:
+        return 5.0;
     }
     return 1.0;
 }
@@ -204,195 +212,205 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 
         switch (c)
         {
-            case MSG_PAUSE:
-            case 'p':
-                Debug.AddLine("processing socket request PAUSE");
-                SetPaused(PAUSE_GUIDING);
-                break;
+        case MSG_PAUSE:
+        case 'p':
+            Debug.AddLine("processing socket request PAUSE");
+            SetPaused(PAUSE_GUIDING);
+            break;
 
-            case MSG_RESUME:
-            case 'r':
-                Debug.AddLine("processing socket request RESUME");
-                SetPaused(PAUSE_NONE);
-                break;
+        case MSG_RESUME:
+        case 'r':
+            Debug.AddLine("processing socket request RESUME");
+            SetPaused(PAUSE_NONE);
+            break;
 
-            case MSG_MOVE1:  // +/- 0.5
-            case MSG_MOVE2:  // +/- 1.0
-            case MSG_MOVE3:  // +/- 2.0
-            case MSG_MOVE4:  // +/- 3.0
-            case MSG_MOVE5:  // +/- 5.0
+        case MSG_MOVE1: // +/- 0.5
+        case MSG_MOVE2: // +/- 1.0
+        case MSG_MOVE3: // +/- 2.0
+        case MSG_MOVE4: // +/- 3.0
+        case MSG_MOVE5: // +/- 5.0
+        {
+            Debug.AddLine("processing socket request MOVEn");
+
+            int ditherType = 3;
+            switch (c)
             {
-                Debug.AddLine("processing socket request MOVEn");
-
-                int ditherType = 3;
-                switch (c)
-                {
-                    case MSG_MOVE1: ditherType = 1; break;
-                    case MSG_MOVE2: ditherType = 2; break;
-                    case MSG_MOVE3: ditherType = 3; break;
-                    case MSG_MOVE4: ditherType = 4; break;
-                    case MSG_MOVE5: ditherType = 5; break;
-                }
-
-                double size = GetDitherAmount(ditherType);
-
-                wxString errMsg;
-                bool ok = PhdController::DitherCompat(size, &errMsg);
-                if (!ok)
-                {
-                    throw ERROR_INFO(+errMsg);
-                }
-
-                rval = RequestedExposureDuration() / 1000;
-                if (rval < 1)
-                {
-                    rval = 1;
-                }
+            case MSG_MOVE1:
+                ditherType = 1;
+                break;
+            case MSG_MOVE2:
+                ditherType = 2;
+                break;
+            case MSG_MOVE3:
+                ditherType = 3;
+                break;
+            case MSG_MOVE4:
+                ditherType = 4;
+                break;
+            case MSG_MOVE5:
+                ditherType = 5;
                 break;
             }
 
-            case MSG_REQDIST:
+            double size = GetDitherAmount(ditherType);
+
+            wxString errMsg;
+            bool ok = PhdController::DitherCompat(size, &errMsg);
+            if (!ok)
             {
-                Debug.AddLine("processing socket request REQDIST");
-                if (!pGuider->IsGuiding())
-                {
-                    throw ERROR_INFO("cannot request distance if not guiding");
-                }
-
-                double currentError = CurrentGuideError();
-
-                if (currentError > 2.55)
-                {
-                    rval = 255;
-                }
-                else
-                {
-                    rval = (unsigned char) (currentError * 100);
-                }
-
-                Debug.AddLine(wxString::Format("SOCKSVR: Sending pixel error of %.2f", (float) rval / 100.0));
-                break;
+                throw ERROR_INFO(+errMsg);
             }
 
-            case MSG_AUTOFINDSTAR:
-                Debug.AddLine("processing socket request AUTOFINDSTAR");
-                bool error;
-                error = pFrame->AutoSelectStar();
-                rval = error ? 0 : 1;
-                if (!error)
-                {
-                    StartLooping();
-                }
-                GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
-                break;
-
-            case MSG_SETLOCKPOSITION:
+            rval = RequestedExposureDuration() / 1000;
+            if (rval < 1)
             {
-                // Sets LockX and LockY to be user-specified
-                unsigned short x,y;
-                sock->Read(&x, 2);
-                sock->Read(&y, 2);
-                sock->Discard();  // Clean out anything else
-
-                if (!pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x,y)))
-                {
-                    Debug.Write(wxString::Format("processing socket request SETLOCKPOSITION for (%d, %d) succeeded\n", x, y));
-                    pFrame->StatusMsg(wxString::Format(_("Lock set to %d,%d"), x, y));
-                    GuideLog.NotifySetLockPosition(pGuider);
-                }
-                else
-                {
-                    Debug.Write(wxString::Format("processing socket request SETLOCKPOSITION for (%d, %d) failed\n", x, y));
-                }
-                break;
-            }
-
-            case MSG_FLIPRACAL:
-            {
-                Debug.AddLine("processing socket request FLIPRACAL");
-                PauseType prev = pGuider->SetPaused(PAUSE_GUIDING);
-                // return 1 for success, 0 for failure
                 rval = 1;
-                if (FlipCalibrationData())
-                {
-                    rval = 0;
-                }
-                pGuider->SetPaused(prev);
-                GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
-                break;
+            }
+            break;
+        }
+
+        case MSG_REQDIST:
+        {
+            Debug.AddLine("processing socket request REQDIST");
+            if (!pGuider->IsGuiding())
+            {
+                throw ERROR_INFO("cannot request distance if not guiding");
             }
 
-            case MSG_GETSTATUS:
-                Debug.AddLine("processing socket request GETSTATUS");
-                rval = Guider::GetExposedState();
-                break;
+            double currentError = CurrentGuideError();
 
-            case MSG_LOOP:
+            if (currentError > 2.55)
             {
-                Debug.AddLine("processing socket request LOOP");
+                rval = 255;
+            }
+            else
+            {
+                rval = (unsigned char) (currentError * 100);
+            }
+
+            Debug.AddLine(wxString::Format("SOCKSVR: Sending pixel error of %.2f", (float) rval / 100.0));
+            break;
+        }
+
+        case MSG_AUTOFINDSTAR:
+            Debug.AddLine("processing socket request AUTOFINDSTAR");
+            bool error;
+            error = pFrame->AutoSelectStar();
+            rval = error ? 0 : 1;
+            if (!error)
+            {
                 StartLooping();
-                GuideLog.ServerCommand(pGuider, "LOOP");
-                break;
             }
+            GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
+            break;
 
-            case MSG_STOP:
+        case MSG_SETLOCKPOSITION:
+        {
+            // Sets LockX and LockY to be user-specified
+            unsigned short x, y;
+            sock->Read(&x, 2);
+            sock->Read(&y, 2);
+            sock->Discard(); // Clean out anything else
+
+            if (!pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x, y)))
             {
-                Debug.AddLine("processing socket request STOP");
-                StopCapturing();
-                GuideLog.ServerCommand(pGuider, "STOP");
-                break;
+                Debug.Write(wxString::Format("processing socket request SETLOCKPOSITION for (%d, %d) succeeded\n", x, y));
+                pFrame->StatusMsg(wxString::Format(_("Lock set to %d,%d"), x, y));
+                GuideLog.NotifySetLockPosition(pGuider);
             }
-
-            case MSG_STARTGUIDING:
+            else
             {
-                Debug.AddLine("processing socket request STARTGUIDING");
-                bool err = StartGuiding();
-                Debug.AddLine(wxString::Format("StartGuiding returned %d, guider state is %d", err, pFrame->pGuider->GetState()));
-                GuideLog.ServerCommand(pGuider, "START GUIDING");
-                break;
+                Debug.Write(wxString::Format("processing socket request SETLOCKPOSITION for (%d, %d) failed\n", x, y));
             }
+            break;
+        }
 
-            case MSG_LOOPFRAMECOUNT:
-                Debug.AddLine("processing socket request LOOPFRAMECOUNT");
-                if (!CaptureActive)
-                {
-                    rval = 0;
-                }
-                else if (m_frameCounter > UCHAR_MAX)
-                {
-                    rval = UCHAR_MAX;
-                }
-                else
-                {
-                    rval = m_frameCounter;
-                }
-                break;
+        case MSG_FLIPRACAL:
+        {
+            Debug.AddLine("processing socket request FLIPRACAL");
+            PauseType prev = pGuider->SetPaused(PAUSE_GUIDING);
+            // return 1 for success, 0 for failure
+            rval = 1;
+            if (FlipCalibrationData())
+            {
+                rval = 0;
+            }
+            pGuider->SetPaused(prev);
+            GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
+            break;
+        }
 
-            case MSG_CLEARCAL:
-                Debug.AddLine("processing socket request CLEARCAL");
+        case MSG_GETSTATUS:
+            Debug.AddLine("processing socket request GETSTATUS");
+            rval = Guider::GetExposedState();
+            break;
 
-                if (pMount)
-                    pMount->ClearCalibration();
-                if (pSecondaryMount)
-                    pSecondaryMount->ClearCalibration();
+        case MSG_LOOP:
+        {
+            Debug.AddLine("processing socket request LOOP");
+            StartLooping();
+            GuideLog.ServerCommand(pGuider, "LOOP");
+            break;
+        }
 
-                GuideLog.ServerCommand(pGuider, "CLEAR CAL");
-                break;
+        case MSG_STOP:
+        {
+            Debug.AddLine("processing socket request STOP");
+            StopCapturing();
+            GuideLog.ServerCommand(pGuider, "STOP");
+            break;
+        }
 
-            case MSG_FLIP_SIM_CAMERA:
-                Debug.AddLine("processing socket request flip camera simulator");
-                GearSimulator::FlipPierSide(pCamera);
-                break;
+        case MSG_STARTGUIDING:
+        {
+            Debug.AddLine("processing socket request STARTGUIDING");
+            bool err = StartGuiding();
+            Debug.AddLine(wxString::Format("StartGuiding returned %d, guider state is %d", err, pFrame->pGuider->GetState()));
+            GuideLog.ServerCommand(pGuider, "START GUIDING");
+            break;
+        }
 
-            case MSG_DESELECT:
-                Debug.AddLine("processing socket request deselect");
-                pFrame->pGuider->Reset(true);
-                break;
+        case MSG_LOOPFRAMECOUNT:
+            Debug.AddLine("processing socket request LOOPFRAMECOUNT");
+            if (!CaptureActive)
+            {
+                rval = 0;
+            }
+            else if (m_frameCounter > UCHAR_MAX)
+            {
+                rval = UCHAR_MAX;
+            }
+            else
+            {
+                rval = m_frameCounter;
+            }
+            break;
 
-            default:
-                Debug.AddLine(wxString::Format("SOCKSVR: Unknown command char received from client: %d\n", (int) c));
-                rval = 1;
-                break;
+        case MSG_CLEARCAL:
+            Debug.AddLine("processing socket request CLEARCAL");
+
+            if (pMount)
+                pMount->ClearCalibration();
+            if (pSecondaryMount)
+                pSecondaryMount->ClearCalibration();
+
+            GuideLog.ServerCommand(pGuider, "CLEAR CAL");
+            break;
+
+        case MSG_FLIP_SIM_CAMERA:
+            Debug.AddLine("processing socket request flip camera simulator");
+            GearSimulator::FlipPierSide(pCamera);
+            break;
+
+        case MSG_DESELECT:
+            Debug.AddLine("processing socket request deselect");
+            pFrame->pGuider->Reset(true);
+            break;
+
+        default:
+            Debug.AddLine(wxString::Format("SOCKSVR: Unknown command char received from client: %d\n", (int) c));
+            rval = 1;
+            break;
         }
     }
     catch (const wxString& Msg)
@@ -403,7 +421,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
     Debug.Write(wxString::Format("Sending socket response %d (0x%x)\n", rval, rval));
 
     // Send response
-    sock->Write(&rval,1);
+    sock->Write(&rval, 1);
 
     // Enable input events again.
     sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
@@ -423,18 +441,18 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
         // Now we process the event
         switch (event.GetSocketEvent())
         {
-            case wxSOCKET_INPUT:
-                HandleSockServerInput(sock);
-                break;
-            case wxSOCKET_LOST:
-                Debug.AddLine("SOCKSVR: Client disconnected, deleting socket");
-                size_t n;
-                n = s_clients.erase(sock);
-                assert(n > 0);
-                sock->Destroy();
-                break;
-            default:
-                break;
+        case wxSOCKET_INPUT:
+            HandleSockServerInput(sock);
+            break;
+        case wxSOCKET_LOST:
+            Debug.AddLine("SOCKSVR: Client disconnected, deleting socket");
+            size_t n;
+            n = s_clients.erase(sock);
+            assert(n > 0);
+            sock->Destroy();
+            break;
+        default:
+            break;
         }
     }
     catch (const wxString& Msg)
@@ -450,7 +468,8 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
 static int SocketConnections;
 static wxSocketBase *ServerEndpoint;
 
-bool ServerSendGuideCommand (int direction, int duration) {
+bool ServerSendGuideCommand(int direction, int duration)
+{
     // Sends a guide command to Nebulosity
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
@@ -458,21 +477,23 @@ bool ServerSendGuideCommand (int direction, int duration) {
     unsigned char cmd = MSG_GUIDE;
     unsigned char rval = 0;
     Debug.AddLine(wxString::Format("Sending guide: %d %d", direction, duration));
-//  cmd = 'Z';
+    //  cmd = 'Z';
     ServerEndpoint->Write(&cmd, 1);
     if (pFrame->SocketServer->Error())
         Debug.AddLine(_T("Error sending Neb command"));
-    else {
+    else
+    {
         Debug.AddLine(_T("Cmd done - sending data"));
         ServerEndpoint->Write(&direction, sizeof(int));
         ServerEndpoint->Write(&duration, sizeof(int));
-        ServerEndpoint->Read(&rval,1);
+        ServerEndpoint->Read(&rval, 1);
         Debug.Write(wxString::Format("Sent guide command - returned %d\n", (int) rval));
     }
     return false;
 }
 
-bool ServerSendCamConnect(int& xsize, int& ysize) {
+bool ServerSendCamConnect(int& xsize, int& ysize)
+{
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
     Debug.AddLine(_T("Sending cam connect request"));
@@ -480,27 +501,31 @@ bool ServerSendCamConnect(int& xsize, int& ysize) {
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (pFrame->SocketServer->Error()) {
+    if (pFrame->SocketServer->Error())
+    {
         Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
-    else {
-//      unsigned char c;
+    else
+    {
+        //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
         Debug.Write(wxString::Format("Cmd done - returned %d\n", (int) rval));
     }
     if (rval)
         return true;
-    else {  // cam connected OK
+    else
+    { // cam connected OK
         // Should get x and y size back
-        ServerEndpoint->Read(&xsize,sizeof(int));
-        ServerEndpoint->Read(&ysize,sizeof(int));
+        ServerEndpoint->Read(&xsize, sizeof(int));
+        ServerEndpoint->Read(&ysize, sizeof(int));
         Debug.Write(wxString::Format("Guide chip reported as %d x %d\n", xsize, ysize));
         return false;
     }
 }
 
-bool ServerSendCamDisconnect() {
+bool ServerSendCamDisconnect()
+{
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
 
@@ -509,22 +534,25 @@ bool ServerSendCamDisconnect() {
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (pFrame->SocketServer->Error()) {
+    if (pFrame->SocketServer->Error())
+    {
         Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
-    else {
-//      unsigned char c;
+    else
+    {
+        //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
         Debug.Write(wxString::Format("Cmd done - returned %d\n", (int) rval));
     }
     if (rval)
         return true;
     else
-        return false;  // cam disconnected OK
+        return false; // cam disconnected OK
 }
 
-bool ServerReqFrame(int duration, usImage& img) {
+bool ServerReqFrame(int duration, usImage& img)
+{
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
     Debug.AddLine(_T("Sending guide frame request"));
@@ -532,20 +560,23 @@ bool ServerReqFrame(int duration, usImage& img) {
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (pFrame->SocketServer->Error()) {
+    if (pFrame->SocketServer->Error())
+    {
         Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
-    else {
-//      unsigned char c;
+    else
+    {
+        //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
         Debug.Write(wxString::Format("Cmd done - returned %d\n", (int) rval));
     }
     if (rval)
         return true;
-    else { // grab frame data
+    else
+    { // grab frame data
         // Send duration request
-        ServerEndpoint->Write(&duration,sizeof(int));
+        ServerEndpoint->Write(&duration, sizeof(int));
         Debug.Write(wxString::Format("Starting %d ms frame\n", duration));
         wxMilliSleep(duration); // might as well wait here nicely at least this long
         Debug.Write(wxString::Format("Reading frame - looking for %u pixels (%u bytes)\n", img.NPixels, img.NPixels * 2));
@@ -556,30 +587,34 @@ bool ServerReqFrame(int duration, usImage& img) {
         xsize = img.Size.GetWidth();
         ysize = img.Size.GetHeight();
         pixels_left = img.NPixels;
-        packet_size = 256;  // # pixels to get
-        int j=0;
-        while (pixels_left > 0) {
-            ServerEndpoint->Read(&buffer,packet_size * 2);
+        packet_size = 256; // # pixels to get
+        int j = 0;
+        while (pixels_left > 0)
+        {
+            ServerEndpoint->Read(&buffer, packet_size * 2);
             pixels_left -= packet_size;
             if ((j % 100) == 0)
                 Debug.Write(wxString::Format("%d left\n", pixels_left));
-            for (i=0; i<packet_size; i++, dataptr++)
+            for (i = 0; i < packet_size; i++, dataptr++)
                 *dataptr = buffer[i];
             if (pixels_left < 256)
                 packet_size = 256;
-            ServerEndpoint->Write(&cmd,1);
+            ServerEndpoint->Write(&cmd, 1);
             j++;
         }
         int min = 9999999;
         int max = -999999;
         dataptr = img.ImageData;
-        for (i=0; i<(xsize * ysize); i++, dataptr++) {
-            if (*dataptr > max) max = (int) *dataptr;
-            else if (*dataptr < min) min = (int) *dataptr;
+        for (i = 0; i < (xsize * ysize); i++, dataptr++)
+        {
+            if (*dataptr > max)
+                max = (int) *dataptr;
+            else if (*dataptr < min)
+                min = (int) *dataptr;
         }
         Debug.Write(wxString::Format("Frame received min=%d max=%d\n", min, max));
 
-//      ServerEndpoint->ReadMsg(img.ImageData,(xsize * ysize * 2));
+        //      ServerEndpoint->ReadMsg(img.ImageData,(xsize * ysize * 2));
         Debug.AddLine("Frame read");
     }
 

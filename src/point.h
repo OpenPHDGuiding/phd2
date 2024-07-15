@@ -41,34 +41,18 @@ class PHD_Point
     bool m_valid;
 
 public:
-
     double X;
     double Y;
 
-    PHD_Point(double x, double y)
-    {
-        SetXY(x, y);
-    }
+    PHD_Point(double x, double y) { SetXY(x, y); }
 
-    PHD_Point(const PHD_Point& p)
-        : m_valid(p.m_valid), X(p.X), Y(p.Y)
-    {
-    }
+    PHD_Point(const PHD_Point& p) : m_valid(p.m_valid), X(p.X), Y(p.Y) { }
 
-    PHD_Point()
-    {
-        Invalidate();
-    }
+    PHD_Point() { Invalidate(); }
 
-    bool IsValid() const
-    {
-        return m_valid;
-    }
+    bool IsValid() const { return m_valid; }
 
-    void Invalidate()
-    {
-        m_valid = false;
-    }
+    void Invalidate() { m_valid = false; }
 
     void SetXY(double x, double y)
     {
@@ -85,23 +69,17 @@ public:
         return dRet;
     }
 
-    double dX(const PHD_Point *pPoint) const
-    {
-        return this->dX(*pPoint);
-    }
+    double dX(const PHD_Point *pPoint) const { return this->dX(*pPoint); }
 
     double dY(const PHD_Point& p) const
     {
         assert(m_valid && p.m_valid);
 
-        double dRet = Y-p.Y;
+        double dRet = Y - p.Y;
         return dRet;
     }
 
-    double dY(const PHD_Point *pPoint) const
-    {
-        return this->dY(*pPoint);
-    }
+    double dY(const PHD_Point *pPoint) const { return this->dY(*pPoint); }
 
     double Distance(const PHD_Point& p) const
     {
@@ -111,15 +89,9 @@ public:
         return dRet;
     }
 
-    double Distance(const PHD_Point *pPoint) const
-    {
-        return Distance(*pPoint);
-    }
+    double Distance(const PHD_Point *pPoint) const { return Distance(*pPoint); }
 
-    double Distance() const
-    {
-        return hypot(X, Y);
-    }
+    double Distance() const { return hypot(X, Y); }
 
     double Angle(const PHD_Point& p) const
     {
@@ -139,15 +111,12 @@ public:
 
     double Angle() const
     {
-        PHD_Point origin(0,0);
+        PHD_Point origin(0, 0);
 
         return Angle(origin);
     }
 
-    double Angle(const PHD_Point *pPoint) const
-    {
-        return Angle(*pPoint);
-    }
+    double Angle(const PHD_Point *pPoint) const { return Angle(*pPoint); }
 
     PHD_Point operator+(const PHD_Point& addend) const
     {
@@ -182,7 +151,7 @@ public:
     PHD_Point operator/(double divisor) const
     {
         assert(m_valid);
-        return PHD_Point(this->X/divisor, this->Y/divisor);
+        return PHD_Point(this->X / divisor, this->Y / divisor);
     }
 
     PHD_Point& operator/=(double divisor)
@@ -215,12 +184,11 @@ class ShiftPoint : public PHD_Point
     typedef PHD_Point super;
 
     PHD_Point m_rate; // rate of change (per second)
-    double m_x0;    // initial x position
-    double m_y0;    // initial y position
-    wxLongLong_t m_t0;      // initial time (seconds)
+    double m_x0; // initial x position
+    double m_y0; // initial y position
+    wxLongLong_t m_t0; // initial time (seconds)
 
 public:
-
     ShiftPoint() { }
 
     void SetShiftRate(double xrate, double yrate)
@@ -239,16 +207,13 @@ public:
         }
     }
 
-    void DisableShift()
-    {
-        m_rate.Invalidate();
-    }
+    void DisableShift() { m_rate.Invalidate(); }
 
     void UpdateShift()
     {
         if (IsValid() && m_rate.IsValid())
         {
-            double dt = (double)(::wxGetUTCTimeMillis().GetValue() - m_t0) / 1000.;
+            double dt = (double) (::wxGetUTCTimeMillis().GetValue() - m_t0) / 1000.;
             X = m_x0 + m_rate.X * dt;
             Y = m_y0 + m_rate.Y * dt;
         }

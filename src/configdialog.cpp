@@ -42,12 +42,12 @@ ConfigDialogPane::ConfigDialogPane(const wxString& heading, wxWindow *pParent)
 
 void ConfigDialogPane::DoAdd(wxSizer *pSizer)
 {
-    this->Add(pSizer, wxSizerFlags().Expand().Border(wxALL,3));
+    this->Add(pSizer, wxSizerFlags().Expand().Border(wxALL, 3));
 }
 
 void ConfigDialogPane::DoAdd(wxWindow *pWindow)
 {
-    this->Add(pWindow, wxSizerFlags().Expand().Border(wxALL,3));
+    this->Add(pWindow, wxSizerFlags().Expand().Border(wxALL, 3));
 }
 
 void ConfigDialogPane::DoAdd(wxWindow *pWindow, const wxString& toolTip)
@@ -56,7 +56,8 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow, const wxString& toolTip)
     DoAdd(pWindow);
 }
 
-wxSizer *ConfigDialogPane::MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2)
+wxSizer *ConfigDialogPane::MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip,
+                                              wxWindow *pControl2)
 {
     wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "));
     pControl->SetToolTip(toolTip);
@@ -88,7 +89,7 @@ int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
 {
     int width = 0;
 
-    for(int i=0;i<nElements;i++)
+    for (int i = 0; i < nElements; i++)
     {
         int thisWidth = StringWidth(string[i]);
 
@@ -101,11 +102,10 @@ int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
     return width;
 }
 
-// Default implementation does nothing because most config dialogs don't need an 'undo' function - simply not calling 'Unload' prevents any pending changes from
-// being saved.  But if non-scalar objects are involved - as in guide algorithms - a specific Undo may be required
-void ConfigDialogPane::Undo(void)
-{
-}
+// Default implementation does nothing because most config dialogs don't need an 'undo' function - simply not calling 'Unload'
+// prevents any pending changes from being saved.  But if non-scalar objects are involved - as in guide algorithms - a specific
+// Undo may be required
+void ConfigDialogPane::Undo(void) { }
 
 wxWindow *ConfigDialogPane::GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id)
 {
@@ -117,11 +117,11 @@ wxWindow *ConfigDialogPane::GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_ID
         if (ctrl)
             it->second.isPositioned = true;
     }
-    return ctrl;           // May return null but client can use CondAddCtrl
+    return ctrl; // May return null but client can use CondAddCtrl
 }
 
-// Handle the case where a control is not created because of state.  wxWidgets handles a null window correctly in 'Add' but the behavior
-// is technically undocumented.
+// Handle the case where a control is not created because of state.  wxWidgets handles a null window correctly in 'Add' but the
+// behavior is technically undocumented.
 void ConfigDialogPane::CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags)
 {
     wxWindow *ctrl = GetSingleCtrl(CtrlMap, id);
@@ -139,7 +139,7 @@ wxSizer *ConfigDialogPane::GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS 
         if (ctrl)
             it->second.isPositioned = true;
     }
-    return ctrl;           // May return null, won't add entry in CtrlMap
+    return ctrl; // May return null, won't add entry in CtrlMap
 }
 
 void ConfigDialogPane::OnImageScaleChange()
@@ -152,7 +152,7 @@ void ConfigDialogPane::EnableDecControls(bool enable)
     // Do nothing by default - subclasses will override if needed
 }
 
-ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     m_pParent = pParent;
     m_pAdvDlg = pAdvancedDialog;
@@ -231,7 +231,8 @@ void ConfigDialogCtrlSet::AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, w
     AddMapElement(CtrlMap, id, pSizer);
 }
 
-wxSizer *ConfigDialogCtrlSet::MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl, const wxString& toolTip)
+wxSizer *ConfigDialogCtrlSet::MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl,
+                                                 const wxString& toolTip)
 {
     wxStaticText *pLabel = new wxStaticText(GetParentWindow(id), wxID_ANY, label + _(": "));
     pControl->SetToolTip(toolTip);
@@ -243,7 +244,8 @@ wxSizer *ConfigDialogCtrlSet::MakeLabeledControl(BRAIN_CTRL_IDS id, const wxStri
     return pSizer;
 }
 
-void ConfigDialogCtrlSet::AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip)
+void ConfigDialogCtrlSet::AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl,
+                                         const wxString& toolTip)
 {
     AddGroup(CtrlMap, id, MakeLabeledControl(id, Label, pCtrl, toolTip));
 }

@@ -37,6 +37,7 @@
 class PolarDriftTool
 {
     PolarDriftTool() = delete;
+
 public:
     static wxWindow *CreatePolarDriftToolWindow();
     static bool UpdateState();

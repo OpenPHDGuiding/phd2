@@ -43,9 +43,7 @@ Logger::Logger()
     m_Initialized = false;
 }
 
-Logger::~Logger()
-{
-}
+Logger::~Logger() { }
 
 // Default, safety-net implementation behind derived logger classes
 bool Logger::ChangeDirLog(const wxString& newdir)
@@ -62,7 +60,7 @@ static wxString DefaultDir()
 
     if (!wxDirExists(rslt))
         if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-            rslt = stdpath.GetDocumentsDir();             // should never happen
+            rslt = stdpath.GetDocumentsDir(); // should never happen
 
     return rslt;
 }
@@ -80,17 +78,16 @@ const wxString& Logger::GetLogDir()
         {
             rslt = pConfig->Global.GetString("/frame/LogDir", wxEmptyString);
             if (rslt.empty())
-                rslt = DefaultDir();                // user has never even looked at it
-            else
-                if (!wxDirExists(rslt))        // user might have deleted our old directories
-                {
-                    // will build entire hierarchy if needed
-                    if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-                        rslt = DefaultDir();
-                }
+                rslt = DefaultDir(); // user has never even looked at it
+            else if (!wxDirExists(rslt)) // user might have deleted our old directories
+            {
+                // will build entire hierarchy if needed
+                if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+                    rslt = DefaultDir();
+            }
         }
         else
-            rslt = DefaultDir();                    // shouldn't ever happen
+            rslt = DefaultDir(); // shouldn't ever happen
 
         m_CurrentDir = rslt;
         m_Initialized = true;
@@ -107,13 +104,13 @@ bool Logger::SetLogDir(const wxString& dir)
     wxString newdir(dir);
     bool bOk = true;
 
-    if (newdir.EndsWith(PATHSEPSTR))        // Need a standard form - no trailing separators
+    if (newdir.EndsWith(PATHSEPSTR)) // Need a standard form - no trailing separators
     {
         wxString stemp = PATHSEPSTR;
         newdir = newdir.substr(0, newdir.length() - stemp.length());
     }
 
-    if (newdir.empty())                // Empty-string shorthand for "default location"
+    if (newdir.empty()) // Empty-string shorthand for "default location"
     {
         newdir = DefaultDir();
     }
@@ -147,7 +144,7 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
     try
     {
         wxArrayString results;
-        int numFiles = wxDir::GetAllFiles(GetLogDir(), &results, filePattern, wxDIR_FILES);      // No sub-directories, just files
+        int numFiles = wxDir::GetAllFiles(GetLogDir(), &results, filePattern, wxDIR_FILES); // No sub-directories, just files
 
         for (int inx = 0; inx < numFiles; inx++)
         {
@@ -155,12 +152,12 @@ void Logger::RemoveMatchingFiles(const wxString& filePattern, int DaysOld)
             if (stamp < oldestDate)
             {
                 ++hitCount;
-                lastFile = results[inx];            // For error logging
+                lastFile = results[inx]; // For error logging
                 wxRemoveFile(lastFile);
             }
         }
     }
-    catch (const wxString& Msg)            // Eat the errors and press ahead, no place for UI here
+    catch (const wxString& Msg) // Eat the errors and press ahead, no place for UI here
     {
         Debug.Write(wxString::Format("Error cleaning up old log file %s: %s\n", lastFile, Msg));
     }
@@ -208,7 +205,7 @@ void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
             }
         }
     }
-    catch (const wxString& Msg)            // Eat the errors and press ahead, no place for UI here
+    catch (const wxString& Msg) // Eat the errors and press ahead, no place for UI here
     {
         Debug.Write(wxString::Format("Error removing old debug log directory %s: %s\n", subdir, Msg));
     }

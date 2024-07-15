@@ -40,7 +40,7 @@
 class GuideAlgorithmZFilter : public GuideAlgorithm
 {
     FILTER_DESIGN m_design;
-    std::vector<double> m_xv, m_yv;  // Historical values up to m_order
+    std::vector<double> m_xv, m_yv; // Historical values up to m_order
     std::vector<double> m_xcoeff, m_ycoeff;
     int m_order;
     double m_gain;
@@ -49,6 +49,7 @@ class GuideAlgorithmZFilter : public GuideAlgorithm
     double m_expFactor;
 
     ZFilterFactory *m_pFactory;
+
 protected:
     class GuideAlgorithmZFilterConfigDialogPane : public ConfigDialogPane
     {

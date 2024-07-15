@@ -1,44 +1,42 @@
 /*
-*  guide_algorithm_zfilter.cpp
-*  PHD Guiding
-*
-*  Created by Ken Self
-*  Copyright (c) 2018 Ken Self
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of openphdguiding.org nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  guide_algorithm_zfilter.cpp
+ *  PHD Guiding
+ *
+ *  Created by Ken Self
+ *  Copyright (c) 2018 Ken Self
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 static const double DefaultMinMove = 0.1;
 static const double DefaultExpFactor = 2.0;
 
-GuideAlgorithmZFilter::GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis),
-      m_pFactory(nullptr)
+GuideAlgorithmZFilter::GuideAlgorithmZFilter(Mount *pMount, GuideAxis axis) : GuideAlgorithm(pMount, axis), m_pFactory(nullptr)
 {
     m_expFactor = DefaultExpFactor;
     m_design = BESSEL;
@@ -72,18 +70,18 @@ void GuideAlgorithmZFilter::reset()
 
 double GuideAlgorithmZFilter::result(double input)
 {
-    double dReturn=0;
+    double dReturn = 0;
 
-//    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
+    //    Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
     double gain = m_gain;
 
-// Shift readings and results
+    // Shift readings and results
     m_xv.insert(m_xv.begin(), (input + m_sumCorr) / gain); // Add total guide output to input to get uncorrected waveform
     m_xv.pop_back();
     m_yv.insert(m_yv.begin(), 0.0);
     m_yv.pop_back();
 
-// Calculate filtered value
+    // Calculate filtered value
     for (int i = 0; i < m_xcoeff.size(); i++)
     {
         m_yv.at(0) += m_xv.at(i) * m_xcoeff.at(i);
@@ -92,7 +90,7 @@ double GuideAlgorithmZFilter::result(double input)
     {
         m_yv.at(0) += m_yv.at(i) * m_ycoeff.at(i);
     }
-    dReturn = m_yv.at(0) -  m_sumCorr; // Return the difference from the uncorrected waveform
+    dReturn = m_yv.at(0) - m_sumCorr; // Return the difference from the uncorrected waveform
 
     if (fabs(dReturn) < m_minMove)
     {
@@ -100,16 +98,17 @@ double GuideAlgorithmZFilter::result(double input)
     }
     m_sumCorr += dReturn;
 
-/*    wxString msg = "GuideAlgorithmZFilter::m_xv ";
-    for (int i = 0; i<m_xcoeff.size(); i++)
-        msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_xv.at(i)));
-    Debug.Write(wxString::Format("%s\n",msg));
-    msg = "GuideAlgorithmZFilter::m_yv ";
-    for (int i = 0; i<m_ycoeff.size(); i++)
-        msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_yv.at(i)));
-    Debug.Write(wxString::Format("%s\n", msg));
-    */
-    Debug.Write(wxString::Format("GuideAlgorithmZFilter::Result() returns %.2f, input %.2f, m_sumCorr=%.2lg\n", dReturn, input, m_sumCorr));
+    /*    wxString msg = "GuideAlgorithmZFilter::m_xv ";
+        for (int i = 0; i<m_xcoeff.size(); i++)
+            msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_xv.at(i)));
+        Debug.Write(wxString::Format("%s\n",msg));
+        msg = "GuideAlgorithmZFilter::m_yv ";
+        for (int i = 0; i<m_ycoeff.size(); i++)
+            msg.Append(wxString::Format("%s%.4lg", i ? "," : "", m_yv.at(i)));
+        Debug.Write(wxString::Format("%s\n", msg));
+        */
+    Debug.Write(wxString::Format("GuideAlgorithmZFilter::Result() returns %.2f, input %.2f, m_sumCorr=%.2lg\n", dReturn, input,
+                                 m_sumCorr));
 
     return dReturn;
 }
@@ -120,8 +119,7 @@ bool GuideAlgorithmZFilter::BuildFilter()
 
     try
     {
-        Debug.Write(wxString::Format("GuideAlgorithmZFilter::order=%d, expFactor=%lf\n",
-            m_order, m_expFactor));
+        Debug.Write(wxString::Format("GuideAlgorithmZFilter::order=%d, expFactor=%lf\n", m_order, m_expFactor));
         if (m_order < 1)
         {
             throw ERROR_INFO("invalid order");
@@ -143,8 +141,8 @@ bool GuideAlgorithmZFilter::BuildFilter()
         m_xcoeff = m_pFactory->xcoeffs;
         m_ycoeff = m_pFactory->ycoeffs;
 
-        Debug.Write(wxString::Format("GuideAlgorithmZFilter::type=%s order=%d, corner=%lf, gain=%lg\n",
-            m_pFactory->getname(), m_order, m_pFactory->corner(), m_gain));
+        Debug.Write(wxString::Format("GuideAlgorithmZFilter::type=%s order=%d, corner=%lf, gain=%lg\n", m_pFactory->getname(),
+                                     m_order, m_pFactory->corner(), m_gain));
         wxString msg = wxString::Format("GuideAlgorithmZFilter::m_xcoeffs:");
         for (int it = 0; it < m_xcoeff.size(); it++)
         {
@@ -179,7 +177,6 @@ bool GuideAlgorithmZFilter::SetMinMove(double minMove)
         }
 
         m_minMove = minMove;
-
     }
     catch (const wxString& Msg)
     {
@@ -206,7 +203,6 @@ bool GuideAlgorithmZFilter::SetExpFactor(double expFactor)
         }
 
         m_expFactor = expFactor;
-
     }
     catch (const wxString& Msg)
     {
@@ -258,8 +254,8 @@ bool GuideAlgorithmZFilter::SetParam(const wxString& name, double val)
 wxString GuideAlgorithmZFilter::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Type=%s-%d, Exp-factor=%.1f, Minimum move = %.3f\n",
-        m_pFactory->getname(), m_order, m_pFactory->corner() / 4.0, GetMinMove());
+    return wxString::Format("Type=%s-%d, Exp-factor=%.1f, Minimum move = %.3f\n", m_pFactory->getname(), m_order,
+                            m_pFactory->corner() / 4.0, GetMinMove());
 }
 
 ConfigDialogPane *GuideAlgorithmZFilter::GetConfigDialogPane(wxWindow *pParent)
@@ -267,63 +263,53 @@ ConfigDialogPane *GuideAlgorithmZFilter::GetConfigDialogPane(wxWindow *pParent)
     return new GuideAlgorithmZFilterConfigDialogPane(pParent, this);
 }
 
-GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterConfigDialogPane::
-    GuideAlgorithmZFilterConfigDialogPane(wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm)
+GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::GuideAlgorithmZFilterConfigDialogPane(
+    wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm)
     : ConfigDialogPane(_("ZFilter Guide Algorithm"), pParent)
 {
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     int width;
     width = StringWidth(_T("00.0"));
-    m_pExpFactor = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
+    m_pExpFactor = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS,
+                                              1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
     m_pExpFactor->SetDigits(1);
 
     DoAdd(_("Exposure Factor"), m_pExpFactor,
-        wxString::Format(_("Multiplied by exposure time gives the equivalent exposure time after filtering. "
-        "Default = %.1f"), DefaultExpFactor));
+          wxString::Format(_("Multiplied by exposure time gives the equivalent exposure time after filtering. "
+                             "Default = %.1f"),
+                           DefaultExpFactor));
     width = StringWidth(_T("000.00"));
-    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS,
+                                            0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
-        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
-
+          wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+                             "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"),
+                           DefaultMinMove));
 }
 
-GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterConfigDialogPane::
-    ~GuideAlgorithmZFilterConfigDialogPane()
-{
-}
+GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::~GuideAlgorithmZFilterConfigDialogPane() { }
 
-void GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterConfigDialogPane::
-    LoadValues()
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::LoadValues()
 {
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
     m_pExpFactor->SetValue(m_pGuideAlgorithm->GetExpFactor());
 }
 
-void GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterConfigDialogPane::
-    UnloadValues()
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::UnloadValues()
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     m_pGuideAlgorithm->SetExpFactor(m_pExpFactor->GetValue());
 }
 
-void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterConfigDialogPane::OnImageScaleChange()
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::OnImageScaleChange()
 {
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
 
-void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterConfigDialogPane::EnableDecControls(bool enable)
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterConfigDialogPane::EnableDecControls(bool enable)
 {
     m_pExpFactor->Enable(enable);
     m_pMinMove->Enable(enable);
@@ -334,9 +320,8 @@ GraphControlPane *GuideAlgorithmZFilter::GetGraphControlPane(wxWindow *pParent, 
     return new GuideAlgorithmZFilterGraphControlPane(pParent, this, label);
 }
 
-GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterGraphControlPane::
-    GuideAlgorithmZFilterGraphControlPane(wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm, const wxString& label)
+GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::GuideAlgorithmZFilterGraphControlPane(
+    wxWindow *pParent, GuideAlgorithmZFilter *pGuideAlgorithm, const wxString& label)
     : GraphControlPane(pParent, label)
 {
     int width;
@@ -344,24 +329,29 @@ GuideAlgorithmZFilter::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("00.0"));
-    m_pExpFactor = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
+    m_pExpFactor = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
+                                              wxSP_ARROW_KEYS, 1.0, 20.0, 2.0, 1.0, _T("ExpFactor"));
     m_pExpFactor->SetDigits(1);
     m_pExpFactor->SetToolTip(
         wxString::Format(_("Multiplied by exposure time gives the equivalent expsoure time after filtering. "
-        "Default = %.1f"), DefaultExpFactor));
-    m_pExpFactor->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnExpFactorSpinCtrlDouble, this);
+                           "Default = %.1f"),
+                         DefaultExpFactor));
+    m_pExpFactor->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED,
+                       &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnExpFactorSpinCtrlDouble, this);
     DoAdd(m_pExpFactor, _("XFac"));
 
     m_pExpFactor->SetValue(m_pGuideAlgorithm->GetExpFactor());
 
     width = StringWidth(_T("000.00"));
-    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
+                                            wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
-    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
-        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
-    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnMinMoveSpinCtrlDouble, this);
+    m_pMinMove->SetToolTip(
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+                           "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"),
+                         DefaultMinMove));
+    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED,
+                     &GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
 
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
@@ -371,33 +361,23 @@ GuideAlgorithmZFilter::
         m_pExpFactor->Enable(currDecGuideMode != DEC_NONE);
         m_pMinMove->Enable(currDecGuideMode != DEC_NONE);
     }
-
 }
 
-GuideAlgorithmZFilter::
-    GuideAlgorithmZFilterGraphControlPane::
-    ~GuideAlgorithmZFilterGraphControlPane()
-{
-}
+GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::~GuideAlgorithmZFilterGraphControlPane() { }
 
-void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterGraphControlPane::EnableDecControls(bool enable)
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::EnableDecControls(bool enable)
 {
     m_pMinMove->Enable(enable);
     m_pExpFactor->Enable(enable);
 }
 
-void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterGraphControlPane::
-OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " ZFilter minimum move", m_pMinMove->GetValue());
 }
 
-void GuideAlgorithmZFilter::
-GuideAlgorithmZFilterGraphControlPane::
-OnExpFactorSpinCtrlDouble(wxSpinDoubleEvent& evt)
+void GuideAlgorithmZFilter::GuideAlgorithmZFilterGraphControlPane::OnExpFactorSpinCtrlDouble(wxSpinDoubleEvent& evt)
 {
     m_pGuideAlgorithm->SetExpFactor(m_pExpFactor->GetValue());
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " ZFilter exposure factor", m_pExpFactor->GetValue());

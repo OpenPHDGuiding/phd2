@@ -39,16 +39,16 @@
 
 #ifdef WDM_CAMERA
 
-#include "cam_wdm_base.h"
-#include "cam_wdm.h"
-#include "CVPlatform.h"
+# include "cam_wdm_base.h"
+# include "cam_wdm.h"
+# include "CVPlatform.h"
 
 CameraWDM::CameraWDM()
 {
     Connected = false;
-    Name = _T("Windows Camera");      // should get overwritten on connect
-    FullSize = wxSize(640, 480);     // should get overwritten on connect
-    m_deviceNumber = -1;  // Which WDM device connected
+    Name = _T("Windows Camera"); // should get overwritten on connect
+    FullSize = wxSize(640, 480); // should get overwritten on connect
+    m_deviceNumber = -1; // Which WDM device connected
     m_deviceMode = -1;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
@@ -174,7 +174,7 @@ bool CameraWDM::SelectDeviceAndMode(SelectionContext ctx)
         // Init the library
         if (CVFAILED(vidCap->Init()))
         {
-            wxMessageBox(_T("Error initializing WDM services"),_("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Error initializing WDM services"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("CVFAILED(VidCap->Init())");
         }
         inited = true;
@@ -239,7 +239,7 @@ bool CameraWDM::SelectDeviceAndMode(SelectionContext ctx)
             if (CVSUCCESS(vidCap->GetModeInfo(curmode, modeInfo)))
             {
                 modeNames.Add(wxString::Format("%dx%d (%s) %d fps", modeInfo.XRes, modeInfo.YRes,
-                    vidCap->GetFormatModeName(modeInfo.InputFormat), modeInfo.EstFrameRate));
+                                               vidCap->GetFormatModeName(modeInfo.InputFormat), modeInfo.EstFrameRate));
             }
         }
 
@@ -300,7 +300,7 @@ bool CameraWDM::Connect(const wxString& camId)
         // Init the library
         if (CVFAILED(m_pVidCap->Init()))
         {
-            wxMessageBox(_T("Error initializing WDM services"), _("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Error initializing WDM services"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("CVFAILED(VidCap->Init())");
         }
 
@@ -323,7 +323,8 @@ bool CameraWDM::Connect(const wxString& camId)
         }
         else
         {
-            wxMessageBox(wxString::Format("Error connecting to WDM device #%d", m_deviceNumber), _("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(wxString::Format("Error connecting to WDM device #%d", m_deviceNumber), _("Error"),
+                         wxOK | wxICON_ERROR);
             throw ERROR_INFO("Error connecting to WDM device");
         }
 
@@ -337,15 +338,13 @@ bool CameraWDM::Connect(const wxString& camId)
         CVVidCapture::VIDCAP_MODE modeInfo;
         if (CVFAILED(m_pVidCap->GetCurrentMode(modeInfo)))
         {
-            wxMessageBox(wxString::Format("Error probing video mode %d", m_deviceMode),_("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(wxString::Format("Error probing video mode %d", m_deviceMode), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("GetCurrentMode() failed");
         }
 
         // RAW YUY2 format encodes two 8-bit greyscale pixels per pseudo-YUY2 value
         // so the width is twice the video mode's advertised width
-        FullSize = m_rawYUY2 ?
-            wxSize(modeInfo.XRes * 2, modeInfo.YRes) :
-            wxSize(modeInfo.XRes, modeInfo.YRes);
+        FullSize = m_rawYUY2 ? wxSize(modeInfo.XRes * 2, modeInfo.YRes) : wxSize(modeInfo.XRes, modeInfo.YRes);
 
         // Start the stream
         m_captureMode = NOT_CAPTURING; // Make sure we don't start saving yet

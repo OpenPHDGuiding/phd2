@@ -49,10 +49,9 @@ wxBEGIN_EVENT_TABLE(TargetWindow, wxWindow)
 wxEND_EVENT_TABLE();
 // clang-format on
 
-TargetWindow::TargetWindow(wxWindow *parent) :
-    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, 0,_("Target"))
+TargetWindow::TargetWindow(wxWindow *parent) : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("Target"))
 {
-    //SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    // SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     SetBackgroundColour(*wxBLACK);
 
     m_visible = false;
@@ -64,7 +63,8 @@ TargetWindow::TargetWindow(wxWindow *parent) :
     pMainSizer->Add(pLeftSizer);
 
     wxString label = wxString::Format("%3d", m_pClient->m_length);
-    m_lengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(40/*80*/,-1),wxALIGN_CENTER_HORIZONTAL);
+    m_lengthButton = new OptionsButton(this, BUTTON_GRAPH_LENGTH, label, wxDefaultPosition, wxSize(40 /*80*/, -1),
+                                       wxALIGN_CENTER_HORIZONTAL);
     m_lengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     wxBoxSizer *pZoomSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -78,7 +78,7 @@ TargetWindow::TargetWindow(wxWindow *parent) :
     pZoomSizer->Add(zoomInButton, wxSizerFlags(1).Expand());
     pZoomSizer->Add(zoomOutButton, wxSizerFlags(1).Expand());
 
-    wxButton *clearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxDefaultPosition,wxSize(80,-1));
+    wxButton *clearButton = new wxButton(this, BUTTON_GRAPH_CLEAR, _("Clear"), wxDefaultPosition, wxSize(80, -1));
     clearButton->SetToolTip(_("Clear graph data"));
 
     m_enableRefCircle = new wxCheckBox(this, TARGET_ENABLE_REF_CIRCLE, _("Reference Circle"));
@@ -96,7 +96,8 @@ TargetWindow::TargetWindow(wxWindow *parent) :
 
     int w, h;
     GetTextExtent(_T("88.8"), &w, &h);
-    m_refCircleRadius = pFrame->MakeSpinCtrlDouble(this, TARGET_REF_CIRCLE_RADIUS, wxEmptyString, wxDefaultPosition, wxSize(w, -1));
+    m_refCircleRadius =
+        pFrame->MakeSpinCtrlDouble(this, TARGET_REF_CIRCLE_RADIUS, wxEmptyString, wxDefaultPosition, wxSize(w, -1));
     m_refCircleRadius->SetToolTip(_("Reference circle radius"));
     m_refCircleRadius->SetRange(0.1, 10.0);
     m_refCircleRadius->SetIncrement(0.1);
@@ -107,11 +108,11 @@ TargetWindow::TargetWindow(wxWindow *parent) :
 
     pLeftSizer->Add(m_lengthButton, wxSizerFlags().Center().Border(wxTOP | wxRIGHT | wxLEFT, 5).Expand());
     pLeftSizer->Add(pZoomSizer, wxSizerFlags().Border(wxRIGHT | wxLEFT, 5).Expand());
-    pLeftSizer->Add(clearButton, wxSizerFlags().Border(wxRIGHT | wxLEFT,5).Expand());
+    pLeftSizer->Add(clearButton, wxSizerFlags().Border(wxRIGHT | wxLEFT, 5).Expand());
     pLeftSizer->Add(m_enableRefCircle, wxSizerFlags().Center().Border(wxALL, 3).Expand());
     pLeftSizer->Add(sizer1, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT, 5).Expand());
 
-    pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL,3).Expand().Proportion(1));
+    pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL, 3).Expand().Proportion(1));
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
@@ -164,8 +165,7 @@ void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
             break;
     }
 
-    PopupMenu(menu, m_lengthButton->GetPosition().x,
-        m_lengthButton->GetPosition().y + m_lengthButton->GetSize().GetHeight());
+    PopupMenu(menu, m_lengthButton->GetPosition().x, m_lengthButton->GetPosition().y + m_lengthButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -233,8 +233,8 @@ wxBEGIN_EVENT_TABLE(TargetClient, wxWindow)
 wxEND_EVENT_TABLE();
 // clang-format on
 
-TargetClient::TargetClient(wxWindow *parent) :
-    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE )
+TargetClient::TargetClient(wxWindow *parent)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201, 201), wxFULL_REPAINT_ON_RESIZE)
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -249,16 +249,14 @@ TargetClient::TargetClient(wxWindow *parent) :
         m_zoom = MIN_ZOOM;
 }
 
-TargetClient::~TargetClient(void)
-{
-}
+TargetClient::~TargetClient(void) { }
 
 void TargetClient::AppendData(const GuideStepInfo& step)
 {
-    memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
+    memmove(&m_history, &m_history[1], sizeof(m_history[0]) * (m_maxHistorySize - 1));
 
-    m_history[m_maxHistorySize-1].ra = step.mountOffset.X;
-    m_history[m_maxHistorySize-1].dec = step.mountOffset.Y;
+    m_history[m_maxHistorySize - 1].ra = step.mountOffset.X;
+    m_history[m_maxHistorySize - 1].dec = step.mountOffset.Y;
 
     if (m_nItems < m_maxHistorySize)
     {
@@ -271,20 +269,20 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     wxAutoBufferedPaintDC dc(this);
 
     dc.SetBackground(*wxBLACK_BRUSH);
-    //dc.SetBackground(wxColour(10,0,0));
+    // dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
-    wxColour Grey(128,128,128);
-    wxPen GreySolidPen = wxPen(Grey,1, wxPENSTYLE_SOLID);
-    wxPen GreyDashPen = wxPen(Grey,1, wxPENSTYLE_DOT);
+    wxColour Grey(128, 128, 128);
+    wxPen GreySolidPen = wxPen(Grey, 1, wxPENSTYLE_SOLID);
+    wxPen GreyDashPen = wxPen(Grey, 1, wxPENSTYLE_DOT);
 
-    dc.SetTextForeground(wxColour(200,200,200));
-    dc.SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    dc.SetTextForeground(wxColour(200, 200, 200));
+    dc.SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     dc.SetPen(GreySolidPen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     wxSize size = GetClientSize();
-    wxPoint center(size.x/2, size.y/2);
+    wxPoint center(size.x / 2, size.y / 2);
     int radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
 
     int leftEdge = center.x - radius_max;
@@ -300,29 +298,29 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     // Draw reference circle
     if (m_refCircleRadius > 0.0)
     {
-        wxDCBrushChanger b(dc, wxBrush(wxColor(55,55,55)));
+        wxDCBrushChanger b(dc, wxBrush(wxColor(55, 55, 55)));
         wxDCPenChanger p(dc, *wxTRANSPARENT_PEN);
         dc.DrawCircle(center, m_refCircleRadius * scale * m_zoom / sampling);
     }
 
     // Draw circles
 
-    for (int i = 1 ; i <= 4 ; i++)
+    for (int i = 1; i <= 4; i++)
     {
         int rr = radius_max * i / 4;
         dc.DrawCircle(center, rr);
-        wxString l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1.0 ? "''" : "");
+        wxString l = wxString::Format(_T("%g%s"), i / 2.0 / m_zoom, sampling != 1.0 ? "''" : "");
         wxSize sl = dc.GetTextExtent(l);
         dc.DrawText(l, center.x - sl.x - 1, center.y - rr - sl.y);
     }
 
     // Draw axes
-    dc.DrawLine(3, center.y , size.x - 3, center.y);
+    dc.DrawLine(3, center.y, size.x - 3, center.y);
     dc.DrawLine(center.x, 3, center.x, size.y - 3);
 
     double r = radius_max / (2 / m_zoom);
     int g = size.x / 100;
-    for (double x = 0 ; x < size.x ; x += r/4)
+    for (double x = 0; x < size.x; x += r / 4)
     {
         if (x != radius_max && x != r)
         {
@@ -330,7 +328,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.DrawLine(center.x - x, center.y - g, center.x - x, center.y + g);
         }
     }
-    for (double y = 0 ; y < size.y ; y += r/4)
+    for (double y = 0; y < size.y; y += r / 4)
     {
         if (y != radius_max && y != r)
         {
@@ -365,15 +363,15 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     GuideParity raParity = pMount ? pMount->RAParity() : GUIDE_PARITY_UNKNOWN;
     if (raParity == GUIDE_PARITY_EVEN)
-        dc.DrawText(_("SkyE"), size.x - d_width * 5, center.y + 5);  // sky E = mount E
+        dc.DrawText(_("SkyE"), size.x - d_width * 5, center.y + 5); // sky E = mount E
     else if (raParity == GUIDE_PARITY_ODD)
-        dc.DrawText(_("SkyE"), leftEdge, center.y + 5);              // sky E = mount W
+        dc.DrawText(_("SkyE"), leftEdge, center.y + 5); // sky E = mount W
 
     GuideParity decParity = pMount ? pMount->DecParity() : GUIDE_PARITY_UNKNOWN;
     if (decParity == GUIDE_PARITY_EVEN)
-        dc.DrawText(_("SkyN"), center.x + 5, center.y + 5 - radius_max);    // sky N = mount N
+        dc.DrawText(_("SkyN"), center.x + 5, center.y + 5 - radius_max); // sky N = mount N
     else if (decParity == GUIDE_PARITY_ODD)
-        dc.DrawText(_("SkyN"), center.x + 5, center.y + 5 + radius_max);    // sky N = mount S
+        dc.DrawText(_("SkyN"), center.x + 5, center.y + 5 + radius_max); // sky N = mount S
 
     dc.SetPen(wxPen(wxColour(127, 127, 255), 1, wxPENSTYLE_SOLID));
     for (unsigned int i = startPoint; i < m_maxHistorySize; i++)

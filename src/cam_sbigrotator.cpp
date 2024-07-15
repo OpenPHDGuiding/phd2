@@ -36,8 +36,8 @@
 
 #if defined(SBIG) && defined(SBIGROTATOR_CAMERA)
 
-#include "cam_sbigrotator.h"
-#include "cam_sbig.h"
+# include "cam_sbigrotator.h"
+# include "cam_sbig.h"
 
 class CameraSBIGRotator : public GuideCamera
 {
@@ -80,7 +80,7 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
 
     try
     {
-        wxString raAngle = wxGetTextFromUser(_("Enter RA Angle (in degrees)"),_("RA angle"), _T("0.0"));
+        wxString raAngle = wxGetTextFromUser(_("Enter RA Angle (in degrees)"), _("RA angle"), _T("0.0"));
         double temp;
 
         if (raAngle.length() == 0 || !raAngle.ToDouble(&temp))
@@ -95,8 +95,7 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
         choices.Add(wxString::Format("Unmirrored (%.2f)", temp - 90));
         choices.Add(wxString::Format("Mirrored (%.2f)", temp + 90));
 
-        int idx = wxGetSingleChoiceIndex(_("Choose Dec Angle"), _("Dec Angle"),
-                                              choices);
+        int idx = wxGetSingleChoiceIndex(_("Choose Dec Angle"), _("Dec Angle"), choices);
         if (idx == -1)
             return true;
 
@@ -151,7 +150,7 @@ bool CameraSBIGRotator::Capture(int duration, usImage& img, int options, const w
     return bError;
 }
 
-bool CameraSBIGRotator::ST4PulseGuideScope (int direction, int duration)
+bool CameraSBIGRotator::ST4PulseGuideScope(int direction, int duration)
 {
     return m_pSubcamera->ST4PulseGuideScope(direction, duration);
 }

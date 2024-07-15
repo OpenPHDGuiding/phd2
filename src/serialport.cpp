@@ -35,13 +35,9 @@
 
 #include "phd.h"
 
-SerialPort::SerialPort(void)
-{
-}
+SerialPort::SerialPort(void) { }
 
-SerialPort::~SerialPort(void)
-{
-}
+SerialPort::~SerialPort(void) { }
 
 SerialPort *SerialPort::SerialPortFactory(void)
 {

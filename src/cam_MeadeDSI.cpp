@@ -36,16 +36,16 @@
 
 #ifdef MEADE_DSI_CAMERA
 
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include "cam_MeadeDSI.h"
+# include "camera.h"
+# include "time.h"
+# include "image_math.h"
+# include "cam_MeadeDSI.h"
 
-#if defined(__APPLE__)
-# include <IOKit/usb/IOUSBLib.h>
-#endif
+# if defined(__APPLE__)
+#  include <IOKit/usb/IOUSBLib.h>
+# endif
 
-#include "DsiDevice.h"
+# include "DsiDevice.h"
 
 class DsiDevice;
 
@@ -57,21 +57,20 @@ public:
     CameraDSI();
     ~CameraDSI();
 
-    bool   CanSelectCamera() const override { return true; }
-    bool   EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool   HasNonGuiCapture() override;
+    bool CanSelectCamera() const override { return true; }
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
-    bool   Connect(const wxString& camId) override;
-    bool   Disconnect() override;
-    bool   GetDevicePixelSize(double *devPixelSize) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
 };
 
-CameraDSI::CameraDSI()
-    : MeadeCam(0)
+CameraDSI::CameraDSI() : MeadeCam(0)
 {
     Name = _T("Meade DSI");
-    FullSize = wxSize(768,505); // CURRENTLY ULTRA-RAW
+    FullSize = wxSize(768, 505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
 
@@ -130,18 +129,25 @@ bool CameraDSI::Connect(const wxString& camId)
     }
 
     retval = !(MeadeCam->Open(DevNum));
-//  wxMessageBox(wxString::Format("Color: %d\n%u x %u",
-//      MeadeCam->IsColor,MeadeCam->GetWidth(),MeadeCam->GetHeight()));
-    if (!retval) {
-        FullSize = wxSize(MeadeCam->GetWidth(),MeadeCam->GetHeight());
-//      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-II: %d\n%u x %u",MeadeCam->CcdName,MeadeCam->ModelName, MeadeCam->ModelNumber,
-//          MeadeCam->IsColor,MeadeCam->IsDsiII, FullSize.GetWidth(), FullSize.GetHeight()) + "\n" + MeadeCam->ErrorMessage);
-//      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-USB2: %d\n%u x %u",MeadeCam->CcdName,MeadeCam->ModelName, MeadeCam->ModelNumber,
-//                                    MeadeCam->IsColor,MeadeCam->IsUSB2, FullSize.GetWidth(), FullSize.GetHeight()) + "\n" + MeadeCam->ErrorMessage);
+    //  wxMessageBox(wxString::Format("Color: %d\n%u x %u",
+    //      MeadeCam->IsColor,MeadeCam->GetWidth(),MeadeCam->GetHeight()));
+    if (!retval)
+    {
+        FullSize = wxSize(MeadeCam->GetWidth(), MeadeCam->GetHeight());
+        //      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-II: %d\n%u x %u",MeadeCam->CcdName,MeadeCam->ModelName,
+        //      MeadeCam->ModelNumber,
+        //          MeadeCam->IsColor,MeadeCam->IsDsiII, FullSize.GetWidth(), FullSize.GetHeight()) + "\n" +
+        //          MeadeCam->ErrorMessage);
+        //      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-USB2: %d\n%u x
+        //      %u",MeadeCam->CcdName,MeadeCam->ModelName, MeadeCam->ModelNumber,
+        //                                    MeadeCam->IsColor,MeadeCam->IsUSB2, FullSize.GetWidth(), FullSize.GetHeight()) +
+        //                                    "\n" + MeadeCam->ErrorMessage);
         MeadeCam->Initialize();
         MeadeCam->SetHighGain(true);
-        if (!MeadeCam->IsDsiIII) MeadeCam->SetDualExposureThreshold(501);
-        else MeadeCam->SetBinMode(1);
+        if (!MeadeCam->IsDsiIII)
+            MeadeCam->SetDualExposureThreshold(501);
+        else
+            MeadeCam->SetBinMode(1);
 
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
@@ -176,7 +182,7 @@ bool CameraDSI::GetDevicePixelSize(double *devPixelSize)
     else
         *devPixelSize = 7.5;
 
-    return false;                               // Pixel sizes are hard-coded
+    return false; // Pixel sizes are hard-coded
 }
 
 bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
@@ -196,7 +202,7 @@ bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& s
 
 // The AbortImage method does not appear to work with the DSI camera.  If abort is called and the thread is terminated, the
 // pending image is still downloaded and PHD2 will crash
-#if AbortActuallyWorks
+# if AbortActuallyWorks
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     // wait for image to finish and d/l
@@ -215,23 +221,26 @@ bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& s
             return true;
         }
     }
-#else // handle the pending image download, regardless
+# else // handle the pending image download, regardless
 
     // We also need to prevent the thread from being killed when phd2 is closed
     WorkerThreadKillGuard _guard;
 
-    if (duration > 100) {
+    if (duration > 100)
+    {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
     }
     bool still_going = true;
-    while (still_going) {  // wait for image to finish and d/l
+    while (still_going)
+    { // wait for image to finish and d/l
         wxMilliSleep(20);
         still_going = !(MeadeCam->ImageReady);
     }
 
-#endif // end of waiting for the image
+# endif // end of waiting for the image
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     if (options & CAPTURE_RECON)
     {
@@ -239,7 +248,7 @@ bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& s
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
             SquarePixels(img, 8.6, 8.3);
-        else if (!MeadeCam->IsDsiIII)           // Original DSI
+        else if (!MeadeCam->IsDsiIII) // Original DSI
             SquarePixels(img, 9.6, 7.5);
     }
 

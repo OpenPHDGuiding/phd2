@@ -43,16 +43,13 @@ class OptionsButton : public wxPanel
     wxBitmap *m_bmp_bold;
 
 public:
-
-    OptionsButton(wxWindow *parent, wxWindowID id, const wxString& label,
-                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-                  long style = wxTAB_TRAVERSAL, const wxString& name = "OptionsButton");
+    OptionsButton(wxWindow *parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition,
+                  const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL, const wxString& name = "OptionsButton");
     ~OptionsButton();
 
     void SetLabel(const wxString& label);
 
 private:
-
     wxSize GetMinSize() const;
 
     void OnPaint(wxPaintEvent& evt);

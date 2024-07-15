@@ -35,24 +35,24 @@
 
 #include "phd.h"
 
-#if defined (SXV)
+#if defined(SXV)
 
-#include "cam_sxv.h"
-#include "image_math.h"
+# include "cam_sxv.h"
+# include "image_math.h"
 
-#include <wx/choicdlg.h>
+# include <wx/choicdlg.h>
 
-#if defined (__WINDOWS__)
-# include "cameras/SXUSB.h"
+# if defined(__WINDOWS__)
+#  include "cameras/SXUSB.h"
 typedef struct t_sxccd_params sxccd_params_t;
 typedef HANDLE sxccd_handle_t;
-# define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME
-# define SXCCD_EXP_FLAGS_FIELD_ODD    CCD_EXP_FLAGS_FIELD_ODD
-# define SXCCD_EXP_FLAGS_FIELD_BOTH   CCD_EXP_FLAGS_FIELD_BOTH
-#else
-# include "cameras/SXMacLib.h"
+#  define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME
+#  define SXCCD_EXP_FLAGS_FIELD_ODD CCD_EXP_FLAGS_FIELD_ODD
+#  define SXCCD_EXP_FLAGS_FIELD_BOTH CCD_EXP_FLAGS_FIELD_BOTH
+# else
+#  include "cameras/SXMacLib.h"
 typedef void *sxccd_handle_t;
-#endif
+# endif
 
 class CameraSXV : public GuideCamera
 {
@@ -70,7 +70,6 @@ class CameraSXV : public GuideCamera
     double m_devicePixelSize;
 
 public:
-
     CameraSXV();
     ~CameraSXV();
 
@@ -92,7 +91,8 @@ private:
     void InitFrameSizes();
 };
 
-enum {
+enum
+{
     SX_CMOS_GUIDER = 39,
 };
 
@@ -107,53 +107,141 @@ static wxString NameFromModel(int model)
 
     switch (model)
     {
-        case 0x05: m = "SX-H5"; break;
-        case 0x85: m = "SX-H5C"; break;
-        case 0x09: m = "SX-H9"; break; // this is almost certainly a Superstar
-        case 0x89: m = "SX-H9C"; break;
-        case 0x39: m = "SX-LS9"; break;
-        case 0x19: m = "SX-SX9"; break;
-        case 0x99: m = "SX-SX9C"; break;
-        case 0x10: m = "SX-H16"; break;
-        case 0x90: m = "SX-H16C"; break;
-        case 0x11: m = "SX-H17"; break;
-        case 0x91: m = "SX-H17C"; break;
-        case 0x12: m = "SX-H18"; break;
-        case 0x92: m = "SX-H18C"; break;
-        case 0x23: m = "SX-H35"; break;
-        case 0xB3: m = "SX-H35C"; break;
-        case 0x24: m = "SX-H36"; break;
-        case 0xB4: m = "SX-H36C"; break;
-        case 0x56: m = "SX-H674"; break;
-        case 0xB6: m = "SX-H674C"; break;
-        case 0x57: m = "SX-H694"; break;
-        case 0xB7: m = "SX-H694C"; break;
-        case 0x28: m = "SX-H814"; break;
-        case 0xA8: m = "SX-H814C"; break;
-        case 0x29: m = "SX-H834"; break;
-        case 0xA9: m = "SX-H834C"; break;
-        case 0x3B: m = "SX-H825"; break;
-        case 0xBB: m = "SX-H825C"; break;
-        case 0x3C: m = "SX-US825"; break;
-        case 0xBC: m = "SX-US825C"; break;
-            // interlaced models
-        case 0x45: m = "SX-MX5"; break;
-        case 0x84: m = "SX-MX5C"; break;
-        case 0x46: m = "SX-LX1"; break;
-        case 0x47: m = "SX-MX7"; break;
-        case 0xC7: m = "SX-MX7C"; break;
-        case 0x48: m = "SX-MX8"; break;
-        case 0xC8: m = "SX-MX8C"; break;
-        case 0x49: m = "SX-MX9"; break;
-        case 0x59: m = "SX-M25"; break;
-        case 0x5A: m = "SX-M26"; break;
-            // development models
-        case 0x0C: m = "SX-DEV1"; break;
-        case 0x0D: m = "SX-DEV2"; break;
-        case 0x0E: m = "SX-DEV3"; break;
-        case 0x0F: m = "SX-DEV4"; break;
+    case 0x05:
+        m = "SX-H5";
+        break;
+    case 0x85:
+        m = "SX-H5C";
+        break;
+    case 0x09:
+        m = "SX-H9";
+        break; // this is almost certainly a Superstar
+    case 0x89:
+        m = "SX-H9C";
+        break;
+    case 0x39:
+        m = "SX-LS9";
+        break;
+    case 0x19:
+        m = "SX-SX9";
+        break;
+    case 0x99:
+        m = "SX-SX9C";
+        break;
+    case 0x10:
+        m = "SX-H16";
+        break;
+    case 0x90:
+        m = "SX-H16C";
+        break;
+    case 0x11:
+        m = "SX-H17";
+        break;
+    case 0x91:
+        m = "SX-H17C";
+        break;
+    case 0x12:
+        m = "SX-H18";
+        break;
+    case 0x92:
+        m = "SX-H18C";
+        break;
+    case 0x23:
+        m = "SX-H35";
+        break;
+    case 0xB3:
+        m = "SX-H35C";
+        break;
+    case 0x24:
+        m = "SX-H36";
+        break;
+    case 0xB4:
+        m = "SX-H36C";
+        break;
+    case 0x56:
+        m = "SX-H674";
+        break;
+    case 0xB6:
+        m = "SX-H674C";
+        break;
+    case 0x57:
+        m = "SX-H694";
+        break;
+    case 0xB7:
+        m = "SX-H694C";
+        break;
+    case 0x28:
+        m = "SX-H814";
+        break;
+    case 0xA8:
+        m = "SX-H814C";
+        break;
+    case 0x29:
+        m = "SX-H834";
+        break;
+    case 0xA9:
+        m = "SX-H834C";
+        break;
+    case 0x3B:
+        m = "SX-H825";
+        break;
+    case 0xBB:
+        m = "SX-H825C";
+        break;
+    case 0x3C:
+        m = "SX-US825";
+        break;
+    case 0xBC:
+        m = "SX-US825C";
+        break;
+        // interlaced models
+    case 0x45:
+        m = "SX-MX5";
+        break;
+    case 0x84:
+        m = "SX-MX5C";
+        break;
+    case 0x46:
+        m = "SX-LX1";
+        break;
+    case 0x47:
+        m = "SX-MX7";
+        break;
+    case 0xC7:
+        m = "SX-MX7C";
+        break;
+    case 0x48:
+        m = "SX-MX8";
+        break;
+    case 0xC8:
+        m = "SX-MX8C";
+        break;
+    case 0x49:
+        m = "SX-MX9";
+        break;
+    case 0x59:
+        m = "SX-M25";
+        break;
+    case 0x5A:
+        m = "SX-M26";
+        break;
+        // development models
+    case 0x0C:
+        m = "SX-DEV1";
+        break;
+    case 0x0D:
+        m = "SX-DEV2";
+        break;
+    case 0x0E:
+        m = "SX-DEV3";
+        break;
+    case 0x0F:
+        m = "SX-DEV4";
+        break;
 
-        default: m = wxString::Format("SX Camera Model %d", model); break;
+    default:
+        m = wxString::Format("SX Camera Model %d", model);
+        break;
     }
 
     if (model == 0x46)
@@ -195,14 +283,16 @@ wxByte CameraSXV::BitsPerPixel()
 class SXCameraDlg : public wxDialog
 {
 public:
-    wxCheckBox* m_squarePixels;
+    wxCheckBox *m_squarePixels;
 
     SXCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("SX Camera Settings"),
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
+                const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133),
+                long style = wxDEFAULT_DIALOG_STYLE);
     ~SXCameraDlg() { }
 };
 
-SXCameraDlg::SXCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+SXCameraDlg::SXCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size,
+                         long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -214,9 +304,9 @@ SXCameraDlg::SXCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title,
     sbSizer3->Add(m_squarePixels, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
 
-    wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
+    wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -269,7 +359,7 @@ void CameraSXV::InitFrameSizes()
         {
             FullSize.SetWidth(CCDParams.width / Binning);
             // This is the height after squaring pixels.
-            FullSize.SetHeight((int)floor((float)(CCDParams.height / Binning) * CCDParams.pix_height / CCDParams.pix_width));
+            FullSize.SetHeight((int) floor((float) (CCDParams.height / Binning) * CCDParams.pix_height / CCDParams.pix_width));
         }
         else
         {
@@ -282,17 +372,17 @@ void CameraSXV::InitFrameSizes()
         m_darkFrameSize = FullSize;
     }
 
-    Debug.Write(wxString::Format("SXV: Bin = %hu, dark size = %dx%d, frame size = %dx%d\n",
-        Binning, m_darkFrameSize.x, m_darkFrameSize.y, FullSize.x, FullSize.y));
+    Debug.Write(wxString::Format("SXV: Bin = %hu, dark size = %dx%d, frame size = %dx%d\n", Binning, m_darkFrameSize.x,
+                                 m_darkFrameSize.y, FullSize.x, FullSize.y));
 }
 
 bool CameraSXV::Connect(const wxString& camId)
 {
     // returns true on error
 
-#if defined (__APPLE__) || defined (__linux__) || defined (__FreeBSD__)
+# if defined(__APPLE__) || defined(__linux__) || defined(__FreeBSD__)
     sxSetTimeoutMS(m_timeoutMs);
-#endif
+# endif
 
     long idx = -1;
     if (camId == DEFAULT_CAMERA_ID)
@@ -338,7 +428,7 @@ bool CameraSXV::Connect(const wxString& camId)
 
     Name = NameFromModel(CameraModel);
 
-    if (CameraModel & 0x80)  // color
+    if (CameraModel & 0x80) // color
         ColorSensor = true;
     else
         ColorSensor = false;
@@ -396,12 +486,13 @@ bool CameraSXV::Connect(const wxString& camId)
     }
 
     Debug.AddLine("SX Camera: " + Name);
-    Debug.AddLine(wxString::Format("SX Camera Params: %u x %u (reported as %u x %u) PixSz: %.2f x %.2f; #Pix: %u Array color type: %u,%u Interlaced: %d Model: %u, Subype: %u, Porch: %u,%u %u,%u Extras: %u",
-            FullSize.GetWidth(), FullSize.GetHeight(), CCDParams.width, CCDParams.height,
-            CCDParams.pix_width, CCDParams.pix_height, FullSize.GetHeight() * FullSize.GetWidth(),
-            CCDParams.color_matrix, (int) ColorSensor, (int) Interlaced,
-            CameraModel, SubType, CCDParams.hfront_porch, CCDParams.hback_porch, CCDParams.vfront_porch, CCDParams.vback_porch,
-            CCDParams.extra_caps));
+    Debug.AddLine(wxString::Format("SX Camera Params: %u x %u (reported as %u x %u) PixSz: %.2f x %.2f; #Pix: %u Array color "
+                                   "type: %u,%u Interlaced: %d Model: %u, Subype: %u, Porch: %u,%u %u,%u Extras: %u",
+                                   FullSize.GetWidth(), FullSize.GetHeight(), CCDParams.width, CCDParams.height,
+                                   CCDParams.pix_width, CCDParams.pix_height, FullSize.GetHeight() * FullSize.GetWidth(),
+                                   CCDParams.color_matrix, (int) ColorSensor, (int) Interlaced, CameraModel, SubType,
+                                   CCDParams.hfront_porch, CCDParams.hback_porch, CCDParams.vfront_porch, CCDParams.vback_porch,
+                                   CCDParams.extra_caps));
 
     if (!err)
         Connected = true;
@@ -450,28 +541,35 @@ static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsign
     {
         int oddbias, evenbias;
         oddbias = evenbias = 0;
-        for (int x = 0; x < 16; x += 2) { // Figure the offsets for this line
-            oddbias += (int)*rawptr++;
-            evenbias += (int)*rawptr++;
+        for (int x = 0; x < 16; x += 2)
+        { // Figure the offsets for this line
+            oddbias += (int) *rawptr++;
+            evenbias += (int) *rawptr++;
         }
-        oddbias = oddbias / 8 - 1000;  // Create avg and pre-build in the offset to keep off of the floor
+        oddbias = oddbias / 8 - 1000; // Create avg and pre-build in the offset to keep off of the floor
         evenbias = evenbias / 8 - 1000;
-        for (int x = 0; x < output_xsize; x += 2) { // Load value into new image array pulling out right bias
-            int val = (int)*rawptr++ - oddbias;
-            if (val < 0) val = 0;  // Bounds check
-            else if (val > 65535) val = 65535;
-            *dataptr++ = (unsigned short)val;
-            val = (int)*rawptr++ - evenbias;
-            if (val < 0) val = 0;  // Bounds check
-            else if (val > 65535) val = 65535;
-            *dataptr++ = (unsigned short)val;
+        for (int x = 0; x < output_xsize; x += 2)
+        { // Load value into new image array pulling out right bias
+            int val = (int) *rawptr++ - oddbias;
+            if (val < 0)
+                val = 0; // Bounds check
+            else if (val > 65535)
+                val = 65535;
+            *dataptr++ = (unsigned short) val;
+            val = (int) *rawptr++ - evenbias;
+            if (val < 0)
+                val = 0; // Bounds check
+            else if (val > 65535)
+                val = 65535;
+            *dataptr++ = (unsigned short) val;
         }
     }
 
     return false;
 }
 
-static bool InitImgInterlacedInterp(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame, const usImage& tmp)
+static bool InitImgInterlacedInterp(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame,
+                                    const usImage& tmp)
 {
     if (img.Init(FullSize))
         return true;
@@ -521,15 +619,15 @@ static bool InitImgInterlacedInterp(usImage& img, const wxSize& FullSize, bool s
 }
 
 static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame,
-    const sxccd_params_t& ccdparams, int binning, const usImage& tmp)
+                                    const sxccd_params_t& ccdparams, int binning, const usImage& tmp)
 {
     // pixels are vertically binned. resample to create square, un-binned pixels
     //
     //  xsize = number of columns (752)
     //  ysize = number of rows read from camera (290)
 
-    float const pw = ccdparams.pix_width * binning;   // bin1: 8.6, bin2: 17.2
-    float const ph = ccdparams.pix_height;  // reported value is for the binned pixel (16.6)
+    float const pw = ccdparams.pix_width * binning; // bin1: 8.6, bin2: 17.2
+    float const ph = ccdparams.pix_height; // reported value is for the binned pixel (16.6)
     float const r0 = pw / ph;
 
     if (img.Init(FullSize))
@@ -561,7 +659,7 @@ static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool s
         {
             const unsigned short *src = raw + p0 * fullw + xofs;
             for (int x = 0; x < framew; x++)
-                *dst++ = (unsigned short)(r0 * (float) *src++);
+                *dst++ = (unsigned short) (r0 * (float) *src++);
         }
         else
         {
@@ -570,7 +668,7 @@ static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool s
             const unsigned short *src0 = raw + p0 * fullw + xofs;
             const unsigned short *src1 = raw + p1 * fullw + xofs;
             for (int x = 0; x < framew; x++)
-                *dst++ = (unsigned short)(r0 * (float)*src0++ + r1 * (float)*src1++);
+                *dst++ = (unsigned short) (r0 * (float) *src0++ + r1 * (float) *src1++);
         }
 
         y0 = y1;
@@ -581,8 +679,8 @@ static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool s
     return false;
 }
 
-static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yofs, unsigned int xsize,
-    unsigned int ysize, bool subframe, const wxSize& FullSize, const unsigned short *raw)
+static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yofs, unsigned int xsize, unsigned int ysize,
+                               bool subframe, const wxSize& FullSize, const unsigned short *raw)
 {
     if (img.Init(FullSize))
         return true;
@@ -607,7 +705,7 @@ static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yof
     return false;
 }
 
-inline static void swap(unsigned short *&a, unsigned short *&b)
+inline static void swap(unsigned short *& a, unsigned short *& b)
 {
     unsigned short *tmp = a;
     a = b;
@@ -625,9 +723,8 @@ static bool ClearPixels(sxccd_handle_t sxHandle, unsigned short flags)
     return true;
 }
 
-static bool LatchPixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset,
-    unsigned short yoffset, unsigned short width, unsigned short height, unsigned short xbin,
-    unsigned short ybin)
+static bool LatchPixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset,
+                        unsigned short width, unsigned short height, unsigned short xbin, unsigned short ybin)
 {
     int ret = sxLatchPixels(sxHandle, flags, 0, xoffset, yoffset, width, height, xbin, ybin);
     if (ret == 0)
@@ -638,9 +735,9 @@ static bool LatchPixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned 
     return true;
 }
 
-static bool ExposePixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset,
-    unsigned short yoffset, unsigned short width, unsigned short height, unsigned short xbin,
-    unsigned short ybin, unsigned int msec)
+static bool ExposePixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset,
+                         unsigned short width, unsigned short height, unsigned short xbin, unsigned short ybin,
+                         unsigned int msec)
 {
     int ret = sxExposePixels(sxHandle, flags, 0, xoffset, yoffset, width, height, xbin, ybin, msec);
     if (ret == 0)
@@ -677,7 +774,7 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
 
     if (HasShutter && ShutterClosed)
     {
-        sxSetShutter(hCam, 1);  // Close the shutter if needed
+        sxSetShutter(hCam, 1); // Close the shutter if needed
         wxMilliSleep(200);
     }
 
@@ -721,7 +818,8 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
             {
                 if (SquarePixels)
                 {
-                    //  incoming subframe coordinates are in squared pixel coordinate system, convert to camera pixel coordinates
+                    //  incoming subframe coordinates are in squared pixel coordinate system, convert to camera pixel
+                    //  coordinates
                     float r = CCDParams.pix_width * (float) xbin / CCDParams.pix_height;
                     unsigned int y0 = (unsigned int) floor(subframe.GetTop() * r);
                     unsigned int y1 = (unsigned int) floor(subframe.GetBottom() * r);
@@ -734,7 +832,7 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
                     {
                         unsigned int y0 = (unsigned int) subframe.GetTop() / 2;
                         // interpolation may require the next row
-                        unsigned int y1 = (unsigned int)(subframe.GetBottom() + 1) / 2;
+                        unsigned int y1 = (unsigned int) (subframe.GetBottom() + 1) / 2;
                         if (y1 >= CCDParams.height)
                             y1 = CCDParams.height - 1;
                         yofs = y0;
@@ -817,7 +915,7 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
     // if (WorkerThread::InterruptRequested())
     //    return true;
 
-    if (!ReadPixels(hCam, RawData, nPixelsToRead))  // stop exposure and read but only the one frame
+    if (!ReadPixels(hCam, RawData, nPixelsToRead)) // stop exposure and read but only the one frame
     {
         DisconnectWithAlert(_("Lost connection to camera"), RECONNECT);
         return true;
@@ -825,7 +923,7 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
 
     if (HasShutter && ShutterClosed)
     {
-        sxSetShutter(hCam, 0);  // Open it back up
+        sxSetShutter(hCam, 0); // Open it back up
         wxMilliSleep(200);
     }
 
@@ -838,7 +936,8 @@ bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& s
         if (IsCMOSGuider(CameraModel))
             error = InitImgCMOSGuider(img, FullSize, RawData);
         else
-            error = InitImgProgressive(img, xofs / xbin, yofs / ybin, xsize / xbin, ysize / ybin, takeSubframe, FullSize, RawData);
+            error =
+                InitImgProgressive(img, xofs / xbin, yofs / ybin, xsize / xbin, ysize / ybin, takeSubframe, FullSize, RawData);
 
         if (error)
         {
@@ -918,24 +1017,25 @@ bool CameraSXV::ST4PulseGuideScope(int direction, int duration)
     // North = 2
     // South = 4
     unsigned char dircmd = 0;
-    switch (direction) {
-        case WEST:
-            dircmd = (unsigned char) 1;
-            break;
-        case EAST:
-            dircmd = (unsigned char) 8;
-            break;
-        case NORTH:
-            dircmd = (unsigned char) 2;
-            break;
-        case SOUTH:
-            dircmd = (unsigned char) 4;
-            break;
+    switch (direction)
+    {
+    case WEST:
+        dircmd = (unsigned char) 1;
+        break;
+    case EAST:
+        dircmd = (unsigned char) 8;
+        break;
+    case NORTH:
+        dircmd = (unsigned char) 2;
+        break;
+    case SOUTH:
+        dircmd = (unsigned char) 4;
+        break;
     }
-    sxSetSTAR2000(hCam,dircmd);
+    sxSetSTAR2000(hCam, dircmd);
     WorkerThread::MilliSleep(duration);
     dircmd = 0;
-    sxSetSTAR2000(hCam,dircmd);
+    sxSetSTAR2000(hCam, dircmd);
 
     return false;
 }

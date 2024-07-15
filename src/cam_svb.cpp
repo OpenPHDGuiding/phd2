@@ -1,46 +1,46 @@
 /*
-*  cam_svb.cpp
-*  PHD2 Guiding
-*
-*  Copyright (c) 2020 Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of openphdguiding.org nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_svb.cpp
+ *  PHD2 Guiding
+ *
+ *  Copyright (c) 2020 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 #include "phd.h"
 
 #ifdef SVB_CAMERA
 
-#include "cam_svb.h"
-#include "cameras/SVBCameraSDK.h"
+# include "cam_svb.h"
+# include "cameras/SVBCameraSDK.h"
 
-#ifdef __WINDOWS__
-# include <Shlwapi.h>
-# include <DelayImp.h>
-#endif
+# ifdef __WINDOWS__
+#  include <Shlwapi.h>
+#  include <DelayImp.h>
+# endif
 
 enum CaptureMode
 {
@@ -55,7 +55,7 @@ class SVBCamera : public GuideCamera
     unsigned short m_prevBinning;
     void *m_buffer;
     size_t m_buffer_size;
-    wxByte m_bpp;  // bits per pixel: 8 or 16
+    wxByte m_bpp; // bits per pixel: 8 or 16
     CaptureMode m_mode;
     bool m_capturing;
     int m_cameraId;
@@ -89,16 +89,15 @@ private:
     bool StopExposure();
 };
 
-SVBCamera::SVBCamera()
-    :
-    m_buffer(nullptr)
+SVBCamera::SVBCamera() : m_buffer(nullptr)
 {
     Name = _T("Svbony Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
     m_hasGuideOutput = false; // updated when connected
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/svb/bpp", 16);
     m_bpp = value == 8 ? 8 : 16;
@@ -121,8 +120,7 @@ struct SVBCameraDlg : public wxDialog
     SVBCameraDlg();
 };
 
-SVBCameraDlg::SVBCameraDlg()
-    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Svbony Camera Properties"))
+SVBCameraDlg::SVBCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Svbony Camera Properties"))
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -137,7 +135,7 @@ SVBCameraDlg::SVBCameraDlg()
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -241,7 +239,8 @@ static int FindCamera(const wxString& camId, wxString *err)
         SVB_CAMERA_INFO info;
         if (SVBGetCameraInfo(&info, i) == SVB_SUCCESS)
         {
-            Debug.Write(wxString::Format("SVB: cam [%d] id %d %s S/N %s\n", i, info.CameraID, info.FriendlyName, info.CameraSN));
+            Debug.Write(
+                wxString::Format("SVB: cam [%d] id %d %s S/N %s\n", i, info.CameraID, info.FriendlyName, info.CameraSN));
             if (info.CameraSN == camId)
             {
                 Debug.Write(wxString::Format("SVB: found matching camera at idx %d, id=%d\n", i, info.CameraID));
@@ -257,7 +256,8 @@ static int FindCamera(const wxString& camId, wxString *err)
 
 inline static int ImgTypeBits(SVB_IMG_TYPE t)
 {
-    switch (t) {
+    switch (t)
+    {
     case SVB_IMG_RAW8:
     case SVB_IMG_Y8:
         return 8;
@@ -345,14 +345,13 @@ bool SVBCamera::Connect(const wxString& camId)
         }
     }
 
-    Debug.Write(wxString::Format("SVB: using mode BPP = %u, image type %d\n", (unsigned int)m_bpp, img_type));
+    Debug.Write(wxString::Format("SVB: using mode BPP = %u, image type %d\n", (unsigned int) m_bpp, img_type));
 
     if (img_type == SVB_IMG_END)
     {
         Disconnect();
         return CamConnectFailed(wxString::Format(_("The camera does not support %s mode, try selecting %s mode"),
-            m_bpp == 8 ? _("8-bit") : _("16-bit"),
-            m_bpp == 8 ? _("16-bit") : _("8-bit")));
+                                                 m_bpp == 8 ? _("8-bit") : _("16-bit"), m_bpp == 8 ? _("16-bit") : _("8-bit")));
     }
 
     m_mode = CM_VIDEO;
@@ -471,8 +470,8 @@ bool SVBCamera::Connect(const wxString& camId)
                     m_minGain = caps.MinValue;
                     m_maxGain = caps.MaxValue;
                     m_defaultGainPct = gain_pct(m_minGain, m_maxGain, caps.DefaultValue);
-                    Debug.Write(wxString::Format("SVB: gain range = %d .. %d default = %ld (%d%%)\n",
-                        m_minGain, m_maxGain, caps.DefaultValue, m_defaultGainPct));
+                    Debug.Write(wxString::Format("SVB: gain range = %d .. %d default = %ld (%d%%)\n", m_minGain, m_maxGain,
+                                                 caps.DefaultValue, m_defaultGainPct));
                 }
                 // fall through
 
@@ -497,7 +496,6 @@ bool SVBCamera::Connect(const wxString& camId)
                 break;
             }
         }
-
     }
 
     m_frame = wxRect(FullSize);
@@ -505,8 +503,7 @@ bool SVBCamera::Connect(const wxString& camId)
 
     SVBSetOutputImageType(m_cameraId, img_type);
 
-    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(),
-        m_frame.GetWidth(), m_frame.GetHeight(), Binning);
+    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(), m_frame.GetWidth(), m_frame.GetHeight(), Binning);
 
     return false;
 }
@@ -569,7 +566,10 @@ inline static int round_up(int v, int m)
 
 static void flush_buffered_image(int cameraId, void *buf, size_t size)
 {
-    enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
+    enum
+    {
+        NUM_IMAGE_BUFFERS = 2
+    }; // camera has 2 internal frame buffers
 
     // clear buffered frames if any
 
@@ -629,8 +629,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
     long cur_exp;
     // The returned exposure value may differ from the requested exposure by several usecs,
     // so round the returned exposure to the nearest millisecond.
-    if (SVBGetControlValue(m_cameraId, SVB_EXPOSURE, &cur_exp, &tmp) == SVB_SUCCESS &&
-        (cur_exp + 500) / 1000 != duration)
+    if (SVBGetControlValue(m_cameraId, SVB_EXPOSURE, &cur_exp, &tmp) == SVB_SUCCESS && (cur_exp + 500) / 1000 != duration)
     {
         Debug.Write(wxString::Format("SVB: set CONTROL_EXPOSURE %d\n", duration * 1000));
         SVBSetControlValue(m_cameraId, SVB_EXPOSURE, duration * 1000, SVB_FALSE);
@@ -638,8 +637,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     long cur_gain;
-    if (SVBGetControlValue(m_cameraId, SVB_GAIN, &cur_gain, &tmp) == SVB_SUCCESS &&
-        new_gain != cur_gain)
+    if (SVBGetControlValue(m_cameraId, SVB_GAIN, &cur_gain, &tmp) == SVB_SUCCESS && new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("SVB: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
         SVBSetControlValue(m_cameraId, SVB_GAIN, new_gain, SVB_FALSE);
@@ -658,18 +656,17 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
     {
         StopCapture();
 
-        SVB_ERROR_CODE status = SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(),
-            frame.GetWidth(), frame.GetHeight(), Binning);
+        SVB_ERROR_CODE status =
+            SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), Binning);
 
         if (status != SVB_SUCCESS)
-            Debug.Write(wxString::Format("SVB: setImageFormat(%d,%d,%d,%d,%hu) => %d\n",
-                frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), Binning, status));
+            Debug.Write(wxString::Format("SVB: setImageFormat(%d,%d,%d,%d,%hu) => %d\n", frame.GetLeft(), frame.GetTop(),
+                                         frame.GetWidth(), frame.GetHeight(), Binning, status));
     }
 
     int poll = wxMin(duration, 100);
 
-    unsigned char *const buffer =
-        m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
+    unsigned char *const buffer = m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
 
     if (m_mode == CM_VIDEO)
     {
@@ -727,7 +724,10 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
             SVBSendSoftTrigger(m_cameraId);
 
-            enum { GRACE_PERIOD_MS = 500 }; // recommended by Svbony
+            enum
+            {
+                GRACE_PERIOD_MS = 500
+            }; // recommended by Svbony
             CameraWatchdog watchdog(duration, duration + GRACE_PERIOD_MS);
 
             if (duration > 100)
@@ -815,7 +815,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
     if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
-       QuickLRecon(img);
+        QuickLRecon(img);
 
     return false;
 }

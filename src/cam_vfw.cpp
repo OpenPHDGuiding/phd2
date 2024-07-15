@@ -36,19 +36,20 @@
 
 #ifdef VFW_CAMERA
 
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include <wx/timer.h>
-//#include "vcapwin.h"
-#include "cam_vfw.h"
+# include "camera.h"
+# include "time.h"
+# include "image_math.h"
+# include <wx/timer.h>
+// #include "vcapwin.h"
+# include "cam_vfw.h"
 
 CameraVFW::CameraVFW()
 {
     Connected = false;
     Name = _T("Windows VFW");
-    FullSize = wxSize(640,480);  // should be overwritten
-    VFW_Window = NULL; Extra_Window=NULL;
+    FullSize = wxSize(640, 480); // should be overwritten
+    VFW_Window = NULL;
+    Extra_Window = NULL;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
     HasPortNum = false;
@@ -61,66 +62,76 @@ wxByte CameraVFW::BitsPerPixel()
 
 bool CameraVFW::Connect(const wxString& camId)
 {
-// returns true on error
-//  bool retval;
+    // returns true on error
+    //  bool retval;
     int ndevices, i, devicenum;
     wxSplitterWindow *dispwin;
-    wxVideoCaptureWindow* capwin;
+    wxVideoCaptureWindow *capwin;
 
-    if (!Extra_Window) {
-        dispwin = new wxSplitterWindow(pFrame->guider,-1);
+    if (!Extra_Window)
+    {
+        dispwin = new wxSplitterWindow(pFrame->guider, -1);
         Extra_Window = dispwin;
     }
-    else dispwin = Extra_Window;
+    else
+        dispwin = Extra_Window;
 
-    if (!VFW_Window) {
-        capwin = new wxVideoCaptureWindow(dispwin,WIN_VFW,wxPoint(0,0),wxSize(640,480));
+    if (!VFW_Window)
+    {
+        capwin = new wxVideoCaptureWindow(dispwin, WIN_VFW, wxPoint(0, 0), wxSize(640, 480));
         VFW_Window = capwin;
     }
-    else capwin = VFW_Window;
+    else
+        capwin = VFW_Window;
 
     dispwin->Show(false);
-    //capwin->Create(frame);
+    // capwin->Create(frame);
     ndevices = capwin->GetDeviceCount();
-    if (ndevices == 0) return true;
+    if (ndevices == 0)
+        return true;
     devicenum = 1;
-    if (ndevices > 1) { // multiple found -- get one from user
+    if (ndevices > 1)
+    { // multiple found -- get one from user
         wxArrayString devnames;
-        for (i=0; i<ndevices; i++)
+        for (i = 0; i < ndevices; i++)
             devnames.Add(capwin->GetDeviceName(i));
-        devicenum = wxGetSingleChoiceIndex(_("Select capture device"),_("Camera choice"),devnames);
+        devicenum = wxGetSingleChoiceIndex(_("Select capture device"), _("Camera choice"), devnames);
         if (devicenum == -1)
             return true;
-        else devicenum = devicenum + 1;
+        else
+            devicenum = devicenum + 1;
     }
-    if (capwin->DeviceConnect(devicenum-1) == false)  // try to connect
+    if (capwin->DeviceConnect(devicenum - 1) == false) // try to connect
         return true;
 
-    if (VFW_Window->HasVideoFormatDialog()) {
+    if (VFW_Window->HasVideoFormatDialog())
+    {
         VFW_Window->VideoFormatDialog();
-//      int w,h,bpp;
-//      FOURCC fourcc;
-//      VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
-//      FullSize = wxSize(w,h);
+        //      int w,h,bpp;
+        //      FOURCC fourcc;
+        //      VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
+        //      FullSize = wxSize(w,h);
     }
 
-    int w,h,bpp;
+    int w, h, bpp;
     FOURCC fourcc;
-    capwin->GetVideoFormat( &w,&h, &bpp, &fourcc );
-//  capwin->SetVideoFormat(640,480,-1,-1);
-    FullSize=wxSize(w,h);
-    pFrame->StatusMsg(wxString::Format("%d x %d mode activated",w,h));
+    capwin->GetVideoFormat(&w, &h, &bpp, &fourcc);
+    //  capwin->SetVideoFormat(640,480,-1,-1);
+    FullSize = wxSize(w, h);
+    pFrame->StatusMsg(wxString::Format("%d x %d mode activated", w, h));
     Connected = true;
     return false;
 }
 
-bool CameraVFW::Disconnect() {
-    if (VFW_Window->IsDeviceConnected()) {
+bool CameraVFW::Disconnect()
+{
+    if (VFW_Window->IsDeviceConnected())
+    {
         VFW_Window->DeviceDisconnect();
     }
     Connected = false;
     VFW_Window = NULL;
-//  Extra_Window = NULL;
+    //  Extra_Window = NULL;
     return false;
 }
 
@@ -137,45 +148,50 @@ bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& s
 
     wxStopWatch swatch;
 
-    //gNumFrames = 0;
-    if (img.Init(FullSize)) {
+    // gNumFrames = 0;
+    if (img.Init(FullSize))
+    {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
     img.Clear();
 
-    swatch.Start(); //wxStartTimer();
-    while (still_going) {
+    swatch.Start(); // wxStartTimer();
+    while (still_going)
+    {
         VFW_Window->SnapshotTowxImage();
         cap_img = VFW_Window->GetwxImage();
         imgdata = cap_img.GetData();
         dptr = img.ImageData;
-        for (unsigned int i = 0; i < img.NPixels; i++, dptr++, imgdata += 3) {
-            *dptr = *dptr + (unsigned short) (*imgdata + *(imgdata+1) + *(imgdata+2));
+        for (unsigned int i = 0; i < img.NPixels; i++, dptr++, imgdata += 3)
+        {
+            *dptr = *dptr + (unsigned short) (*imgdata + *(imgdata + 1) + *(imgdata + 2));
         }
         NFrames++;
         if ((swatch.Time() >= duration) && (NFrames > 2))
             still_going = false;
     }
-    pFrame->StatusMsg(wxString::Format("%d frames",NFrames));
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    pFrame->StatusMsg(wxString::Format("%d frames", NFrames));
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
     return false;
 }
 
-void CameraVFW::ShowPropertyDialog() {
-//      if (event.GetId() == ADV_BUTTON1) {
-/*  if (VFW_Window->HasVideoFormatDialog()) {
-        VFW_Window->VideoFormatDialog();
-        int w,h,bpp;
-        FOURCC fourcc;
-        VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
-        FullSize = wxSize(w,h);
-    }*/
-//  else {
-        if (VFW_Window->HasVideoSourceDialog()) VFW_Window->VideoSourceDialog();
-//  }
-
+void CameraVFW::ShowPropertyDialog()
+{
+    //      if (event.GetId() == ADV_BUTTON1) {
+    /*  if (VFW_Window->HasVideoFormatDialog()) {
+            VFW_Window->VideoFormatDialog();
+            int w,h,bpp;
+            FOURCC fourcc;
+            VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
+            FullSize = wxSize(w,h);
+        }*/
+    //  else {
+    if (VFW_Window->HasVideoSourceDialog())
+        VFW_Window->VideoSourceDialog();
+    //  }
 }
 
 #endif

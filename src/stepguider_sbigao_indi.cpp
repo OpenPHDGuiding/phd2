@@ -40,89 +40,89 @@
 
 #ifdef STEPGUIDER_SBIGAO_INDI
 
-#include "stepguider_sbigao_indi.h"
-#include "config_indi.h"
-#include <libindi/baseclient.h>
+# include "stepguider_sbigao_indi.h"
+# include "config_indi.h"
+# include <libindi/baseclient.h>
 
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+# include <libindi/basedevice.h>
+# include <libindi/indiproperty.h>
 
 class StepGuiderSbigAoINDI : public StepGuider, public INDI::BaseClient
 {
-    private:
-        // INDI parts
-        static const int MaxDeviceInitWaitMilliSeconds = 2000;
-        static const int MaxDevicePropertiesWaitMilliSeconds = 5000;
-        long     INDIport;
-        wxString INDIhost;
-        wxString INDIaoDeviceName;
-        bool     modal;
-        bool     ready;
-        void     ClearStatus();
-        void     CheckState();
+private:
+    // INDI parts
+    static const int MaxDeviceInitWaitMilliSeconds = 2000;
+    static const int MaxDevicePropertiesWaitMilliSeconds = 5000;
+    long INDIport;
+    wxString INDIhost;
+    wxString INDIaoDeviceName;
+    bool modal;
+    bool ready;
+    void ClearStatus();
+    void CheckState();
 
-        INumberVectorProperty *pulseGuideNS_prop;
-        INumber               *pulseN_prop;
-        INumber               *pulseS_prop;
-        INumberVectorProperty *pulseGuideWE_prop;
-        INumber               *pulseW_prop;
-        INumber               *pulseE_prop;
-        INumberVectorProperty *aoNS_prop;
-        INumber               *aoN_prop;
-        INumber               *aoS_prop;
-        INumberVectorProperty *aoWE_prop;
-        INumber               *aoW_prop;
-        INumber               *aoE_prop;
-        ISwitchVectorProperty *aoCenterSW_prop;
-        ISwitch               *aoCenter_prop;
-        INDI::BaseDevice      ao_device;
-        ITextVectorProperty   *ao_driverInfo;
-        IText                 *ao_driverName;
-        IText                 *ao_driverExec;
-        IText                 *ao_driverVersion;
-        IText                 *ao_driverInterface;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber *pulseN_prop;
+    INumber *pulseS_prop;
+    INumberVectorProperty *pulseGuideWE_prop;
+    INumber *pulseW_prop;
+    INumber *pulseE_prop;
+    INumberVectorProperty *aoNS_prop;
+    INumber *aoN_prop;
+    INumber *aoS_prop;
+    INumberVectorProperty *aoWE_prop;
+    INumber *aoW_prop;
+    INumber *aoE_prop;
+    ISwitchVectorProperty *aoCenterSW_prop;
+    ISwitch *aoCenter_prop;
+    INDI::BaseDevice ao_device;
+    ITextVectorProperty *ao_driverInfo;
+    IText *ao_driverName;
+    IText *ao_driverExec;
+    IText *ao_driverVersion;
+    IText *ao_driverInterface;
 
-        // StepGuider parts
-        static const int DefaultMaxSteps = 45;
-        wxString m_Name;
-        int m_maxSteps;
-        bool Connected {false};
+    // StepGuider parts
+    static const int DefaultMaxSteps = 45;
+    wxString m_Name;
+    int m_maxSteps;
+    bool Connected { false };
 
-        bool Center() override;
-        STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
-        int MaxPosition(GUIDE_DIRECTION direction) const override;
-        bool SetMaxPosition(int steps) override;
-        bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
+    bool Center() override;
+    STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
+    int MaxPosition(GUIDE_DIRECTION direction) const override;
+    bool SetMaxPosition(int steps) override;
+    bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit) override;
 
-        bool    ST4HasGuideOutput() override;
-        bool    ST4HostConnected() override;
-        bool    ST4HasNonGuiMove() override;
-        bool    ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasGuideOutput() override;
+    bool ST4HostConnected() override;
+    bool ST4HasNonGuiMove() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
 
-    protected:
-        // INDI parts
-        void newDevice(INDI::BaseDevice dp) override;
-        void removeDevice(INDI::BaseDevice dp) override;
-        void newProperty(INDI::Property property) override;
-        //void updateProperty(INDI::Property property) override;
-        void removeProperty(INDI::Property property) override {};
-        //void newMessage(INDI::BaseDevice dp, int messageID) override;
-        void serverConnected() override;
-        void serverDisconnected(int exit_code) override;
+protected:
+    // INDI parts
+    void newDevice(INDI::BaseDevice dp) override;
+    void removeDevice(INDI::BaseDevice dp) override;
+    void newProperty(INDI::Property property) override;
+    // void updateProperty(INDI::Property property) override;
+    void removeProperty(INDI::Property property) override {};
+    // void newMessage(INDI::BaseDevice dp, int messageID) override;
+    void serverConnected() override;
+    void serverDisconnected(int exit_code) override;
 
-    public:
-        StepGuiderSbigAoINDI();
-        ~StepGuiderSbigAoINDI();
+public:
+    StepGuiderSbigAoINDI();
+    ~StepGuiderSbigAoINDI();
 
-        // StepGuider parts
-        bool Connect() override;
-        bool Disconnect() override;
-        bool HasNonGuiMove() override;
-        bool HasSetupDialog() const override;
-        void SetupDialog() override;
+    // StepGuider parts
+    bool Connect() override;
+    bool Disconnect() override;
+    bool HasNonGuiMove() override;
+    bool HasSetupDialog() const override;
+    void SetupDialog() override;
 
-    private:
-        void ShowPropertyDialog() override;
+private:
+    void ShowPropertyDialog() override;
 };
 
 StepGuiderSbigAoINDI::StepGuiderSbigAoINDI()
@@ -130,8 +130,8 @@ StepGuiderSbigAoINDI::StepGuiderSbigAoINDI()
     ClearStatus();
 
     // load the values from the current profile
-    INDIhost   = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
-    INDIport   = pConfig->Profile.GetLong("/indi/INDIport", 7624);
+    INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
+    INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIaoDeviceName = pConfig->Profile.GetString("/indi/INDIao", _T("SBIG CCD"));
 
     m_Name = INDIaoDeviceName;
@@ -177,9 +177,9 @@ void StepGuiderSbigAoINDI::CheckState()
     {
         if (atof(ao_driverVersion->text) < 2.1)
         {
-            wxMessageBox(wxString::Format(
-                             _("We need at least INDI driver %s version 2.1 to get AO support."),
-                             ao_driverExec->text), _("Error"));
+            wxMessageBox(
+                wxString::Format(_("We need at least INDI driver %s version 2.1 to get AO support."), ao_driverExec->text),
+                _("Error"));
         }
 
         Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::CheckState is ready"));
@@ -295,8 +295,7 @@ bool StepGuiderSbigAoINDI::Connect()
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport); // define server to connect to.
     watchDevice(INDIaoDeviceName.mb_str(wxConvUTF8)); // Receive messages only for our device.
 
-    Debug.AddLine(wxString::Format("Connecting to INDI server %s on port %d, device %s",
-                                   INDIhost, INDIport, INDIaoDeviceName));
+    Debug.AddLine(wxString::Format("Connecting to INDI server %s on port %d, device %s", INDIhost, INDIport, INDIaoDeviceName));
 
     Debug.Write(wxString::Format("Waiting for 30s for [%s] to connect...\n", INDIaoDeviceName));
 
@@ -445,29 +444,29 @@ StepGuider::STEP_RESULT StepGuiderSbigAoINDI::Step(GUIDE_DIRECTION direction, in
 
         switch (direction)
         {
-            case NORTH:
-                aoN_prop->value = steps;
-                aoS_prop->value = 0;
-                sendNewNumber(aoNS_prop);
-                break;
-            case SOUTH:
-                aoN_prop->value = 0;
-                aoS_prop->value = steps;
-                sendNewNumber(aoNS_prop);
-                break;
-            case EAST:
-                aoW_prop->value = 0;
-                aoE_prop->value = steps;
-                sendNewNumber(aoWE_prop);
-                break;
-            case WEST:
-                aoW_prop->value = steps;
-                aoE_prop->value = 0;
-                sendNewNumber(aoWE_prop);
-                break;
-            default:
-                throw ERROR_INFO("StepGuiderSbigAO::step: invalid direction");
-                break;
+        case NORTH:
+            aoN_prop->value = steps;
+            aoS_prop->value = 0;
+            sendNewNumber(aoNS_prop);
+            break;
+        case SOUTH:
+            aoN_prop->value = 0;
+            aoS_prop->value = steps;
+            sendNewNumber(aoNS_prop);
+            break;
+        case EAST:
+            aoW_prop->value = 0;
+            aoE_prop->value = steps;
+            sendNewNumber(aoWE_prop);
+            break;
+        case WEST:
+            aoW_prop->value = steps;
+            aoE_prop->value = 0;
+            sendNewNumber(aoWE_prop);
+            break;
+        default:
+            throw ERROR_INFO("StepGuiderSbigAO::step: invalid direction");
+            break;
         }
     }
     catch (const wxString& Msg)
@@ -501,25 +500,25 @@ bool StepGuiderSbigAoINDI::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
         {
             switch (direction)
             {
-                case NORTH:
-                    *isAtLimit = aoNS_prop->np[0].value == aoNS_prop->np[0].max;
-                    Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit North"));
-                    break;
-                case SOUTH:
-                    *isAtLimit = aoNS_prop->np[1].value == aoNS_prop->np[1].max;
-                    Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit South"));
-                    break;
-                case EAST:
-                    *isAtLimit = aoWE_prop->np[0].value == aoWE_prop->np[0].max;
-                    Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit East"));
-                    break;
-                case WEST:
-                    *isAtLimit = aoWE_prop->np[1].value == aoWE_prop->np[1].max;
-                    Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit West"));
-                    break;
-                default:
-                    throw ERROR_INFO("StepGuiderSbigAoINDI::IsAtLimit: invalid direction");
-                    break;
+            case NORTH:
+                *isAtLimit = aoNS_prop->np[0].value == aoNS_prop->np[0].max;
+                Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit North"));
+                break;
+            case SOUTH:
+                *isAtLimit = aoNS_prop->np[1].value == aoNS_prop->np[1].max;
+                Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit South"));
+                break;
+            case EAST:
+                *isAtLimit = aoWE_prop->np[0].value == aoWE_prop->np[0].max;
+                Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit East"));
+                break;
+            case WEST:
+                *isAtLimit = aoWE_prop->np[1].value == aoWE_prop->np[1].max;
+                Debug.AddLine(wxString::Format("StepGuiderSbigAoINDI::IsAtLimit West"));
+                break;
+            default:
+                throw ERROR_INFO("StepGuiderSbigAoINDI::IsAtLimit: invalid direction");
+                break;
             }
         }
         catch (const wxString& Msg)
@@ -575,29 +574,29 @@ bool StepGuiderSbigAoINDI::ST4PulseGuideScope(int direction, int duration)
         {
             switch (direction)
             {
-                case NORTH:
-                    pulseN_prop->value = duration;
-                    pulseS_prop->value = 0;
-                    sendNewNumber(pulseGuideNS_prop);
-                    break;
-                case SOUTH:
-                    pulseN_prop->value = 0;
-                    pulseS_prop->value = duration;
-                    sendNewNumber(pulseGuideNS_prop);
-                    break;
-                case EAST:
-                    pulseW_prop->value = 0;
-                    pulseE_prop->value = duration;
-                    sendNewNumber(pulseGuideWE_prop);
-                    break;
-                case WEST:
-                    pulseW_prop->value = duration;
-                    pulseE_prop->value = 0;
-                    sendNewNumber(pulseGuideWE_prop);
-                    break;
-                default:
-                    throw ERROR_INFO("StepGuiderSbigAO::ST4PulseGuideScope: invalid direction");
-                    break;
+            case NORTH:
+                pulseN_prop->value = duration;
+                pulseS_prop->value = 0;
+                sendNewNumber(pulseGuideNS_prop);
+                break;
+            case SOUTH:
+                pulseN_prop->value = 0;
+                pulseS_prop->value = duration;
+                sendNewNumber(pulseGuideNS_prop);
+                break;
+            case EAST:
+                pulseW_prop->value = 0;
+                pulseE_prop->value = duration;
+                sendNewNumber(pulseGuideWE_prop);
+                break;
+            case WEST:
+                pulseW_prop->value = duration;
+                pulseE_prop->value = 0;
+                sendNewNumber(pulseGuideWE_prop);
+                break;
+            default:
+                throw ERROR_INFO("StepGuiderSbigAO::ST4PulseGuideScope: invalid direction");
+                break;
             }
         }
         catch (const wxString& Msg)

@@ -1,37 +1,37 @@
 /*
-*  guiding_stats.cpp
-*  PHD2 Guiding
-*
-*  Created by Bruce Waddington
-*  Copyright (c) 2018 Bruce Waddington
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Bret McKee, Dad Dog Development,
-*     Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  guiding_stats.cpp
+ *  PHD2 Guiding
+ *
+ *  Created by Bruce Waddington
+ *  Copyright (c) 2018 Bruce Waddington
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 #include <math.h>
@@ -45,17 +45,14 @@
 // differences, which can lead to things like negative variances
 // See: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
 
-// DescriptiveStats is used for non-windowed datasets.  Max, min, sigma and variance are computed on-the-fly as values are added to dataset
-// Applicable to any double values, no semantic assumptions made.  Does not retain a list of values
+// DescriptiveStats is used for non-windowed datasets.  Max, min, sigma and variance are computed on-the-fly as values are added
+// to dataset Applicable to any double values, no semantic assumptions made.  Does not retain a list of values
 DescriptiveStats::DescriptiveStats()
 {
     ClearAll();
 }
 
-DescriptiveStats::~DescriptiveStats()
-{
-
-}
+DescriptiveStats::~DescriptiveStats() { }
 
 // Add a new double value, update stats
 void DescriptiveStats::AddValue(double Val)
@@ -183,8 +180,8 @@ double DescriptiveStats::GetMaxDelta()
         return 0.;
 }
 
-// Applies a high-pass filter to a stream of data, one sample point at a time.  Samples are not retained, client can use DescriptiveStats or AxisStats
-// on the filtered data values
+// Applies a high-pass filter to a stream of data, one sample point at a time.  Samples are not retained, client can use
+// DescriptiveStats or AxisStats on the filtered data values
 HighPassFilter::HighPassFilter(double CutoffPeriod, double SamplePeriod)
 {
     alphaCutoff = CutoffPeriod / (CutoffPeriod + std::max(1.0, SamplePeriod));
@@ -276,9 +273,7 @@ AxisStats::AxisStats()
     InitializeScalars();
 }
 
-AxisStats::~AxisStats()
-{
-}
+AxisStats::~AxisStats() { }
 
 void AxisStats::ClearAll()
 {
@@ -355,7 +350,7 @@ void AxisStats::AddGuideInfo(double DeltaT, double StarPos, double GuideAmt)
         if (newDelta >= maxDelta)
         {
             maxDelta = newDelta;
-            maxDeltaInx = guidingEntries.size();      // where the entry is going to go - furthest down in list among equals
+            maxDeltaInx = guidingEntries.size(); // where the entry is going to go - furthest down in list among equals
         }
     }
 
@@ -475,7 +470,7 @@ double AxisStats::GetMedian() const
         double rslt = 0.;
 
         // Need a copy of guidingEntries to do a sort
-        std::vector <double> sortedEntries;
+        std::vector<double> sortedEntries;
 
         for (auto pGS = guidingEntries.begin(); pGS != guidingEntries.end(); ++pGS)
         {
@@ -543,7 +538,8 @@ double AxisStats::GetLinearFitResults(double *Slope, double *Intercept, double *
     double currentMean = 0.;
 
     double slope = ((numVals * sumXY) - (sumX * sumY)) / ((numVals * sumXSq) - (sumX * sumX));
-    //double constrainedSlope = sumXY / sumXSq;          // Possible future use, slope value if intercept is constrained to be zero
+    // double constrainedSlope = sumXY / sumXSq;          // Possible future use, slope value if intercept is constrained to be
+    // zero
     double intcpt = (sumY - (slope * sumX)) / numVals;
 
     if (Sigma)
@@ -584,12 +580,10 @@ WindowedAxisStats::WindowedAxisStats(int AutoWindowSize) : AxisStats()
     windowSize = AutoWindowSize;
 }
 
-WindowedAxisStats::~WindowedAxisStats()
-{
+WindowedAxisStats::~WindowedAxisStats() { }
 
-}
-
-// Change the auto-window size - trim older entries if necessary. Setting size to zero disables auto-windowing but does not discard data
+// Change the auto-window size - trim older entries if necessary. Setting size to zero disables auto-windowing but does not
+// discard data
 bool WindowedAxisStats::ChangeWindowSize(unsigned int NewSize)
 {
     bool success = false;
@@ -625,7 +619,7 @@ bool WindowedAxisStats::ChangeWindowSize(unsigned int NewSize)
 // entry[0] (the oldest) is actually removed.
 void WindowedAxisStats::AdjustMinMaxValues()
 {
-    StarDisplacement target = guidingEntries.front();           // Entry that's about to be removed
+    StarDisplacement target = guidingEntries.front(); // Entry that's about to be removed
     bool recalNeeded = false;
     double prev = target.StarPos;
 
@@ -643,7 +637,8 @@ void WindowedAxisStats::AdjustMinMaxValues()
 
     if (recalNeeded)
     {
-        for (auto pGS = guidingEntries.begin() + 1; pGS != guidingEntries.end(); ++pGS)  // Dont start at zero, that will be removed
+        for (auto pGS = guidingEntries.begin() + 1; pGS != guidingEntries.end();
+             ++pGS) // Dont start at zero, that will be removed
         {
             StarDisplacement entry = *pGS;
             minDisplacement = std::min(minDisplacement, entry.StarPos);
@@ -680,7 +675,7 @@ void WindowedAxisStats::RemoveOldestEntry()
             axisReversals--;
         if (target.Guided)
             axisMoves--;
-        AdjustMinMaxValues();                   // Will process list only if required
+        AdjustMinMaxValues(); // Will process list only if required
         guidingEntries.pop_front();
         maxDeltaInx--;
     }

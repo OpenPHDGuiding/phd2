@@ -33,19 +33,19 @@
  */
 
 #include "phd.h"
-#if defined (INOVA_PLC)
-#include "camera.h"
-#include "image_math.h"
-#include "cam_INovaPLC.h"
-#include "DSCAMAPI.h"
+#if defined(INOVA_PLC)
+# include "camera.h"
+# include "image_math.h"
+# include "cam_INovaPLC.h"
+# include "DSCAMAPI.h"
 
 CameraINovaPLC::CameraINovaPLC()
 {
     Connected = FALSE;
-    Name=_T("i-Nova PLC-M");
-    FullSize = wxSize(1280,1024);  // Current size of a full frame
-    m_hasGuideOutput = true;  // Do we have an ST4 port?
-    HasGainControl = true;  // Can we adjust gain?
+    Name = _T("i-Nova PLC-M");
+    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    m_hasGuideOutput = true; // Do we have an ST4 port?
+    HasGainControl = true; // Can we adjust gain?
 }
 
 wxByte CameraINovaPLC::BitsPerPixel()
@@ -61,10 +61,10 @@ bool CameraINovaPLC::Connect(const wxString& camId)
 
     DSCameraSetDataWide(true);
     DSCameraSetAeState(false); // Turn off auto-exposure
-    DSCameraGetRowTime(&RowTime);  // Figure the row-time in microseconds -- this lets me figure the actual exp time
-    RawData = new unsigned short[1280*1024];
+    DSCameraGetRowTime(&RowTime); // Figure the row-time in microseconds -- this lets me figure the actual exp time
+    RawData = new unsigned short[1280 * 1024];
 
-    Connected = true;  // Set global flag for being connected
+    Connected = true; // Set global flag for being connected
 
     return false;
 }
@@ -92,20 +92,22 @@ bool CameraINovaPLC::ST4PulseGuideScope(int direction, int duration)
              bit1 - DEC+
              bit2 - DEC-
              bit3 - RA-*/
-    switch (direction) {
-        case WEST:
-           dircode = 0x01;
-            break;
-        case NORTH:
-            dircode = 0x02;
-            break;
-        case SOUTH:
-            dircode = 0x04;
-            break;
-        case EAST:
-            dircode = 0x08;
-            break;
-        default: return true; // bad direction passed in
+    switch (direction)
+    {
+    case WEST:
+        dircode = 0x01;
+        break;
+    case NORTH:
+        dircode = 0x02;
+        break;
+    case SOUTH:
+        dircode = 0x04;
+        break;
+    case EAST:
+        dircode = 0x08;
+        break;
+    default:
+        return true; // bad direction passed in
     }
     DSCameraSetGuidingPort(dircode);
     WorkerThread::MilliSleep(duration);
@@ -117,7 +119,7 @@ bool CameraINovaPLC::Disconnect()
 {
     Connected = false;
     DSCameraUnInit();
-    delete [] RawData;
+    delete[] RawData;
     return false;
 }
 
@@ -127,33 +129,39 @@ bool CameraINovaPLC::Capture(int duration, usImage& img, int options, const wxRe
     int ysize = FullSize.GetHeight();
     DS_CAMERA_STATUS rval;
     int ntries = 1;
-    if (img.Init(FullSize)) {
+    if (img.Init(FullSize))
+    {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     int ExpDur = pFrame->RequestedExposureDuration();
 
-    if (duration != ExpDur) { // reset the exp time - and pause -- we have had a change here from the current value
+    if (duration != ExpDur)
+    { // reset the exp time - and pause -- we have had a change here from the current value
         rval = DSCameraSetExposureTime(ExpDur * 1000 / RowTime);
         wxMilliSleep(100);
     }
 
     rval = DSCameraGrabFrame((BYTE *) RawData);
-    while (rval != STATUS_OK) {
+    while (rval != STATUS_OK)
+    {
         ntries++;
         rval = DSCameraGrabFrame((BYTE *) RawData);
-        //pFrame->StatusMsg(wxString::Format("%d %d",ntries,rval));
-        if (ntries > 30) {
+        // pFrame->StatusMsg(wxString::Format("%d %d",ntries,rval));
+        if (ntries > 30)
+        {
             pFrame->Alert("Timeout capturing frames - >30 bad in a row");
             return true;
         }
     }
 
-    for (unsigned int i = 0; i <xsize*ysize; i++) {
-        img.ImageData[i] = (RawData[i]>> 8) | (RawData[i] << 8);
+    for (unsigned int i = 0; i < xsize * ysize; i++)
+    {
+        img.ImageData[i] = (RawData[i] >> 8) | (RawData[i] << 8);
     }
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return false;
 }

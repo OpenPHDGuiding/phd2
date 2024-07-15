@@ -40,4 +40,4 @@ public:
     static GuideCamera *MakeAtikCamera(bool hsModel, bool color);
 };
 
-#endif  //ATIK16DEF
+#endif // ATIK16DEF

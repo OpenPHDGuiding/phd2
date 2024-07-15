@@ -34,18 +34,18 @@
 
 #ifdef __APPLE__
 
-#include "phd.h"
-#include <IOKit/serial/IOSerialKeys.h>
+# include "phd.h"
+# include <IOKit/serial/IOSerialKeys.h>
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 120000
-# define IOMainPort IOMasterPort
-#endif
+# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 120000
+#  define IOMainPort IOMasterPort
+# endif
 
 static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
 {
-    kern_return_t   kernResult;
-    mach_port_t     masterPort;
-    CFMutableDictionaryRef  classesToMatch;
+    kern_return_t kernResult;
+    mach_port_t masterPort;
+    CFMutableDictionaryRef classesToMatch;
 
     if ((kernResult = IOMainPort(0, &masterPort)) != KERN_SUCCESS)
     {
@@ -59,7 +59,7 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
         return kernResult;
     }
 
-    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),CFSTR(kIOSerialBSDAllTypes));
+    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey), CFSTR(kIOSerialBSDAllTypes));
     kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, serialIterator);
     if (kernResult != KERN_SUCCESS)
     {
@@ -75,12 +75,11 @@ static const char *getRegistryString(io_object_t sObj, const char *propName)
     //   CFTypeRef  nameCFstring;
     CFStringRef nameCFstring;
     resultStr[0] = 0;
-    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(sObj,
-                                                                 CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII),
-                                                                 kCFAllocatorDefault, 0);
-    if (nameCFstring) {
-        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr),
-                           kCFStringEncodingASCII);
+    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(
+        sObj, CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII), kCFAllocatorDefault, 0);
+    if (nameCFstring)
+    {
+        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr), kCFStringEncodingASCII);
         CFRelease(nameCFstring);
     }
     return resultStr;
@@ -92,11 +91,14 @@ wxArrayString SerialPortMac::GetSerialPortList(void)
 
     io_iterator_t iterator;
     kern_return_t result = createSerialIterator(&iterator);
-    if (result == KERN_SUCCESS){
+    if (result == KERN_SUCCESS)
+    {
         io_object_t port;
-        while ((port = IOIteratorNext(iterator)) != 0){
-            const char* name = getRegistryString(port,kIOCalloutDeviceKey);
-            if (name){
+        while ((port = IOIteratorNext(iterator)) != 0)
+        {
+            const char *name = getRegistryString(port, kIOCalloutDeviceKey);
+            if (name)
+            {
                 ret.Add(name);
             }
             IOObjectRelease(port);

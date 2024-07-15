@@ -36,11 +36,7 @@
 #include "phd.h"
 #include "scope_onboard_st4.h"
 
-ScopeOnboardST4::ScopeOnboardST4(void)
-    :
-    m_pOnboardHost(nullptr)
-{
-}
+ScopeOnboardST4::ScopeOnboardST4(void) : m_pOnboardHost(nullptr) { }
 
 ScopeOnboardST4::~ScopeOnboardST4(void)
 {
@@ -137,7 +133,7 @@ Mount::MOVE_RESULT ScopeOnboardST4::Guide(GUIDE_DIRECTION direction, int duratio
             throw ERROR_INFO("Attempt to Guide On Camera mount when camera is not connected");
         }
 
-        if (m_pOnboardHost->ST4PulseGuideScope(direction,duration))
+        if (m_pOnboardHost->ST4PulseGuideScope(direction, duration))
         {
             result = MOVE_ERROR;
         }

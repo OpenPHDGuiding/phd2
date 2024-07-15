@@ -118,33 +118,26 @@ wxEND_EVENT_TABLE();
  * |             +-------------------+   +-------------------+                |
  * +--------------------------------------------------------------------------+
  */
-GearDialog::GearDialog(wxWindow *pParent) :
-    wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_cameraUpdated(false),
-    m_mountUpdated(false),
-    m_stepGuiderUpdated(false),
-    m_rotatorUpdated(false),
-    m_showDarksDialog(false),
-    m_camWarningIssued(false),
-    m_camChanged(false),
-    m_imageScaleRatio(1.0),
-    m_flushConfig(false)
+GearDialog::GearDialog(wxWindow *pParent)
+    : wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
+      m_cameraUpdated(false), m_mountUpdated(false), m_stepGuiderUpdated(false), m_rotatorUpdated(false),
+      m_showDarksDialog(false), m_camWarningIssued(false), m_camChanged(false), m_imageScaleRatio(1.0), m_flushConfig(false)
 {
-    m_pCamera              = nullptr;
-    m_pScope               = nullptr;
+    m_pCamera = nullptr;
+    m_pScope = nullptr;
     m_pAuxScope = nullptr;
     m_pStepGuider = nullptr;
     m_pRotator = nullptr;
 
-    m_pCameras             = nullptr;
-    m_pScopes              = nullptr;
-    m_pAuxScopes           = nullptr;
-    m_pStepGuiders         = nullptr;
+    m_pCameras = nullptr;
+    m_pScopes = nullptr;
+    m_pAuxScopes = nullptr;
+    m_pStepGuiders = nullptr;
     m_pRotators = nullptr;
 
-    m_pConnectCameraButton      = nullptr;
-    m_pConnectScopeButton       = nullptr;
-    m_pConnectAuxScopeButton    = nullptr;
+    m_pConnectCameraButton = nullptr;
+    m_pConnectScopeButton = nullptr;
+    m_pConnectAuxScopeButton = nullptr;
     m_pConnectStepGuiderButton = nullptr;
     m_pConnectRotatorButton = nullptr;
 
@@ -171,8 +164,8 @@ GearDialog::~GearDialog()
     delete m_pRotator;
 
     // prevent double frees
-    pCamera         = nullptr;
-    pMount          = nullptr;
+    pCamera = nullptr;
+    pMount = nullptr;
     pSecondaryMount = nullptr;
     pPointingSource = nullptr;
     pRotator = nullptr;
@@ -182,9 +175,9 @@ GearDialog::~GearDialog()
 
 static wxToggleButton *MakeConnectBtn(wxWindow *parent, wxWindowID id)
 {
-#   include "icons/connected.png.h"
+#include "icons/connected.png.h"
     wxBitmap connected_bmp(wxBITMAP_PNG_FROM_DATA(connected));
-#   include "icons/disconnected.png.h"
+#include "icons/disconnected.png.h"
     wxBitmap disconnected_bmp(wxBITMAP_PNG_FROM_DATA(disconnected));
 
     wxToggleButton *btn = new wxToggleButton(parent, id, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
@@ -206,9 +199,9 @@ static wxToggleButton *MakeConnectBtn(wxWindow *parent, wxWindowID id)
 
 void GearDialog::Initialize()
 {
-    wxSizerFlags sizerFlags       = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2).Expand();
-    wxSizerFlags sizerTextFlags   = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2).Expand();
-    wxSizerFlags sizerLabelFlags  = wxSizerFlags().Align(wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL).Border(wxALL, 2);
+    wxSizerFlags sizerFlags = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL, 2).Expand();
+    wxSizerFlags sizerTextFlags = wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL, 2).Expand();
+    wxSizerFlags sizerLabelFlags = wxSizerFlags().Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, 2);
     wxSizerFlags sizerButtonFlags = wxSizerFlags().Align(wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL).Border(wxALL, 2).Expand();
 
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
@@ -216,13 +209,15 @@ void GearDialog::Initialize()
     wxBoxSizer *profilesSizer = new wxBoxSizer(wxHORIZONTAL);
     profilesSizer->Add(new wxStaticText(this, wxID_ANY, _("Equipment profile")), sizerLabelFlags);
     m_profiles = new wxChoice(this, GEAR_PROFILES, wxDefaultPosition, wxDefaultSize, pConfig->ProfileNames());
-    m_profiles->SetToolTip(_("Select the Equipment Profile you would like to use. PHD stores all of your settings and equipment selections in an Equipment Profile. "
+    m_profiles->SetToolTip(_("Select the Equipment Profile you would like to use. PHD stores all of your settings and "
+                             "equipment selections in an Equipment Profile. "
                              "You can create multiple profiles and switch back and forth between them."));
     m_profiles->SetStringSelection(pConfig->GetCurrentProfile());
     profilesSizer->Add(m_profiles, sizerButtonFlags);
 
     m_menuProfileManage = new wxMenu();
-    m_menuProfileManage->Append(GEAR_PROFILE_WIZARD, _("New using Wizard..."), _("Run the first-light wizard to create a new profile"));
+    m_menuProfileManage->Append(GEAR_PROFILE_WIZARD, _("New using Wizard..."),
+                                _("Run the first-light wizard to create a new profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_DELETE, _("Delete"), _("Delete the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
@@ -234,17 +229,20 @@ void GearDialog::Initialize()
     m_btnProfileManage->SetToolTip(_("Create a new Equipment Profile, or delete or rename the selected Equipment Profile"));
     profilesSizer->Add(m_btnProfileManage, sizerButtonFlags);
 
-    pTopLevelSizer->Add(profilesSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2));
+    pTopLevelSizer->Add(profilesSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL, 2));
     pTopLevelSizer->AddSpacer(10);
 
     // text at the top.  I tried (really really hard) to get it to resize/Wrap()
     // with the rest of the sizer, but it just didn't want to work, and I needed
     // to get the rest of the dialog working.
-    wxStaticText *pText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL);
+    wxStaticText *pText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+                                           wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL);
     int width, height;
-    pText->SetLabel(_("Select your equipment below and click Connect All to connect, or click Disconnect All to disconnect. You can also connect or disconnect individual equipment items by clicking the button next to the item."));
+    pText->SetLabel(
+        _("Select your equipment below and click Connect All to connect, or click Disconnect All to disconnect. You can also "
+          "connect or disconnect individual equipment items by clicking the button next to the item."));
     pText->GetTextExtent(_T("MMMMMMMMMM"), &width, &height);
-    pText->Wrap(4*width);
+    pText->Wrap(4 * width);
     pTopLevelSizer->Add(pText, sizerTextFlags.Align(wxALIGN_CENTER));
 
     // The Gear grid in the middle of the screen
@@ -252,14 +250,15 @@ void GearDialog::Initialize()
     pTopLevelSizer->Add(m_gearSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL, 2));
 
     // Camera
-    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize), wxGBPosition(0, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
-                              0, nullptr, 0, wxDefaultValidator, _("Camera"));
+    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize), wxGBPosition(0, 0),
+                     wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+    m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator,
+                              _("Camera"));
     m_gearSizer->Add(m_pCameras, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
-#   include "icons/select.png.h"
+#include "icons/select.png.h"
     wxBitmap select_bmp(wxBITMAP_PNG_FROM_DATA(select));
-#   include "icons/setup.png.h"
+#include "icons/setup.png.h"
     wxBitmap setup_bmp(wxBITMAP_PNG_FROM_DATA(setup));
 
     m_selectCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SELECT_CAMERA, select_bmp);
@@ -270,35 +269,44 @@ void GearDialog::Initialize()
     m_pSetupCameraButton->SetToolTip(_("Camera Setup"));
     m_gearSizer->Add(m_pSetupCameraButton, wxGBPosition(0, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectCameraButton = MakeConnectBtn(this, GEAR_BUTTON_CONNECT_CAMERA);
-    m_gearSizer->Add(m_pConnectCameraButton, wxGBPosition(0, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pConnectCameraButton, wxGBPosition(0, 4), wxGBSpan(1, 1),
+                     wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // mount
-    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
-                             0, nullptr, 0, wxDefaultValidator, _("Mount"));
-    m_pScopes->SetToolTip(_("Specify how guide commands will be sent to the mount - via an ASCOM or INDI driver, directly from the camera or AO, "
-        "or via one of the GPxxx devices. An ASCOM connection is recommended."));
+    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0),
+                     wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+    m_pScopes =
+        new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator, _("Mount"));
+    m_pScopes->SetToolTip(
+        _("Specify how guide commands will be sent to the mount - via an ASCOM or INDI driver, directly from the camera or AO, "
+          "or via one of the GPxxx devices. An ASCOM connection is recommended."));
     m_gearSizer->Add(m_pScopes, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, setup_bmp);
     m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
     m_gearSizer->Add(m_pSetupScopeButton, wxGBPosition(1, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectScopeButton = MakeConnectBtn(this, GEAR_BUTTON_CONNECT_SCOPE);
-    m_gearSizer->Add(m_pConnectScopeButton, wxGBPosition(1, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pConnectScopeButton, wxGBPosition(1, 4), wxGBSpan(1, 1),
+                     wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // aux mount - used for position/state information when not guiding through ASCOM interface
-    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Aux Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pAuxScopes = new wxChoice(this, GEAR_CHOICE_AUXSCOPE, wxDefaultPosition, wxDefaultSize,
-        0, nullptr, 0, wxDefaultValidator, _("Aux Mount"));
+    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Aux Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(2, 0),
+                     wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+    m_pAuxScopes = new wxChoice(this, GEAR_CHOICE_AUXSCOPE, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator,
+                                _("Aux Mount"));
 
 #if defined(GUIDE_ASCOM) || defined(GUIDE_INDI)
-#ifdef GUIDE_ASCOM
+# ifdef GUIDE_ASCOM
     wxString driverName = _T("ASCOM");
 # else
     wxString driverName = _T("INDI");
-#endif
-    m_pAuxScopes->SetToolTip(wxString::Format(_("If you are using a guide port (On-camera or GPXXX) interface  for guiding, you can also use an 'aux' connection to your %s-compatible mount. This will "
-        "be used to make automatic calibration adjustments based on declination and side-of-pier.  If you have already selected an %s driver for your 'mount', the 'aux' mount "
-        "parameter will not be used."), driverName, driverName));
+# endif
+    m_pAuxScopes->SetToolTip(
+        wxString::Format(_("If you are using a guide port (On-camera or GPXXX) interface  for guiding, you can also use an "
+                           "'aux' connection to your %s-compatible mount. This will "
+                           "be used to make automatic calibration adjustments based on declination and side-of-pier.  If you "
+                           "have already selected an %s driver for your 'mount', the 'aux' mount "
+                           "parameter will not be used."),
+                         driverName, driverName));
 #endif // ASCOM or INDI
 
     m_gearSizer->Add(m_pAuxScopes, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
@@ -306,47 +314,54 @@ void GearDialog::Initialize()
     m_pSetupAuxScopeButton->SetToolTip(_("Aux Mount Setup"));
     m_gearSizer->Add(m_pSetupAuxScopeButton, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectAuxScopeButton = MakeConnectBtn(this, GEAR_BUTTON_CONNECT_AUXSCOPE);
-    m_gearSizer->Add(m_pConnectAuxScopeButton, wxGBPosition(2, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pConnectAuxScopeButton, wxGBPosition(2, 4), wxGBSpan(1, 1),
+                     wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     m_moreButton = new wxButton(this, GEAR_BUTTON_MORE, wxEmptyString);
     m_gearSizer->Add(m_moreButton, wxGBPosition(3, 0), wxGBSpan(1, 4), wxALL | /*wxALIGN_CENTER*/ wxALIGN_LEFT, 5);
 
     // ao
-    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("AO"), wxDefaultPosition, wxDefaultSize), wxGBPosition(4, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
-                                  0, nullptr, 0, wxDefaultValidator, _("AO"));
+    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("AO"), wxDefaultPosition, wxDefaultSize), wxGBPosition(4, 0),
+                     wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+    m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
+                                  wxDefaultValidator, _("AO"));
     m_gearSizer->Add(m_pStepGuiders, wxGBPosition(4, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, setup_bmp);
     m_pSetupStepGuiderButton->SetToolTip(_("AO Setup"));
-    m_gearSizer->Add(m_pSetupStepGuiderButton, wxGBPosition(4, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupStepGuiderButton, wxGBPosition(4, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL,
+                     5);
     m_pConnectStepGuiderButton = MakeConnectBtn(this, GEAR_BUTTON_CONNECT_STEPGUIDER);
-    m_gearSizer->Add(m_pConnectStepGuiderButton, wxGBPosition(4, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pConnectStepGuiderButton, wxGBPosition(4, 4), wxGBSpan(1, 1),
+                     wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // rotator
-    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Rotator"), wxDefaultPosition, wxDefaultSize), wxGBPosition(5, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-    m_pRotators = new wxChoice(this, GEAR_CHOICE_ROTATOR, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator, _("Rotator"));
+    m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Rotator"), wxDefaultPosition, wxDefaultSize), wxGBPosition(5, 0),
+                     wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+    m_pRotators = new wxChoice(this, GEAR_CHOICE_ROTATOR, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0, wxDefaultValidator,
+                               _("Rotator"));
     m_gearSizer->Add(m_pRotators, wxGBPosition(5, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pSetupRotatorButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_ROTATOR, setup_bmp);
     m_pSetupRotatorButton->SetToolTip(_("Rotator Setup"));
     m_gearSizer->Add(m_pSetupRotatorButton, wxGBPosition(5, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectRotatorButton = MakeConnectBtn(this, GEAR_BUTTON_CONNECT_ROTATOR);
-    m_gearSizer->Add(m_pConnectRotatorButton, wxGBPosition(5, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pConnectRotatorButton, wxGBPosition(5, 4), wxGBSpan(1, 1),
+                     wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // Setup the bottom row of buttons
 
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pConnectAllButton = new wxButton( this, GEAR_BUTTON_CONNECT_ALL, _("Connect All"));
+    m_pConnectAllButton = new wxButton(this, GEAR_BUTTON_CONNECT_ALL, _("Connect All"));
     m_pConnectAllButton->SetToolTip(_("Connect all equipment and close the equipment selection window"));
     pButtonSizer->Add(m_pConnectAllButton, sizerFlags);
 
-    m_pDisconnectAllButton = new wxButton( this, GEAR_BUTTON_DISCONNECT_ALL, _("Disconnect All"));
+    m_pDisconnectAllButton = new wxButton(this, GEAR_BUTTON_DISCONNECT_ALL, _("Disconnect All"));
     m_pDisconnectAllButton->SetToolTip(_("Disconnect all equipment"));
     pButtonSizer->Add(m_pDisconnectAllButton, sizerFlags);
 
-    wxButton* closeBtn = new wxButton(this, wxID_CANCEL, _("Close"));
+    wxButton *closeBtn = new wxButton(this, wxID_CANCEL, _("Close"));
     pButtonSizer->Add(closeBtn, sizerFlags);
 
-    pTopLevelSizer->Add(pButtonSizer, wxSizerFlags().Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2));
+    pTopLevelSizer->Add(pButtonSizer, wxSizerFlags().Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2));
 
     // preselect the choices
     LoadGearChoices();
@@ -424,8 +439,10 @@ static wxString NewAoName(const wxString& oldname)
     // we renamed the AOs when we added the INDI SBIG AO
     // temporary code to convert the old names to the new
     // this should be removed after a release or two
-    if (oldname == _T("sxAO")) return _T("SX AO");
-    if (oldname == _T("INDI sxAO")) return _T("SX AO (INDI)");
+    if (oldname == _T("sxAO"))
+        return _T("SX AO");
+    if (oldname == _T("INDI sxAO"))
+        return _T("SX AO (INDI)");
     return oldname;
 }
 #endif
@@ -488,10 +505,8 @@ int GearDialog::ShowGearDialog(bool autoConnect)
         wxCommandEvent dummyEvent;
         OnButtonConnectAll(dummyEvent);
 
-        if (m_pCamera && m_pCamera->Connected &&
-            (!m_pScope || m_pScope->IsConnected()) &&
-            (!m_pAuxScope || m_pAuxScope->IsConnected()) &&
-            (!m_pStepGuider || m_pStepGuider->IsConnected()) &&
+        if (m_pCamera && m_pCamera->Connected && (!m_pScope || m_pScope->IsConnected()) &&
+            (!m_pAuxScope || m_pAuxScope->IsConnected()) && (!m_pStepGuider || m_pStepGuider->IsConnected()) &&
             (!m_pRotator || m_pRotator->IsConnected()))
         {
             callSuper = false;
@@ -544,10 +559,9 @@ void GearDialog::EndModal(int retCode)
     pFrame->pGraphLog->UpdateControls();
     pFrame->pTarget->UpdateControls();
 
-    if (pFrame->GetAutoLoadCalibration() && !m_camChanged)              // ok to reload calibration
+    if (pFrame->GetAutoLoadCalibration() && !m_camChanged) // ok to reload calibration
     {
-        if (pMount && pMount->IsConnected() &&
-            (!pSecondaryMount || pSecondaryMount->IsConnected()))
+        if (pMount && pMount->IsConnected() && (!pSecondaryMount || pSecondaryMount->IsConnected()))
         {
             Debug.Write("Auto-loading calibration data\n");
             pFrame->LoadCalibration();
@@ -677,7 +691,8 @@ void GearDialog::UpdateScopeButtonState()
             {
                 m_pConnectScopeButton->Enable(false);
             }
-            else if (m_pScope->RequiresStepGuider() && (!m_pStepGuider || !m_pStepGuider->ST4HasGuideOutput() || !m_pStepGuider->IsConnected()))
+            else if (m_pScope->RequiresStepGuider() &&
+                     (!m_pStepGuider || !m_pStepGuider->ST4HasGuideOutput() || !m_pStepGuider->IsConnected()))
             {
                 m_pConnectScopeButton->Enable(false);
             }
@@ -694,7 +709,7 @@ void GearDialog::UpdateAuxScopeButtonState()
     // Now set up the buttons to match our current state
     if (m_pScope && m_pScope->CanReportPosition())
     {
-        int noneInx = m_pAuxScopes->FindString(_("None"));            // Should always be first in list
+        int noneInx = m_pAuxScopes->FindString(_("None")); // Should always be first in list
         m_pAuxScopes->SetSelection(noneInx);
         m_pAuxScopes->Enable(false);
         m_pSetupAuxScopeButton->Enable(false);
@@ -820,11 +835,9 @@ void GearDialog::UpdateRotatorButtonState()
 
 void GearDialog::UpdateConnectAllButtonState()
 {
-    if ((m_pCamera     && !m_pCamera->Connected) ||
-        (m_pScope      && !m_pScope->IsConnected()) ||
-        (m_pAuxScope   && !m_pAuxScope->IsConnected()) ||
-        (m_pStepGuider && !m_pStepGuider->IsConnected()) ||
-        (m_pRotator    && !m_pRotator->IsConnected()))
+    if ((m_pCamera && !m_pCamera->Connected) || (m_pScope && !m_pScope->IsConnected()) ||
+        (m_pAuxScope && !m_pAuxScope->IsConnected()) || (m_pStepGuider && !m_pStepGuider->IsConnected()) ||
+        (m_pRotator && !m_pRotator->IsConnected()))
     {
         m_pConnectAllButton->Enable(true);
     }
@@ -836,11 +849,9 @@ void GearDialog::UpdateConnectAllButtonState()
 
 void GearDialog::UpdateDisconnectAllButtonState()
 {
-    if ((m_pCamera     && m_pCamera->Connected) ||
-        (m_pScope      && m_pScope->IsConnected()) ||
-        (m_pAuxScope   && m_pAuxScope->IsConnected()) ||
-        (m_pStepGuider && m_pStepGuider->IsConnected()) ||
-        (m_pRotator    && m_pRotator->IsConnected()))
+    if ((m_pCamera && m_pCamera->Connected) || (m_pScope && m_pScope->IsConnected()) ||
+        (m_pAuxScope && m_pAuxScope->IsConnected()) || (m_pStepGuider && m_pStepGuider->IsConnected()) ||
+        (m_pRotator && m_pRotator->IsConnected()))
     {
         m_pDisconnectAllButton->Enable(true);
         m_profiles->Enable(false);
@@ -1033,7 +1044,7 @@ void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
     }
 
     PopupMenu(menu, m_selectCameraButton->GetPosition().x,
-        m_selectCameraButton->GetPosition().y + m_selectCameraButton->GetSize().GetHeight());
+              m_selectCameraButton->GetPosition().y + m_selectCameraButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -1107,11 +1118,11 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         }
 
         Debug.Write(wxString::Format("DoConnectCamera: reconnecting=%d warningIssued=%d lastCam=[%s] scaleRatio=%.3f\n",
-            autoReconnecting, m_camWarningIssued, m_lastCamera, m_imageScaleRatio));
+                                     autoReconnecting, m_camWarningIssued, m_lastCamera, m_imageScaleRatio));
 
-        // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams from same mfr
-        // so do what we can here including consideration of image scale change
-        // Purpose is to warn user of potential loss of dark/bpm files and later, to adjust guide params as best we can
+        // No very reliable way to know if cam selection has changed - id's and name strings may be the same for different cams
+        // from same mfr so do what we can here including consideration of image scale change Purpose is to warn user of
+        // potential loss of dark/bpm files and later, to adjust guide params as best we can
         if (!m_camWarningIssued && !autoReconnecting)
         {
             if ((m_lastCamera != _("None") && newCam != _("None") && !DeviceSelectionMatches(m_lastCamera, newCam)) ||
@@ -1128,12 +1139,13 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
                 {
                     Debug.Write("DoConnectCamera: displaying camera-change warning\n");
 
-                    wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
-                        " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
+                    wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library "
+                                     "or bad-pixel maps. You should consider"
+                                     " creating a new profile for this set-up.  Do you want to connect to this camera anyway?");
                     if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
                     {
                         m_camWarningIssued = true;
-                        m_lastCamera = newCam;          // make consistent with what's in the UI
+                        m_lastCamera = newCam; // make consistent with what's in the UI
                     }
                     else
                     {
@@ -1159,8 +1171,8 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
             m_pCamera->SetCameraGain(defaultGain);
         }
 
-        // See if the profile was created with a binning level that isn't supported by the camera (user mistake) - if so, reset binning to 1
-        // Must be done here because orig binning level is not saved
+        // See if the profile was created with a binning level that isn't supported by the camera (user mistake) - if so, reset
+        // binning to 1 Must be done here because orig binning level is not saved
         if (profileBinning > m_pCamera->MaxBinning)
         {
             int rslt;
@@ -1193,7 +1205,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         Debug.Write(wxString::Format("HasSubFrames=%d\n", m_pCamera->HasSubframes));
         Debug.Write(wxString::Format("ST4HasGuideOutput=%d\n", m_pCamera->ST4HasGuideOutput()));
 
-        if (!autoReconnecting)            // On a reconnect, this stuff is already established
+        if (!autoReconnecting) // On a reconnect, this stuff is already established
         {
             AutoLoadDefectMap();
             if (!pCamera->CurrentDefectMap)
@@ -1286,8 +1298,7 @@ void GearDialog::UpdateGearPointers()
         pSecondaryMount = nullptr;
     }
 
-    pPointingSource = m_pScope && (!m_pAuxScope || m_pScope->CanReportPosition()) ?
-        m_pScope : m_pAuxScope;
+    pPointingSource = m_pScope && (!m_pAuxScope || m_pScope->CanReportPosition()) ? m_pScope : m_pAuxScope;
 
     pRotator = m_pRotator;
 }
@@ -1826,7 +1837,8 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
     bool firstLight = IsEmptyProfile();
     wxString current = m_profiles->GetStringSelection();
 
-    bool showGreeting = event.GetId() == 0; // Event id of 0 comes from "first light" launch; show first light UI panel only then
+    bool showGreeting =
+        event.GetId() == 0; // Event id of 0 comes from "first light" launch; show first light UI panel only then
     bool darks_requested;
     if (EquipmentProfileWizard::ShowModal(this, showGreeting, &darks_requested))
     {
@@ -1834,7 +1846,7 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
         // if this was a first-light run, we may have left an empty "My Equipment" profile behind - if so, delete it
         if (firstLight)
         {
-            pConfig->DeleteProfile(current);                // Can't be any dark/bpm files associated with it
+            pConfig->DeleteProfile(current); // Can't be any dark/bpm files associated with it
         }
 
         wxArrayString profiles = pConfig->ProfileNames();
@@ -1872,9 +1884,9 @@ void GearDialog::ShowProfileWizard()
 void GearDialog::ShowProfileWizard(wxCommandEvent& evt)
 {
     OnButtonWizard(evt);
-    if (!IsEmptyProfile())                      // User didn't just cancel out
+    if (!IsEmptyProfile()) // User didn't just cancel out
     {
-        ShowGearDialog(m_showDarksDialog);      // Maybe auto-connect, close, launch darks; or just display dialog
+        ShowGearDialog(m_showDarksDialog); // Maybe auto-connect, close, launch darks; or just display dialog
     }
 }
 
@@ -1911,10 +1923,8 @@ bool GearDialog::SetProfile(int profileId, wxString *error)
         return true;
     }
 
-    if ((m_pCamera && m_pCamera->Connected) ||
-        (m_pScope && m_pScope->IsConnected()) ||
-        (m_pAuxScope && m_pAuxScope->IsConnected()) ||
-        (m_pStepGuider && m_pStepGuider->IsConnected()) ||
+    if ((m_pCamera && m_pCamera->Connected) || (m_pScope && m_pScope->IsConnected()) ||
+        (m_pAuxScope && m_pAuxScope->IsConnected()) || (m_pStepGuider && m_pStepGuider->IsConnected()) ||
         (m_pRotator && m_pRotator->IsConnected()))
     {
         *error = "cannot set profile when equipment is connected";
@@ -1947,10 +1957,8 @@ bool GearDialog::SetProfile(int profileId, wxString *error)
 
 bool GearDialog::ConnectAll(wxString *error)
 {
-    if (m_pCamera && m_pCamera->Connected &&
-        (!m_pScope || m_pScope->IsConnected()) &&
-        (!m_pAuxScope || m_pAuxScope->IsConnected()) &&
-        (!m_pStepGuider || m_pStepGuider->IsConnected()) &&
+    if (m_pCamera && m_pCamera->Connected && (!m_pScope || m_pScope->IsConnected()) &&
+        (!m_pAuxScope || m_pAuxScope->IsConnected()) && (!m_pStepGuider || m_pStepGuider->IsConnected()) &&
         (!m_pRotator || m_pRotator->IsConnected()))
     {
         // everything already connected
@@ -2003,10 +2011,8 @@ bool GearDialog::ConnectAll(wxString *error)
 
 bool GearDialog::DisconnectAll(wxString *error)
 {
-    if ((!m_pCamera || !m_pCamera->Connected) &&
-        (!m_pScope || !m_pScope->IsConnected()) &&
-        (!m_pAuxScope || !m_pAuxScope->IsConnected()) &&
-        (!m_pStepGuider || !m_pStepGuider->IsConnected()) &&
+    if ((!m_pCamera || !m_pCamera->Connected) && (!m_pScope || !m_pScope->IsConnected()) &&
+        (!m_pAuxScope || !m_pAuxScope->IsConnected()) && (!m_pStepGuider || !m_pStepGuider->IsConnected()) &&
         (!m_pRotator || !m_pRotator->IsConnected()))
     {
         // nothing connected
@@ -2081,15 +2087,16 @@ struct NewProfileDialog : public wxDialog
     NewProfileDialog(wxWindow *parent);
 };
 
-NewProfileDialog::NewProfileDialog(wxWindow *parent)
-    : wxDialog(parent, wxID_ANY, _("New Equipment Profile"))
+NewProfileDialog::NewProfileDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("New Equipment Profile"))
 {
-    wxSizerFlags sizerLabelFlags  = wxSizerFlags().Align(wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL).Border(wxALL,2).Expand();
-    wxSizerFlags sizerTextFlags = wxSizerFlags().Align(wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL).Border(wxALL,2).Expand();
-    wxSizerFlags sizerButtonFlags = wxSizerFlags().Align(wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL).Border(wxALL,2).Expand();
+    wxSizerFlags sizerLabelFlags = wxSizerFlags().Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, 2).Expand();
+    wxSizerFlags sizerTextFlags = wxSizerFlags().Align(wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL).Border(wxALL, 2).Expand();
+    wxSizerFlags sizerButtonFlags = wxSizerFlags().Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, 2).Expand();
 
     wxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
-    sizer1->Add(new wxStaticText(this, wxID_ANY, _("Name"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
+    sizer1->Add(
+        new wxStaticText(this, wxID_ANY, _("Name"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL),
+        sizerLabelFlags);
     wxSize size = GetTextExtent("MMMMMMMMMMMMMMMMMMMMMMMMMMMM");
     size.SetHeight(-1);
     m_name = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, size);
@@ -2100,10 +2107,13 @@ NewProfileDialog::NewProfileDialog(wxWindow *parent)
     choices.Insert(_("PHD Defaults"), 0);
 
     wxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);
-    sizer2->Add(new wxStaticText(this, wxID_ANY, _("Profile initial settings"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
+    sizer2->Add(new wxStaticText(this, wxID_ANY, _("Profile initial settings"), wxDefaultPosition, wxDefaultSize,
+                                 wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL),
+                sizerLabelFlags);
     m_copyFrom = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
     m_copyFrom->SetSelection(0);
-    m_copyFrom->SetToolTip(_("Select PHD Defaults to create a profile with default PHD settings, or select an existing Equipment Profile to copy its settings into your new profile."));
+    m_copyFrom->SetToolTip(_("Select PHD Defaults to create a profile with default PHD settings, or select an existing "
+                             "Equipment Profile to copy its settings into your new profile."));
     sizer2->Add(m_copyFrom, sizerTextFlags);
 
     wxSizer *sizer3 = new wxBoxSizer(wxVERTICAL);
@@ -2127,7 +2137,8 @@ void GearDialog::OnProfileNew(wxCommandEvent& event)
 
     if (pConfig->GetProfileId(newname) > 0)
     {
-        wxMessageBox(wxString::Format(_("Cannot create profile %s, there is already a profile with that name"), newname), _("Error"));
+        wxMessageBox(wxString::Format(_("Cannot create profile %s, there is already a profile with that name"), newname),
+                     _("Error"));
         return;
     }
 
@@ -2159,7 +2170,8 @@ void GearDialog::OnProfileNew(wxCommandEvent& event)
 void GearDialog::OnProfileDelete(wxCommandEvent& event)
 {
     wxString current = m_profiles->GetStringSelection();
-    int result = wxMessageBox(wxString::Format(_("Delete profile %s?"), current), _("Delete Equipment Profile"), wxOK | wxCANCEL | wxCENTRE);
+    int result = wxMessageBox(wxString::Format(_("Delete profile %s?"), current), _("Delete Equipment Profile"),
+                              wxOK | wxCANCEL | wxCENTRE);
     if (result != wxOK)
         return;
     int id = pConfig->GetProfileId(current);
@@ -2188,7 +2200,8 @@ void GearDialog::OnProfileRename(wxCommandEvent& event)
 
     if (pConfig->GetProfileId(newname) > 0)
     {
-        wxMessageBox(_(wxString::Format("Cannot not rename profile to %s, there is already a profile with that name", newname)), _("Error"));
+        wxMessageBox(_(wxString::Format("Cannot not rename profile to %s, there is already a profile with that name", newname)),
+                     _("Error"));
         return;
     }
 
@@ -2241,9 +2254,9 @@ void GearDialog::OnProfileLoad(wxCommandEvent& event)
 void GearDialog::OnProfileSave(wxCommandEvent& event)
 {
     wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
-    wxString fname = wxFileSelector(_("Export PHD Equipment Profile"), default_path,
-                                    pConfig->GetCurrentProfile() + wxT(".phd"), wxT("phd"),
-                                    wxT("PHD profile files (*.phd)|*.phd"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
+    wxString fname =
+        wxFileSelector(_("Export PHD Equipment Profile"), default_path, pConfig->GetCurrentProfile() + wxT(".phd"), wxT("phd"),
+                       wxT("PHD profile files (*.phd)|*.phd"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
 
     if (fname.IsEmpty())
     {

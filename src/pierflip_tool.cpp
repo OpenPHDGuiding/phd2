@@ -75,9 +75,8 @@ struct PierFlipCalToolWin : public wxFrame
 };
 
 PierFlipCalToolWin::PierFlipCalToolWin()
-    :
-    wxFrame(pFrame, wxID_ANY, _("Meridian Flip Calibration Tool"), wxDefaultPosition, wxSize(334, 350),
-            wxCAPTION|wxCLOSE_BOX|wxFRAME_NO_TASKBAR|wxTAB_TRAVERSAL)
+    : wxFrame(pFrame, wxID_ANY, _("Meridian Flip Calibration Tool"), wxDefaultPosition, wxSize(334, 350),
+              wxCAPTION | wxCLOSE_BOX | wxFRAME_NO_TASKBAR | wxTAB_TRAVERSAL)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -85,36 +84,36 @@ PierFlipCalToolWin::PierFlipCalToolWin()
 
     wxSize sz = GetTextExtent(_T("M"));
 
-    m_instructions = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-        wxSize(31 * sz.GetWidth(), 19 * sz.GetHeight() / 2),
-        wxTE_MULTILINE | wxTE_NO_VSCROLL | wxTE_READONLY | wxTE_WORDWRAP);
-    sz1->Add(m_instructions, 0, wxALL|wxEXPAND, 5);
+    m_instructions =
+        new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(31 * sz.GetWidth(), 19 * sz.GetHeight() / 2),
+                       wxTE_MULTILINE | wxTE_NO_VSCROLL | wxTE_READONLY | wxTE_WORDWRAP);
+    sz1->Add(m_instructions, 0, wxALL | wxEXPAND, 5);
 
     wxFlexGridSizer *sz2 = new wxFlexGridSizer(3, 2, 0, 0);
     sz2->SetFlexibleDirection(wxBOTH);
     sz2->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
     wxStaticText *label1 = new wxStaticText(this, wxID_ANY, _("Declination"));
-    sz2->Add(label1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(label1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     m_dec = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    sz2->Add(m_dec, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(m_dec, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     wxStaticText *label2 = new wxStaticText(this, wxID_ANY, _("Hour Angle"));
-    sz2->Add(label2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(label2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     m_ha = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    sz2->Add(m_ha, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(m_ha, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     wxStaticText *label3 = new wxStaticText(this, wxID_ANY, _("Pier Side"));
-    sz2->Add(label3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(label3, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     m_pierSide = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    sz2->Add(m_pierSide, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sz2->Add(m_pierSide, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     m_scopePosCtrls = sz2;
 
-    sz1->Add(sz2, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    sz1->Add(sz2, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     wxBoxSizer *sz3 = new wxBoxSizer(wxHORIZONTAL);
 
@@ -149,7 +148,8 @@ PierFlipCalToolWin::~PierFlipCalToolWin()
     Debug.Write("PFT: closed\n");
 
     // Disconnect Events
-    m_restart->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PierFlipCalToolWin::OnRestartClick), nullptr, this);
+    m_restart->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PierFlipCalToolWin::OnRestartClick), nullptr,
+                          this);
     m_next->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PierFlipCalToolWin::OnNextClick), nullptr, this);
     Disconnect(wxID_ANY, wxEVT_TIMER, wxTimerEventHandler(PierFlipCalToolWin::OnTimer));
 
@@ -216,8 +216,7 @@ static void SetBg(wxTextCtrl *ctrl, Color c)
     static wxColor Y(237, 237, 88);
     static wxColor G(88, 237, 88);
 
-    const wxColor& cl = c == GREY ? wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW) :
-        c == RED ? R : c == YELLOW ? Y : G;
+    const wxColor& cl = c == GREY ? wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW) : c == RED ? R : c == YELLOW ? Y : G;
 
     if (ctrl->SetBackgroundColour(cl))
         ctrl->Refresh();
@@ -236,18 +235,18 @@ void PierFlipCalToolWin::SetState(State state)
     {
     case ST_INTRO:
         s = _("This tool will automatically determine the correct value for the setting "
-            "'Reverse Dec output after meridian flip'.\n\n"
-            "The procedure requires two calibrations -- one with the telescope on the East "
-            "side of the pier, and one on the West. You will be instructed to slew the "
-            "telescope when needed.\n\n"
-            "Click Next to begin");
+              "'Reverse Dec output after meridian flip'.\n\n"
+              "The procedure requires two calibrations -- one with the telescope on the East "
+              "side of the pier, and one on the West. You will be instructed to slew the "
+              "telescope when needed.\n\n"
+              "Click Next to begin");
         m_next->SetLabel(_("Next"));
         m_scopePosCtrls->ShowItems(false);
         Fit();
         break;
     case ST_SLEW_1:
         s = _("Point the telescope in the direction of the intersection of the meridian and the celestial "
-            "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
+              "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
         m_next->SetLabel(_("Calibrate"));
         m_status->SetStatusText(wxEmptyString);
         if (!m_scopePosCtrls->AreAnyItemsShown())
@@ -258,37 +257,35 @@ void PierFlipCalToolWin::SetState(State state)
         break;
     case ST_CALIBRATE_1:
         s = _("Wait for the first calibration to complete.");
-        m_status->SetStatusText(wxString::Format(_("Calibrating on the %s side of pier"),
-            Scope::PierSideStrTr(pPointingSource->SideOfPier())));
+        m_status->SetStatusText(
+            wxString::Format(_("Calibrating on the %s side of pier"), Scope::PierSideStrTr(pPointingSource->SideOfPier())));
         break;
     case ST_SLEW_2:
-        s = wxString::Format(_("Slew the telescope to force a meridian flip - the scope should move to the %s side of the pier, still pointing near Dec = 0."),
-            Scope::PierSideStrTr(m_firstCal.pierSide == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST)) +
+        s = wxString::Format(_("Slew the telescope to force a meridian flip - the scope should move to the %s side of the "
+                               "pier, still pointing near Dec = 0."),
+                             Scope::PierSideStrTr(m_firstCal.pierSide == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST)) +
             _T("\n\n") +
             _("Point the telescope in the direction of the intersection of the meridian and the celestial "
-            "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
+              "equator, near Hour Angle = 0 and Declination = 0.\n\nClick Calibrate when ready.");
         m_status->SetStatusText(wxEmptyString);
         break;
     case ST_CALIBRATE_2:
         s = _("Wait for the second calibration to complete.");
-        m_status->SetStatusText(wxString::Format(_("Calibrating on the %s side of pier"),
-            Scope::PierSideStrTr(pPointingSource->SideOfPier())));
+        m_status->SetStatusText(
+            wxString::Format(_("Calibrating on the %s side of pier"), Scope::PierSideStrTr(pPointingSource->SideOfPier())));
         break;
     case ST_DONE:
         if (m_resultError.empty())
         {
-            s = _("Meridian flip calibration completed sucessfully.") +
-                _T("\n\n") +
+            s = _("Meridian flip calibration completed sucessfully.") + _T("\n\n") +
                 wxString::Format(_("The correct setting for 'Reverse Dec output after meridian flip' "
-                "for this mount is: %s"),
-                m_result ? _("enabled") : _("disabled")) +
-                _T("\n\n") +
-                _("Click Apply to accept the setting");
+                                   "for this mount is: %s"),
+                                 m_result ? _("enabled") : _("disabled")) +
+                _T("\n\n") + _("Click Apply to accept the setting");
         }
         else
         {
-            s = _("Meridian flip calibration failed.") + _T("\n\n") +
-                m_resultError + _T("\n\n") +
+            s = _("Meridian flip calibration failed.") + _T("\n\n") + m_resultError + _T("\n\n") +
                 _("Resolve any calibration issues and try again");
         }
         m_next->SetLabel(_("Apply"));
@@ -415,7 +412,7 @@ void PierFlipCalToolWin::DoOnTimer()
 
 void PierFlipCalToolWin::OnTimer(wxTimerEvent&)
 {
-   DoOnTimer();
+    DoOnTimer();
 }
 
 void PierFlipCalToolWin::OnGuidingStateUpdated()
@@ -500,14 +497,14 @@ bool PierFlipTool::CanRunTool(wxString *error)
     {
         Debug.Write("PFT: called when no mount present\n");
         *error = _("The meridian flip calibration tool requires a mount. "
-            "Click the Connect Equipment button to select your mount.");
+                   "Click the Connect Equipment button to select your mount.");
         return false;
     }
     if (TheScope()->GetDecGuideMode() == DEC_GUIDE_MODE::DEC_NONE)
     {
         Debug.Write("PFT: called when dec guiding disabled\n");
         *error = _("The meridian flip calibration tool cannnot be run with Declination guiding disabled. "
-            "If your mount can guide in Declination, set your Dec guide mode to Auto and try again.");
+                   "If your mount can guide in Declination, set your Dec guide mode to Auto and try again.");
         return false;
     }
     return true;

@@ -58,24 +58,24 @@ class MyFrame;
 
 struct EXPOSE_REQUEST
 {
-    usImage         *pImage;
-    int              exposureDuration;
-    int              options;
-    wxRect           subframe;
-    bool             error;
-    wxSemaphore     *pSemaphore;
+    usImage *pImage;
+    int exposureDuration;
+    int options;
+    wxRect subframe;
+    bool error;
+    wxSemaphore *pSemaphore;
 };
 
 struct MOVE_REQUEST
 {
-    Mount             *mount;
-    int                duration;
-    GUIDE_DIRECTION    direction;
-    bool               axisMove;
-    unsigned int       moveOptions;
+    Mount *mount;
+    int duration;
+    GUIDE_DIRECTION direction;
+    bool axisMove;
+    unsigned int moveOptions;
     Mount::MOVE_RESULT moveResult;
-    GuiderOffset       ofs;
-    wxSemaphore       *semaphore;
+    GuiderOffset ofs;
+    wxSemaphore *semaphore;
 };
 
 struct MoveCompleteEvent : public wxThreadEvent
@@ -92,16 +92,16 @@ class WorkerThread : public wxThread
     // types and routines for the server->worker message queue
     enum WORKER_REQUEST_TYPE
     {
-        REQUEST_NONE,       // not used
+        REQUEST_NONE, // not used
         REQUEST_TERMINATE,
         REQUEST_EXPOSE,
         REQUEST_MOVE,
     };
 
     /*
-    * this struct is passed through the message queue to the worker thread
-    * to request work
-    */
+     * this struct is passed through the message queue to the worker thread
+     * to request work
+     */
     struct WORKER_THREAD_REQUEST
     {
         WORKER_REQUEST_TYPE request;
@@ -121,8 +121,8 @@ class WorkerThread : public wxThread
     bool m_skipSendExposeComplete;
 
 public:
-
-    enum InterruptBits {
+    enum InterruptBits
+    {
         _BITNR_STOP,
         _BITNR_TERMINATE,
 
@@ -182,6 +182,7 @@ protected:
 public:
     void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe);
     void SetSkipExposeComplete();
+
 protected:
     bool HandleExpose(EXPOSE_REQUEST *args);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
@@ -191,6 +192,7 @@ protected:
 public:
     void EnqueueWorkerThreadMoveRequest(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions);
     void EnqueueWorkerThreadAxisMove(Mount *mount, const GUIDE_DIRECTION direction, int duration, unsigned int moveOptions);
+
 protected:
     void HandleMove(MOVE_REQUEST *args);
     void SendWorkerThreadMoveComplete(const MOVE_REQUEST& move);
@@ -241,6 +243,7 @@ class WorkerThreadKillGuard
 {
     WorkerThread *m_thread;
     bool m_prev;
+
 public:
     WorkerThreadKillGuard(WorkerThread *thread = WorkerThread::This()) : m_thread(thread)
     {
@@ -256,9 +259,9 @@ public:
 class Watchdog : public wxStopWatch
 {
     long m_timeout_ms;
+
 public:
-    Watchdog(unsigned int timeout_ms, unsigned int grace_period_ms) : m_timeout_ms(timeout_ms + grace_period_ms)
-        { }
+    Watchdog(unsigned int timeout_ms, unsigned int grace_period_ms) : m_timeout_ms(timeout_ms + grace_period_ms) { }
     bool Expired(void) const { return Time() > m_timeout_ms; }
 };
 

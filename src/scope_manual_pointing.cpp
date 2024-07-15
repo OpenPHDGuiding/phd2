@@ -40,44 +40,49 @@ struct ScopePointingDlg : public wxDialog
 {
     double m_latitudeVal, m_longitudeVal;
 
-    wxSpinCtrl* m_dec;
-    wxRadioButton* m_radioBtnWest;
-    wxRadioButton* m_radioBtnEast;
-    wxRadioButton* m_radioBtnUnspecified;
-    wxSpinCtrl* m_raHr;
-    wxSpinCtrl* m_raMin;
-    wxTextCtrl* m_latitude;
-    wxTextCtrl* m_longitude;
-    wxButton* m_OK;
-    wxButton* m_Cancel;
+    wxSpinCtrl *m_dec;
+    wxRadioButton *m_radioBtnWest;
+    wxRadioButton *m_radioBtnEast;
+    wxRadioButton *m_radioBtnUnspecified;
+    wxSpinCtrl *m_raHr;
+    wxSpinCtrl *m_raMin;
+    wxTextCtrl *m_latitude;
+    wxTextCtrl *m_longitude;
+    wxButton *m_OK;
+    wxButton *m_Cancel;
 
-    ScopePointingDlg(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Scope Pointing"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(332, 358), long style = wxDEFAULT_DIALOG_STYLE);
+    ScopePointingDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Scope Pointing"),
+                     const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(332, 358),
+                     long style = wxDEFAULT_DIALOG_STYLE);
     ~ScopePointingDlg();
 };
 
-ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxDialog(parent, id, title, pos, size, style)
+ScopePointingDlg::ScopePointingDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos,
+                                   const wxSize& size, long style)
+    : wxDialog(parent, id, title, pos, size, style)
 {
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer* bSizer1;
+    wxBoxSizer *bSizer1;
     bSizer1 = new wxBoxSizer(wxVERTICAL);
 
-    wxStaticBoxSizer* sbSizer2;
+    wxStaticBoxSizer *sbSizer2;
     sbSizer2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Guiding")), wxVERTICAL);
 
-    wxBoxSizer* bSizer2;
+    wxBoxSizer *bSizer2;
     bSizer2 = new wxBoxSizer(wxVERTICAL);
 
-    wxBoxSizer* bSizer3;
+    wxBoxSizer *bSizer3;
     bSizer3 = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *staticText1 = new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY,
-        wxString::Format(_("Declination (%s)"), DEGREES_SYMBOL), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *staticText1 =
+        new wxStaticText(sbSizer2->GetStaticBox(), wxID_ANY, wxString::Format(_("Declination (%s)"), DEGREES_SYMBOL),
+                         wxDefaultPosition, wxDefaultSize, 0);
     staticText1->Wrap(-1);
     bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
     m_dec = pFrame->MakeSpinCtrl(sbSizer2->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
-        pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, -90, 90, 0);
+                                 pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, -90, 90, 0);
     m_dec->SetToolTip(_("Approximate telescope declination, degrees"));
     m_dec->SetSelection(-1, -1);
 
@@ -85,21 +90,27 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
 
     bSizer2->Add(bSizer3, 0, wxALIGN_CENTER_HORIZONTAL, 5);
 
-    wxStaticBoxSizer* sbSizer4;
+    wxStaticBoxSizer *sbSizer4;
     sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(sbSizer2->GetStaticBox(), wxID_ANY, _("Side of Pier")), wxVERTICAL);
 
-    m_radioBtnWest = new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("West (pointing East)"), wxDefaultPosition, wxDefaultSize, 0);
-    m_radioBtnWest->SetToolTip(_("Telescope is on the West side of the pier, typically pointing East, before the meridian flip"));
+    m_radioBtnWest =
+        new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("West (pointing East)"), wxDefaultPosition, wxDefaultSize, 0);
+    m_radioBtnWest->SetToolTip(
+        _("Telescope is on the West side of the pier, typically pointing East, before the meridian flip"));
 
     sbSizer4->Add(m_radioBtnWest, 0, wxALL, 5);
 
-    m_radioBtnEast = new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("East (pointing West)"), wxDefaultPosition, wxDefaultSize, 0);
-    m_radioBtnEast->SetToolTip(_("Telescope is on the East side of the pier, typically pointing West, after the meridian flip"));
+    m_radioBtnEast =
+        new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("East (pointing West)"), wxDefaultPosition, wxDefaultSize, 0);
+    m_radioBtnEast->SetToolTip(
+        _("Telescope is on the East side of the pier, typically pointing West, after the meridian flip"));
 
     sbSizer4->Add(m_radioBtnEast, 0, wxALL, 5);
 
-    m_radioBtnUnspecified = new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("Unspecified"), wxDefaultPosition, wxDefaultSize, 0);
-    m_radioBtnUnspecified->SetToolTip(_("Select Unspecified if you do not want PHD2 to flip your calibration data for side of pier changes"));
+    m_radioBtnUnspecified =
+        new wxRadioButton(sbSizer4->GetStaticBox(), wxID_ANY, _("Unspecified"), wxDefaultPosition, wxDefaultSize, 0);
+    m_radioBtnUnspecified->SetToolTip(
+        _("Select Unspecified if you do not want PHD2 to flip your calibration data for side of pier changes"));
 
     sbSizer4->Add(m_radioBtnUnspecified, 0, wxALL, 5);
 
@@ -112,62 +123,67 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
     m_raHr = 0;
     if (pFrame->pDriftTool)
     {
-        wxStaticBoxSizer* sbSizer3;
+        wxStaticBoxSizer *sbSizer3;
         sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Drift Alignment")), wxVERTICAL);
 
-        wxBoxSizer* bSizer31;
+        wxBoxSizer *bSizer31;
         bSizer31 = new wxBoxSizer(wxHORIZONTAL);
 
-        wxStaticText *staticText11 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText11 =
+            new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
         staticText11->Wrap(-1);
         bSizer31->Add(staticText11, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-        wxStaticText *staticText111 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("hr"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText111 =
+            new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("hr"), wxDefaultPosition, wxDefaultSize, 0);
         staticText111->Wrap(-1);
         bSizer31->Add(staticText111, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
         m_raHr = pFrame->MakeSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 23, 0);
+                                      pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 23, 0);
         m_raHr->SetToolTip(_("Telescope's Right Ascension, hours"));
 
         bSizer31->Add(m_raHr, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-        wxStaticText *staticText1111 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("min"), wxDefaultPosition, wxDefaultSize, 0);
+        wxStaticText *staticText1111 =
+            new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, _("min"), wxDefaultPosition, wxDefaultSize, 0);
         staticText1111->Wrap(-1);
         bSizer31->Add(staticText1111, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
         m_raMin = pFrame->MakeSpinCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition,
-            pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 59, 0);
+                                       pFrame->GetTextExtent("999"), wxSP_ARROW_KEYS, 0, 59, 0);
         m_raMin->SetToolTip(_("Telescope's Right Ascension, minutes"));
 
         bSizer31->Add(m_raMin, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
         sbSizer3->Add(bSizer31, 0, 0, 5);
 
-        wxBoxSizer* bSizer8;
+        wxBoxSizer *bSizer8;
         bSizer8 = new wxBoxSizer(wxHORIZONTAL);
 
-        wxStaticText *staticText13 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY,
-            wxString::Format(_("Latitude (%s)"), DEGREES_SYMBOL));
+        wxStaticText *staticText13 =
+            new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxString::Format(_("Latitude (%s)"), DEGREES_SYMBOL));
         staticText13->Wrap(-1);
         bSizer8->Add(staticText13, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
         wxFloatingPointValidator<double> val1(3, &m_latitudeVal, wxNUM_VAL_ZERO_AS_BLANK);
         val1.SetRange(-90.0, 90.0);
-        m_latitude = new wxTextCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, val1);
+        m_latitude =
+            new wxTextCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, val1);
         m_latitude->SetToolTip(_("Site latitude"));
         m_latitude->SetMaxSize(wxSize(70, -1));
 
         bSizer8->Add(m_latitude, 0, wxALL, 5);
 
-        wxStaticText *staticText131 = new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY,
-            wxString::Format(_("Longitude (%s)"), DEGREES_SYMBOL));
+        wxStaticText *staticText131 =
+            new wxStaticText(sbSizer3->GetStaticBox(), wxID_ANY, wxString::Format(_("Longitude (%s)"), DEGREES_SYMBOL));
         staticText131->Wrap(-1);
         bSizer8->Add(staticText131, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
         wxFloatingPointValidator<double> val2(3, &m_longitudeVal, wxNUM_VAL_ZERO_AS_BLANK);
         val2.SetRange(-180.0, 180.0);
-        m_longitude = new wxTextCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, val2);
+        m_longitude =
+            new wxTextCtrl(sbSizer3->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, val2);
         m_longitude->SetToolTip(_("Site longitude, degrees East of Greenwich.  Longitudes West of Greenwich are negative."));
         m_longitude->SetMaxSize(wxSize(70, -1));
 
@@ -195,9 +211,7 @@ ScopePointingDlg::ScopePointingDlg(wxWindow* parent, wxWindowID id, const wxStri
     this->Centre(wxBOTH);
 }
 
-ScopePointingDlg::~ScopePointingDlg()
-{
-}
+ScopePointingDlg::~ScopePointingDlg() { }
 
 wxString ScopeManualPointing::GetDisplayName()
 {
@@ -268,10 +282,17 @@ bool ScopeManualPointing::PreparePositionInteractive(void)
     // load values
     dlg.m_dec->SetValue((int) degrees(m_dec));
     wxRadioButton *btn;
-    switch (m_sideOfPier) {
-    case PIER_SIDE_EAST:  btn = dlg.m_radioBtnEast; break;
-    case PIER_SIDE_WEST:  btn = dlg.m_radioBtnWest; break;
-    default:              btn = dlg.m_radioBtnUnspecified; break;
+    switch (m_sideOfPier)
+    {
+    case PIER_SIDE_EAST:
+        btn = dlg.m_radioBtnEast;
+        break;
+    case PIER_SIDE_WEST:
+        btn = dlg.m_radioBtnWest;
+        break;
+    default:
+        btn = dlg.m_radioBtnUnspecified;
+        break;
     }
     btn->SetValue(true);
     if (dlg.m_raHr)
@@ -309,19 +330,20 @@ bool ScopeManualPointing::PreparePositionInteractive(void)
         m_ra = (double) dlg.m_raHr->GetValue() + (double) dlg.m_raMin->GetValue() / 60.0;
 
         // TODO: figure out why data transfer not working
-    #if 0
+#if 0
         m_latitude = dlg.m_latitudeVal;
         m_longitude = dlg.m_longitudeVal;
-    #else
+#else
         dlg.m_latitude->GetValue().ToDouble(&m_latitude);
         dlg.m_longitude->GetValue().ToDouble(&m_longitude);
-    #endif
+#endif
         pConfig->Profile.SetDouble("/scope/manual_pointing/latitude", m_latitude);
         pConfig->Profile.SetDouble("/scope/manual_pointing/longitude", m_longitude);
     }
 
     Debug.Write(wxString::Format("ScopeManualPointing%s coords %.3f,%.3f pierside %d site %.3f,%.3f\n",
-                                 dlg.m_raHr ? " (driftalign)" : "", m_ra, degrees(m_dec), m_sideOfPier, m_latitude, m_longitude));
+                                 dlg.m_raHr ? " (driftalign)" : "", m_ra, degrees(m_dec), m_sideOfPier, m_latitude,
+                                 m_longitude));
 
     return false;
 }

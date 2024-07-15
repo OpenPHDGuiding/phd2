@@ -46,8 +46,8 @@ bool ScopeGpInt::Connect(void)
 {
     short reg = Inp32(port);
 
-    reg = reg & 0x0F;  // Deassert all directions, protect low bits
-    Out32(port,reg);
+    reg = reg & 0x0F; // Deassert all directions, protect low bits
+    Out32(port, reg);
     Scope::Connect();
     return false;
 }
@@ -56,8 +56,8 @@ bool ScopeGpInt::Disconnect(void)
 {
     short reg = Inp32(port);
 
-    reg = reg & 0x0F;  // Deassert all directions, protect low bits
-    Out32(port,reg);
+    reg = reg & 0x0F; // Deassert all directions, protect low bits
+    Out32(port, reg);
     Scope::Disconnect();
     return false;
 }
@@ -66,17 +66,26 @@ Mount::MOVE_RESULT ScopeGpInt::Guide(GUIDE_DIRECTION direction, int duration)
 {
     short reg = Inp32(port);
 
-    reg = reg & 0x0F;  // Deassert all directions
-    switch (direction) {
-        case NORTH: reg = reg ^ 0x80; break;    // Dec+
-        case SOUTH: reg = reg ^ 0x40; break;    // Dec-
-        case EAST: reg = reg ^ 0x10; break;     // RA-
-        case WEST: reg = reg ^ 0x20; break;     // RA+
+    reg = reg & 0x0F; // Deassert all directions
+    switch (direction)
+    {
+    case NORTH:
+        reg = reg ^ 0x80;
+        break; // Dec+
+    case SOUTH:
+        reg = reg ^ 0x40;
+        break; // Dec-
+    case EAST:
+        reg = reg ^ 0x10;
+        break; // RA-
+    case WEST:
+        reg = reg ^ 0x20;
+        break; // RA+
     }
-    Out32(port,reg);
+    Out32(port, reg);
     WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
-    reg = reg & 0x0F;  // Deassert all directions
-    Out32(port,reg);
+    reg = reg & 0x0F; // Deassert all directions
+    Out32(port, reg);
 
     return MOVE_OK;
 }

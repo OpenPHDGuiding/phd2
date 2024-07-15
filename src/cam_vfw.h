@@ -40,15 +40,15 @@
 class CameraVFW : public GuideCamera
 {
     wxVideoCaptureWindow *VFW_Window;
-    wxSplitterWindow     *Extra_Window;
+    wxSplitterWindow *Extra_Window;
 
 public:
     CameraVFW();
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    ShowPropertyDialog() override;
-    wxByte  BitsPerPixel() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void ShowPropertyDialog() override;
+    wxByte BitsPerPixel() override;
 };
 
 #endif

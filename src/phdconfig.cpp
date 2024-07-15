@@ -46,14 +46,9 @@ wxString PhdConfig::DefaultProfileName = wxTRANSLATE("My Equipment");
 
 #define PROFILE_STREAM_VERSION "1"
 
-ConfigSection::ConfigSection()
-    : m_pConfig(nullptr)
-{
-}
+ConfigSection::ConfigSection() : m_pConfig(nullptr) { }
 
-ConfigSection::~ConfigSection()
-{
-}
+ConfigSection::~ConfigSection() { }
 
 void ConfigSection::SelectProfile(int profileId)
 {
@@ -130,9 +125,9 @@ int ConfigSection::GetInt(const wxString& name, int defaultValue)
         m_pConfig->Read(path, &lReturn, defaultValue);
     }
 
-    Debug.Write(wxString::Format("GetInt(\"%s\", %d) returns %d\n", path, defaultValue, (int)lReturn));
+    Debug.Write(wxString::Format("GetInt(\"%s\", %d) returns %d\n", path, defaultValue, (int) lReturn));
 
-    return (int)lReturn;
+    return (int) lReturn;
 }
 
 void ConfigSection::SetBoolean(const wxString& name, bool value)
@@ -254,16 +249,12 @@ struct AutoConfigPath
     wxConfigBase *m_cfg;
     wxString m_savePath;
 
-    AutoConfigPath(wxConfigBase *cfg, const wxString& path)
-        : m_cfg(cfg)
+    AutoConfigPath(wxConfigBase *cfg, const wxString& path) : m_cfg(cfg)
     {
         m_savePath = cfg->GetPath();
         cfg->SetPath(path);
     }
-    ~AutoConfigPath()
-    {
-        m_cfg->SetPath(m_savePath);
-    }
+    ~AutoConfigPath() { m_cfg->SetPath(m_savePath); }
 };
 
 int PhdConfig::FirstProfile()
@@ -410,26 +401,31 @@ bool PhdConfig::CreateProfile(const wxString& name)
 static void CopyVal(wxConfigBase *cfg, const wxString& src, const wxString& dst)
 {
     wxConfigBase::EntryType type = cfg->GetEntryType(src);
-    switch (type) {
-    case wxConfigBase::Type_String: {
+    switch (type)
+    {
+    case wxConfigBase::Type_String:
+    {
         wxString val;
         cfg->Read(src, &val);
         cfg->Write(dst, val);
         break;
     }
-    case wxConfigBase::Type_Boolean: {
+    case wxConfigBase::Type_Boolean:
+    {
         bool val;
         cfg->Read(src, &val);
         cfg->Write(dst, val);
         break;
     }
-    case wxConfigBase::Type_Integer: {
+    case wxConfigBase::Type_Integer:
+    {
         long val;
         cfg->Read(src, &val);
         cfg->Write(dst, val);
         break;
     }
-    case wxConfigBase::Type_Float: {
+    case wxConfigBase::Type_Float:
+    {
         double val;
         cfg->Read(src, &val);
         cfg->Write(dst, val);
@@ -474,7 +470,8 @@ bool PhdConfig::CloneProfile(const wxString& dest, const wxString& source)
     int dstId = GetProfileId(dest);
     if (dstId > 0)
     {
-        Debug.Write(wxString::Format("Clone profile could not clone %s: destination profile %s already exists\n", source, dest));
+        Debug.Write(
+            wxString::Format("Clone profile could not clone %s: destination profile %s already exists\n", source, dest));
         return true;
     }
 
@@ -571,11 +568,25 @@ static wxString unescape_string(const wxString& s)
         {
             switch (s[i + 1].GetValue())
             {
-            case '\\': d.Append('\\'); ++i; break;
-            case 't':  d.Append('\t'); ++i; break;
-            case 'r':  d.Append('\r'); ++i; break;
-            case 'n':  d.Append('\n'); ++i; break;
-            default:   d.Append(ch);        break;
+            case '\\':
+                d.Append('\\');
+                ++i;
+                break;
+            case 't':
+                d.Append('\t');
+                ++i;
+                break;
+            case 'r':
+                d.Append('\r');
+                ++i;
+                break;
+            case 'n':
+                d.Append('\n');
+                ++i;
+                break;
+            default:
+                d.Append(ch);
+                break;
             }
         }
         else
@@ -596,8 +607,8 @@ static bool ParseLine(const wxString& s, wxString *name, wxString *typestr, wxSt
     return true;
 }
 
-static void LoadVal(ConfigSection& section, const wxString& s, const wxString& name,
-    const wxString& typestr, const wxString& val)
+static void LoadVal(ConfigSection& section, const wxString& s, const wxString& name, const wxString& typestr,
+                    const wxString& val)
 {
     long type;
     if (!typestr.ToLong(&type))
@@ -610,7 +621,8 @@ static void LoadVal(ConfigSection& section, const wxString& s, const wxString& n
     case wxConfigBase::Type_String:
         section.SetString(name, unescape_string(val));
         break;
-    case wxConfigBase::Type_Boolean: {
+    case wxConfigBase::Type_Boolean:
+    {
         long lval;
         if (!val.ToLong(&lval))
         {
@@ -622,7 +634,8 @@ static void LoadVal(ConfigSection& section, const wxString& s, const wxString& n
         }
         break;
     }
-    case wxConfigBase::Type_Integer: {
+    case wxConfigBase::Type_Integer:
+    {
         long lval;
         if (!val.ToLong(&lval))
         {
@@ -634,7 +647,8 @@ static void LoadVal(ConfigSection& section, const wxString& s, const wxString& n
         }
         break;
     }
-    case wxConfigBase::Type_Float: {
+    case wxConfigBase::Type_Float:
+    {
         double dval;
         if (!val.ToDouble(&dval))
         {
@@ -703,26 +717,31 @@ static void WriteVal(wxTextOutputStream& os, wxConfigBase *cfg, const wxString& 
 {
     wxString sval;
     wxConfigBase::EntryType type = cfg->GetEntryType(key);
-    switch (type) {
-    case wxConfigBase::Type_String: {
+    switch (type)
+    {
+    case wxConfigBase::Type_String:
+    {
         wxString val;
         cfg->Read(key, &val);
         sval = escape_string(val);
         break;
     }
-    case wxConfigBase::Type_Boolean: {
+    case wxConfigBase::Type_Boolean:
+    {
         bool val;
         cfg->Read(key, &val);
         sval = wxString(val ? "1" : "0");
         break;
     }
-    case wxConfigBase::Type_Integer: {
+    case wxConfigBase::Type_Integer:
+    {
         long val;
         cfg->Read(key, &val);
         sval = wxString::Format("%lu", val);
         break;
     }
-    case wxConfigBase::Type_Float: {
+    case wxConfigBase::Type_Float:
+    {
         double val;
         cfg->Read(key, &val);
         sval = wxString::Format("%g", val);

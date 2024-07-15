@@ -37,16 +37,17 @@
 
 #ifdef KWIQGUIDER_CAMERA
 
-#include "cam_KWIQGuider.h"
-#include "camera.h"
+# include "cam_KWIQGuider.h"
+# include "camera.h"
 
-#include <KWIQGuider.h>
+# include <KWIQGuider.h>
 
 using namespace KWIQ;
 
 class CameraKWIQGuider : public GuideCamera
 {
     KWIQ::KWIQGuider *KWIQguider;
+
 public:
     CameraKWIQGuider();
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
@@ -63,9 +64,9 @@ CameraKWIQGuider::CameraKWIQGuider()
 {
     Connected = false;
     Name = _T("KWIQGuider (KWIQGuider)");
-    FullSize = wxSize(1280, 1024);  // Current size of a full frame
-    m_hasGuideOutput = true;  // Do we have an ST4 port?
-    HasGainControl = true;  // Can we adjust gain?
+    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    m_hasGuideOutput = true; // Do we have an ST4 port?
+    HasGainControl = true; // Can we adjust gain?
 
     KWIQguider = new KWIQGuider();
 }
@@ -80,7 +81,7 @@ bool CameraKWIQGuider::Connect(const wxString& camId)
     if (!KWIQguider->Connect())
         return CamConnectFailed(_("Could not connect to KWIQGuider"));
 
-    Connected = true;  // Set global flag for being connected
+    Connected = true; // Set global flag for being connected
     return false;
 }
 
@@ -93,20 +94,22 @@ bool CameraKWIQGuider::Disconnect()
 
 bool CameraKWIQGuider::ST4PulseGuideScope(int direction, int duration)
 {
-    switch (direction) {
-        case WEST:
-            KWIQguider->Guide(guide_west, duration);
-            break;
-        case NORTH:
-            KWIQguider->Guide(guide_north, duration);
-            break;
-        case SOUTH:
-            KWIQguider->Guide(guide_south, duration);
-            break;
-        case EAST:
-            KWIQguider->Guide(guide_east, duration);
-            break;
-        default: return true; // bad direction passed in
+    switch (direction)
+    {
+    case WEST:
+        KWIQguider->Guide(guide_west, duration);
+        break;
+    case NORTH:
+        KWIQguider->Guide(guide_north, duration);
+        break;
+    case SOUTH:
+        KWIQguider->Guide(guide_south, duration);
+        break;
+    case EAST:
+        KWIQguider->Guide(guide_east, duration);
+        break;
+    default:
+        return true; // bad direction passed in
     }
 
     wxMilliSleep(duration + 10);
@@ -119,23 +122,26 @@ bool CameraKWIQGuider::Capture(int duration, usImage& img, int options, const wx
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 
-    if (img.Init(xsize,ysize)) {
+    if (img.Init(xsize, ysize))
+    {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
-    KWIQguider->SetGain((int)(GuideCameraGain / 24));
-//    KWIQguider->SetGain((int)(GuideCameraGain / 7));    // Won't exceed 15, not < 1
+    KWIQguider->SetGain((int) (GuideCameraGain / 24));
+    //    KWIQguider->SetGain((int)(GuideCameraGain / 7));    // Won't exceed 15, not < 1
 
     struct raw_image *raw = KWIQguider->Expose(duration);
 
-    for (unsigned int i = 0; i < raw->width * raw->height; i++) {
+    for (unsigned int i = 0; i < raw->width * raw->height; i++)
+    {
         img.ImageData[i] = (unsigned short) raw->data[i];
     }
 
     KWIQguider->FreeRawImage(raw);
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return false;
 }

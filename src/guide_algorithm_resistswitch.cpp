@@ -1,51 +1,50 @@
 /*
-*  guide_algorithm_resistswitch.cpp
-*  PHD Guiding
-*
-*  Created by Bret McKee
-*  Copyright (c) 2012 Bret McKee
-*  All rights reserved.
-*
-*  Based upon work by Craig Stark.
-*  Copyright (c) 2006-2010 Craig Stark.
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Bret McKee, Dad Dog Development,
-*     Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  guide_algorithm_resistswitch.cpp
+ *  PHD Guiding
+ *
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
+ *  All rights reserved.
+ *
+ *  Based upon work by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 
 static const double DefaultMinMove = 0.2;
 static const double DefaultAggression = 1.0;
 
-GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis)
+GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis) : GuideAlgorithm(pMount, axis)
 {
-    double minMove  = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
+    double minMove = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
     double aggr = pConfig->Profile.GetDouble(GetConfigPath() + "/aggression", DefaultAggression);
@@ -57,9 +56,7 @@ GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis 
     reset();
 }
 
-GuideAlgorithmResistSwitch::~GuideAlgorithmResistSwitch(void)
-{
-}
+GuideAlgorithmResistSwitch::~GuideAlgorithmResistSwitch(void) { }
 
 GUIDE_ALGORITHM GuideAlgorithmResistSwitch::Algorithm() const
 {
@@ -112,7 +109,8 @@ double GuideAlgorithmResistSwitch::result(double input)
             double thresh = 3.0 * m_minMove;
             if (sign(input) != m_currentSide && fabs(input) > thresh)
             {
-                Debug.Write(wxString::Format("resist switch: large excursion: input %.2f thresh %.2f direction from %d to %d\n", input, thresh, m_currentSide, sign(input)));
+                Debug.Write(wxString::Format("resist switch: large excursion: input %.2f thresh %.2f direction from %d to %d\n",
+                                             input, thresh, m_currentSide, sign(input)));
                 // force switch
                 m_currentSide = 0;
                 unsigned int i;
@@ -154,7 +152,8 @@ double GuideAlgorithmResistSwitch::result(double input)
                 throw THROW_INFO("Not getting worse");
             }
 
-            Debug.Write(wxString::Format("switching direction from %d to %d - decHistory=%d oldest=%.2f newest=%.2f\n", m_currentSide, sign(decHistory), decHistory, oldest, newest));
+            Debug.Write(wxString::Format("switching direction from %d to %d - decHistory=%d oldest=%.2f newest=%.2f\n",
+                                         m_currentSide, sign(decHistory), decHistory, oldest, newest));
 
             m_currentSide = sign(decHistory);
         }
@@ -227,7 +226,8 @@ bool GuideAlgorithmResistSwitch::SetAggression(double aggr)
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/aggression", m_aggression);
 
-    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetAggression() returns %d, m_aggression=%.2f\n", bError, m_aggression));
+    Debug.Write(
+        wxString::Format("GuideAlgorithmResistSwitch::SetAggression() returns %d, m_aggression=%.2f\n", bError, m_aggression));
 
     return bError;
 }
@@ -268,7 +268,8 @@ bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
 
     if (name == "minMove")
         err = SetMinMove(val);
-    else if (name == "fastSwitch") {
+    else if (name == "fastSwitch")
+    {
         SetFastSwitchEnabled(val != 0.0);
         err = false;
     }
@@ -283,8 +284,8 @@ bool GuideAlgorithmResistSwitch::SetParam(const wxString& name, double val)
 wxString GuideAlgorithmResistSwitch::GetSettingsSummary() const
 {
     // return a loggable summary of current mount settings
-    return wxString::Format("Minimum move = %.3f Aggression = %.f%% FastSwitch = %s\n",
-        GetMinMove(), GetAggression() * 100.0, GetFastSwitchEnabled() ? "enabled" : "disabled");
+    return wxString::Format("Minimum move = %.3f Aggression = %.f%% FastSwitch = %s\n", GetMinMove(), GetAggression() * 100.0,
+                            GetFastSwitchEnabled() ? "enabled" : "disabled");
 }
 
 ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pParent)
@@ -292,9 +293,8 @@ ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pPar
     return new GuideAlgorithmResistSwitchConfigDialogPane(pParent, this);
 }
 
-GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchConfigDialogPane::
-    GuideAlgorithmResistSwitchConfigDialogPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm)
+GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::GuideAlgorithmResistSwitchConfigDialogPane(
+    wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm)
     : ConfigDialogPane(_("ResistSwitch Guide Algorithm"), pParent)
 {
     int width;
@@ -302,56 +302,51 @@ GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000"));
-    m_pAggression = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, _T("Aggressiveness"));
+    m_pAggression = pFrame->MakeSpinCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 1.0,
+                                         100.0, 100.0, _T("Aggressiveness"));
 
     DoAdd(_("Aggressiveness"), m_pAggression,
-        wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggression * 100.0));
+          wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"),
+                           DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
-    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.01, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS,
+                                            0.0, 20.0, 0.0, 0.01, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
-        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
+          wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+                             "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"),
+                           DefaultMinMove));
 
     m_pFastSwitch = new wxCheckBox(pParent, wxID_ANY, _("Fast switch for large deflections"));
-    DoAdd(m_pFastSwitch, _("Ordinarily the Resist Switch algortithm waits several frames before switching direction. With Fast Switch enabled PHD2 will switch direction immediately if it sees a very large deflection. Enable this option if your mount has a substantial amount of backlash and PHD2 sometimes overcorrects."));
+    DoAdd(m_pFastSwitch,
+          _("Ordinarily the Resist Switch algortithm waits several frames before switching direction. With Fast Switch enabled "
+            "PHD2 will switch direction immediately if it sees a very large deflection. Enable this option if your mount has a "
+            "substantial amount of backlash and PHD2 sometimes overcorrects."));
 }
 
-GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchConfigDialogPane::
-    ~GuideAlgorithmResistSwitchConfigDialogPane(void)
-{
-}
+GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::~GuideAlgorithmResistSwitchConfigDialogPane(void) { }
 
-void GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchConfigDialogPane::
-    LoadValues(void)
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::LoadValues(void)
 {
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
     m_pAggression->SetValue(m_pGuideAlgorithm->GetAggression() * 100.0);
     m_pFastSwitch->SetValue(m_pGuideAlgorithm->GetFastSwitchEnabled());
 }
 
-void GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchConfigDialogPane::
-    UnloadValues(void)
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::UnloadValues(void)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
     m_pGuideAlgorithm->SetFastSwitchEnabled(m_pFastSwitch->GetValue());
 }
 
-void GuideAlgorithmResistSwitch::
-GuideAlgorithmResistSwitchConfigDialogPane::OnImageScaleChange()
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::OnImageScaleChange()
 {
     GuideAlgorithm::AdjustMinMoveSpinCtrl(m_pMinMove);
 }
-void GuideAlgorithmResistSwitch::
-GuideAlgorithmResistSwitchConfigDialogPane::EnableDecControls(bool enable)
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchConfigDialogPane::EnableDecControls(bool enable)
 {
     m_pAggression->Enable(enable);
     m_pMinMove->Enable(enable);
@@ -363,9 +358,8 @@ GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pPar
     return new GuideAlgorithmResistSwitchGraphControlPane(pParent, this, label);
 }
 
-GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchGraphControlPane::
-    GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label)
+GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::GuideAlgorithmResistSwitchGraphControlPane(
+    wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label)
     : GraphControlPane(pParent, label)
 {
     int width;
@@ -374,21 +368,26 @@ GuideAlgorithmResistSwitch::
 
     // Aggression
     width = StringWidth(_T("000"));
-    m_pAggression = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, _T("Aggressiveness"));
-    m_pAggression->SetToolTip(wxString::Format(_("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggression * 100.0));
-    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrl, this);
+    m_pAggression = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 1.0,
+                                         100.0, 100.0, _T("Aggressiveness"));
+    m_pAggression->SetToolTip(wxString::Format(
+        _("What percentage of the computed correction should be applied? Default = %.f%%"), DefaultAggression * 100.0));
+    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED,
+                        &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrl, this);
     DoAdd(m_pAggression, _T("Agr"));
     m_pAggression->SetValue(m_pGuideAlgorithm->GetAggression() * 100.0);
 
     // Min move
     width = StringWidth(_T("00.00"));
-    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition,
-        wxSize(width, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.01, _T("MinMove"));
+    m_pMinMove = pFrame->MakeSpinCtrlDouble(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, 0.0,
+                                            20.0, 0.0, 0.01, _T("MinMove"));
     m_pMinMove->SetDigits(2);
-    m_pMinMove->SetToolTip(wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
-        "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"), DefaultMinMove));
-    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
+    m_pMinMove->SetToolTip(
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? \n"
+                           "If camera is binned, this is a fraction of the binned pixel size. Default = %.2f"),
+                         DefaultMinMove));
+    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED,
+                     &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
     DoAdd(m_pMinMove, _("MnMo"));
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
 
@@ -400,30 +399,22 @@ GuideAlgorithmResistSwitch::
     }
 }
 
-GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchGraphControlPane::
-    ~GuideAlgorithmResistSwitchGraphControlPane(void)
-{
-}
+GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::~GuideAlgorithmResistSwitchGraphControlPane(void) { }
 
-void GuideAlgorithmResistSwitch::
-GuideAlgorithmResistSwitchGraphControlPane::EnableDecControls(bool enable)
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::EnableDecControls(bool enable)
 {
     m_pAggression->Enable(enable);
     m_pMinMove->Enable(enable);
 }
 
-void GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchGraphControlPane::
-    OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble(
+    wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum move", m_pMinMove->GetValue());
 }
 
-void GuideAlgorithmResistSwitch::
-    GuideAlgorithmResistSwitchGraphControlPane::
-    OnAggressionSpinCtrl(wxSpinEvent& WXUNUSED(evt))
+void GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrl(wxSpinEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
     pFrame->NotifyGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());

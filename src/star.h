@@ -80,8 +80,10 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, double max_hfd, unsigned short saturation, StarFindLogType loggingControl);
-    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, double max_hfd, unsigned short saturation, StarFindLogType loggingControl);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode, double min_hfd, double max_hfd, unsigned short saturation,
+              StarFindLogType loggingControl);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode, double min_hfd, double max_hfd,
+              unsigned short saturation, StarFindLogType loggingControl);
 
     static bool WasFound(FindResult result);
     bool WasFound() const;
@@ -104,32 +106,18 @@ public:
     PHD_Point referencePoint;
     unsigned int missCount;
     unsigned int zeroCount;
-    PHD_Point offsetFromPrimary;        // X,y offset from primary star location, set in AutoFind, used for dither recovery
+    PHD_Point offsetFromPrimary; // X,y offset from primary star location, set in AutoFind, used for dither recovery
     bool wasLost;
 
-    GuideStar()
-        :
-        referencePoint(0., 0.),
-        missCount(0),
-        zeroCount(0),
-        offsetFromPrimary(0., 0.),
-        wasLost(false)
-    {
-    }
+    GuideStar() : referencePoint(0., 0.), missCount(0), zeroCount(0), offsetFromPrimary(0., 0.), wasLost(false) { }
 
     GuideStar(const Star& star)
-        :
-        Star(star),
-        referencePoint(star),
-        missCount(0),
-        zeroCount(0),
-        offsetFromPrimary(0., 0.),
-        wasLost(false)
+        : Star(star), referencePoint(star), missCount(0), zeroCount(0), offsetFromPrimary(0., 0.), wasLost(false)
     {
     }
 
     bool AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion, const wxRect& roi,
-        std::vector<GuideStar>& foundStars, int maxStars);
+                  std::vector<GuideStar>& foundStars, int maxStars);
 };
 
 #endif /* STAR_H_INCLUDED */

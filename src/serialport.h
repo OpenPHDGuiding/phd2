@@ -41,10 +41,10 @@ class SerialPort
 public:
     enum PARITY
     {
-        ParityNone  = 0,
-        ParityOdd   = 1,
-        ParityEven  = 2,
-        ParityMark  = 3,
+        ParityNone = 0,
+        ParityOdd = 1,
+        ParityEven = 2,
+        ParityMark = 3,
         ParitySpace = 4,
     };
 
@@ -54,7 +54,8 @@ public:
     SerialPort(void);
     virtual ~SerialPort(void);
 
-    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) = 0;
+    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS,
+                         bool useDTR) = 0;
     virtual bool Disconnect(void) = 0;
 
     virtual bool Send(const unsigned char *pData, unsigned count) = 0;

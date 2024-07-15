@@ -1,36 +1,36 @@
 /*
-*  rotator.cpp
-*  PHD Guiding
-*
-*  Created by Andy Galasso
-*  Copyright (c) 2015 Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  rotator.cpp
+ *  PHD Guiding
+ *
+ *  Created by Andy Galasso
+ *  Copyright (c) 2015 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 
@@ -43,7 +43,8 @@ const float Rotator::POSITION_UNKNOWN = -888.f;
 
 Rotator *pRotator;
 
-static wxString INDIRotatorName() {
+static wxString INDIRotatorName()
+{
     wxString indirotator = pConfig->Profile.GetString("/indi/INDIrotator", wxEmptyString);
     return indirotator.empty() ? _T("INDI Rotator") : wxString::Format("INDI Rotator [%s]", indirotator);
 }
@@ -86,23 +87,28 @@ Rotator *Rotator::Factory(const wxString& choice)
         }
 #ifdef ROTATOR_ASCOM
         // do ascom first since it includes many choices, some of which match other choices below (like Simulator)
-        else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
+        else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND)
+        {
             rotator = new RotatorAscom(choice);
         }
 #endif
 #ifdef ROTATOR_INDI
-        else if (choice.Contains(_T("INDI"))) {
+        else if (choice.Contains(_T("INDI")))
+        {
             rotator = INDIRotatorFactory::MakeINDIRotator();
         }
 #endif
-        else if (choice.Find(_("None")) != wxNOT_FOUND) {
+        else if (choice.Find(_("None")) != wxNOT_FOUND)
+        {
         }
 #ifdef ROTATOR_SIMULATOR
-        else if (choice.Find(_T("Simulator")) != wxNOT_FOUND) {
+        else if (choice.Find(_T("Simulator")) != wxNOT_FOUND)
+        {
             rotator = GearSimulator::MakeRotatorSimulator();
         }
 #endif
-        else {
+        else
+        {
             throw ERROR_INFO("RotatorFactory: Unknown rotator choice");
         }
     }
@@ -119,16 +125,13 @@ Rotator *Rotator::Factory(const wxString& choice)
     return rotator;
 }
 
-Rotator::Rotator()
-    : m_connected(false)
+Rotator::Rotator() : m_connected(false)
 {
     m_isReversed = pConfig->Profile.GetBoolean("/rotator/isReversed", false);
     Debug.Write(wxString::Format("Rotator:ctor: isReversed = %d\n", m_isReversed));
 }
 
-Rotator::~Rotator()
-{
-}
+Rotator::~Rotator() { }
 
 bool Rotator::Connect()
 {
@@ -147,9 +150,7 @@ bool Rotator::IsConnected() const
     return m_connected;
 }
 
-void Rotator::ShowPropertyDialog()
-{
-}
+void Rotator::ShowPropertyDialog() { }
 
 void Rotator::SetReversed(bool val)
 {
@@ -158,11 +159,7 @@ void Rotator::SetReversed(bool val)
     Debug.Write(wxString::Format("Rotator:SetReversed: isReversed = %d\n", m_isReversed));
 }
 
-RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent)
-    : ConfigDialogPane(_("Rotator Settings"), parent)
-{
-
-}
+RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent) : ConfigDialogPane(_("Rotator Settings"), parent) { }
 
 void RotatorConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
@@ -176,12 +173,14 @@ ConfigDialogPane *Rotator::GetConfigDialogPane(wxWindow *parent)
     return new RotatorConfigDialogPane(parent);
 }
 
-RotatorConfigDialogCtrlSet *Rotator::GetConfigDlgCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+RotatorConfigDialogCtrlSet *Rotator::GetConfigDlgCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog,
+                                                         BrainCtrlIdMap& CtrlMap)
 {
     return new RotatorConfigDialogCtrlSet(pParent, pRotator, pAdvancedDialog, CtrlMap);
 }
 
-RotatorConfigDialogCtrlSet::RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+RotatorConfigDialogCtrlSet::RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog,
+                                                       BrainCtrlIdMap& CtrlMap)
     : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     m_rotator = pRotator;

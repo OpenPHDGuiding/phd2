@@ -42,25 +42,20 @@
 
 const int RetentionPeriod = 60;
 
-GuidingLog::GuidingLog()
-    :
-    m_enabled(false),
-    m_keepFile(false),
-    m_isGuiding(false)
-{
-}
+GuidingLog::GuidingLog() : m_enabled(false), m_keepFile(false), m_isGuiding(false) { }
 
-GuidingLog::~GuidingLog()
-{
-}
+GuidingLog::~GuidingLog() { }
 
 static wxString PierSideStr(PierSide p)
 {
     switch (p)
     {
-    case PIER_SIDE_EAST: return "East";
-    case PIER_SIDE_WEST: return "West";
-    default:             return "Unknown";
+    case PIER_SIDE_EAST:
+        return "East";
+    case PIER_SIDE_WEST:
+        return "West";
+    default:
+        return "Unknown";
     }
 }
 
@@ -68,9 +63,12 @@ static wxString ParityStr(int p)
 {
     switch (p)
     {
-    case GUIDE_PARITY_EVEN: return "Even";
-    case GUIDE_PARITY_ODD:  return "Odd";
-    default:                return "N/A";
+    case GUIDE_PARITY_EVEN:
+        return "Even";
+    case GUIDE_PARITY_ODD:
+        return "Odd";
+    default:
+        return "N/A";
     }
 }
 
@@ -119,8 +117,7 @@ static void GetAltAz(double Latitude, double HA, double Dec, double& Altitude, d
 
     // Now get azimuth - alternative formula using zSin avoids div-by-zero conditions
     double As = cos(decRadians) * sin(haRadians) / zSin;
-    double Ac = (sin(latRadians) * cos(decRadians) * cos(haRadians) - cos(latRadians) *
-        sin(decRadians)) / zSin;
+    double Ac = (sin(latRadians) * cos(decRadians) * cos(haRadians) - cos(latRadians) * sin(decRadians)) / zSin;
     // atan2 doesn't want both params = 0
     if (Ac == 0.0 && As == 0.0)
     {
@@ -148,11 +145,12 @@ static wxString PointingInfo()
     {
         ha = HourAngle(cur_ra, cur_st);
         rslt = wxString::Format("RA = %0.2f hr, Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s, Rotator pos = %s, ",
-            cur_ra, cur_dec, ha, PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
+                                cur_ra, cur_dec, ha, PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
     }
     else
     {
-        rslt = wxString::Format("RA/Dec = Unknown, Hour angle = Unknown, Pier side = Unknown, Rotator pos = %s, ", RotatorPosStr());
+        rslt = wxString::Format("RA/Dec = Unknown, Hour angle = Unknown, Pier side = Unknown, Rotator pos = %s, ",
+                                RotatorPosStr());
         pointingError = true;
     }
     if (pPointingSource && !pointingError && !pPointingSource->GetSiteLatLong(&latitude, &longitude))
@@ -193,11 +191,8 @@ static void GuidingHeader(wxFFile& file)
     const Star& star = pFrame->pGuider->PrimaryStar();
 
     file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
-                                pFrame->pGuider->LockPosition().X,
-                                pFrame->pGuider->LockPosition().Y,
-                                pFrame->pGuider->CurrentPosition().X,
-                                pFrame->pGuider->CurrentPosition().Y,
-                                star.HFD));
+                                pFrame->pGuider->LockPosition().X, pFrame->pGuider->LockPosition().Y,
+                                pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y, star.HFD));
 
     file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,"
                "RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
@@ -208,9 +203,8 @@ static void WriteSummaryInfo(wxFFile& file, const GuideLogSummaryInfo& summary)
     if (!summary.valid)
         return;
 
-    file.Write(wxString::Format("Log Summary: calcnt:%u gcnt:%u gdur:%.f gacnt:%u\n",
-                                summary.cal_cnt, summary.guide_cnt, summary.guide_dur,
-                                summary.ga_cnt));
+    file.Write(wxString::Format("Log Summary: calcnt:%u gcnt:%u gdur:%.f gacnt:%u\n", summary.cal_cnt, summary.guide_cnt,
+                                summary.guide_dur, summary.ga_cnt));
 }
 
 void GuideLogSummaryInfo::LoadSummaryInfo(wxFFile& file)
@@ -220,11 +214,21 @@ void GuideLogSummaryInfo::LoadSummaryInfo(wxFFile& file)
     wxFFileInputStream is(file);
     if (is.IsOk())
     {
-        struct RestorePos {
+        struct RestorePos
+        {
             wxFFile& f;
             wxFileOffset o;
             RestorePos(wxFFile& f_) : f(f_) { o = f.Tell(); }
-            ~RestorePos() { try { f.Seek(o); } catch (...) {} }
+            ~RestorePos()
+            {
+                try
+                {
+                    f.Seek(o);
+                }
+                catch (...)
+                {
+                }
+            }
         } restore(file);
         wxFileOffset ofs = wxMax(file.Length() - 128, 0LL);
         is.SeekI(ofs);
@@ -282,8 +286,9 @@ void GuidingLog::EnableLogging()
 
         assert(m_file.IsOpened());
 
-        m_file.Write(_T("PHD2 version ") FULLVER _T(" [") PHD_OSNAME _T("]") _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
-            logFileTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+        m_file.Write(_T("PHD2 version ") FULLVER _T(" [") PHD_OSNAME _T("]")
+                     _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") +
+                     logFileTime.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
 
         m_enabled = true;
 
@@ -343,9 +348,9 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
         ok = false;
     }
 
-    if (enabled)             // if SetLogDir failed, no harm no foul, stay with original. Otherwise
+    if (enabled) // if SetLogDir failed, no harm no foul, stay with original. Otherwise
     {
-        EnableLogging();     // start fresh...
+        EnableLogging(); // start fresh...
     }
 
     return ok;
@@ -400,7 +405,7 @@ void GuidingLog::CloseGuideLog()
 
     m_enabled = false;
 
-    if (!m_keepFile)            // Delete the file if nothing useful was logged
+    if (!m_keepFile) // Delete the file if nothing useful was logged
     {
         wxRemove(m_fileName);
     }
@@ -443,11 +448,8 @@ void GuidingLog::StartCalibration(const Mount *pCalibrationMount)
     const Star& star = pFrame->pGuider->PrimaryStar();
 
     m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f, HFD = %.2f px\n",
-                pFrame->pGuider->LockPosition().X,
-                pFrame->pGuider->LockPosition().Y,
-                pFrame->pGuider->CurrentPosition().X,
-                pFrame->pGuider->CurrentPosition().Y,
-                star.HFD));
+                                  pFrame->pGuider->LockPosition().X, pFrame->pGuider->LockPosition().Y,
+                                  pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y, star.HFD));
 
     m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
 
@@ -465,7 +467,8 @@ void GuidingLog::CalibrationFailed(const Mount *pCalibrationMount, const wxStrin
 
     assert(m_file.IsOpened());
 
-    m_file.Write(msg); m_file.Write("\n");
+    m_file.Write(msg);
+    m_file.Write("\n");
     Flush();
 }
 
@@ -477,25 +480,22 @@ void GuidingLog::CalibrationStep(const CalibrationStepInfo& info)
     assert(m_file.IsOpened());
 
     // Direction,Step,dx,dy,x,y,Dist
-    m_file.Write(wxString::Format("%s,%d,%.3f,%.3f,%.3f,%.3f,%.3f\n",
-        info.direction,
-        info.stepNumber,
-        info.dx, info.dy,
-        info.pos.X, info.pos.Y,
-        info.dist));
+    m_file.Write(wxString::Format("%s,%d,%.3f,%.3f,%.3f,%.3f,%.3f\n", info.direction, info.stepNumber, info.dx, info.dy,
+                                  info.pos.X, info.pos.Y, info.dist));
 
     Flush();
 }
 
-void GuidingLog::CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction, double angle, double rate, int parity)
+void GuidingLog::CalibrationDirectComplete(const Mount *pCalibrationMount, const wxString& direction, double angle, double rate,
+                                           int parity)
 {
     if (!m_enabled)
         return;
 
     assert(m_file.IsOpened());
 
-    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f px/sec, Parity = %s\n",
-        direction, degrees(angle), rate * 1000.0, ParityStr(parity)));
+    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f px/sec, Parity = %s\n", direction,
+                                  degrees(angle), rate * 1000.0, ParityStr(parity)));
 
     Flush();
 }
@@ -559,12 +559,9 @@ void GuidingLog::GuideStep(const GuideStepInfo& step)
 
     assert(m_file.IsOpened());
 
-    m_file.Write(wxString::Format("%d,%.3f,\"%s\",%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
-        step.frameNumber, step.time,
-        step.mount->IsStepGuider() ? "AO" : "Mount",
-        step.cameraOffset.X, step.cameraOffset.Y,
-        step.mountOffset.X, step.mountOffset.Y,
-        step.guideDistanceRA, step.guideDistanceDec));
+    m_file.Write(wxString::Format("%d,%.3f,\"%s\",%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,", step.frameNumber, step.time,
+                                  step.mount->IsStepGuider() ? "AO" : "Mount", step.cameraOffset.X, step.cameraOffset.Y,
+                                  step.mountOffset.X, step.mountOffset.Y, step.guideDistanceRA, step.guideDistanceDec));
 
     if (step.mount->IsStepGuider())
     {
@@ -574,13 +571,13 @@ void GuidingLog::GuideStep(const GuideStepInfo& step)
     }
     else
     {
-        m_file.Write(wxString::Format("%d,%s,%d,%s,,,",
-            step.durationRA, step.durationRA > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionRA) : "",
-            step.durationDec, step.durationDec > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionDec): ""));
+        m_file.Write(wxString::Format(
+            "%d,%s,%d,%s,,,", step.durationRA,
+            step.durationRA > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION) step.directionRA) : "", step.durationDec,
+            step.durationDec > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION) step.directionDec) : ""));
     }
 
-    m_file.Write(wxString::Format("%.f,%.2f,%d\n",
-            step.starMass, step.starSNR, step.starError));
+    m_file.Write(wxString::Format("%.f,%.2f,%d\n", step.starMass, step.starSNR, step.starError));
 
     Flush();
 }
@@ -592,8 +589,8 @@ void GuidingLog::FrameDropped(const FrameDroppedInfo& info)
 
     assert(m_file.IsOpened());
 
-    m_file.Write(wxString::Format("%d,%.3f,\"DROP\",,,,,,,,,,,,,%.f,%.2f,%d,\"%s\"\n",
-        info.frameNumber, info.time, info.starMass, info.starSNR, info.starError, info.status));
+    m_file.Write(wxString::Format("%d,%.3f,\"DROP\",,,,,,,,,,,,,%.f,%.2f,%d,\"%s\"\n", info.frameNumber, info.time,
+                                  info.starMass, info.starSNR, info.starError, info.status));
 
     Flush();
 }
@@ -606,7 +603,7 @@ void GuidingLog::CalibrationFrameDropped(const FrameDroppedInfo& info)
     assert(m_file.IsOpened());
 
     m_file.Write(wxString::Format("INFO: STAR LOST during calibration, Mass= %.f, SNR= %.2f, Error= %d, Status=%s\n",
-        info.starMass, info.starSNR, info.starError, info.status));
+                                  info.starMass, info.starSNR, info.starError, info.status));
 
     Flush();
 }
@@ -616,8 +613,8 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
     if (!m_enabled || !m_isGuiding)
         return;
 
-    m_file.Write(wxString::Format("INFO: DITHER by %.3f, %.3f, new lock pos = %.3f, %.3f\n",
-        dx, dy, guider->LockPosition().X, guider->LockPosition().Y));
+    m_file.Write(wxString::Format("INFO: DITHER by %.3f, %.3f, new lock pos = %.3f, %.3f\n", dx, dy, guider->LockPosition().X,
+                                  guider->LockPosition().Y));
 
     Flush();
 }
@@ -653,8 +650,8 @@ void GuidingLog::NotifySetLockPosition(Guider *guider)
     if (!m_enabled || !m_isGuiding)
         return;
 
-    m_file.Write(wxString::Format("INFO: SET LOCK POSITION, new lock pos = %.3f, %.3f\n",
-        guider->LockPosition().X, guider->LockPosition().Y));
+    m_file.Write(wxString::Format("INFO: SET LOCK POSITION, new lock pos = %.3f, %.3f\n", guider->LockPosition().X,
+                                  guider->LockPosition().Y));
 
     Flush();
 
@@ -669,13 +666,12 @@ void GuidingLog::NotifyLockShiftParams(const LockPosShiftParams& shiftParams, co
     wxString details;
     if (shiftParams.shiftEnabled)
     {
-        details = wxString::Format("%s rate (%.2f,%.2f) %s/hr (%.2f,%.2f) px/hr",
-                                    shiftParams.shiftIsMountCoords ? "RA,Dec" : "X,Y",
-                                    shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.X : 0.0,
-                                    shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.Y : 0.0,
-                                    shiftParams.shiftUnits == UNIT_ARCSEC ? "arc-sec" : "pixels",
-                                    cameraRate.IsValid() ? cameraRate.X * 3600.0 : 0.0,
-                                    cameraRate.IsValid() ? cameraRate.Y * 3600.0 : 0.0);
+        details = wxString::Format(
+            "%s rate (%.2f,%.2f) %s/hr (%.2f,%.2f) px/hr", shiftParams.shiftIsMountCoords ? "RA,Dec" : "X,Y",
+            shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.X : 0.0,
+            shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.Y : 0.0,
+            shiftParams.shiftUnits == UNIT_ARCSEC ? "arc-sec" : "pixels", cameraRate.IsValid() ? cameraRate.X * 3600.0 : 0.0,
+            cameraRate.IsValid() ? cameraRate.Y * 3600.0 : 0.0);
     }
 
     m_file.Write(wxString::Format("INFO: LOCK SHIFT, enabled = %d %s\n", shiftParams.shiftEnabled, details));
@@ -700,8 +696,7 @@ void GuidingLog::NotifyManualGuide(const Mount *mount, int direction, int durati
     if (!m_enabled || !m_isGuiding)
         return;
 
-    m_file.Write(wxString::Format("INFO: Manual guide (%s) %s %d %s\n",
-                                  mount->IsStepGuider() ? "AO" : "Mount",
+    m_file.Write(wxString::Format("INFO: Manual guide (%s) %s %d %s\n", mount->IsStepGuider() ? "AO" : "Mount",
                                   mount->DirectionStr(static_cast<GUIDE_DIRECTION>(direction)), duration,
                                   mount->IsStepGuider() ? (duration != 1 ? "steps" : "step") : "ms"));
     Flush();

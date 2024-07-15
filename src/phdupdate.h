@@ -50,7 +50,6 @@ struct UpdaterSettings
 class PHD2Updater
 {
 public:
-
     // start the updater process at app init
     static void InitUpdater();
 

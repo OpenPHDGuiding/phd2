@@ -32,10 +32,10 @@
  *
  */
 
-#if !defined(SERIALPORT_MAC_H_INCLUDED) && defined (__APPLE__)
-#define SERIALPORT_MAC_H_INCLUDED
+#if !defined(SERIALPORT_MAC_H_INCLUDED) && defined(__APPLE__)
+# define SERIALPORT_MAC_H_INCLUDED
 
-#include "serialport_posix.h"
+# include "serialport_posix.h"
 
 class SerialPortMac : public SerialPortPosix
 {
@@ -43,4 +43,4 @@ public:
     wxArrayString GetSerialPortList() override;
 };
 
-#endif  // SERIALPORT_MAC_H_INCLUDED
+#endif // SERIALPORT_MAC_H_INCLUDED

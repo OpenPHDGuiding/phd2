@@ -36,8 +36,7 @@
 #ifndef ManualCalDialog_h_included
 #define ManualCalDialog_h_included
 
-class ManualCalDialog :
-    public wxDialog
+class ManualCalDialog : public wxDialog
 {
 private:
     wxChoice *m_binning;

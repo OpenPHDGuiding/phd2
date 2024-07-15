@@ -48,7 +48,6 @@ class GuideAlgorithmHysteresis : public GuideAlgorithm
     double m_lastMove;
 
 protected:
-
     class GuideAlgorithmHysteresisConfigDialogPane : public ConfigDialogPane
     {
         GuideAlgorithmHysteresis *m_pGuideAlgorithm;
@@ -69,7 +68,8 @@ protected:
     class GuideAlgorithmHysteresisGraphControlPane : public GraphControlPane
     {
     public:
-        GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, const wxString& label);
+        GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm,
+                                                 const wxString& label);
         ~GuideAlgorithmHysteresisGraphControlPane();
         void EnableDecControls(bool enable) override;
 
@@ -95,7 +95,6 @@ protected:
     friend class GraphLogWindow;
 
 public:
-
     GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis);
     ~GuideAlgorithmHysteresis();
 

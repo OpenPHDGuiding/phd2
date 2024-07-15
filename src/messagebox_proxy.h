@@ -44,12 +44,13 @@ class wxMessageBoxProxy
     wxWindow *m_parent;
     int m_x;
     int m_y;
-    wxSemaphore      m_semaphore;
+    wxSemaphore m_semaphore;
     int m_result;
 
 public:
     void showMessageBox(void);
-    int wxMessageBox(const wxString& message, const wxString& caption = "Message", int style = wxOK, wxWindow *parent = nullptr, int x = -1, int y = -1);
+    int wxMessageBox(const wxString& message, const wxString& caption = "Message", int style = wxOK, wxWindow *parent = nullptr,
+                     int x = -1, int y = -1);
 };
 
 #endif // MESSAGEBOX_PROXY_H_INCLUDED

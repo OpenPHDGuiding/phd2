@@ -60,11 +60,10 @@ SerialPortLoopback::SerialPortLoopback(void)
     m_data = 0;
 }
 
-SerialPortLoopback::~SerialPortLoopback(void)
-{
-}
+SerialPortLoopback::~SerialPortLoopback(void) { }
 
-bool SerialPortLoopback::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
+bool SerialPortLoopback::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS,
+                                 bool useDTR)
 {
     bool bError = false;
 

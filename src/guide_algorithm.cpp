@@ -41,8 +41,8 @@
 
 wxString GuideAlgorithm::GetConfigPath() const
 {
-    return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
-        (m_guideAxis == GUIDE_X ? "X/" : "Y/") + GetGuideAlgorithmClassName();
+    return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" + (m_guideAxis == GUIDE_X ? "X/" : "Y/") +
+        GetGuideAlgorithmClassName();
 }
 
 wxString GuideAlgorithm::GetAxis() const
@@ -50,9 +50,9 @@ wxString GuideAlgorithm::GetAxis() const
     return m_guideAxis == GUIDE_RA ? _("RA") : _("DEC");
 }
 
-// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation of the algo
-// class will then use default values for everything.  If this is too brute-force for a particular algo, the function can be overridden.
-// For algos that use a min-move parameter, a smart value will be applied based on image scale
+// Default technique to force a reset on algo parameters is simply to remove the keys from the Registry - a subsequent creation
+// of the algo class will then use default values for everything.  If this is too brute-force for a particular algo, the
+// function can be overridden. For algos that use a min-move parameter, a smart value will be applied based on image scale
 void GuideAlgorithm::ResetParams()
 {
     wxString configPath = GetConfigPath();
@@ -87,25 +87,23 @@ double GuideAlgorithm::SmartDefaultMinMove()
     }
 }
 
-void GuideAlgorithm::AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl)
+void GuideAlgorithm::AdjustMinMoveSpinCtrl(wxSpinCtrlDouble *minMoveCtrl)
 {
     // Always use current AD values for all params affecting image scale
-    double smartMove = GuideAlgorithm::SmartDefaultMinMove(pFrame->pAdvancedDialog->GetFocalLength(), pFrame->pAdvancedDialog->GetPixelSize(), pFrame->pAdvancedDialog->GetBinning());
+    double smartMove =
+        GuideAlgorithm::SmartDefaultMinMove(pFrame->pAdvancedDialog->GetFocalLength(), pFrame->pAdvancedDialog->GetPixelSize(),
+                                            pFrame->pAdvancedDialog->GetBinning());
     minMoveCtrl->SetValue(smartMove);
 }
 
-void GuideAlgorithm::GuidingStarted()
-{
-}
+void GuideAlgorithm::GuidingStarted() { }
 
 void GuideAlgorithm::GuidingStopped()
 {
     reset();
 }
 
-void GuideAlgorithm::GuidingPaused()
-{
-}
+void GuideAlgorithm::GuidingPaused() { }
 
 void GuideAlgorithm::GuidingResumed()
 {
@@ -117,17 +115,14 @@ void GuideAlgorithm::GuidingDithered(double amt)
     reset();
 }
 
-void GuideAlgorithm::GuidingDitherSettleDone(bool success)
-{
-}
+void GuideAlgorithm::GuidingDitherSettleDone(bool success) { }
 
-void GuideAlgorithm::DirectMoveApplied(double amt)
-{
-}
+void GuideAlgorithm::DirectMoveApplied(double amt) { }
 
 void GuideAlgorithm::GuidingDisabled()
 {
-    // By default, guide star deflections will be accumulated even with guiding disabled - algo can override if this is a problem
+    // By default, guide star deflections will be accumulated even with guiding disabled - algo can override if this is a
+    // problem
 }
 
 void GuideAlgorithm::GuidingEnabled()
@@ -136,9 +131,7 @@ void GuideAlgorithm::GuidingEnabled()
     reset();
 }
 
-void GuideAlgorithm::GetParamNames(wxArrayString& names) const
-{
-}
+void GuideAlgorithm::GetParamNames(wxArrayString& names) const { }
 
 bool GuideAlgorithm::GetParam(const wxString& name, double *val) const
 {

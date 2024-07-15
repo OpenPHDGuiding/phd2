@@ -40,14 +40,14 @@
 class StepGuiderSxAO : public StepGuider
 {
     static const int DefaultMaxSteps = 45;
-    static const int DefaultTimeout =  1 * 1000;
-    static const int CenterTimeout  = 45 * 1000;
+    static const int DefaultTimeout = 1 * 1000;
+    static const int CenterTimeout = 45 * 1000;
 
     wxString m_serialPortName;
     SerialPort *m_pSerialPort;
     int m_maxSteps;
 
-  public:
+public:
     StepGuiderSxAO();
     virtual ~StepGuiderSxAO();
 
@@ -56,7 +56,7 @@ class StepGuiderSxAO : public StepGuider
 
     bool HasNonGuiMove() override;
 
-  private:
+private:
     bool Center() override;
     STEP_RESULT Step(GUIDE_DIRECTION direction, int steps) override;
     int MaxPosition(GUIDE_DIRECTION direction) const override;
@@ -84,11 +84,11 @@ StepGuiderSxAO::StepGuiderSxAO()
 {
     m_Name = "SXV-AO";
 
-#ifdef USE_LOOPBACK_SERIAL
+# ifdef USE_LOOPBACK_SERIAL
     m_pSerialPort = new SerialPortLoopback();
-#else
+# else
     m_pSerialPort = SerialPort::SerialPortFactory();
-#endif
+# endif
 
     m_serialPortName = pConfig->Profile.GetString("/stepguider/sxao/serialport", wxEmptyString);
     m_maxSteps = pConfig->Profile.GetInt("/stepguider/sxao/MaxSteps", DefaultMaxSteps);
@@ -144,21 +144,24 @@ bool StepGuiderSxAO::Connect()
 
         if (version == 0)
         {
-            wxMessageBox(wxString::Format(
-                _("This AO device has firmware version %03u which means it needs to be flashed.\n"
-                  "It is recommended to load firmware version 101 or earlier.\n"
-                  "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
-                  "contains the v101 firmware."), version),
-                  _("Error"));
+            wxMessageBox(
+                wxString::Format(_("This AO device has firmware version %03u which means it needs to be flashed.\n"
+                                   "It is recommended to load firmware version 101 or earlier.\n"
+                                   "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                                   "contains the v101 firmware."),
+                                 version),
+                _("Error"));
             throw ERROR_INFO("StepGuiderSxAO::Connect: V000 means AO device needs a flash");
         }
         else if (version >= 102 && version <= 107)
         {
-            bool confirmed = ConfirmDialog::Confirm(wxString::Format(
-                _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
-                "calibration to fail. It is recommended to load firmware version 101 or earlier.\n"
-                "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
-                "contains the v101 firmware."), version) + "\n\n" + _("Would you like to proceed anyway?"),
+            bool confirmed = ConfirmDialog::Confirm(
+                wxString::Format(_("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
+                                   "calibration to fail. It is recommended to load firmware version 101 or earlier.\n"
+                                   "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                                   "contains the v101 firmware."),
+                                 version) +
+                    "\n\n" + _("Would you like to proceed anyway?"),
                 "/sx_ao_bad_firmware_ok");
 
             if (!confirmed)
@@ -188,15 +191,14 @@ void StepGuiderSxAO::ShowPropertyDialog()
 
         if (serialPorts.IsEmpty())
         {
-            wxMessageBox(_("No serial ports found"),_("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_("No serial ports found"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("No Serial ports found");
         }
 
         int resp = serialPorts.Index(m_serialPortName);
 
-        resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
-                NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
-                resp);
+        resp = wxGetSingleChoiceIndex(_("Select serial port"), _("Serial Port"), serialPorts, NULL, wxDefaultCoord,
+                                      wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT, resp);
         if (resp == -1)
         {
             Debug.Write("Serial port selection canceled\n");
@@ -279,7 +281,8 @@ bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int 
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
-        Debug.AddBytes(wxString::Format("StepGuiderSxAO::SendThenReceive received %c, sent", *receivedChar), pBuffer, bufferSize);
+        Debug.AddBytes(wxString::Format("StepGuiderSxAO::SendThenReceive received %c, sent", *receivedChar), pBuffer,
+                       bufferSize);
 
         if (*receivedChar == 'W') // TODO: meaning
         {
@@ -321,7 +324,8 @@ bool StepGuiderSxAO::SendShortCommand(unsigned char command, unsigned char *resp
  * is the command, the second is the direction and the remaining
  * 5 characters are a count.
  */
-bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parameter, unsigned int count, unsigned char *response)
+bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parameter, unsigned int count,
+                                     unsigned char *response)
 {
     bool bError = false;
 
@@ -334,13 +338,14 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand invalid count");
         }
         int bufsize = sizeof(cmdBuf);
-#if defined (__WINDOWS__)
+# if defined(__WINDOWS__)
         // MSVC-ism _snprintf returns a negative number if there is not enough space in the buffer
-        int ret = _snprintf((char *)&cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
-#else
-        // C99 snprintf returns the number of characters that the formatted string takes whether there was enough space in the buffer or not
-        int ret = snprintf((char *)&cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
-#endif
+        int ret = _snprintf((char *) &cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
+# else
+        // C99 snprintf returns the number of characters that the formatted string takes whether there was enough space in the
+        // buffer or not
+        int ret = snprintf((char *) &cmdBuf[0], bufsize, "%c%c%5.5d", command, parameter, count);
+# endif
 
         if (ret < 0)
         {
@@ -400,7 +405,7 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
             throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: Receive failed");
         }
 
-        for (int i=0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             unsigned char ch = buf[i];
 
@@ -494,21 +499,21 @@ StepGuider::STEP_RESULT StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int step
 
         switch (direction)
         {
-            case NORTH:
-                parameter = 'N';
-                break;
-            case SOUTH:
-                parameter = 'S';
-                break;
-            case EAST:
-                parameter = 'T';
-                break;
-            case WEST:
-                parameter = 'W';
-                break;
-            default:
-                throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
-                break;
+        case NORTH:
+            parameter = 'N';
+            break;
+        case SOUTH:
+            parameter = 'S';
+            break;
+        case EAST:
+            parameter = 'T';
+            break;
+        case WEST:
+            parameter = 'W';
+            break;
+        default:
+            throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
+            break;
         }
 
         if (SendLongCommand(cmd, parameter, steps, &response))
@@ -526,7 +531,6 @@ StepGuider::STEP_RESULT StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int step
         {
             throw ERROR_INFO("StepGuiderSxAO::step: response != cmd");
         }
-
     }
     catch (const wxString& Msg)
     {
@@ -572,21 +576,21 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
 
         switch (direction)
         {
-            case NORTH:
-                *isAtLimit = (response & 0x1) == 0x1;
-                break;
-            case SOUTH:
-                *isAtLimit = (response & 0x2) == 0x2;
-                break;
-            case EAST:
-                *isAtLimit = (response & 0x4) == 0x4;
-                break;
-            case WEST:
-                *isAtLimit = (response & 0x8) == 0x8;
-                break;
-            default:
-                throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
-                break;
+        case NORTH:
+            *isAtLimit = (response & 0x1) == 0x1;
+            break;
+        case SOUTH:
+            *isAtLimit = (response & 0x2) == 0x2;
+            break;
+        case EAST:
+            *isAtLimit = (response & 0x4) == 0x4;
+            break;
+        case WEST:
+            *isAtLimit = (response & 0x8) == 0x8;
+            break;
+        default:
+            throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
+            break;
         }
     }
     catch (const wxString& Msg)
@@ -625,21 +629,21 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
 
         switch (direction)
         {
-            case NORTH:
-                parameter = 'N';
-                break;
-            case SOUTH:
-                parameter = 'S';
-                break;
-            case EAST:
-                parameter = 'T';
-                break;
-            case WEST:
-                parameter = 'W';
-                break;
-            default:
-                throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): invalid direction");
-                break;
+        case NORTH:
+            parameter = 'N';
+            break;
+        case SOUTH:
+            parameter = 'S';
+            break;
+        case EAST:
+            parameter = 'T';
+            break;
+        case WEST:
+            parameter = 'W';
+            break;
+        default:
+            throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): invalid direction");
+            break;
         }
 
         if (SendLongCommand(cmd, parameter, duration, &response))

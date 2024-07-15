@@ -35,20 +35,15 @@
 
 #ifdef GUIDE_VOYAGER
 
-class ScopeVoyager:public Scope
+class ScopeVoyager : public Scope
 {
 private:
     wxSocketClient VoyagerClient;
 
 public:
-    ScopeVoyager()
-    {
-    }
+    ScopeVoyager() { }
 
-    virtual ~ScopeVoyager()
-    {
-        VoyagerClient.Close();
-    }
+    virtual ~ScopeVoyager() { VoyagerClient.Close(); }
 
     bool Connect(const wxString& hostname);
     bool Connect() override;

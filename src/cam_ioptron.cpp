@@ -36,17 +36,14 @@
 
 #if defined(IOPTRON_CAMERA)
 
-#include "cam_ioptron.h"
-#include "cam_wdm_base.h"
-#include "CVPlatform.h"
+# include "cam_ioptron.h"
+# include "cam_wdm_base.h"
+# include "CVPlatform.h"
 
 class IoptronCamera : public CameraWDM
 {
 public:
-    IoptronCamera()
-    {
-        m_rawYUY2 = true;
-    }
+    IoptronCamera() { m_rawYUY2 = true; }
     bool CanSelectCamera() const override
     {
         // TODO: we could probably hanlde multiple cameras, but would need 2 cameras to test
@@ -157,15 +154,14 @@ bool IoptronCamera::SelectDeviceAndMode(SelectionContext ctx)
         CVVidCapture::VIDCAP_MODE modeInfo;
         if (CVSUCCESS(vc.get()->GetModeInfo(i, modeInfo)))
         {
-            if (modeInfo.XRes == 640 && modeInfo.YRes == 960 &&
-                modeInfo.InputFormat == VIDCAP_FORMAT_YUY2)
+            if (modeInfo.XRes == 640 && modeInfo.YRes == 960 && modeInfo.InputFormat == VIDCAP_FORMAT_YUY2)
             {
                 if (m_deviceMode == -1)
                     m_deviceMode = i;
             }
-            Debug.Write(wxString::Format("IOPTRON: mode %d: %dx%d (%s) %d fps %s\n", i, modeInfo.XRes,
-                modeInfo.YRes, vc.get()->GetFormatModeName(modeInfo.InputFormat),
-                modeInfo.EstFrameRate, i == m_deviceMode ? "<<<<" : ""));
+            Debug.Write(wxString::Format("IOPTRON: mode %d: %dx%d (%s) %d fps %s\n", i, modeInfo.XRes, modeInfo.YRes,
+                                         vc.get()->GetFormatModeName(modeInfo.InputFormat), modeInfo.EstFrameRate,
+                                         i == m_deviceMode ? "<<<<" : ""));
         }
         else
             Debug.Write(wxString::Format("IOPTRON: mode %d: GetModeInfo failed, skipped\n", i));

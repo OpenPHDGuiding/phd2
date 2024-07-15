@@ -45,7 +45,7 @@ class PHDStatusBar;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
-    MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST+1,
+    MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST + 1,
     MYFRAME_WORKER_THREAD_MOVE_COMPLETE,
 };
 
@@ -75,7 +75,7 @@ struct AutoExposureCfg
 struct VarDelayCfg
 {
     bool enabled;
-    int shortDelay;     // times in milliseconds
+    int shortDelay; // times in milliseconds
     int longDelay;
 };
 
@@ -156,7 +156,7 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     void OnVariableDelayChecked(wxCommandEvent& evt);
 
 public:
-    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MyFrameConfigDialogCtrlSet() {};
 
     virtual void LoadValues();
@@ -185,16 +185,15 @@ protected:
     friend class WorkerThread;
 
 private:
-
     NOISE_REDUCTION_METHOD m_noiseReductionMethod;
     DitherMode m_ditherMode;
     double m_ditherScaleFactor;
     bool m_ditherRaOnly;
     DitherSpiral m_ditherSpiral;
     bool m_serverMode;
-    int  m_timeLapse;       // Delay between frames (useful for vid cameras)
+    int m_timeLapse; // Delay between frames (useful for vid cameras)
     VarDelayCfg m_varDelayConfig;
-    int  m_focalLength;
+    int m_focalLength;
     bool m_beepForLostStar;
     double m_sampling;
     bool m_autoLoadCalibration;
@@ -232,7 +231,7 @@ public:
     wxMenuItem *m_upgradeMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
-    wxComboBox    *Dur_Choice;
+    wxComboBox *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
@@ -317,12 +316,12 @@ public:
     void OnCharHook(wxKeyEvent& evt);
     void OnTextControlSetFocus(wxFocusEvent& evt);
     void OnTextControlKillFocus(wxFocusEvent& evt);
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
+#if defined(GUIDE_INDI) || defined(INDI_CAMERA)
     void OnINDIConfig(wxCommandEvent& evt);
     void OnINDIDialog(wxCommandEvent& evt);
 #endif
     void OnPanelClose(wxAuiManagerEvent& evt);
-#if defined (V4L_CAMERA)
+#if defined(V4L_CAMERA)
     void OnSaveSettings(wxCommandEvent& evt);
     void OnRestoreSettings(wxCommandEvent& evt);
 #endif
@@ -384,7 +383,7 @@ public:
     static void DeleteDarkLibraryFiles(int profileID);
     static wxString DarkLibFileName(int profileId);
     void SetDarkMenuState();
-    bool LoadDarkHandler(bool checkIt);         // Use to also set menu item states
+    bool LoadDarkHandler(bool checkIt); // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
     void CheckDarkFrameGeometry();
     void UpdateStatusBarCalibrationStatus();
@@ -435,8 +434,10 @@ public:
     double GetCameraPixelScale() const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel,  alert_fn *SpecialFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
-    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg, bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, long arg,
+               bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
+    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg,
+                           bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
     void ClearAlert();
     void StatusMsg(const wxString& text);
     void StatusMsgNoTimeout(const wxString& text);
@@ -467,12 +468,13 @@ public:
 
     // Following 2 functions are used by clients that need to size the spin control based on the max text width
     wxSpinCtrl *MakeSpinCtrl(wxWindow *parent, wxWindowID id = -1, const wxString& value = wxEmptyString,
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_ARROW_KEYS,
-        int min = 0, int max = 100, int initial = 0, const wxString& name = wxT("wxSpinCtrl"));
+                             const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                             long style = wxSP_ARROW_KEYS, int min = 0, int max = 100, int initial = 0,
+                             const wxString& name = wxT("wxSpinCtrl"));
     wxSpinCtrlDouble *MakeSpinCtrlDouble(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString,
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-        long style = wxSP_ARROW_KEYS | wxALIGN_RIGHT, double min = 0, double max = 100, double initial = 0,
-        double inc = 1, const wxString& name = wxT("wxSpinCtrlDouble"));
+                                         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                                         long style = wxSP_ARROW_KEYS | wxALIGN_RIGHT, double min = 0, double max = 100,
+                                         double initial = 0, double inc = 1, const wxString& name = wxT("wxSpinCtrlDouble"));
 
 private:
     wxCriticalSection m_CSpWorkerThread;
@@ -491,8 +493,8 @@ private:
 
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 
-    bool StartWorkerThread(WorkerThread*& pWorkerThread);
-    bool StopWorkerThread(WorkerThread*& pWorkerThread);
+    bool StartWorkerThread(WorkerThread *& pWorkerThread);
+    bool StopWorkerThread(WorkerThread *& pWorkerThread);
     void OnStatusMsg(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
@@ -518,25 +520,26 @@ private:
 
 extern MyFrame *pFrame;
 
-enum {
+enum
+{
     MENU_SHOWHELP = 101,
     BEGIN_SCOPES,
-      SCOPE_ASCOM,
-      SCOPE_CAMERA,
-      SCOPE_GPUSB,
-      SCOPE_GPINT3BC,
-      SCOPE_GPINT378,
-      SCOPE_GPINT278,
-      SCOPE_VOYAGER,
-      SCOPE_EQUINOX,
-      SCOPE_EQMAC,
-      SCOPE_GCUSBST4,
-      SCOPE_INDI,
+    SCOPE_ASCOM,
+    SCOPE_CAMERA,
+    SCOPE_GPUSB,
+    SCOPE_GPINT3BC,
+    SCOPE_GPINT378,
+    SCOPE_GPINT278,
+    SCOPE_VOYAGER,
+    SCOPE_EQUINOX,
+    SCOPE_EQMAC,
+    SCOPE_GCUSBST4,
+    SCOPE_INDI,
     END_SCOPES,
     BEGIN_STEPGUIDERS,
-      AO_NONE,
-      AO_SXAO,
-      AO_SIMULATOR,
+    AO_NONE,
+    AO_SXAO,
+    AO_SIMULATOR,
     END_STEPGUIDERS,
     BUTTON_GEAR,
     BUTTON_CAL,
@@ -552,50 +555,50 @@ enum {
     BUTTON_ALERT_HELP,
     BUTTON_ALERT_DONTSHOW,
     GEAR_DIALOG_IDS_BEGIN,
-        GEAR_PROFILES,
-        GEAR_PROFILE_MANAGE,
-        GEAR_PROFILE_NEW,
-        GEAR_PROFILE_DELETE,
-        GEAR_PROFILE_RENAME,
-        GEAR_PROFILE_LOAD,
-        GEAR_PROFILE_SAVE,
-        GEAR_PROFILE_WIZARD,
+    GEAR_PROFILES,
+    GEAR_PROFILE_MANAGE,
+    GEAR_PROFILE_NEW,
+    GEAR_PROFILE_DELETE,
+    GEAR_PROFILE_RENAME,
+    GEAR_PROFILE_LOAD,
+    GEAR_PROFILE_SAVE,
+    GEAR_PROFILE_WIZARD,
 
-        GEAR_CHOICE_CAMERA,
-        GEAR_BUTTON_SELECT_CAMERA,
-        MENU_SELECT_CAMERA_BEGIN, // a range of ids camera selection popup menu
-        MENU_SELECT_CAMERA_END = MENU_SELECT_CAMERA_BEGIN + 10,
-        GEAR_BUTTON_SETUP_CAMERA,
-        GEAR_BUTTON_CONNECT_CAMERA,
-        GEAR_BUTTON_DISCONNECT_CAMERA,
+    GEAR_CHOICE_CAMERA,
+    GEAR_BUTTON_SELECT_CAMERA,
+    MENU_SELECT_CAMERA_BEGIN, // a range of ids camera selection popup menu
+    MENU_SELECT_CAMERA_END = MENU_SELECT_CAMERA_BEGIN + 10,
+    GEAR_BUTTON_SETUP_CAMERA,
+    GEAR_BUTTON_CONNECT_CAMERA,
+    GEAR_BUTTON_DISCONNECT_CAMERA,
 
-        GEAR_CHOICE_SCOPE,
-        GEAR_BUTTON_SETUP_SCOPE,
-        GEAR_BUTTON_CONNECT_SCOPE,
-        GEAR_BUTTON_DISCONNECT_SCOPE,
+    GEAR_CHOICE_SCOPE,
+    GEAR_BUTTON_SETUP_SCOPE,
+    GEAR_BUTTON_CONNECT_SCOPE,
+    GEAR_BUTTON_DISCONNECT_SCOPE,
 
-        GEAR_CHOICE_AUXSCOPE,
-        GEAR_BUTTON_SETUP_AUXSCOPE,
-        GEAR_BUTTON_CONNECT_AUXSCOPE,
-        GEAR_BUTTON_DISCONNECT_AUXSCOPE,
+    GEAR_CHOICE_AUXSCOPE,
+    GEAR_BUTTON_SETUP_AUXSCOPE,
+    GEAR_BUTTON_CONNECT_AUXSCOPE,
+    GEAR_BUTTON_DISCONNECT_AUXSCOPE,
 
-        GEAR_BUTTON_MORE,
+    GEAR_BUTTON_MORE,
 
-        GEAR_CHOICE_STEPGUIDER,
-        GEAR_BUTTON_SETUP_STEPGUIDER,
-        GEAR_BUTTON_CONNECT_STEPGUIDER,
-        GEAR_BUTTON_DISCONNECT_STEPGUIDER,
+    GEAR_CHOICE_STEPGUIDER,
+    GEAR_BUTTON_SETUP_STEPGUIDER,
+    GEAR_BUTTON_CONNECT_STEPGUIDER,
+    GEAR_BUTTON_DISCONNECT_STEPGUIDER,
 
-        GEAR_CHOICE_ROTATOR,
-        GEAR_BUTTON_SETUP_ROTATOR,
-        GEAR_BUTTON_CONNECT_ROTATOR,
-        GEAR_BUTTON_DISCONNECT_ROTATOR,
+    GEAR_CHOICE_ROTATOR,
+    GEAR_BUTTON_SETUP_ROTATOR,
+    GEAR_BUTTON_CONNECT_ROTATOR,
+    GEAR_BUTTON_DISCONNECT_ROTATOR,
 
-        GEAR_BUTTON_CONNECT_ALL,
-        GEAR_BUTTON_DISCONNECT_ALL,
+    GEAR_BUTTON_CONNECT_ALL,
+    GEAR_BUTTON_DISCONNECT_ALL,
     GEAR_DIALOG_IDS_END,
     CTRL_GAMMA,
-    WIN_VFW,  // Dummy event to capture VFW streams
+    WIN_VFW, // Dummy event to capture VFW streams
     MGUIDE1_UP,
     MGUIDE1_DOWN,
     MGUIDE1_RIGHT,
@@ -646,15 +649,15 @@ enum {
     BUTTON_GRAPH_LENGTH,
     BUTTON_GRAPH_HEIGHT,
     BUTTON_GRAPH_SETTINGS,
-        GRAPH_RADEC,
-        GRAPH_DXDY,
-        GRAPH_ARCSECS,
-        GRAPH_PIXELS,
-        GRAPH_STAR_MASS,
-        GRAPH_STAR_SNR,
-        GRAPH_RADX_COLOR,
-        GRAPH_DECDY_COLOR,
-        GRAPH_SCALE_CORR,
+    GRAPH_RADEC,
+    GRAPH_DXDY,
+    GRAPH_ARCSECS,
+    GRAPH_PIXELS,
+    GRAPH_STAR_MASS,
+    GRAPH_STAR_SNR,
+    GRAPH_RADX_COLOR,
+    GRAPH_DECDY_COLOR,
+    GRAPH_SCALE_CORR,
     BUTTON_GRAPH_CLEAR,
     TARGET_ENABLE_REF_CIRCLE,
     TARGET_REF_CIRCLE_RADIUS,
@@ -693,7 +696,8 @@ enum {
     GA_REVIEW_ITEMS_LIMIT = GA_REVIEW_ITEMS_BASE + 4,
 };
 
-enum {
+enum
+{
     SOCK_SERVER_ID = 100,
     SOCK_SERVER_CLIENT_ID,
     EVENT_SERVER_ID,

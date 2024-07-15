@@ -117,4 +117,3 @@ inline double GuideAlgorithmLowpass::GetSlopeWeight() const
 }
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */
-

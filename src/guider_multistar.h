@@ -51,7 +51,8 @@ class GuiderConfigDialogCtrlSet;
 class GuiderMultiStarConfigDialogCtrlSet : public GuiderConfigDialogCtrlSet
 {
 public:
-    GuiderMultiStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    GuiderMultiStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog,
+                                       BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderMultiStarConfigDialogCtrlSet();
 
     GuiderMultiStar *m_pGuiderMultiStar;
@@ -96,8 +97,7 @@ public:
     class GuiderMultiStarConfigDialogPane : public GuiderConfigDialogPane
     {
     protected:
-
-        public:
+    public:
         GuiderMultiStarConfigDialogPane(wxWindow *pParent, GuiderMultiStar *pGuider);
         ~GuiderMultiStarConfigDialogPane() {};
 
@@ -112,7 +112,7 @@ public:
     bool SetMassChangeThreshold(double starMassChangeThreshold);
     bool SetTolerateJumps(bool enable, double threshold);
     bool SetSearchRegion(int searchRegion);
-    bool RefineOffset(const usImage *pImage, GuiderOffset* pOffset);
+    bool RefineOffset(const usImage *pImage, GuiderOffset *pOffset);
 
     friend class GuiderMultiStarConfigDialogPane;
     friend class GuiderMultiStarConfigDialogCtrlSet;
@@ -137,7 +137,8 @@ public:
     wxString GetSettingsSummary() const override;
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
-    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override;
+    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog,
+                                                      BrainCtrlIdMap& CtrlMap) override;
 
     void LoadProfileSettings() override;
 
@@ -155,32 +156,27 @@ private:
     wxDECLARE_EVENT_TABLE();
 };
 
-inline int
-GuiderMultiStar::GetMaxMovePixels() const
+inline int GuiderMultiStar::GetMaxMovePixels() const
 {
     return m_searchRegion;
 }
 
-inline const Star&
-GuiderMultiStar::PrimaryStar() const
+inline const Star& GuiderMultiStar::PrimaryStar() const
 {
     return m_primaryStar;
 }
 
-inline bool
-GuiderMultiStar::GetMultiStarMode() const
+inline bool GuiderMultiStar::GetMultiStarMode() const
 {
     return m_multiStarMode;
 }
 
-inline bool
-GuiderMultiStar::IsLocked() const
+inline bool GuiderMultiStar::IsLocked() const
 {
     return m_primaryStar.WasFound();
 }
 
-inline const PHD_Point&
-GuiderMultiStar::CurrentPosition() const
+inline const PHD_Point& GuiderMultiStar::CurrentPosition() const
 {
     return m_primaryStar;
 }

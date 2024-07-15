@@ -92,7 +92,7 @@ struct Session
 
 static std::vector<Session> s_session;
 // grid sort order defined by these maps between grid row and session index
-static std::vector<int> s_grid_row;    // map session index to grid row
+static std::vector<int> s_grid_row; // map session index to grid row
 static std::vector<int> s_session_idx; // map grid row => session index
 
 static bool s_include_empty;
@@ -120,7 +120,7 @@ enum
 struct LogScanner
 {
     wxGrid *m_grid;
-    std::deque<int> m_q;  // indexes remaining to be checked
+    std::deque<int> m_q; // indexes remaining to be checked
     std::ifstream m_ifs;
     wxDateTime m_guiding_starts;
     void Init(wxGrid *grid);
@@ -155,10 +155,10 @@ static wxString FormatTimeSpan(const wxTimeSpan& dt)
 {
     int days = dt.GetDays();
     if (days > 1)
-        return wxString::Format(_("%dd"), days);  // 2d or more
+        return wxString::Format(_("%dd"), days); // 2d or more
     int hrs = dt.GetHours();
     if (days == 1)
-        return wxString::Format(_("%dhr"), hrs);  // 24-47h
+        return wxString::Format(_("%dhr"), hrs); // 24-47h
     // < 24h
     int mins = dt.GetMinutes();
     mins -= hrs * 60;
@@ -173,21 +173,21 @@ static wxString FormatTimeSpan(const wxTimeSpan& dt)
 
 static wxString FormatGuideFor(const Session& session)
 {
-    switch (session.summary_loaded) {
-        case ST_BEGIN: default:
-            return wxEmptyString;
-        case ST_LOADING:
-            return _("loading...");
-        case ST_LOADED:
-            if (session.HasGuiding())
-            {
-                // looks better in the grid with some padding
-                return "   " +
-                    FormatTimeSpan(wxTimeSpan(0 /* hrs */, 0 /* minutes */, session.summary.guide_dur)) +
-                    "   ";
-            }
-            else
-                return _("None");
+    switch (session.summary_loaded)
+    {
+    case ST_BEGIN:
+    default:
+        return wxEmptyString;
+    case ST_LOADING:
+        return _("loading...");
+    case ST_LOADED:
+        if (session.HasGuiding())
+        {
+            // looks better in the grid with some padding
+            return "   " + FormatTimeSpan(wxTimeSpan(0 /* hrs */, 0 /* minutes */, session.summary.guide_dur)) + "   ";
+        }
+        else
+            return _("None");
     }
 }
 
@@ -251,8 +251,7 @@ static std::string GA_COMPLETE("INFO: GA Result - Dec Drift Rate=");
 
 inline static bool StartsWith(const std::string& s, const std::string& pfx)
 {
-    return s.length() >= pfx.length() &&
-        s.compare(0, pfx.length(), pfx) == 0;
+    return s.length() >= pfx.length() && s.compare(0, pfx.length(), pfx) == 0;
 }
 
 bool LogScanner::DoWork(unsigned int millis)
@@ -426,7 +425,8 @@ static int GetSortCol(wxGrid *grid)
 {
     int col = -1;
     for (int i = 0; i < grid->GetNumberCols(); i++)
-        if (grid->IsSortingBy(i)) {
+        if (grid->IsSortingBy(i))
+        {
             col = i;
             break;
         }
@@ -437,8 +437,10 @@ struct SessionCompare
 {
     bool asc;
     SessionCompare(bool asc_) : asc(asc_) { }
-    bool operator()(int a, int b) const {
-        if (!asc) std::swap(a, b);
+    bool operator()(int a, int b) const
+    {
+        if (!asc)
+            std::swap(a, b);
         return s_session[a].start < s_session[b].start;
     }
 };
@@ -626,7 +628,7 @@ static void LoadRecentUploads()
 
 static void SaveUploadInfo(const wxString& url, const wxDateTime& time)
 {
-    for (auto it = s_recent.begin();  it != s_recent.end(); ++it)
+    for (auto it = s_recent.begin(); it != s_recent.end(); ++it)
     {
         if (it->url == url)
         {
@@ -634,7 +636,10 @@ static void SaveUploadInfo(const wxString& url, const wxDateTime& time)
             break;
         }
     }
-    enum { MAX_RECENT = 5 };
+    enum
+    {
+        MAX_RECENT = 5
+    };
     while (s_recent.size() >= MAX_RECENT)
         s_recent.pop_front();
     Uploaded t;
@@ -656,17 +661,14 @@ static void SaveUploadInfo(const wxString& url, const wxDateTime& time)
 #define STEP3_TITLE_OK _("Upload Log Files - Upload complete")
 #define STEP3_TITLE_FAIL _("Upload Log Files - Upload not completed")
 
-#define STEP1_MESSAGE _( \
-  "When asking for help in the PHD2 Forum it is important to include your PHD2 logs. This tool will " \
-  "help you upload your log files so they can be seen in the forum.\n" \
-  "The first step is to select which files to upload.\n" \
-)
+#define STEP1_MESSAGE                                                                                                          \
+    _("When asking for help in the PHD2 Forum it is important to include your PHD2 logs. This tool will "                      \
+      "help you upload your log files so they can be seen in the forum.\n"                                                     \
+      "The first step is to select which files to upload.\n")
 
 LogUploadDialog::LogUploadDialog(wxWindow *parent)
-    :
-    wxDialog(parent, wxID_ANY, STEP1_TITLE, wxDefaultPosition, wxSize(580, 480), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-    m_step(1),
-    m_nrSelected(0)
+    : wxDialog(parent, wxID_ANY, STEP1_TITLE, wxDefaultPosition, wxSize(580, 480), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+      m_step(1), m_nrSelected(0)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -716,7 +718,8 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_grid->SetRowLabelSize(0);
     m_grid->SetRowLabelAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
 
-    m_recent = new wxHyperlinkCtrl(this, wxID_ANY, _("Recent uploads"), wxEmptyString, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+    m_recent = new wxHyperlinkCtrl(this, wxID_ANY, _("Recent uploads"), wxEmptyString, wxDefaultPosition, wxDefaultSize,
+                                   wxHL_DEFAULT_STYLE);
 
     LoadRecentUploads();
     if (s_recent.empty())
@@ -732,10 +735,10 @@ LogUploadDialog::LogUploadDialog(wxWindow *parent)
     m_includeEmpty = new wxCheckBox(this, wxID_ANY, _("Show logs with no guiding"));
     m_includeEmpty->SetToolTip(_("Show all available logs, including logs from nights when there was no guiding"));
 
-    wxBoxSizer *sizer0 = new wxBoxSizer(wxVERTICAL);   // top-level sizer
-    wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL);   // sizer containing the grid
-    wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);  // sizer containing the buttons below the grid
-    wxBoxSizer *sizer3 = new wxBoxSizer(wxHORIZONTAL);  // sizer containing Recent uploads and Include empty checkbox
+    wxBoxSizer *sizer0 = new wxBoxSizer(wxVERTICAL); // top-level sizer
+    wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL); // sizer containing the grid
+    wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL); // sizer containing the buttons below the grid
+    wxBoxSizer *sizer3 = new wxBoxSizer(wxHORIZONTAL); // sizer containing Recent uploads and Include empty checkbox
 
     sizer1->Add(m_grid, 0, wxALL | wxEXPAND, 5);
 
@@ -814,8 +817,7 @@ void LogUploadDialog::OnCellLeftClick(wxGridEvent& event)
     }
 
     int r;
-    if ((r = event.GetRow()) < s_session.size() &&
-        event.GetCol() == COL_SELECT)
+    if ((r = event.GetRow()) < s_session.size() && event.GetCol() == COL_SELECT)
     {
         const Session& session = s_session[s_session_idx[r]];
         if (session.has_guide || session.has_debug)
@@ -859,10 +861,7 @@ struct AutoChdir
         m_prev = wxFileName::GetCwd();
         wxFileName::SetCwd(dir);
     }
-    ~AutoChdir()
-    {
-        wxFileName::SetCwd(m_prev);
-    }
+    ~AutoChdir() { wxFileName::SetCwd(m_prev); }
 };
 
 struct FileData
@@ -889,7 +888,10 @@ struct BgUpload : public RunInBg
     std::ostringstream m_response;
     UploadErr m_err;
 
-    BgUpload(wxWindow *parent) : RunInBg(parent, _("Upload"), _("Uploading log files ...")), m_curl(nullptr), m_err(UPL_INTERNAL_ERROR) {}
+    BgUpload(wxWindow *parent)
+        : RunInBg(parent, _("Upload"), _("Uploading log files ...")), m_curl(nullptr), m_err(UPL_INTERNAL_ERROR)
+    {
+    }
     ~BgUpload() override;
     bool Entry() override;
 };
@@ -973,9 +975,13 @@ static long QueryMaxSize(BgUpload *upload)
 
     upload->SetMessage(_("Connecting ..."));
 
-    int waitSecs[] = { 1, 5, 15, };
+    int waitSecs[] = {
+        1,
+        5,
+        15,
+    };
 
-    for (int tries = 0; ; tries++)
+    for (int tries = 0;; tries++)
     {
         CURLcode res = curl_easy_perform(upload->m_curl);
         if (res == CURLE_OK)
@@ -984,7 +990,8 @@ static long QueryMaxSize(BgUpload *upload)
         if (tries < WXSIZEOF(waitSecs))
         {
             int secs = waitSecs[tries];
-            Debug.Write(wxString::Format("Upload log: get limits failed: %s, wait %ds for retry\n", curl_easy_strerror(res), secs));
+            Debug.Write(
+                wxString::Format("Upload log: get limits failed: %s, wait %ds for retry\n", curl_easy_strerror(res), secs));
             for (int i = secs; i > 0; --i)
             {
                 upload->SetMessage(wxString::Format(_("Connection failed, will retry in %ds"), i));
@@ -1129,9 +1136,13 @@ bool BgUpload::Entry()
 
     // do the upload
 
-    int waitSecs[] = { 1, 5, 15, };
+    int waitSecs[] = {
+        1,
+        5,
+        15,
+    };
 
-    for (int tries = 0; ; tries++)
+    for (int tries = 0;; tries++)
     {
         CURLcode res = curl_easy_perform(m_curl);
         if (res == CURLE_OK)
@@ -1167,8 +1178,7 @@ bool BgUpload::Entry()
     curl_easy_getinfo(m_curl, CURLINFO_SPEED_UPLOAD_T, &speed_upload);
     curl_easy_getinfo(m_curl, CURLINFO_TOTAL_TIME, &total_time);
 
-    Debug.Write(wxString::Format("Upload log: %ld bytes/sec, %.3f seconds elapsed\n",
-        (long) speed_upload, total_time));
+    Debug.Write(wxString::Format("Upload log: %ld bytes/sec, %.3f seconds elapsed\n", (long) speed_upload, total_time));
 
     return true;
 }
@@ -1196,8 +1206,8 @@ void LogUploadDialog::ConfirmUpload()
         else
             logs = _("Guide log");
 
-        msg += wxString::Format("%-20s %-27s %s<br>", m_grid->GetCellValue(r, COL_NIGHTOF),
-                                FormatTimestamp(session.start), logs);
+        msg +=
+            wxString::Format("%-20s %-27s %s<br>", m_grid->GetCellValue(r, COL_NIGHTOF), FormatTimestamp(session.start), logs);
     }
     msg += "</pre>";
 
@@ -1259,7 +1269,7 @@ void LogUploadDialog::ExecUpload()
         JsonParser parser;
         if (parser.Parse(s))
         {
-            json_for_each (n, parser.Root())
+            json_for_each(n, parser.Root())
             {
                 if (!n->name)
                     continue;
@@ -1280,12 +1290,17 @@ void LogUploadDialog::ExecUpload()
     if (ok)
     {
         SaveUploadInfo(url, wxDateTime::Now());
-        wxString msg = wxString::Format(_("The log files have been uploaded and can be accessed at this link:") + "<br>"
-            "<br>"
-            "<font size=-1>%s</font><br><br>" +
-            _("You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by posting a message that includes the link. "
-              "Copy and paste the link into your forum post.") + "<br><br>" +
-              wxString::Format("<a href=\"copy.%u\">", (unsigned int)(s_recent.size() - 1)) + _("Copy link to clipboard"), url);
+        wxString msg =
+            wxString::Format(_("The log files have been uploaded and can be accessed at this link:") +
+                                 "<br>"
+                                 "<br>"
+                                 "<font size=-1>%s</font><br><br>" +
+                                 _("You can share your log files in the <a href=\"forum\">PHD2 Forum</a> by posting a message "
+                                   "that includes the link. "
+                                   "Copy and paste the link into your forum post.") +
+                                 "<br><br>" + wxString::Format("<a href=\"copy.%u\">", (unsigned int) (s_recent.size() - 1)) +
+                                 _("Copy link to clipboard"),
+                             url);
         WindowUpdateLocker noUpdates(this);
         SetTitle(STEP3_TITLE_OK);
         m_html->SetPage(msg);
@@ -1333,9 +1348,8 @@ void LogUploadDialog::OnRecentClicked(wxHyperlinkEvent& event)
     int i = s_recent.size() - 1;
     for (auto it = s_recent.rbegin(); it != s_recent.rend(); ++it, --i)
     {
-        os << "<tr><td>" << wxDateTime(it->when).Format() << "</td>"
-            << "<td><font size=-1>" << it->url << "</font></td>"
-            << "<td><a href=\"copy." << i << "\">Copy link</a></td></tr>";
+        os << "<tr><td>" << wxDateTime(it->when).Format() << "</td>" << "<td><font size=-1>" << it->url << "</font></td>"
+           << "<td><a href=\"copy." << i << "\">Copy link</a></td></tr>";
     }
     os << "</table>";
 

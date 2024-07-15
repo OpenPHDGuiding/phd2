@@ -42,7 +42,7 @@
 
 #ifdef GUIDE_ASCOM
 
-#include "comdispatch.h"
+# include "comdispatch.h"
 
 class ScopeASCOM : public Scope
 {

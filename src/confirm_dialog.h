@@ -35,15 +35,16 @@
 #ifndef CONFIRM_DIALOG_H_INCLUDED
 #define CONFIRM_DIALOG_H_INCLUDED
 
-class ConfirmDialog :
-    public wxDialog
+class ConfirmDialog : public wxDialog
 {
 public:
-    ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmativeLabel, const wxString& negativeLabel);
+    ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmativeLabel,
+                  const wxString& negativeLabel);
     ~ConfirmDialog(void);
 
     static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& title = "");
-    static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmativeLabel, const wxString& negativeLabel, const wxString& title = "");
+    static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmativeLabel,
+                        const wxString& negativeLabel, const wxString& title = "");
     static void ResetAllDontAskAgain(void);
 
 private:
