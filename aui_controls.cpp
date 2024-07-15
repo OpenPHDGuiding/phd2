@@ -50,9 +50,11 @@
 #include "icons/sb_arrow_down_16.png.h"
 #endif
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(PHDStatusBar, wxStatusBar)
   EVT_SIZE(PHDStatusBar::OnSize)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 // Types of fields in the statusbar
 enum SBFieldTypes
@@ -105,12 +107,14 @@ public:
     wxDECLARE_EVENT_TABLE();
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(SBPanel, wxPanel)
   EVT_PAINT(SBPanel::OnPaint)
 #ifdef __APPLE__
   EVT_TIMER(wxID_ANY, SBPanel::OnTimer)
 #endif
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 // Classes for color-coded state indicators
 class SBStateIndicatorItem;

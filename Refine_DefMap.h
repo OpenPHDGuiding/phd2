@@ -111,7 +111,7 @@ private:
     void InitCameraMode();
     void RestoreCameraMode();
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif // REFINEDEFMAP_H_INCLUDED

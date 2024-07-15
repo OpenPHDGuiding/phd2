@@ -145,17 +145,19 @@ public:
     wxDECLARE_EVENT_TABLE();
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
-EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
-EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
-EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
-EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
-EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
-EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
-EVT_CHOICE(ID_BINNING, ProfileWizard::OnBinningChange)
-EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
-EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
-wxEND_EVENT_TABLE()
+    EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
+    EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
+    EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
+    EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
+    EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+    EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
+    EVT_CHOICE(ID_BINNING, ProfileWizard::OnBinningChange)
+    EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
+    EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
+wxEND_EVENT_TABLE();
+// clang-format on
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;

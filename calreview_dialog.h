@@ -40,7 +40,7 @@
 
 class CalReviewDialog: public wxDialog
 {
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 
 public:
     /// Constructors

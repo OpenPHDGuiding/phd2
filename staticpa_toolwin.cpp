@@ -41,27 +41,31 @@
 #include <wx/textwrapper.h>
 
 //==================================
-BEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
-EVT_BUTTON(ID_INSTR, StaticPaToolWin::OnInstr)
-EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
-EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
-EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
-EVT_CHECKBOX(ID_FLIP, StaticPaToolWin::OnFlip)
-EVT_CHECKBOX(ID_ORBIT, StaticPaToolWin::OnOrbit)
-EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
-EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
-EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
-EVT_BUTTON(ID_STAR3, StaticPaToolWin::OnStar3)
-EVT_BUTTON(ID_GOTO, StaticPaToolWin::OnGoto)
-EVT_BUTTON(ID_CLEAR, StaticPaToolWin::OnClear)
-EVT_BUTTON(ID_CLOSE, StaticPaToolWin::OnCloseBtn)
-EVT_CLOSE(StaticPaToolWin::OnClose)
-END_EVENT_TABLE()
+// clang-format off
+wxBEGIN_EVENT_TABLE(StaticPaToolWin, wxFrame)
+    EVT_BUTTON(ID_INSTR, StaticPaToolWin::OnInstr)
+    EVT_CHOICE(ID_HEMI, StaticPaToolWin::OnHemi)
+    EVT_SPINCTRLDOUBLE(ID_HA, StaticPaToolWin::OnHa)
+    EVT_CHECKBOX(ID_MANUAL, StaticPaToolWin::OnManual)
+    EVT_CHECKBOX(ID_FLIP, StaticPaToolWin::OnFlip)
+    EVT_CHECKBOX(ID_ORBIT, StaticPaToolWin::OnOrbit)
+    EVT_CHOICE(ID_REFSTAR, StaticPaToolWin::OnRefStar)
+    EVT_BUTTON(ID_ROTATE, StaticPaToolWin::OnRotate)
+    EVT_BUTTON(ID_STAR2, StaticPaToolWin::OnStar2)
+    EVT_BUTTON(ID_STAR3, StaticPaToolWin::OnStar3)
+    EVT_BUTTON(ID_GOTO, StaticPaToolWin::OnGoto)
+    EVT_BUTTON(ID_CLEAR, StaticPaToolWin::OnClear)
+    EVT_BUTTON(ID_CLOSE, StaticPaToolWin::OnCloseBtn)
+    EVT_CLOSE(StaticPaToolWin::OnClose)
+wxEND_EVENT_TABLE();
+// clang-format on
 
-BEGIN_EVENT_TABLE(StaticPaToolWin::PolePanel, wxPanel)
-EVT_PAINT(StaticPaToolWin::PolePanel::OnPaint)
-EVT_LEFT_DCLICK(StaticPaToolWin::PolePanel::OnClick)
-END_EVENT_TABLE()
+// clang-format off
+wxBEGIN_EVENT_TABLE(StaticPaToolWin::PolePanel, wxPanel)
+    EVT_PAINT(StaticPaToolWin::PolePanel::OnPaint)
+    EVT_LEFT_DCLICK(StaticPaToolWin::PolePanel::OnClick)
+wxEND_EVENT_TABLE();
+// clang-format on
 
 StaticPaToolWin::PolePanel::PolePanel(StaticPaToolWin* parent):
     wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(320, 240), wxBU_AUTODRAW | wxBU_EXACTFIT),

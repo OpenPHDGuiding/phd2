@@ -39,12 +39,14 @@ enum {
     TIMER_ID_COOLER = 101,
 };
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(StatsWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH, StatsWindow::OnButtonLength)
     EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, StatsWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR, StatsWindow::OnButtonClear)
     EVT_TIMER(TIMER_ID_COOLER, StatsWindow::OnTimerCooler)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 StatsWindow::StatsWindow(wxWindow *parent)
     : wxWindow(parent, wxID_ANY),

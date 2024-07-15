@@ -123,6 +123,7 @@ wxDEFINE_EVENT(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_NEWMESSAGE_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(IndiGui, wxDialog)
     EVT_CLOSE(IndiGui::OnQuit)
     EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
@@ -130,7 +131,8 @@ wxBEGIN_EVENT_TABLE(IndiGui, wxDialog)
     EVT_THREAD(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, IndiGui::OnUpdatePropertyFromThread)
     EVT_THREAD(INDIGUI_THREAD_NEWMESSAGE_EVENT, IndiGui::OnNewMessageFromThread)
     EVT_THREAD(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, IndiGui::OnRemovePropertyFromThread)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 //////////////////////////////////////////////////////////////////////
 // Functions running in the INDI client thread

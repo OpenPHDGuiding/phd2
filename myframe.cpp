@@ -77,6 +77,8 @@ wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 
+// clang-format off
+// clang-format off
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU_HIGHLIGHT_ALL(MyFrame::OnMenuHighlight)
     EVT_MENU_CLOSE(MyFrame::OnAnyMenuClose)
@@ -172,7 +174,8 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusBarTimerEvent)
 
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 struct FileDropTarget : public wxFileDropTarget
 {

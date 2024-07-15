@@ -513,7 +513,7 @@ private:
     void DoTryReconnect();
 
     // and of course, an event table
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 extern MyFrame *pFrame;

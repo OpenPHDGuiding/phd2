@@ -35,11 +35,11 @@
  #include "phd.h"
  #include "starcross_test.h"
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(StarCrossDialog, wxDialog)
-
-EVT_CLOSE(StarCrossDialog::OnCloseWindow)
-
-wxEND_EVENT_TABLE()
+    EVT_CLOSE(StarCrossDialog::OnCloseWindow)
+wxEND_EVENT_TABLE();
+// clang-format on
 
 #define SCT_DEFAULT_PULSE_SIZE 1000
 #define SCT_DEFAULT_PULSE_COUNT 25

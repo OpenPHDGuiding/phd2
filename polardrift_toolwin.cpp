@@ -41,13 +41,15 @@
 #include <wx/textwrapper.h>
 
 //==================================
-BEGIN_EVENT_TABLE(PolarDriftToolWin, wxFrame)
-EVT_CHOICE(ID_HEMI, PolarDriftToolWin::OnHemi)
-EVT_CHECKBOX(ID_MIRROR, PolarDriftToolWin::OnMirror)
-EVT_BUTTON(ID_START, PolarDriftToolWin::OnStart)
-EVT_BUTTON(ID_CLOSE, PolarDriftToolWin::OnCloseBtn)
-EVT_CLOSE(PolarDriftToolWin::OnClose)
-END_EVENT_TABLE()
+// clang-format off
+wxBEGIN_EVENT_TABLE(PolarDriftToolWin, wxFrame)
+    EVT_CHOICE(ID_HEMI, PolarDriftToolWin::OnHemi)
+    EVT_CHECKBOX(ID_MIRROR, PolarDriftToolWin::OnMirror)
+    EVT_BUTTON(ID_START, PolarDriftToolWin::OnStart)
+    EVT_BUTTON(ID_CLOSE, PolarDriftToolWin::OnCloseBtn)
+    EVT_CLOSE(PolarDriftToolWin::OnClose)
+wxEND_EVENT_TABLE();
+// clang-format on
 
 wxWindow *PolarDriftTool::CreatePolarDriftToolWindow()
 {

@@ -11,9 +11,11 @@
 
 #include <string.h>
 
-BEGIN_EVENT_TABLE (wxLed, wxWindow)
-    EVT_PAINT (wxLed::OnPaint)
-END_EVENT_TABLE ()
+// clang-format off
+wxBEGIN_EVENT_TABLE(wxLed, wxWindow)
+    EVT_PAINT(wxLed::OnPaint)
+wxEND_EVENT_TABLE();
+// clang-format on ()
 
 wxLed::wxLed (wxWindow * parent, wxWindowID id, const char * disabledColor, const wxPoint & pos, const wxSize & size)
 :

@@ -1611,13 +1611,15 @@ struct SimCamDialog : public wxDialog
     void OnRbCustomPE(wxCommandEvent& evt);
     void OnOkClick(wxCommandEvent& evt);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
-BEGIN_EVENT_TABLE(SimCamDialog, wxDialog)
+// clang-format off
+wxBEGIN_EVENT_TABLE(SimCamDialog, wxDialog)
     EVT_BUTTON(wxID_RESET, SimCamDialog::OnReset)
     EVT_BUTTON(wxID_CONVERT, SimCamDialog::OnPierFlip)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 // Utility functions for adding controls with specified properties
 static wxSlider *NewSlider(wxWindow *parent, int val, int minval, int maxval, const wxString& tooltip)

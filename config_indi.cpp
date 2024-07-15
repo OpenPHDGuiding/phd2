@@ -236,6 +236,7 @@ void INDIConfig::UpdateControlStates()
 
 wxDEFINE_EVENT(THREAD_UPDATE_EVENT, wxThreadEvent);
 
+// clang-format off
 wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
     EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
     EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
@@ -243,7 +244,8 @@ wxBEGIN_EVENT_TABLE(INDIConfig, wxDialog)
     EVT_CHECKBOX(VERBOSE, INDIConfig::OnVerboseChecked)
     EVT_CHECKBOX(FORCEVIDEO, INDIConfig::OnForceVideoChecked)
     EVT_THREAD(THREAD_UPDATE_EVENT, INDIConfig::OnUpdateFromThread)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 INDIConfig::~INDIConfig()
 {

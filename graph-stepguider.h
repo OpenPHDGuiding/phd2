@@ -64,7 +64,7 @@ private:
 
     bool m_visible;
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif // GRAPH_STEPGUIDER_H_INCLUDED

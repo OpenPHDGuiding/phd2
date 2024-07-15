@@ -38,7 +38,8 @@
 #include <wx/gbsizer.h>
 #include <functional>
 
-BEGIN_EVENT_TABLE(GearDialog, wxDialog)
+// clang-format off
+wxBEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_CHOICE(GEAR_PROFILES, GearDialog::OnProfileChoice)
     EVT_BUTTON(GEAR_PROFILE_MANAGE, GearDialog::OnButtonProfileManage)
     EVT_MENU(GEAR_PROFILE_NEW, GearDialog::OnProfileNew)
@@ -82,7 +83,8 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_ROTATOR, GearDialog::OnButtonDisconnectRotator)
 
     EVT_CHAR_HOOK(GearDialog::OnChar)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 /*
  * The Gear Dialog allows the user to select and connect to their hardware.

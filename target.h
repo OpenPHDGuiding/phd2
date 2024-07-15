@@ -65,7 +65,7 @@ class TargetClient : public wxWindow
 
     friend class TargetWindow;
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 class TargetWindow : public wxWindow
@@ -93,7 +93,7 @@ private:
     void OnCheckBoxRefCircle(wxCommandEvent& event);
     void OnRefCircleRadius(wxSpinDoubleEvent& event);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif // TARGET_H_INCLUDED

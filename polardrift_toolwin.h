@@ -97,7 +97,7 @@ struct PolarDriftToolWin : public wxFrame
     bool WatchDrift();
     void PaintHelper(wxAutoBufferedPaintDCBase& dc, double scale);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif

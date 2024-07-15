@@ -100,11 +100,13 @@ inline void DeflectionLogger::Log(const PHD_Point&) { }
 static const int DefaultOverlayMode  = OVERLAY_NONE;
 static const bool DefaultScaleImage  = true;
 
-BEGIN_EVENT_TABLE(Guider, wxWindow)
+// clang-format off
+wxBEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_PAINT(Guider::OnPaint)
     EVT_CLOSE(Guider::OnClose)
     EVT_ERASE_BACKGROUND(Guider::OnErase)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 static void SaveBookmarks(const std::vector<wxRealPoint>& vec)
 {

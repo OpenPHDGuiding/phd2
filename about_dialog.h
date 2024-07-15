@@ -44,7 +44,7 @@ public:
 
 private:
     void OnLink(wxHtmlLinkEvent & event);
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif // ABOUT_DIALOG_H_INCLUDED

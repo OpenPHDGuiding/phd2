@@ -118,10 +118,11 @@ struct DriftToolWin : public wxFrame
 
     void SetStatusText(const wxString &text, int number = 0) override;
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
-BEGIN_EVENT_TABLE(DriftToolWin, wxFrame)
+// clang-format off
+wxBEGIN_EVENT_TABLE(DriftToolWin, wxFrame)
     EVT_BUTTON(ID_SLEW, DriftToolWin::OnSlew)
     EVT_BUTTON(ID_SAVE, DriftToolWin::OnSaveCoords)
     EVT_BUTTON(ID_DRIFT, DriftToolWin::OnDrift)
@@ -130,7 +131,8 @@ BEGIN_EVENT_TABLE(DriftToolWin, wxFrame)
     EVT_COMMAND(wxID_ANY, APPSTATE_NOTIFY_EVENT, DriftToolWin::OnAppStateNotify)
     EVT_CLOSE(DriftToolWin::OnClose)
     EVT_TIMER(ID_TIMER, DriftToolWin::OnTimer)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 DriftToolWin::DriftToolWin()
     : wxFrame(pFrame, wxID_ANY, _("Drift Align"), wxDefaultPosition, wxDefaultSize,

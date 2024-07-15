@@ -172,7 +172,7 @@ private:
 
     void OnButtonWizard(wxCommandEvent& event);
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 inline Scope *GearDialog::AuxScope() const

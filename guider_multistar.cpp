@@ -200,10 +200,12 @@ enum {
     MAX_LIST_SIZE = 12
 };
 
-BEGIN_EVENT_TABLE(GuiderMultiStar, Guider)
+// clang-format off
+wxBEGIN_EVENT_TABLE(GuiderMultiStar, Guider)
     EVT_PAINT(GuiderMultiStar::OnPaint)
     EVT_LEFT_DOWN(GuiderMultiStar::OnLClick)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
+// clang-format on
 
 // Define a constructor for the guide canvas
 GuiderMultiStar::GuiderMultiStar(wxWindow *parent)
