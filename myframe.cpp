@@ -53,7 +53,7 @@
 #include <wx/dirdlg.h>
 #include <wx/dnd.h>
 #include <wx/textwrapper.h>
-#include "wx/valnum.h"
+#include <wx/valnum.h>
 
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;

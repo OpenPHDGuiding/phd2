@@ -35,7 +35,7 @@
 
 #include "phd.h"
 #include "darks_dialog.h"
-#include "wx/valnum.h"
+#include <wx/valnum.h>
 
 #include <algorithm>
 #include <sstream>

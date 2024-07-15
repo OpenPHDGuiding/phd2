@@ -36,7 +36,7 @@
 #ifndef _CALREVIEW_DIALOG_H_
 #define _CALREVIEW_DIALOG_H_
 
-#include "wx/notebook.h"
+#include <wx/notebook.h>
 
 class CalReviewDialog: public wxDialog
 {

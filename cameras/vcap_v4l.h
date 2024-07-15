@@ -16,8 +16,8 @@
     #pragma interface "vcap_v4l.h"
 #endif
 
-#include "wx/defs.h"
-#include "wx/timer.h"
+#include <wx/defs.h>
+#include <wx/timer.h>
 
 class wxTimerEvent;
 class wxScrollWinEvent;

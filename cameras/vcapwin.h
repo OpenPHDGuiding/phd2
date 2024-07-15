@@ -19,10 +19,10 @@
     #pragma interface "vcapwin.h"
 #endif
 
-#include "wx/defs.h"
-#include "wx/event.h"
-#include "wx/scrolwin.h"
-#include "wx/image.h"
+#include <wx/defs.h>
+#include <wx/event.h>
+#include <wx/scrolwin.h>
+#include <wx/image.h>
 
 // These are our DLL macros (see the contrib libs like wxPlot)
 #ifdef WXMAKINGDLL_VIDCAP

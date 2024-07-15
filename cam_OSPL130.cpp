@@ -11,7 +11,7 @@
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
-#include "wx/stopwatch.h"
+#include <wx/stopwatch.h>
 
 #if defined (OS_PL130)
 #include "cam_OSPL130.h"
