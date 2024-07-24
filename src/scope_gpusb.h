@@ -38,10 +38,7 @@
 class ScopeGpUsb : public Scope
 {
 public:
-    ScopeGpUsb(void)
-    {
-        m_Name = wxString("GPUSB");
-    }
+    ScopeGpUsb(void) { m_Name = wxString("GPUSB"); }
 
     bool Connect(void) override;
     bool Disconnect(void) override;

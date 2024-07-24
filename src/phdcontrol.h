@@ -37,16 +37,16 @@
 
 struct SettleParams
 {
-    double tolerancePx;  // settle threshold, pixels
-    int settleTimeSec;   // time to be within tolerance
-    int timeoutSec;      // timeout value
-    int frames;          // number of frames
+    double tolerancePx; // settle threshold, pixels
+    int settleTimeSec; // time to be within tolerance
+    int timeoutSec; // timeout value
+    int frames; // number of frames
 };
 
 enum ControlGuideOptions
 {
-    GUIDEOPT_FORCE_RECAL = (1U << 0),        // Always recalibrate
-    GUIDEOPT_USE_STICKY_LOCK = (1U << 1),    // Insure that recalibration returns star to initial position
+    GUIDEOPT_FORCE_RECAL = (1U << 0), // Always recalibrate
+    GUIDEOPT_USE_STICKY_LOCK = (1U << 1), // Insure that recalibration returns star to initial position
 };
 
 class PhdController
@@ -64,7 +64,7 @@ public:
     static void OnAppExit();
 
     static bool IsSettling();
-    static bool IsIdle();               // Not currently working through various transitions in guiding state
+    static bool IsIdle(); // Not currently working through various transitions in guiding state
 };
 
 #endif

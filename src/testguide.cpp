@@ -42,6 +42,7 @@ class TestGuideDialog : public wxDialog
     wxChoice *ditherTypeChoice;
     wxSpinCtrlDouble *ditherScaleSpinCtrl;
     wxCheckBox *raOnlyCheckBox;
+
 public:
     TestGuideDialog();
     ~TestGuideDialog();
@@ -90,9 +91,10 @@ wxSizer *TestGuideDialog::InitMountControls()
     wxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
 
     sz1->Add(new wxStaticText(this, wxID_ANY, _("Guide Pulse Duration (ms):")),
-        wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
+             wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
     pulseDurationSpinCtrl = pFrame->MakeSpinCtrlDouble(this, ID_PULSEDURATION, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(GetParent(), "00000"), -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 100.0, 5000.0, 100.0, 100.0);
+                                                       wxSize(StringWidth(GetParent(), "00000"), -1),
+                                                       wxSP_ARROW_KEYS | wxALIGN_RIGHT, 100.0, 5000.0, 100.0, 100.0);
     pulseDurationSpinCtrl->SetDigits(0);
     pulseDurationSpinCtrl->SetToolTip(_("Manual guide pulse duration (milliseconds)"));
     Mount *mnt = TheScope();
@@ -102,11 +104,13 @@ wxSizer *TestGuideDialog::InitMountControls()
 
     wxButton *btn = new wxButton(this, ID_RESET, _("Reset"));
     sz1->Add(btn, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
-    btn->SetToolTip(_("Reset the manual guide pulse duration to the default value. The default value is the calibration step size."));
+    btn->SetToolTip(
+        _("Reset the manual guide pulse duration to the default value. The default value is the calibration step size."));
 
     wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
 
-    sz2->Add(new wxStaticText(this, wxID_ANY, _("Dither")), wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz2->Add(new wxStaticText(this, wxID_ANY, _("Dither")),
+             wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
     wxArrayString choices;
     choices.Add(_("MOVE1 (+/- 0.5)"));
     choices.Add(_("MOVE2 (+/- 1.0)"));
@@ -115,43 +119,49 @@ wxSizer *TestGuideDialog::InitMountControls()
     choices.Add(_("MOVE5 (+/- 5.0)"));
     ditherTypeChoice = new wxChoice(this, ID_DITHERTYPE, wxDefaultPosition, wxDefaultSize, choices);
     ditherTypeChoice->Select(pConfig->Profile.GetInt("/ManualGuide/DitherType", 4) - 1);
-    ditherTypeChoice->SetToolTip(_("Select the dither amount type. Imaging applications have the option of sending each of these dither amounts to PHD."));
+    ditherTypeChoice->SetToolTip(_(
+        "Select the dither amount type. Imaging applications have the option of sending each of these dither amounts to PHD."));
     sz2->Add(ditherTypeChoice, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
 
-    sz2->Add(new wxStaticText(this, wxID_ANY, _("Scale")), wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz2->Add(new wxStaticText(this, wxID_ANY, _("Scale")),
+             wxSizerFlags().Right().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
     ditherScaleSpinCtrl = pFrame->MakeSpinCtrlDouble(this, ID_DITHERSCALE, wxEmptyString, wxDefaultPosition,
-        wxSize(StringWidth(GetParent(), "000.0"), -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.1, 100.0, 1.0, 1.0);
+                                                     wxSize(StringWidth(GetParent(), "000.0"), -1),
+                                                     wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.1, 100.0, 1.0, 1.0);
     ditherScaleSpinCtrl->SetDigits(1);
     ditherScaleSpinCtrl->SetValue(pFrame->GetDitherScaleFactor());
-    ditherScaleSpinCtrl->SetToolTip(_("Scale factor for dithering. The dither amount type is multiplied by this value to get the actual dither amount. Changing the value here affects both manual dithering and dithering from imaging applications connected to PHD."));
+    ditherScaleSpinCtrl->SetToolTip(
+        _("Scale factor for dithering. The dither amount type is multiplied by this value to get the actual dither amount. "
+          "Changing the value here affects both manual dithering and dithering from imaging applications connected to PHD."));
     sz2->Add(ditherScaleSpinCtrl, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
 
     raOnlyCheckBox = new wxCheckBox(this, ID_RAONLY, _("RA Only"));
     sz2->Add(raOnlyCheckBox, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
     raOnlyCheckBox->SetValue(pFrame->GetDitherRaOnly());
-    raOnlyCheckBox->SetToolTip(_("Dither on RA axis only. Changing the value here affects both manual dithering and dithering from imaging applications connected to PHD."));
+    raOnlyCheckBox->SetToolTip(_("Dither on RA axis only. Changing the value here affects both manual dithering and dithering "
+                                 "from imaging applications connected to PHD."));
 
     btn = new wxButton(this, ID_DITHER, _("Dither"));
-    btn->SetToolTip(_("Move the guider lock position a random amount on each axis, up to the maximum value determined by the dither type and the dither scale factor."));
+    btn->SetToolTip(_("Move the guider lock position a random amount on each axis, up to the maximum value determined by the "
+                      "dither type and the dither scale factor."));
     sz2->Add(btn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
 
     wxSizer *sz3 = new wxBoxSizer(wxVERTICAL);
     sz3->Add(sz1, wxSizerFlags().Border(wxALL, 10).Align(wxALIGN_CENTER_HORIZONTAL));
     sz3->Add(new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxSize(1, -1)),
-        wxSizerFlags().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL).Expand());
+             wxSizerFlags().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL).Expand());
     sz3->Add(sz2, wxSizerFlags().Border(wxALL, 10));
 
     return sz3;
 }
 
-TestGuideDialog::TestGuideDialog() :
-    wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300))
+TestGuideDialog::TestGuideDialog() : wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1, -1), wxSize(300, 300))
 {
     wxBoxSizer *pOuterSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticBoxSizer *pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Mount"));
-    wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
-    static wxString AoLabels[] = {_("Up"), _("Down"), _("Right"), _("Left") };
-    static wxString ScopeLabels[] = {_("North"), _("South"), _("East"), _("West") };
+    wxGridSizer *sizer = new wxGridSizer(3, 3, 0, 0);
+    static wxString AoLabels[] = { _("Up"), _("Down"), _("Right"), _("Left") };
+    static wxString ScopeLabels[] = { _("North"), _("South"), _("East"), _("West") };
 
     bool usingAo = pSecondaryMount && pSecondaryMount->IsConnected();
 
@@ -169,51 +179,51 @@ TestGuideDialog::TestGuideDialog() :
 
     // Build the buttons for the primary mount
 
-    NButton1 = new wxButton(this, MGUIDE1_UP, pLabels[0], wxPoint(-1,-1),wxSize(-1,-1));
-    SButton1 = new wxButton(this, MGUIDE1_DOWN, pLabels[1], wxPoint(-1,-1),wxSize(-1,-1));
-    EButton1 = new wxButton(this, MGUIDE1_RIGHT, pLabels[2], wxPoint(-1,-1),wxSize(-1,-1));
-    WButton1 = new wxButton(this, MGUIDE1_LEFT, pLabels[3], wxPoint(-1,-1),wxSize(-1,-1));
+    NButton1 = new wxButton(this, MGUIDE1_UP, pLabels[0], wxPoint(-1, -1), wxSize(-1, -1));
+    SButton1 = new wxButton(this, MGUIDE1_DOWN, pLabels[1], wxPoint(-1, -1), wxSize(-1, -1));
+    EButton1 = new wxButton(this, MGUIDE1_RIGHT, pLabels[2], wxPoint(-1, -1), wxSize(-1, -1));
+    WButton1 = new wxButton(this, MGUIDE1_LEFT, pLabels[3], wxPoint(-1, -1), wxSize(-1, -1));
 
     sizer->AddStretchSpacer();
-    sizer->Add(NButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->Add(NButton1, wxSizerFlags().Expand().Border(wxALL, 6));
     sizer->AddStretchSpacer();
-    sizer->Add(WButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->Add(WButton1, wxSizerFlags().Expand().Border(wxALL, 6));
     sizer->AddStretchSpacer();
-    sizer->Add(EButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->Add(EButton1, wxSizerFlags().Expand().Border(wxALL, 6));
     sizer->AddStretchSpacer();
-    sizer->Add(SButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->Add(SButton1, wxSizerFlags().Expand().Border(wxALL, 6));
 
     pWrapperSizer->Add(sizer, wxSizerFlags().Center());
     if (!usingAo)
     {
         pWrapperSizer->Add(InitMountControls());
     }
-    pOuterSizer->Add(pWrapperSizer,wxSizerFlags().Border(wxALL,3).Center().Expand());
+    pOuterSizer->Add(pWrapperSizer, wxSizerFlags().Border(wxALL, 3).Center().Expand());
 
     if (usingAo)
     {
         pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Mount"));
-        sizer = new wxGridSizer(3,3,0,0);
+        sizer = new wxGridSizer(3, 3, 0, 0);
 
         pLabels = ScopeLabels;
 
-        NButton2 = new wxButton(this, MGUIDE2_UP, pLabels[0], wxPoint(-1,-1),wxSize(-1,-1));
-        SButton2 = new wxButton(this, MGUIDE2_DOWN, pLabels[1], wxPoint(-1,-1),wxSize(-1,-1));
-        EButton2 = new wxButton(this, MGUIDE2_RIGHT, pLabels[2], wxPoint(-1,-1),wxSize(-1,-1));
-        WButton2 = new wxButton(this, MGUIDE2_LEFT, pLabels[3], wxPoint(-1,-1),wxSize(-1,-1));
+        NButton2 = new wxButton(this, MGUIDE2_UP, pLabels[0], wxPoint(-1, -1), wxSize(-1, -1));
+        SButton2 = new wxButton(this, MGUIDE2_DOWN, pLabels[1], wxPoint(-1, -1), wxSize(-1, -1));
+        EButton2 = new wxButton(this, MGUIDE2_RIGHT, pLabels[2], wxPoint(-1, -1), wxSize(-1, -1));
+        WButton2 = new wxButton(this, MGUIDE2_LEFT, pLabels[3], wxPoint(-1, -1), wxSize(-1, -1));
 
         sizer->AddStretchSpacer();
-        sizer->Add(NButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->Add(NButton2, wxSizerFlags().Expand().Border(wxALL, 6));
         sizer->AddStretchSpacer();
-        sizer->Add(WButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->Add(WButton2, wxSizerFlags().Expand().Border(wxALL, 6));
         sizer->AddStretchSpacer();
-        sizer->Add(EButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->Add(EButton2, wxSizerFlags().Expand().Border(wxALL, 6));
         sizer->AddStretchSpacer();
-        sizer->Add(SButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->Add(SButton2, wxSizerFlags().Expand().Border(wxALL, 6));
 
         pWrapperSizer->Add(sizer, wxSizerFlags().Center());
         pWrapperSizer->Add(InitMountControls());
-        pOuterSizer->Add(pWrapperSizer,wxSizerFlags().Border(wxALL,3).Center().Expand());
+        pOuterSizer->Add(pWrapperSizer, wxSizerFlags().Border(wxALL, 3).Center().Expand());
     }
 
     pOuterSizer->AddSpacer(30);
@@ -279,36 +289,36 @@ inline static void ManualMove(Mount *mount, GUIDE_DIRECTION dir, int dur)
     }
 }
 
-void TestGuideDialog::OnButton(wxCommandEvent &evt)
+void TestGuideDialog::OnButton(wxCommandEvent& evt)
 {
     int duration = (int) floor(pulseDurationSpinCtrl->GetValue());
 
     switch (evt.GetId())
     {
-        case MGUIDE1_UP:
-            ManualMove(pMount, UP, duration);
-            break;
-        case MGUIDE1_DOWN:
-            ManualMove(pMount, DOWN, duration);
-            break;
-        case MGUIDE1_RIGHT:
-            ManualMove(pMount, RIGHT, duration);
-            break;
-        case MGUIDE1_LEFT:
-            ManualMove(pMount, LEFT, duration);
-            break;
-        case MGUIDE2_UP:
-            ManualMove(pSecondaryMount, UP, duration);
-            break;
-        case MGUIDE2_DOWN:
-            ManualMove(pSecondaryMount, DOWN, duration);
-            break;
-        case MGUIDE2_RIGHT:
-            ManualMove(pSecondaryMount, RIGHT, duration);
-            break;
-        case MGUIDE2_LEFT:
-            ManualMove(pSecondaryMount, LEFT, duration);
-            break;
+    case MGUIDE1_UP:
+        ManualMove(pMount, UP, duration);
+        break;
+    case MGUIDE1_DOWN:
+        ManualMove(pMount, DOWN, duration);
+        break;
+    case MGUIDE1_RIGHT:
+        ManualMove(pMount, RIGHT, duration);
+        break;
+    case MGUIDE1_LEFT:
+        ManualMove(pMount, LEFT, duration);
+        break;
+    case MGUIDE2_UP:
+        ManualMove(pSecondaryMount, UP, duration);
+        break;
+    case MGUIDE2_DOWN:
+        ManualMove(pSecondaryMount, DOWN, duration);
+        break;
+    case MGUIDE2_RIGHT:
+        ManualMove(pSecondaryMount, RIGHT, duration);
+        break;
+    case MGUIDE2_LEFT:
+        ManualMove(pSecondaryMount, LEFT, duration);
+        break;
     }
 }
 

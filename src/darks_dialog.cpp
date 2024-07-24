@@ -44,7 +44,7 @@ static const int DefDarkCount = 5;
 static const int DefDMExpTime = 15;
 static const int DefDMCount = 25;
 
-static const int MaxNoteLength = 65;            // For now
+static const int MaxNoteLength = 65; // For now
 
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
@@ -57,7 +57,8 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, const wxSize& size, int val, int minval, int maxval, int inc,
                                  const wxString& tooltip)
 {
-    wxSpinCtrl *pNewCtrl = pFrame->MakeSpinCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, size, wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
+    wxSpinCtrl *pNewCtrl = pFrame->MakeSpinCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, size, wxSP_ARROW_KEYS,
+                                                minval, maxval, val, _("Exposure time"));
     pNewCtrl->SetValue(val);
     pNewCtrl->SetToolTip(tooltip);
     return pNewCtrl;
@@ -89,8 +90,8 @@ static wxString MaxExposureDefault()
 
 // Dialog operates in one of two modes: 1) To create a user-requested dark library or 2) To create a master dark frame
 // and associated data files needed to construct a new defect map
-DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
-    wxDialog(parent, wxID_ANY, _("Build Dark Library"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+DarksDialog::DarksDialog(wxWindow *parent, bool darkLib)
+    : wxDialog(parent, wxID_ANY, _("Build Dark Library"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     buildDarkLib = darkLib;
     if (!buildDarkLib)
@@ -105,22 +106,25 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         wxStaticBoxSizer *pDarkGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
         wxFlexGridSizer *pDarkParams = new wxFlexGridSizer(2, 4, 5, 15);
 
-        m_pDarkMinExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-            m_expStrings, wxCB_READONLY);
+        m_pDarkMinExpTime =
+            new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_expStrings, wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Min Exposure Time"), m_pDarkMinExpTime);
         m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", MinExposureDefault()));
-        m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks. Choose a value corresponding to the shortest camera exposure you will use for guiding."));
+        m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks. Choose a value corresponding to the shortest camera "
+                                        "exposure you will use for guiding."));
 
-        m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-            m_expStrings, wxCB_READONLY);
+        m_pDarkMaxExpTime =
+            new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_expStrings, wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Max Exposure Time"), m_pDarkMaxExpTime);
         m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", MaxExposureDefault()));
-        m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks. Choose a value corresponding to the longest camera exposure you will use for guiding."));
+        m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks. Choose a value corresponding to the longest camera "
+                                        "exposure you will use for guiding."));
 
-        m_pDarkCount = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount),
-            1, 20, 1, _("Number of dark frames for each exposure time"));
+        m_pDarkCount = NewSpinnerInt(this, pFrame->GetTextExtent("9999"),
+                                     pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount), 1, 20, 1,
+                                     _("Number of dark frames for each exposure time"));
         AddTableEntryPair(this, pDarkParams, _("Frames to take for each \n exposure time"), m_pDarkCount);
         pDarkGroup->Add(pDarkParams, wxSizerFlags().Border(wxALL, 10));
         pvSizer->Add(pDarkGroup, wxSizerFlags().Border(wxALL, 10).Expand());
@@ -129,11 +133,14 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
         wxStaticText *pInfo = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1));
         m_rbModifyDarkLib = new wxRadioButton(this, wxID_ANY, _("Modify/extend existing dark library"));
-        m_rbModifyDarkLib->SetToolTip(_("Darks created now will replace older darks having matching exposure times. If different exposure times are used, "
+        m_rbModifyDarkLib->SetToolTip(_(
+            "Darks created now will replace older darks having matching exposure times. If different exposure times are used, "
             "those darks will be added to the library."));
         m_rbNewDarkLib = new wxRadioButton(this, wxID_ANY, _("Create entirely new dark library"));
-        m_rbNewDarkLib->SetToolTip(_("Darks created now will be used to build a completely new dark library - old dark frames will be discarded. You "
-            " MUST use this option if you've seen alert messages about incompatible frame sizes or mismatches with the current camera."));
+        m_rbNewDarkLib->SetToolTip(
+            _("Darks created now will be used to build a completely new dark library - old dark frames will be discarded. You "
+              " MUST use this option if you've seen alert messages about incompatible frame sizes or mismatches with the "
+              "current camera."));
         if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
         {
             if (pFrame->LoadDarkHandler(true))
@@ -141,8 +148,9 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
                 double min_v, max_v;
                 int num;
                 pCamera->GetDarklibProperties(&num, &min_v, &max_v);
-                pInfo->SetLabel(wxString::Format(_("Existing dark library covers %d exposure times in the range of %g s to %g s"),
-                    num, min_v / 1000., max_v / 1000.));
+                pInfo->SetLabel(
+                    wxString::Format(_("Existing dark library covers %d exposure times in the range of %g s to %g s"), num,
+                                     min_v / 1000., max_v / 1000.));
                 m_rbModifyDarkLib->SetValue(true);
             }
             else
@@ -170,11 +178,13 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         // Defect map controls
         wxStaticBoxSizer *pDMapGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Frame Settings"));
         wxFlexGridSizer *pDMapParams = new wxFlexGridSizer(2, 4, 5, 15);
-        m_pDefectExpTime = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_exptime", DefDMExpTime),
-            5, 15, 1, _("Exposure time for building defect map"));
+        m_pDefectExpTime =
+            NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_exptime", DefDMExpTime), 5,
+                          15, 1, _("Exposure time for building defect map"));
         AddTableEntryPair(this, pDMapParams, _("Exposure Time"), m_pDefectExpTime);
-        m_pNumDefExposures = NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_num_frames", DefDMCount),
-            5, 25, 1, _("Number of exposures for building defect map"));
+        m_pNumDefExposures =
+            NewSpinnerInt(this, pFrame->GetTextExtent("9999"), pConfig->Profile.GetInt("/camera/dmap_num_frames", DefDMCount),
+                          5, 25, 1, _("Number of exposures for building defect map"));
         AddTableEntryPair(this, pDMapParams, _("Number of Exposures"), m_pNumDefExposures);
         pDMapGroup->Add(pDMapParams, wxSizerFlags().Border(wxALL, 10));
         pvSizer->Add(pDMapGroup, wxSizerFlags().Border(wxALL, 10));
@@ -182,7 +192,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
 
     // Controls for notes and status
     wxBoxSizer *phSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY,  _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));
+    wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY, _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));
     wxSize sz(38 * StringWidth(this, "M"), -1);
     m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, sz);
     m_pNotes->SetToolTip(_("Free-form note, included in FITs header for each dark frame; max length=65"));
@@ -198,7 +208,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     pvSizer->Add(m_pProgress, wxSizerFlags().Border(wxLEFT, 60));
 
     // Buttons
-    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pResetBtn = new wxButton(this, wxID_ANY, _("Reset"));
     m_pResetBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnReset, this);
     m_pResetBtn->SetToolTip(_("Reset all parameters to application defaults"));
@@ -211,15 +221,9 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     m_pStopBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStop, this);
     m_pStopBtn->SetToolTip("");
 
-    pButtonSizer->Add(
-        m_pResetBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        m_pStartBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        m_pStopBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(m_pResetBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(m_pStartBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(m_pStopBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
     pvSizer->Add(pButtonSizer, wxSizerFlags().Center().Border(wxALL, 10));
 
     // status bar
@@ -229,7 +233,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     pvSizer->Add(m_pStatusBar, 0, wxGROW);
 
     SetAutoLayout(true);
-    SetSizerAndFit (pvSizer);
+    SetSizerAndFit(pvSizer);
 
     m_cancelling = false;
     m_started = false;
@@ -270,16 +274,16 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             tot_dur += exposureDurations[i] * darkFrameCount;
 
         m_pProgress->SetRange(tot_dur);
-        if (m_rbNewDarkLib->GetValue())           // User rebuilding from scratch
+        if (m_rbNewDarkLib->GetValue()) // User rebuilding from scratch
             pCamera->ClearDarks();
 
         for (int inx = minExpInx; inx <= maxExpInx; inx++)
         {
             int darkExpTime = exposureDurations[inx];
             if (darkExpTime >= 1000)
-                ShowStatus (wxString::Format(_("Building master dark at %.1f sec:"), (double)darkExpTime / 1000.0), false);
+                ShowStatus(wxString::Format(_("Building master dark at %.1f sec:"), (double) darkExpTime / 1000.0), false);
             else
-                ShowStatus (wxString::Format(_("Building master dark at %d mSec:"), darkExpTime), false);
+                ShowStatus(wxString::Format(_("Building master dark at %d mSec:"), darkExpTime), false);
             usImage *newDark = new usImage();
             err = CreateMasterDarkFrame(*newDark, exposureDurations[inx], darkFrameCount);
             wxYield();
@@ -296,7 +300,9 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
 
         if (m_cancelling || err)
         {
-            ShowStatus(m_cancelling ? _("Operation cancelled - no changes have been made") : _("Operation failed - no changes have been made"), false);
+            ShowStatus(m_cancelling ? _("Operation cancelled - no changes have been made")
+                                    : _("Operation failed - no changes have been made"),
+                       false);
             if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
             {
                 if (pFrame->LoadDarkHandler(true))
@@ -308,7 +314,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         else
         {
             pFrame->SaveDarkLibrary(m_pNotes->GetValue());
-            pFrame->LoadDarkHandler(true);          // Put it to use, including selection of matching dark frame
+            pFrame->LoadDarkHandler(true); // Put it to use, including selection of matching dark frame
             wrapupMsg = _("dark library built");
             if (m_rbNewDarkLib)
                 Debug.AddLine("Dark library - new dark lib created from scratch.");
@@ -320,7 +326,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     else
     {
         // Start by computing master dark frame with longish exposure times
-        ShowStatus(_("Taking darks to compute defect map: "),  false);
+        ShowStatus(_("Taking darks to compute defect map: "), false);
 
         int defectFrameCount = m_pNumDefExposures->GetValue();
         int defectExpTime = m_pDefectExpTime->GetValue() * 1000;
@@ -356,7 +362,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
 
     m_pStartBtn->Enable(true);
     m_pResetBtn->Enable(true);
-    pFrame->SetDarkMenuState();         // Hard to know where we are at this point
+    pFrame->SetDarkMenuState(); // Hard to know where we are at this point
 
     if (m_cancelling || err)
     {
@@ -370,7 +376,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         // Put up a message showing results and maybe notice to uncover the scope; then close the dialog
         pCamera->ShutterClosed = false; // Lights
         if (!pCamera->HasShutter)
-            wrapupMsg = _("Uncover guide scope") + wxT("\n\n") + wrapupMsg;   // Results will appear in smaller font
+            wrapupMsg = _("Uncover guide scope") + wxT("\n\n") + wrapupMsg; // Results will appear in smaller font
         wxMessageBox(wxString::Format(_("Operation complete: %s"), wrapupMsg));
         EndDialog(wxOK);
     }
@@ -449,7 +455,7 @@ struct Histogram
             mean += v;
             v >>= (img.BitsPerPixel - 8);
             if (v > 255)
-                v = 255;  // should never happen if BitsPerPixel is valid
+                v = 255; // should never happen if BitsPerPixel is valid
             ++val[v];
         }
         mean /= img.NPixels;
@@ -502,7 +508,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         err = GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK);
         if (err)
         {
-            ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double)expTime / 1000.0), true);
+            ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
             pCamera->ShutterClosed = false;
             break;
         }
@@ -513,8 +519,8 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         darkFrame.CalcStats();
 
         Debug.Write(wxString::Format("dark frame stats: bpp %u min %u max %u med %u filtmin %u filtmax %u\n",
-                                     darkFrame.BitsPerPixel, darkFrame.MinADU, darkFrame.MaxADU,
-                                     darkFrame.MedianADU, darkFrame.FiltMin, darkFrame.FiltMax));
+                                     darkFrame.BitsPerPixel, darkFrame.MinADU, darkFrame.MaxADU, darkFrame.MedianADU,
+                                     darkFrame.FiltMin, darkFrame.FiltMax));
 
         Histogram h(darkFrame);
         h.Dump();
@@ -538,7 +544,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         const unsigned int *iptr = avgimg;
         unsigned short *usptr = darkFrame.ImageData;
         for (unsigned int i = 0; i < darkFrame.NPixels; i++)
-            *usptr++ = (unsigned short)(*iptr++ / frameCount);
+            *usptr++ = (unsigned short) (*iptr++ / frameCount);
     }
 
     m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
@@ -549,6 +555,4 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
     return err;
 }
 
-DarksDialog::~DarksDialog(void)
-{
-}
+DarksDialog::~DarksDialog(void) { }

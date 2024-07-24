@@ -37,6 +37,7 @@
 class LogUploader
 {
     LogUploader() = delete;
+
 public:
     static void UploadLogs();
 };

@@ -45,15 +45,15 @@ struct GuiderOffset;
 
 enum GUIDE_DIRECTION
 {
-    NONE  = -1,
+    NONE = -1,
     UP = 0,
-    NORTH = UP,     // Dec + for eq mounts
+    NORTH = UP, // Dec + for eq mounts
     DOWN,
-    SOUTH = DOWN,   // Dec-
+    SOUTH = DOWN, // Dec-
     RIGHT,
-    EAST = RIGHT,   // RA-
+    EAST = RIGHT, // RA-
     LEFT,
-    WEST = LEFT     // RA+
+    WEST = LEFT // RA+
 };
 
 enum PierSide
@@ -65,9 +65,9 @@ enum PierSide
 
 enum GuideParity
 {
-    GUIDE_PARITY_EVEN = 1,      // Guide(NORTH) moves scope north
-    GUIDE_PARITY_ODD = -1,      // Guide(NORTH) moves scope south
-    GUIDE_PARITY_UNKNOWN = 0,   // we don't know or care
+    GUIDE_PARITY_EVEN = 1, // Guide(NORTH) moves scope north
+    GUIDE_PARITY_ODD = -1, // Guide(NORTH) moves scope south
+    GUIDE_PARITY_UNKNOWN = 0, // we don't know or care
     GUIDE_PARITY_UNCHANGED = -5, // special case for SetCalibration, leave value unchanged
 };
 
@@ -124,20 +124,20 @@ struct CalibrationDetails
 
 enum MountMoveOptionBits
 {
-    MOVEOPT_ALGO_RESULT = (1<<0),    // filter move through guide algorithm
-    MOVEOPT_ALGO_DEDUCE = (1<<1),    // use guide algorithm to deduce the move amount (when paused or star lost)
-    MOVEOPT_USE_BLC     = (1<<2),    // use backlash comp for this move
-    MOVEOPT_GRAPH       = (1<<3),    // display the move on the graphs
-    MOVEOPT_MANUAL      = (1<<4),    // manual move - allow even when guiding disabled
+    MOVEOPT_ALGO_RESULT = (1 << 0), // filter move through guide algorithm
+    MOVEOPT_ALGO_DEDUCE = (1 << 1), // use guide algorithm to deduce the move amount (when paused or star lost)
+    MOVEOPT_USE_BLC = (1 << 2), // use backlash comp for this move
+    MOVEOPT_GRAPH = (1 << 3), // display the move on the graphs
+    MOVEOPT_MANUAL = (1 << 4), // manual move - allow even when guiding disabled
 };
 
 enum
 {
     MOVEOPTS_CALIBRATION_MOVE = 0,
-    MOVEOPTS_GUIDE_STEP       = MOVEOPT_ALGO_RESULT | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
-    MOVEOPTS_DEDUCED_MOVE     = MOVEOPT_ALGO_DEDUCE | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
-    MOVEOPTS_RECOVERY_MOVE    = MOVEOPT_USE_BLC,
-    MOVEOPTS_AO_BUMP          = MOVEOPT_USE_BLC,
+    MOVEOPTS_GUIDE_STEP = MOVEOPT_ALGO_RESULT | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
+    MOVEOPTS_DEDUCED_MOVE = MOVEOPT_ALGO_DEDUCE | MOVEOPT_USE_BLC | MOVEOPT_GRAPH,
+    MOVEOPTS_RECOVERY_MOVE = MOVEOPT_USE_BLC,
+    MOVEOPTS_AO_BUMP = MOVEOPT_USE_BLC,
 };
 
 extern wxString DumpMoveOptionBits(unsigned int moveOptions);
@@ -152,12 +152,12 @@ struct MoveResultInfo
 
 class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
-    Mount* m_pMount;
+    Mount *m_pMount;
     wxCheckBox *m_pClearCalibration;
     wxCheckBox *m_pEnableGuide;
 
 public:
-    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MountConfigDialogCtrlSet() {};
     virtual void LoadValues();
     virtual void UnloadValues();
@@ -171,8 +171,8 @@ class Mount : public wxMessageBoxProxy
 
     bool m_calibrated;
     Calibration m_cal;
-    double m_xRate;         // rate adjusted for declination
-    double m_yAngleError;   // orthogonality error
+    double m_xRate; // rate adjusted for declination
+    double m_yAngleError; // orthogonality error
 
 protected:
     bool m_guidingEnabled;
@@ -190,18 +190,18 @@ public:
     {
     protected:
         Mount *m_pMount;
-        wxWindow* m_pParent;
-        wxChoice   *m_pXGuideAlgorithmChoice;
-        wxChoice   *m_pYGuideAlgorithmChoice;
-        int        m_initXGuideAlgorithmSelection;
-        int        m_initYGuideAlgorithmSelection;
+        wxWindow *m_pParent;
+        wxChoice *m_pXGuideAlgorithmChoice;
+        wxChoice *m_pYGuideAlgorithmChoice;
+        int m_initXGuideAlgorithmSelection;
+        int m_initYGuideAlgorithmSelection;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
-        wxStaticBoxSizer* m_pAlgoBox;
-        wxStaticBoxSizer* m_pRABox;
-        wxStaticBoxSizer* m_pDecBox;
-        wxButton* m_pResetRAParams;
-        wxButton* m_pResetDecParams;
+        wxStaticBoxSizer *m_pAlgoBox;
+        wxStaticBoxSizer *m_pRABox;
+        wxStaticBoxSizer *m_pDecBox;
+        wxButton *m_pResetRAParams;
+        wxButton *m_pResetDecParams;
         void OnResetRAParams(wxCommandEvent& evt);
         void OnResetDecParams(wxCommandEvent& evt);
 
@@ -244,11 +244,11 @@ public:
     // functions with an implementation in Mount that cannot be over-ridden
     // by a subclass
 public:
-
-    enum MOVE_RESULT {
-        MOVE_OK = 0,             // move succeeded
-        MOVE_ERROR,              // move failed for unspecified reason
-        MOVE_ERROR_SLEWING,      // move failed due to scope slewing
+    enum MOVE_RESULT
+    {
+        MOVE_OK = 0, // move succeeded
+        MOVE_ERROR, // move failed for unspecified reason
+        MOVE_ERROR_SLEWING, // move failed due to scope slewing
         MOVE_ERROR_AO_LIMIT_REACHED, // move failed due to AO limit
     };
 
@@ -272,11 +272,11 @@ public:
 
     virtual MOVE_RESULT MoveOffset(GuiderOffset *guiderOffset, unsigned int moveOptions);
 
-    bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
-                                                      PHD_Point& mountVectorEndpoint, bool logged = true);
+    bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint, PHD_Point& mountVectorEndpoint,
+                                                      bool logged = true);
 
-    bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
-                                                      PHD_Point& cameraVectorEndpoint, bool logged = true);
+    bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint, PHD_Point& cameraVectorEndpoint,
+                                                      bool logged = true);
 
     void LogGuideStepInfo();
 
@@ -305,14 +305,15 @@ public:
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions, MoveResultInfo *moveResultInfo) = 0;
+    virtual MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int amount, unsigned int moveOptions,
+                                 MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT MoveAxis(GUIDE_DIRECTION direction, int duration, unsigned int moveOptions) = 0;
     virtual int CalibrationMoveSize() = 0;
     virtual int CalibrationTotDistance() = 0;
 
     // Calibration related routines
-    virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
-    virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
+    virtual bool BeginCalibration(const PHD_Point& currentLocation) = 0;
+    virtual bool UpdateCalibrationState(const PHD_Point& currentLocation) = 0;
 
     virtual void NotifyGuidingStarted();
     virtual void NotifyGuidingStopped();
@@ -323,8 +324,9 @@ public:
     virtual void NotifyDirectMove(const PHD_Point& dist);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
-    ConfigDialogCtrlSet* currConfigDialogCtrlSet;               // instance currently in-use by AD
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog,
+                                                             BrainCtrlIdMap& CtrlMap) = 0;
+    ConfigDialogCtrlSet *currConfigDialogCtrlSet; // instance currently in-use by AD
 
     virtual wxString GetMountClassName() const = 0;
 
@@ -338,7 +340,6 @@ public:
     // consider whether they need to call the base class functions as part of
     // their operation
 public:
-
     virtual bool HasNonGuiMove();
     virtual bool SynchronousOnly();
     virtual bool HasSetupDialog() const;

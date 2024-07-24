@@ -38,54 +38,43 @@
 class usImage
 {
 public:
-    unsigned short     *ImageData;      // Pointer to raw data
-    wxSize              Size;           // Dimensions of image
-    wxRect              Subframe;       // were the valid data is
-    unsigned int        NPixels;
-    unsigned short      MinADU;
-    unsigned short      MaxADU;
-    unsigned short      MedianADU;
-    unsigned short      FiltMin;
-    unsigned short      FiltMax;
-    wxDateTime          ImgStartTime;
-    int                 ImgExpDur;      // milli-seconds
-    int                 ImgStackCnt;
-    wxByte              BitsPerPixel;
-    unsigned short      Pedestal;
-    unsigned int        FrameNum;
+    unsigned short *ImageData; // Pointer to raw data
+    wxSize Size; // Dimensions of image
+    wxRect Subframe; // were the valid data is
+    unsigned int NPixels;
+    unsigned short MinADU;
+    unsigned short MaxADU;
+    unsigned short MedianADU;
+    unsigned short FiltMin;
+    unsigned short FiltMax;
+    wxDateTime ImgStartTime;
+    int ImgExpDur; // milli-seconds
+    int ImgStackCnt;
+    wxByte BitsPerPixel;
+    unsigned short Pedestal;
+    unsigned int FrameNum;
 
     usImage()
-        :
-        ImageData(nullptr),
-        NPixels(0),
-        MinADU(0),
-        MaxADU(0),
-        MedianADU(0),
-        FiltMin(0),
-        FiltMax(0),
-        ImgExpDur(0),
-        ImgStackCnt(1),
-        BitsPerPixel(0),
-        Pedestal(0),
-        FrameNum(0)
+        : ImageData(nullptr), NPixels(0), MinADU(0), MaxADU(0), MedianADU(0), FiltMin(0), FiltMax(0), ImgExpDur(0),
+          ImgStackCnt(1), BitsPerPixel(0), Pedestal(0), FrameNum(0)
     {
     }
     ~usImage() { delete[] ImageData; }
 
-    bool                Init(const wxSize& size);
-    bool                Init(int width, int height) { return Init(wxSize(width, height)); }
-    void                SwapImageData(usImage& other);
-    void                CalcStats();
-    void                InitImgStartTime();
-    bool                CopyFrom(const usImage& src);
-    bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
-    bool                CopyFromImage(const wxImage& img);
-    bool                Load(const wxString& fname);
-    bool                Save(const wxString& fname, const wxString& hdrComment = wxEmptyString) const;
-    bool                Rotate(double theta, bool mirror=false);
-    unsigned short&     Pixel(int x, int y) { return ImageData[y * Size.x + x]; }
+    bool Init(const wxSize& size);
+    bool Init(int width, int height) { return Init(wxSize(width, height)); }
+    void SwapImageData(usImage& other);
+    void CalcStats();
+    void InitImgStartTime();
+    bool CopyFrom(const usImage& src);
+    bool CopyToImage(wxImage **img, int blevel, int wlevel, double power);
+    bool CopyFromImage(const wxImage& img);
+    bool Load(const wxString& fname);
+    bool Save(const wxString& fname, const wxString& hdrComment = wxEmptyString) const;
+    bool Rotate(double theta, bool mirror = false);
+    unsigned short& Pixel(int x, int y) { return ImageData[y * Size.x + x]; }
     const unsigned short& Pixel(int x, int y) const { return ImageData[y * Size.x + x]; }
-    void                Clear(void);
+    void Clear(void);
 };
 
 inline void usImage::Clear(void)

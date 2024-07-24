@@ -36,7 +36,7 @@
 #define ROTATORS_INCLUDED
 
 #if defined(__WINDOWS__)
-#define ROTATOR_ASCOM
+# define ROTATOR_ASCOM
 #endif
 
 #define ROTATOR_INDI

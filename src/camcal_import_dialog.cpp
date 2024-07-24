@@ -33,8 +33,8 @@
  *
  */
 
-// Handles import of camera calibration files (dark library, bad-pix map files) from user-selected profile to the current profile
-// Source profile choices are limited to camera data with compatible geometry
+// Handles import of camera calibration files (dark library, bad-pix map files) from user-selected profile to the current
+// profile Source profile choices are limited to camera data with compatible geometry
 
 #include "phd.h"
 #include "camcal_import_dialog.h"
@@ -48,10 +48,10 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+CamCalImportDialog::CamCalImportDialog(wxWindow *parent)
+    : wxDialog(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
-    wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
 
     SetTitle(wxString::Format(_("Import Darks to Profile %s"), pConfig->GetCurrentProfile()));
 
@@ -59,11 +59,12 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     m_profileNames = pConfig->ProfileNames();
 
     // Start with the dark library
-    wxStaticBoxSizer* darksGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
+    wxStaticBoxSizer *darksGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
 
-    wxStaticText* darksLabel = new wxStaticText(this, wxID_STATIC, _("Choose the profile with the dark library you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *darksLabel = new wxStaticText(
+        this, wxID_STATIC, _("Choose the profile with the dark library you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
     darksGroup->Add(darksLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
-    wxFlexGridSizer* drkGrid = new wxFlexGridSizer(2, 2, 0, 0);
+    wxFlexGridSizer *drkGrid = new wxFlexGridSizer(2, 2, 0, 0);
 
     wxArrayString drkChoices;
     drkChoices.Add(_("None"));
@@ -72,7 +73,8 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
 
     if (drkChoices.Count() > 1)
     {
-        m_darksChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, drkChoices, 0, wxDefaultValidator, _("Darks Profiles"));
+        m_darksChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, drkChoices, 0, wxDefaultValidator,
+                                     _("Darks Profiles"));
         m_darksChoice->SetSelection(0);
         m_darksChoice->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &CamCalImportDialog::OnDarkProfileChoice, this);
         AddTableEntryPair(this, drkGrid, _("Import from profile"), m_darksChoice);
@@ -85,9 +87,11 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     vSizer->Add(darksGroup, 0, wxALIGN_LEFT | wxALL, 10);
 
     // Now add the bad-pix map controls
-    wxStaticBoxSizer* bpmGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Bad-pixel Map"));
+    wxStaticBoxSizer *bpmGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Bad-pixel Map"));
 
-    wxStaticText* bpmLabel = new wxStaticText(this, wxID_STATIC, _("Choose the profile with the bad-pixel map you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *bpmLabel =
+        new wxStaticText(this, wxID_STATIC, _("Choose the profile with the bad-pixel map you want to use:"), wxDefaultPosition,
+                         wxDefaultSize, 0);
     bpmGroup->Add(bpmLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
 
     wxArrayString bpmChoices;
@@ -97,7 +101,8 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
 
     if (bpmChoices.Count() > 1)
     {
-        m_bpmChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, bpmChoices, 0, wxDefaultValidator, _("Bad-pix Map Profiles"));
+        m_bpmChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, bpmChoices, 0, wxDefaultValidator,
+                                   _("Bad-pix Map Profiles"));
         m_bpmChoice->SetSelection(0);
         m_bpmChoice->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &CamCalImportDialog::OnBPMProfileChoice, this);
         wxFlexGridSizer *bpmGrid = new wxFlexGridSizer(2, 2, 0, 0);
@@ -112,29 +117,27 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     vSizer->Add(bpmGroup, 0, wxALIGN_LEFT | wxALL, 10);
 
     // Add the buttons
-    wxBoxSizer* btnHSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *btnHSizer = new wxBoxSizer(wxHORIZONTAL);
     vSizer->Add(btnHSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
 
-    wxButton* btnOk = new wxButton(this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0);
+    wxButton *btnOk = new wxButton(this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0);
     btnOk->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CamCalImportDialog::OnOk, this);
     btnOk->SetDefault();
     btnHSizer->Add(btnOk, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-    wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
+    wxButton *btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
     btnHSizer->Add(btnCancel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-    //PopulateLBs(darksLB, bpmLB);
+    // PopulateLBs(darksLB, bpmLB);
     SetSizerAndFit(vSizer);
 
     m_activeProfileName = pConfig->GetCurrentProfile();
     m_sourceDarksProfileId = -1;
     m_sourceBpmProfileId = -1;
 }
-CamCalImportDialog::~CamCalImportDialog(void)
-{
-}
+CamCalImportDialog::~CamCalImportDialog(void) { }
 
-void CamCalImportDialog::FindCompatibleDarks(wxArrayString* pResults)
+void CamCalImportDialog::FindCompatibleDarks(wxArrayString *pResults)
 {
 
     for (unsigned int i = 0; i < m_profileNames.GetCount(); i++)
@@ -144,10 +147,9 @@ void CamCalImportDialog::FindCompatibleDarks(wxArrayString* pResults)
             if (pFrame->DarkLibExists(profileId, false))
                 pResults->Add(m_profileNames[i]);
     }
-
 }
 
-void CamCalImportDialog::FindCompatibleBPMs(wxArrayString* pResults)
+void CamCalImportDialog::FindCompatibleBPMs(wxArrayString *pResults)
 {
     for (unsigned int i = 0; i < m_profileNames.GetCount(); i++)
     {
@@ -174,7 +176,6 @@ void CamCalImportDialog::OnDarkProfileChoice(wxCommandEvent& evt)
         m_darkCameraChoice->SetLabelText(wxEmptyString);
         m_sourceDarksProfileId = -1;
     }
-
 }
 
 void CamCalImportDialog::OnBPMProfileChoice(wxCommandEvent& evt)
@@ -205,7 +206,8 @@ void CamCalImportDialog::OnOk(wxCommandEvent& evt)
     {
         if (DefectMap::ImportFromProfile(m_sourceBpmProfileId, m_thisProfileId))
         {
-            Debug.Write(wxString::Format("Defect map files imported and loaded from profile %d to profile %d\n", m_sourceBpmProfileId, m_thisProfileId));
+            Debug.Write(wxString::Format("Defect map files imported and loaded from profile %d to profile %d\n",
+                                         m_sourceBpmProfileId, m_thisProfileId));
             pFrame->LoadDefectMapHandler(true);
             bpmLoaded = true;
         }
@@ -222,7 +224,8 @@ void CamCalImportDialog::OnOk(wxCommandEvent& evt)
         destName = MyFrame::DarkLibFileName(m_thisProfileId);
         if (wxCopyFile(sourceName, destName, true))
         {
-            Debug.Write(wxString::Format("Dark library imported from profile %d to profile %d\n", m_sourceDarksProfileId, m_thisProfileId));
+            Debug.Write(wxString::Format("Dark library imported from profile %d to profile %d\n", m_sourceDarksProfileId,
+                                         m_thisProfileId));
             if (!bpmLoaded)
             {
                 pFrame->LoadDarkHandler(true);
@@ -234,6 +237,6 @@ void CamCalImportDialog::OnOk(wxCommandEvent& evt)
             wxMessageBox(_("Dark library could not be imported because of errors in file/copy"));
         }
     }
-    pFrame->SetDarkMenuState();                     // Get enabled states straightened out
+    pFrame->SetDarkMenuState(); // Get enabled states straightened out
     EndModal(wxID_OK);
 }

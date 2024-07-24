@@ -39,17 +39,16 @@
 class CamCalImportDialog : public wxDialog
 {
 public:
-
     CamCalImportDialog(wxWindow *parent);
     ~CamCalImportDialog(void);
 
 private:
-    wxChoice* m_darksChoice;
-    wxStaticText* m_darkCameraChoice;
-    wxChoice* m_bpmChoice;
-    wxStaticText* m_bpmCameraChoice;
-    void FindCompatibleDarks(wxArrayString* pResults);
-    void FindCompatibleBPMs(wxArrayString* pResults);
+    wxChoice *m_darksChoice;
+    wxStaticText *m_darkCameraChoice;
+    wxChoice *m_bpmChoice;
+    wxStaticText *m_bpmCameraChoice;
+    void FindCompatibleDarks(wxArrayString *pResults);
+    void FindCompatibleBPMs(wxArrayString *pResults);
     void OnDarkProfileChoice(wxCommandEvent& evt);
     void OnBPMProfileChoice(wxCommandEvent& evt);
     void OnOk(wxCommandEvent& evt);

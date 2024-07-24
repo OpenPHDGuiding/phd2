@@ -35,13 +35,9 @@
 
 #include "phd.h"
 
-ParallelPort::ParallelPort(void)
-{
-}
+ParallelPort::ParallelPort(void) { }
 
-ParallelPort::~ParallelPort(void)
-{
-}
+ParallelPort::~ParallelPort(void) { }
 
 bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
 {

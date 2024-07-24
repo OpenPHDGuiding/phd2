@@ -1,42 +1,42 @@
 /*
-*  cam_moravian.cpp
-*  PHD2 Guiding
-*
-*  Copyright (c) 2020 Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of openphdguiding.org nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_moravian.cpp
+ *  PHD2 Guiding
+ *
+ *  Copyright (c) 2020 Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 #include "phd.h"
 
 #ifdef MORAVIAN_CAMERA
 
-#include "cam_moravian.h"
+# include "cam_moravian.h"
 // #include "gxeth.h" TODO - ethernet camera support
-#include "gxusb.h"
+# include "gxusb.h"
 
 static std::vector<gXusb::CARDINAL> __ids;
 
@@ -50,7 +50,7 @@ static std::vector<gXusb::CARDINAL> _get_ids()
     Debug.Write("MVN: begin enumerate\n");
     __ids.clear();
     gXusb::Enumerate(_enum_cb);
-    Debug.Write(wxString::Format("MVN: enumerate found %u\n", (unsigned int)__ids.size())); // MSVC barfs on %zu
+    Debug.Write(wxString::Format("MVN: enumerate found %u\n", (unsigned int) __ids.size())); // MSVC barfs on %zu
     return __ids;
 }
 
@@ -143,10 +143,7 @@ struct MCam
         return dflt;
     }
 
-    wxString Serial()
-    {
-        return StrParam(gspCameraSerial, wxString::Format("ID%d", IntParam(gipCameraId, 1)));
-    }
+    wxString Serial() { return StrParam(gspCameraSerial, wxString::Format("ID%d", IntParam(gipCameraId, 1))); }
 
     float GetValue(gXusb::CARDINAL idx, float dflt = 0.f)
     {
@@ -269,10 +266,7 @@ struct MCam
         return ok;
     }
 
-    wxSize ChipSize()
-    {
-        return wxSize(IntParam(gipChipW), IntParam(gipChipD));
-    }
+    wxSize ChipSize() { return wxSize(IntParam(gipChipW), IntParam(gipChipD)); }
 
     bool CaptureSync(void *buf, unsigned int size, unsigned int duration, wxByte bpp, const wxRect& frame)
     {
@@ -280,13 +274,13 @@ struct MCam
         gXusb::BOOLEAN ok;
         if (bpp == 8)
         {
-            ok = gXusb::GetImageExposure8b(m_cam, exp, false, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(),
-                size, buf);
+            ok = gXusb::GetImageExposure8b(m_cam, exp, false, frame.GetLeft(), frame.GetTop(), frame.GetWidth(),
+                                           frame.GetHeight(), size, buf);
         }
         else
         {
-            ok = gXusb::GetImageExposure16b(m_cam, exp, false, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(),
-                size, buf);
+            ok = gXusb::GetImageExposure16b(m_cam, exp, false, frame.GetLeft(), frame.GetTop(), frame.GetWidth(),
+                                            frame.GetHeight(), size, buf);
         }
         if (!ok)
             Debug.Write(wxString::Format("MVN: CaptureSync: %s\n", LastError()));
@@ -336,7 +330,7 @@ class MoravianCamera : public GuideCamera
     unsigned int m_curGain;
     void *m_buffer;
     size_t m_buffer_size;
-    wxByte m_bpp;  // bits per pixel: 8 or 16
+    wxByte m_bpp; // bits per pixel: 8 or 16
     MCam m_cam;
     bool m_canGuide;
     int m_maxGain;
@@ -369,16 +363,15 @@ public:
     bool GetSensorTemperature(double *temperature) override;
 };
 
-MoravianCamera::MoravianCamera()
-    :
-    m_buffer(nullptr)
+MoravianCamera::MoravianCamera() : m_buffer(nullptr)
 {
     Name = _T("Moravian Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
     m_hasGuideOutput = false; // updated when connected
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     m_defaultGainPct = 0; // TODO: what is a good default? GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/moravian/bpp", 16);
     m_bpp = value == 8 ? 8 : 16;
@@ -412,8 +405,7 @@ struct MoravianCameraDlg : public wxDialog
     void LoadCamInfo();
 };
 
-MoravianCameraDlg::MoravianCameraDlg()
-    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Moravian Camera Properties"))
+MoravianCameraDlg::MoravianCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("Moravian Camera Properties"))
 {
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -432,8 +424,8 @@ MoravianCameraDlg::MoravianCameraDlg()
 
     wxBoxSizer *sizer5 = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *staticText1 = new wxStaticText(sizer2->GetStaticBox(), wxID_ANY, _("Read Mode"),
-        wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *staticText1 =
+        new wxStaticText(sizer2->GetStaticBox(), wxID_ANY, _("Read Mode"), wxDefaultPosition, wxDefaultSize, 0);
     staticText1->Wrap(-1);
     sizer5->Add(staticText1, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxTOP, 5);
 
@@ -626,10 +618,8 @@ bool MoravianCamera::Connect(const wxString& camId)
     int flash_minor = m_cam.IntParam(gipFlashMinor);
     int flash_build = m_cam.IntParam(gipFlashBuild);
 
-    Debug.Write(wxString::Format("MVN: Driver %d.%d.%d | Firmware %d.%d.%d | Flash %d.%d.%d\n",
-        drv_major, drv_minor, drv_build,
-        fw_major, fw_minor, fw_build,
-        flash_major, flash_minor, flash_build));
+    Debug.Write(wxString::Format("MVN: Driver %d.%d.%d | Firmware %d.%d.%d | Flash %d.%d.%d\n", drv_major, drv_minor, drv_build,
+                                 fw_major, fw_minor, fw_build, flash_major, flash_minor, flash_build));
 
     Name = m_cam.StrParam(gspCameraDescription, _T("Moravian Camera"));
 
@@ -663,8 +653,7 @@ bool MoravianCamera::Connect(const wxString& camId)
     m_hasGuideOutput = m_cam.BoolParam(gbpGuide);
     m_maxMoveMs = m_hasGuideOutput ? m_cam.IntParam(gipMaximalMoveTime) : 0;
 
-    Debug.Write(wxString::Format("MVN: CanPulseGuide: %s MaxMove: %d\n",
-        m_hasGuideOutput ? "yes" : "no", m_maxMoveMs));
+    Debug.Write(wxString::Format("MVN: CanPulseGuide: %s MaxMove: %d\n", m_hasGuideOutput ? "yes" : "no", m_maxMoveMs));
 
     bool rgb = m_cam.BoolParam(gbpRGB);
     bool cmy = m_cam.BoolParam(gbpCMY);
@@ -713,8 +702,8 @@ bool MoravianCamera::Connect(const wxString& camId)
     m_maxGain = m_cam.IntParam(gipMaxGain);
     int default_gain = 0; // TODO: ask moravian
     m_defaultGainPct = gain_pct(0, m_maxGain, default_gain);
-    Debug.Write(wxString::Format("MVN: gain range = %d .. %d default = %ld (%d%%)\n",
-        0, m_maxGain, default_gain, m_defaultGainPct));
+    Debug.Write(
+        wxString::Format("MVN: gain range = %d .. %d default = %ld (%d%%)\n", 0, m_maxGain, default_gain, m_defaultGainPct));
 
     unsigned int new_gain = cam_gain(0, m_maxGain, GuideCameraGain);
     Debug.Write(wxString::Format("MVN: set gain %d%% %d\n", GuideCameraGain, new_gain));
@@ -947,12 +936,26 @@ bool MoravianCamera::ST4PulseGuideScope(int direction, int duration)
 
         gXusb::INT16 radur, decdur;
 
-        switch (direction) {
-        case NORTH: radur = 0; decdur = +dur; break;
-        case SOUTH: radur = 0; decdur = -dur; break;
-        case EAST:  radur = +dur; decdur = 0; break;
-        case WEST:  radur = -dur; decdur = 0; break;
-        default: return true;
+        switch (direction)
+        {
+        case NORTH:
+            radur = 0;
+            decdur = +dur;
+            break;
+        case SOUTH:
+            radur = 0;
+            decdur = -dur;
+            break;
+        case EAST:
+            radur = +dur;
+            decdur = 0;
+            break;
+        case WEST:
+            radur = -dur;
+            decdur = 0;
+            break;
+        default:
+            return true;
         }
 
         if (!gXusb::MoveTelescope(m_cam, radur, decdur))

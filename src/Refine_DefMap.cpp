@@ -36,7 +36,8 @@
 #include "Refine_DefMap.h"
 #include "darks_dialog.h"
 
-enum {
+enum
+{
     ID_PREVIEW = 10001,
 };
 
@@ -63,8 +64,9 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-RefineDefMap::RefineDefMap(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX), m_profileId(-1)
+RefineDefMap::RefineDefMap(wxWindow *parent)
+    : wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX),
+      m_profileId(-1)
 {
     SetSize(wxSize(900, 400));
 
@@ -162,11 +164,13 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
     pHotSlider = new wxSlider(this, wxID_ANY, 0, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pHotSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnHotChange, this);
     pHotSlider->Bind(wxEVT_SCROLL_THUMBTRACK, &RefineDefMap::OnHotChange, this);
-    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', then click on 'generate' to build and load the new bad-pixel map"));
+    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', "
+                             "then click on 'generate' to build and load the new bad-pixel map"));
     pColdSlider = new wxSlider(this, wxID_ANY, 0, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pColdSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnColdChange, this);
     pColdSlider->Bind(wxEVT_SCROLL_THUMBTRACK, &RefineDefMap::OnColdChange, this);
-    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', then click on 'generate' to build and load the new bad-pixel map"));
+    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', "
+                              "then click on 'generate' to build and load the new bad-pixel map"));
     AddTableEntryPair(this, pAdjustmentGrid, _("Hot pixels"), pHotSlider);
     AddTableEntryPair(this, pAdjustmentGrid, _("Cold pixels"), pColdSlider);
     pAggressivenessGrp->Add(pAdjustmentGrid);
@@ -180,21 +184,17 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
 
     pApplyBtn = new wxButton(this, wxID_ANY, _("Generate"));
     pApplyBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnGenerate, this);
-    pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new bad-pixel map; this will discard any manually added bad pixels"));
+    pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new bad-pixel map; this will discard "
+                            "any manually added bad pixels"));
 
     pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add Bad Pixel"));
     pAddDefectBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnAddDefect, this);
-    pAddDefectBtn->SetToolTip(_("Click on a bad pixel in the image display; then click on this button to add it to the in-use bad-pixel map"));
+    pAddDefectBtn->SetToolTip(
+        _("Click on a bad pixel in the image display; then click on this button to add it to the in-use bad-pixel map"));
 
-    pButtonSizer->Add(
-        pResetBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        pApplyBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        pAddDefectBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(pResetBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(pApplyBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(pAddDefectBtn, wxSizerFlags(0).Align(0).Border(wxALL, 10));
 
     pVSizer->Add(pButtonSizer, wxSizerFlags().Center().Border(wxALL, 10));
 
@@ -240,7 +240,7 @@ bool RefineDefMap::InitUI()
     if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), false))
     {
         if (RebuildMasterDarks())
-            firstTime = true;       // Need to get the UI built before finishing up
+            firstTime = true; // Need to get the UI built before finishing up
     }
     if (DefectMap::DefectMapExists(m_profileId, false) || firstTime)
     {
@@ -253,7 +253,7 @@ bool RefineDefMap::InitUI()
     else
     {
         RestoreCameraMode();
-        return false;      // No master dark files to work with, user didn't build them
+        return false; // No master dark files to work with, user didn't build them
     }
 }
 
@@ -297,7 +297,6 @@ void RefineDefMap::LoadFromProfile()
     GetBadPxCounts();
     ShowStatus(_("Statistics completed..."), false);
     LoadPreview();
-
 }
 
 bool RefineDefMap::RebuildMasterDarks()
@@ -351,10 +350,10 @@ void RefineDefMap::ApplyNewMap()
     pInfoGrid->SetCellValue(hotFactorLoc, wxString::Format("%d", pHotSlider->GetValue()));
     pInfoGrid->SetCellValue(coldFactorLoc, wxString::Format("%d", pColdSlider->GetValue()));
     pInfoGrid->SetCellValue(createTimeLoc, DefectMapTimeString());
-    pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
+    pStatsGrid->SetCellValue(manualPixelLoc, "0"); // Manual pixels will always be discarded
     pHotSlider->Enable(true);
     pColdSlider->Enable(true);
-    pFrame->SetDarkMenuState();                     // Get enabled states straightened out
+    pFrame->SetDarkMenuState(); // Get enabled states straightened out
 }
 
 void RefineDefMap::OnGenerate(wxCommandEvent& evt)
@@ -369,7 +368,7 @@ void RefineDefMap::OnGenerate(wxCommandEvent& evt)
         else
         {
             ShowStatus(_("Master dark frames NOT rebuilt"), false);
-            return;         // Couldn't do what we were asked
+            return; // Couldn't do what we were asked
         }
     }
     ApplyNewMap();
@@ -382,7 +381,7 @@ wxString RefineDefMap::DefectMapTimeString()
     if (wxFileExists(dfFileName))
     {
         wxDateTime when = wxFileModificationTime(dfFileName);
-        return(when.FormatDate() + "  " + when.FormatTime());
+        return when.FormatDate() + "  " + when.FormatTime();
     }
     else
         return "";
@@ -405,7 +404,7 @@ void RefineDefMap::Recalc()
     if (manualPixelCount != 0)
     {
         manualPixelCount = 0;
-        pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
+        pStatsGrid->SetCellValue(manualPixelLoc, "0"); // Manual pixels will always be discarded
     }
     GetBadPxCounts();
     m_builder.BuildDefectMap(m_defectMap, false);
@@ -432,7 +431,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
 
     if (pFrame->pGuider->IsLocked())
     {
-        wxPoint badspot((int)(pixelLoc.X + 0.5), (int)(pixelLoc.Y + 0.5));
+        wxPoint badspot((int) (pixelLoc.X + 0.5), (int) (pixelLoc.Y + 0.5));
         Debug.AddLine(wxString::Format("Current position returned as %.1f,%.1f", pixelLoc.X, pixelLoc.Y));
         Debug.AddLine(wxString::Format("User adding bad pixel at %d,%d", badspot.x, badspot.y));
 
@@ -445,7 +444,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
             {
                 if (!pCurrMap->FindDefect(badspot))
                 {
-                    pCurrMap->AddDefect(badspot);           // Changes both in-memory instance and disk file
+                    pCurrMap->AddDefect(badspot); // Changes both in-memory instance and disk file
                     manualPixelCount++;
                     pStatsGrid->SetCellValue(manualPixelLoc, wxString::Format("%d", manualPixelCount));
                     needLoadPreview = true;

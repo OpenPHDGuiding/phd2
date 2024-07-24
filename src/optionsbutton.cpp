@@ -54,12 +54,9 @@ enum
     PADY = 5,
 };
 
-OptionsButton::OptionsButton(wxWindow *parent, wxWindowID id, const wxString& label,
-                             const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-    :
-    wxPanel(parent, id, pos, size, style, name),
-    m_highlighted(false),
-    m_label(label)
+OptionsButton::OptionsButton(wxWindow *parent, wxWindowID id, const wxString& label, const wxPoint& pos, const wxSize& size,
+                             long style, const wxString& name)
+    : wxPanel(parent, id, pos, size, style, name), m_highlighted(false), m_label(label)
 {
     m_bmp = new wxBitmap(down_arrow);
     m_bmp_bold = new wxBitmap(down_arrow_bold);
@@ -76,8 +73,7 @@ OptionsButton::~OptionsButton()
 wxSize OptionsButton::GetMinSize() const
 {
     wxSize txtsz = GetTextExtent(m_label);
-    return wxSize(PADX + txtsz.x + PADX + m_bmp->GetWidth() + PADX,
-        PADY + txtsz.y + PADY);
+    return wxSize(PADX + txtsz.x + PADX + m_bmp->GetWidth() + PADX, PADY + txtsz.y + PADY);
 }
 
 void OptionsButton::SetLabel(const wxString& label)
@@ -86,7 +82,7 @@ void OptionsButton::SetLabel(const wxString& label)
     Refresh();
 }
 
-void OptionsButton::OnPaint(wxPaintEvent & evt)
+void OptionsButton::OnPaint(wxPaintEvent& evt)
 {
     wxBufferedPaintDC dc(this);
 
@@ -152,7 +148,7 @@ void OptionsButton::OnMouseLeave(wxMouseEvent& event)
 void OptionsButton::OnClick(wxMouseEvent& event)
 {
     wxCommandEvent cmd(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
-#ifdef  __WXGTK__  // Process the event as in wxgtk_button_clicked_callback()
+#ifdef __WXGTK__ // Process the event as in wxgtk_button_clicked_callback()
     HandleWindowEvent(cmd);
 #else
     ::wxPostEvent(GetParent(), cmd);

@@ -49,6 +49,7 @@ struct Variant : public VARIANT
 class ExcepInfo : public EXCEPINFO
 {
     ExcepInfo& operator=(const ExcepInfo& rhs) = delete;
+
 public:
     ExcepInfo();
     ~ExcepInfo();
@@ -62,6 +63,7 @@ class DispatchClass
 {
     typedef std::map<wxString, DISPID> idmap_t;
     idmap_t m_idmap;
+
 public:
     DispatchClass() { }
     ~DispatchClass() { }
@@ -74,6 +76,7 @@ class DispatchObj
     DispatchClass *m_class;
     IDispatch *m_idisp;
     ExcepInfo m_excep;
+
 public:
     DispatchObj();
     DispatchObj(DispatchClass *cls);
@@ -103,6 +106,7 @@ class GITEntry
 {
     IGlobalInterfaceTable *m_pIGlobalInterfaceTable;
     DWORD m_dwCookie;
+
 public:
     GITEntry();
     ~GITEntry();
@@ -114,17 +118,14 @@ public:
     {
         IDispatch *idisp = 0;
         if (m_dwCookie)
-            m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (LPVOID *)&idisp);
+            m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (LPVOID *) &idisp);
         return idisp;
     }
 };
 
 struct GITObjRef : public DispatchObj
 {
-    GITObjRef(const GITEntry& gitentry)
-    {
-        Attach(gitentry.Get(), 0);
-    }
+    GITObjRef(const GITEntry& gitentry) { Attach(gitentry.Get(), 0); }
 };
 
 #endif

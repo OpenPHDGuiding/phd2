@@ -102,11 +102,11 @@ public:
     virtual bool GetParam(const wxString& name, double *val) const;
     virtual bool SetParam(const wxString& name, double val);
     virtual double GetMinMove() const { return -1.0; };
-    virtual bool SetMinMove(double minMove) { return true; };       // true indicates error
+    virtual bool SetMinMove(double minMove) { return true; }; // true indicates error
     wxString GetConfigPath() const;
     wxString GetAxis() const;
-    virtual void ResetParams();     // Override if fine-tuned logic is needed by a particular algo
-    static void AdjustMinMoveSpinCtrl(wxSpinCtrlDouble* minMoveCtrl);
+    virtual void ResetParams(); // Override if fine-tuned logic is needed by a particular algo
+    static void AdjustMinMoveSpinCtrl(wxSpinCtrlDouble *minMoveCtrl);
     static double SmartDefaultMinMove();
     static double SmartDefaultMinMove(int focalLength, double pixelSize, int binning);
 };

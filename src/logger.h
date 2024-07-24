@@ -41,12 +41,10 @@ class Logger
     bool m_Initialized;
 
 protected:
-
     bool SetLogDir(const wxString& newdir);
     virtual bool ChangeDirLog(const wxString& newdir);
 
 public:
-
     Logger();
     virtual ~Logger();
 

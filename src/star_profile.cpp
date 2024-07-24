@@ -48,8 +48,8 @@ enum
     FULLW = 2 * HALFW + 1,
 };
 
-ProfileWindow::ProfileWindow(wxWindow *parent) :
-    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_("Profile"))
+ProfileWindow::ProfileWindow(wxWindow *parent)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _("Profile"))
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -57,7 +57,7 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
     this->mode = 0; // 2D profile
     rawMode = pConfig->Global.GetBoolean("/ProfileRawMode", false);
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-    this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
+    this->data = new unsigned short[FULLW * FULLW]; // 21x21 subframe
 
     memset(midrow_profile, 0, sizeof(midrow_profile));
     memset(vert_profile, 0, sizeof(vert_profile));
@@ -81,7 +81,8 @@ void ProfileWindow::OnLClick(wxMouseEvent& mevent)
     else
     {
         this->mode = this->mode + 1;
-        if (this->mode > 2) this->mode = 0;
+        if (this->mode > 2)
+            this->mode = 0;
     }
     Refresh();
 }
@@ -95,23 +96,28 @@ void ProfileWindow::SetState(bool is_active)
 
 void ProfileWindow::UpdateData(const usImage *img, float xpos, float ypos)
 {
-    if (this->data == NULL) return;
+    if (this->data == NULL)
+        return;
     int xstart = ROUNDF(xpos) - HALFW;
     int ystart = ROUNDF(ypos) - HALFW;
-    if (xstart < 0) xstart = 0;
+    if (xstart < 0)
+        xstart = 0;
     else if (xstart > (img->Size.GetWidth() - (FULLW + 1)))
         xstart = img->Size.GetWidth() - (FULLW + 1);
-    if (ystart < 0) ystart = 0;
+    if (ystart < 0)
+        ystart = 0;
     else if (ystart > (img->Size.GetHeight() - (FULLW + 1)))
         ystart = img->Size.GetHeight() - (FULLW + 1);
 
-    int x,y;
+    int x, y;
     unsigned short *uptr = this->data;
     const int xrowsize = img->Size.GetWidth();
     for (x = 0; x < FULLW; x++)
         horiz_profile[x] = vert_profile[x] = midrow_profile[x] = 0;
-    for (y = 0; y < FULLW; y++) {
-        for (x = 0; x < FULLW; x++, uptr++) {
+    for (y = 0; y < FULLW; y++)
+    {
+        for (x = 0; x < FULLW; x++, uptr++)
+        {
             *uptr = *(img->ImageData + xstart + x + (ystart + y) * xrowsize);
             horiz_profile[x] += (int) *uptr;
             vert_profile[y] += (int) *uptr;
@@ -137,7 +143,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xsize = this->GetSize().GetX();
     const int ysize = this->GetSize().GetY();
 
-#if defined (__APPLE__)
+#if defined(__APPLE__)
     const wxFont& smallFont = *wxSMALL_FONT;
 #else
     const wxFont& smallFont = *wxSWISS_FONT;
@@ -145,13 +151,14 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetFont(smallFont);
     int smallFontHeight = dc.GetTextExtent("0").GetHeight();
 
-    bool inFocusingMode = (ysize > xsize/2 + 20);
+    bool inFocusingMode = (ysize > xsize / 2 + 20);
 
     wxFont largeFont;
     int largeFontHeight;
     int labelTextHeight;
 
-    if (inFocusingMode) {
+    if (inFocusingMode)
+    {
         // To compute the scale factor, we use the following formula, which maximizes the use of all available
         // window width (xsize) while displaying HFD metrics in the exact format. The scaling value is calculated
         // on the premise that both large font digits are fixed-width, and that font scaling is linear.
@@ -161,8 +168,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         // therefore, scale = (xsize - 10 - smallFontTextWidth) / (sfw * strlen(largeFontTextWithoutDot) + dotw)
         const Star& star = pFrame->pGuider->PrimaryStar();
         float hfd = star.HFD;
-        float sfw = (float)dc.GetTextExtent("0").GetWidth();
-        float dotw = (float)dc.GetTextExtent(".").GetWidth();
+        float sfw = (float) dc.GetTextExtent("0").GetWidth();
+        float dotw = (float) dc.GetTextExtent(".").GetWidth();
         float hfdArcSec = hfd * pFrame->GetCameraPixelScale();
 
         wxString smallFontText = wxString::Format("HFD: " /* ... */ "  %.2f\"", hfdArcSec);
@@ -175,7 +182,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         // smallFontHeight * scale should be at most 1/2 of the window height
         // Note: the text extent of the large font based on ths scale factor is only an approximation,
         // but it's good enough for our purpose.
-        scale = wxMin(scale, (float)ysize / (2.0 * smallFontHeight));
+        scale = wxMin(scale, (float) ysize / (2.0 * smallFontHeight));
         largeFont = smallFont.Scaled(scale);
 
         dc.SetFont(largeFont);
@@ -183,17 +190,18 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.SetFont(smallFont);
         labelTextHeight = 5 + smallFontHeight + largeFontHeight + 5;
     }
-    else {
+    else
+    {
         labelTextHeight = 5 + smallFontHeight + 5;
     }
 
-    wxPen RedPen(wxColour(255,0,0));
+    wxPen RedPen(wxColour(255, 0, 0));
 
     int i;
     int *profptr;
     wxString profileLabel;
     switch (this->mode)
-    {  // Figure which profile to use
+    { // Figure which profile to use
     case 0: // mid-row
     default:
         profptr = midrow_profile;
@@ -229,12 +237,13 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
         // Figure the actual points in the window
-        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize - labelTextHeight - 5);
-        if (!Prof_Range) Prof_Range = 1;
+        float Prof_Range = (float) (Prof_Max - Prof_Min) / (float) (ysize - labelTextHeight - 5);
+        if (!Prof_Range)
+            Prof_Range = 1;
         int wprof = (xsize - 15) / 2 - 5;
         wprof /= 20;
         for (i = 0; i < FULLW; i++)
-            Prof[i] = wxPoint(5 + i * wprof, ysize - labelTextHeight - ((float)(*(profptr + i) - Prof_Min) / Prof_Range));
+            Prof[i] = wxPoint(5 + i * wprof, ysize - labelTextHeight - ((float) (*(profptr + i) - Prof_Min) / Prof_Range));
 
         // fwhm
         int x1 = 0;
@@ -252,10 +261,10 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
         profval = *(profptr + x1);
         profvalprec = *(profptr + x1 - 1);
-        float f1 = (float)x1 - (float)(profval - Prof_Mid) / (float)(profval - profvalprec);
+        float f1 = (float) x1 - (float) (profval - Prof_Mid) / (float) (profval - profvalprec);
         profval = *(profptr + x2);
         profvalprec = *(profptr + x2 - 1);
-        float f2 = (float)x2 - (float)(profvalprec - Prof_Mid) / (float)(profvalprec - profval);
+        float f2 = (float) x2 - (float) (profvalprec - Prof_Mid) / (float) (profvalprec - profval);
         fwhm = f2 - f1;
 
         // Draw it
@@ -264,16 +273,17 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     // Prioritize rendering star image before rendering text
-    dc.SetTextForeground(wxColour(255,0,0));
+    dc.SetTextForeground(wxColour(255, 0, 0));
 
     // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
-    wxImage* img = pFrame->pGuider->DisplayedImage();
+    wxImage *img = pFrame->pGuider->DisplayedImage();
     double scaleFactor = pFrame->pGuider->ScaleFactor();
     imageLeftMargin = (xsize - 15) / 2;
     if (img)
     {
         int width = xsize - imageLeftMargin - 5;
-        if (width > ysize + 5) width = ysize - 5;
+        if (width > ysize + 5)
+            width = ysize - 5;
         int midwidth = width / 2;
         // grab width(30) px box around lock pos, scale by 2 & display next to profile
         double LockX = pFrame->pGuider->LockPosition().X * scaleFactor;
@@ -326,7 +336,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         if (sz > 0)
         {
             // and a small cross at the centroid
-            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2.0)) + 1, starY = midwidth - dStarY * (width / (sz * 2.0)) + 1 + imgTop;
+            double starX = imageLeftMargin + midwidth - dStarX * (width / (sz * 2.0)) + 1,
+                   starY = midwidth - dStarY * (width / (sz * 2.0)) + 1 + imgTop;
             if (starX >= imageLeftMargin)
             {
                 dc.SetPen(RedPen);
@@ -355,7 +366,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             // Show X/Y of centroid if there's room
             if ((imageLeftMargin > fwhmLineWidth + 20) && (ysize - labelTextHeight + 5 > imageBottom))
-                dc.DrawText(wxString::Format("X: %0.2f, Y: %0.2f", pFrame->pGuider->CurrentPosition().X, pFrame->pGuider->CurrentPosition().Y), imageLeftMargin, ysize - labelTextHeight + 5);
+                dc.DrawText(wxString::Format("X: %0.2f, Y: %0.2f", pFrame->pGuider->CurrentPosition().X,
+                                             pFrame->pGuider->CurrentPosition().Y),
+                            imageLeftMargin, ysize - labelTextHeight + 5);
             int x = 5;
             wxString s(_("HFD: "));
             dc.DrawText(s, x, ysize - largeFontHeight / 2 - smallFontHeight / 2);
@@ -372,7 +385,8 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
         else
         {
-            dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5, ysize - smallFontHeight - 5);
+            dc.DrawText(wxString::Format(_("%s FWHM: %.2f, HFD: %.2f (%.2f\")"), profileLabel, fwhm, hfd, hfdArcSec), 5,
+                        ysize - smallFontHeight - 5);
         }
     }
     else
@@ -380,4 +394,3 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawText(wxString::Format(_("%s FWHM: %.2f"), profileLabel, fwhm), 5, ysize - smallFontHeight - 5);
     }
 }
-

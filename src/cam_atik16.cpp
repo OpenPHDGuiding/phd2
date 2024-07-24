@@ -35,13 +35,13 @@
 
 #if defined(ATIK16)
 
-#include "cam_atik16.h"
-#include "camera.h"
-#include "image_math.h"
+# include "cam_atik16.h"
+# include "camera.h"
+# include "image_math.h"
 
-#include <wx/stopwatch.h>
+# include <wx/stopwatch.h>
 
-#include "ArtemisHSCAPI.h"
+# include "ArtemisHSCAPI.h"
 
 class CameraAtik16 : public GuideCamera
 {
@@ -55,30 +55,29 @@ public:
     ~CameraAtik16();
 
     bool CanSelectCamera() const override { return true; }
-    bool    EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    HasNonGuiCapture() override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool HasNonGuiCapture() override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-    void    ClearGuidePort();
-    wxByte  BitsPerPixel() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    void ClearGuidePort();
+    wxByte BitsPerPixel() override;
 
-    bool    Color;
-    bool    HSModel;
+    bool Color;
+    bool HSModel;
 
 private:
     bool ST4HasNonGuiMove();
     bool LoadDLL(wxString *err);
 };
 
-CameraAtik16::CameraAtik16(bool hsmodel, bool color)
-    : m_dllLoaded(false)
+CameraAtik16::CameraAtik16(bool hsmodel, bool color) : m_dllLoaded(false)
 {
     Connected = false;
     Name = _T("Atik 16");
-    FullSize = wxSize(1280,1024);
+    FullSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
     Color = color;
@@ -151,9 +150,10 @@ bool CameraAtik16::Connect(const wxString& camId)
 {
     // returns true on error
 
-    if (Cam_Handle) {
+    if (Cam_Handle)
+    {
         Debug.Write("Already connected\n");
-        return false;  // Already connected
+        return false; // Already connected
     }
     wxString err;
     if (!LoadDLL(&err))
@@ -173,7 +173,7 @@ bool CameraAtik16::Connect(const wxString& camId)
 
     Cam_Handle = ArtemisConnect(devnum); // Connect to first avail camera
 
-    if (!Cam_Handle)   // Connection failed
+    if (!Cam_Handle) // Connection failed
     {
         return CamConnectFailed(wxString::Format(_("Atik camera connection failed - Driver version %d"), ArtemisAPIVersion()));
     }
@@ -206,15 +206,15 @@ bool CameraAtik16::Connect(const wxString& camId)
         int NumTempSensors;
         int TECMin;
         int TECMax;
-        int level,setpoint;
+        int level, setpoint;
         TECFlags = TECMin = TECMax = level = setpoint = 0;
-        ArtemisTemperatureSensorInfo(Cam_Handle,0,&NumTempSensors);
+        ArtemisTemperatureSensorInfo(Cam_Handle, 0, &NumTempSensors);
         ArtemisCoolingInfo(Cam_Handle, &TECFlags, &level, &TECMin, &TECMax, &setpoint);
 
         if ((TECFlags & 0x04) && !(TECFlags & 0x08)) // On/off only, no setpoints
-            setpoint = 1;  // Turn it on
+            setpoint = 1; // Turn it on
         else
-            setpoint = 10 * 100;  // should be 10C
+            setpoint = 10 * 100; // should be 10C
 
         if (TECFlags & 0x02) // can be controlled
             ArtemisSetCooling(Cam_Handle, setpoint);
@@ -232,29 +232,39 @@ bool CameraAtik16::Connect(const wxString& camId)
 bool CameraAtik16::ST4PulseGuideScope(int direction, int duration)
 {
     int axis;
-    //wxStopWatch swatch;
+    // wxStopWatch swatch;
 
     // Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
-    switch (direction) {
-/*      case WEST: axis = ARTEMIS_GUIDE_WEST; break;    // 0111 0000
-        case NORTH: axis = ARTEMIS_GUIDE_NORTH; break;  // 1011 0000
-        case SOUTH: axis = ARTEMIS_GUIDE_SOUTH; break;  // 1101 0000
-        case EAST: axis = ARTEMIS_GUIDE_EAST;   break;  // 1110 0000*/
-        case WEST: axis = 2; break; // 0111 0000
-        case NORTH: axis = 0; break;    // 1011 0000
-        case SOUTH: axis = 1; break;    // 1101 0000
-        case EAST: axis = 3;    break;  // 1110 0000
-        default: return true; // bad direction passed in
+    switch (direction)
+    {
+        /*      case WEST: axis = ARTEMIS_GUIDE_WEST; break;    // 0111 0000
+                case NORTH: axis = ARTEMIS_GUIDE_NORTH; break;  // 1011 0000
+                case SOUTH: axis = ARTEMIS_GUIDE_SOUTH; break;  // 1101 0000
+                case EAST: axis = ARTEMIS_GUIDE_EAST;   break;  // 1110 0000*/
+    case WEST:
+        axis = 2;
+        break; // 0111 0000
+    case NORTH:
+        axis = 0;
+        break; // 1011 0000
+    case SOUTH:
+        axis = 1;
+        break; // 1101 0000
+    case EAST:
+        axis = 3;
+        break; // 1110 0000
+    default:
+        return true; // bad direction passed in
     }
-    //swatch.Start();
-    ArtemisPulseGuide(Cam_Handle,axis,duration);  // returns after pulse
-    //long t1 = swatch.Time();
-    //wxMessageBox(wxString::Format("%ld",t1));
-/*  ArtemisGuide(Cam_Handle,axis);
-    wxMilliSleep(duration);
-    ArtemisStopGuiding(Cam_Handle);*/
-    //if (duration > 50) wxMilliSleep(duration - 50);  // wait until it's mostly done
-    //wxMilliSleep(duration + 10);
+    // swatch.Start();
+    ArtemisPulseGuide(Cam_Handle, axis, duration); // returns after pulse
+    // long t1 = swatch.Time();
+    // wxMessageBox(wxString::Format("%ld",t1));
+    /*  ArtemisGuide(Cam_Handle,axis);
+        wxMilliSleep(duration);
+        ArtemisStopGuiding(Cam_Handle);*/
+    // if (duration > 50) wxMilliSleep(duration - 50);  // wait until it's mostly done
+    // wxMilliSleep(duration + 10);
     return false;
 }
 
@@ -307,12 +317,14 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
         return true;
     }
 
-    wxRect frame; // raw subframe to meet camera subframe requirements, may be a superset of the requested subframe - unbinned coords
-    wxPoint subframePos;  // position of PHD2 subframe within frame - binned coords
+    wxRect frame; // raw subframe to meet camera subframe requirements, may be a superset of the requested subframe - unbinned
+                  // coords
+    wxPoint subframePos; // position of PHD2 subframe within frame - binned coords
 
     if (useSubframe)
     {
-        // Round height up to next multiple of 2 to workaround bug where the camera returns incorrect data when the subframe height is odd.
+        // Round height up to next multiple of 2 to workaround bug where the camera returns incorrect data when the subframe
+        // height is odd.
         int w = subframe.width * Binning;
         int x = subframe.x * Binning;
         if (w & 1)
@@ -361,8 +373,7 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
             wxMilliSleep(100);
         else
             wxMilliSleep(30);
-        if (WorkerThread::InterruptRequested() &&
-            (WorkerThread::TerminateRequested() || StopCapture(Cam_Handle)))
+        if (WorkerThread::InterruptRequested() && (WorkerThread::TerminateRequested() || StopCapture(Cam_Handle)))
         {
             return true;
         }

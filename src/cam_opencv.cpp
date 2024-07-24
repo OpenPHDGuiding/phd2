@@ -38,14 +38,14 @@
 
 #ifdef OPENCV_CAMERA
 
-#include "cam_opencv.h"
+# include "cam_opencv.h"
 
-#include <opencv2/opencv.hpp>
+# include <opencv2/opencv.hpp>
 
 CameraOpenCV::CameraOpenCV(int devNumber)
 {
     Connected = false;
-    Name=_T("OpenCV");
+    Name = _T("OpenCV");
     FullSize = wxSize(640, 480);
     m_hasGuideOutput = false;
     pCapDev = NULL;
@@ -98,7 +98,8 @@ bool CameraOpenCV::Connect(const wxString& camId)
         bError = true;
     }
 
-    return bError;;
+    return bError;
+    ;
 }
 
 bool CameraOpenCV::Disconnect()
@@ -172,4 +173,4 @@ bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect
     return bError;
 }
 
-#endif  // OPENCV_CAMERA
+#endif // OPENCV_CAMERA

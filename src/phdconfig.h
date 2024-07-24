@@ -80,11 +80,11 @@ public:
 
     void SelectProfile(int profileId);
 
-    bool     GetBoolean(const wxString& name, bool defaultValue);
+    bool GetBoolean(const wxString& name, bool defaultValue);
     wxString GetString(const wxString& name, const wxString& defaultValue);
-    double   GetDouble(const wxString& name, double defaultValue);
-    long     GetLong(const wxString& name, long defaultValue);
-    int      GetInt(const wxString& name, int defaultValue);
+    double GetDouble(const wxString& name, double defaultValue);
+    long GetLong(const wxString& name, long defaultValue);
+    int GetInt(const wxString& name, int defaultValue);
 
     void SetBoolean(const wxString& name, bool value);
     void SetString(const wxString& name, const wxString& value);
@@ -111,7 +111,6 @@ class PhdConfig
     int m_currentProfileId;
 
 public:
-
     PhdConfig(int instance);
     ~PhdConfig();
 

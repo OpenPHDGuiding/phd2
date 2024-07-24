@@ -37,65 +37,73 @@
 
 #include <algorithm>
 
-class HistogramBuilder {
-    public:
-        int *histo;
-        unsigned short MinADU, MaxADU;
-        int pixCount;
+class HistogramBuilder
+{
+public:
+    int *histo;
+    unsigned short MinADU, MaxADU;
+    int pixCount;
 
-        HistogramBuilder() {
-            histo = new int[65536];
-            MinADU = 0;
-            MaxADU = 0;
-            pixCount = 0;
-        }
+    HistogramBuilder()
+    {
+        histo = new int[65536];
+        MinADU = 0;
+        MaxADU = 0;
+        pixCount = 0;
+    }
 
-        ~HistogramBuilder() {
-            delete[] histo;
-        }
+    ~HistogramBuilder() { delete[] histo; }
 
-        unsigned short median() const
+    unsigned short median() const
+    {
+        int pixelLeft = pixCount / 2;
+
+        for (int i = MinADU; i < MaxADU; ++i)
         {
-            int pixelLeft = pixCount / 2;
-
-            for (int i = MinADU; i < MaxADU; ++i) {
-                if (histo[i] > pixelLeft) {
-                    return i;
-                }
-                pixelLeft -= histo[i];
+            if (histo[i] > pixelLeft)
+            {
+                return i;
             }
-            return MaxADU;
+            pixelLeft -= histo[i];
         }
+        return MaxADU;
+    }
 
-        void scan(const unsigned short *t, int len)
+    void scan(const unsigned short *t, int len)
+    {
+        if (pixCount == 0)
         {
-            if (pixCount == 0) {
-                unsigned short v = t[0];
-                // Initialization
-                MinADU = t[0];
-                MaxADU = t[0];
-                histo[t[0]] = 0;
-            }
-
-            for (int i = 0; i < len; ++i) {
-                unsigned short v = t[i];
-                if (v < MinADU) {
-                    for (int k = v; k < MinADU; ++k) {
-                        histo[k] = 0;
-                    }
-                    MinADU = v;
-                }
-                if (v > MaxADU) {
-                    for (int k = MaxADU + 1; k <= v; ++k) {
-                        histo[k] = 0;
-                    }
-                    MaxADU = v;
-                }
-                histo[v]++;
-            }
-
-            pixCount += len;
+            unsigned short v = t[0];
+            // Initialization
+            MinADU = t[0];
+            MaxADU = t[0];
+            histo[t[0]] = 0;
         }
+
+        for (int i = 0; i < len; ++i)
+        {
+            unsigned short v = t[i];
+            if (v < MinADU)
+            {
+                for (int k = v; k < MinADU; ++k)
+                {
+                    histo[k] = 0;
+                }
+                MinADU = v;
+            }
+            if (v > MaxADU)
+            {
+                for (int k = MaxADU + 1; k <= v; ++k)
+                {
+                    histo[k] = 0;
+                }
+                MaxADU = v;
+            }
+            histo[v]++;
+        }
+
+        pixCount += len;
+    }
 };
 
 bool usImage::Init(const wxSize& size)
@@ -141,8 +149,10 @@ void usImage::CalcStats()
     if (!ImageData || !NPixels)
         return;
 
-    MinADU = 65535; MaxADU = 0;
-    FiltMin = 65535; FiltMax = 0;
+    MinADU = 65535;
+    MaxADU = 0;
+    FiltMin = 65535;
+    FiltMax = 0;
 
     if (Subframe.IsEmpty())
     {
@@ -162,8 +172,10 @@ void usImage::CalcStats()
         for (unsigned int i = 0; i < NPixels; i++)
         {
             unsigned short d = *src++;
-            if (d < FiltMin) FiltMin = d;
-            if (d > FiltMax) FiltMax = d;
+            if (d < FiltMin)
+                FiltMin = d;
+            if (d > FiltMax)
+                FiltMax = d;
         }
 
         delete[] tmpdata;
@@ -202,8 +214,10 @@ void usImage::CalcStats()
         for (unsigned int i = 0; i < pixcnt; i++)
         {
             unsigned short d = *src++;
-            if (d < FiltMin) FiltMin = d;
-            if (d > FiltMax) FiltMax = d;
+            if (d < FiltMin)
+                FiltMin = d;
+            if (d > FiltMax)
+                FiltMax = d;
         }
 
         delete[] dst;
@@ -215,10 +229,14 @@ static unsigned char *buildGammaLookupTable(int blevel, int wlevel, double power
 {
     unsigned char *result = new unsigned char[0x10000];
 
-    if (blevel < 0) blevel = 0;
-    if (wlevel < 0) wlevel = 0;
-    if (blevel > 0xffff) blevel = 0xffff;
-    if (wlevel > 0xffff) blevel = 0xffff;
+    if (blevel < 0)
+        blevel = 0;
+    if (wlevel < 0)
+        wlevel = 0;
+    if (blevel > 0xffff)
+        blevel = 0xffff;
+    if (wlevel > 0xffff)
+        blevel = 0xffff;
 
     for (int i = 0; i <= blevel; ++i)
         result[i] = 0;
@@ -240,7 +258,8 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
 {
     wxImage *img = *rawimg;
 
-    if (!img || !img->Ok() || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) // can't reuse bitmap
+    if (!img || !img->Ok() || (img->GetWidth() != Size.GetWidth()) ||
+        (img->GetHeight() != Size.GetHeight())) // can't reuse bitmap
     {
         delete img;
         img = new wxImage(Size.GetWidth(), Size.GetHeight(), false);
@@ -251,7 +270,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
 
     unsigned char *lutTable = buildGammaLookupTable(blevel, wlevel, power);
 
-    for (unsigned int i = 0; i < NPixels; i++, RawPtr++ )
+    for (unsigned int i = 0; i < NPixels; i++, RawPtr++)
     {
         unsigned short v = *RawPtr;
         unsigned char d = lutTable[v];
@@ -277,8 +296,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
     try
     {
-        fitsfile *fptr;  // FITS file pointer
-        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        fitsfile *fptr; // FITS file pointer
+        int status = 0; // CFITSIO status value MUST be initialized to zero!
 
         PHD_fits_create_file(&fptr, fname, true, &status);
 
@@ -337,7 +356,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
                     int m = (int) ra;
                     ra -= m;
                     ra *= 60.0;
-                    hdr.write("OBJCTRA", wxString::Format("%02d %02d %06.3f", h, m, ra).c_str(), "Object Right Ascension in hms");
+                    hdr.write("OBJCTRA", wxString::Format("%02d %02d %06.3f", h, m, ra).c_str(),
+                              "Object Right Ascension in hms");
                 }
 
                 {
@@ -349,7 +369,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
                     int m = (int) dec;
                     dec -= m;
                     dec *= 60.0;
-                    hdr.write("OBJCTDEC", wxString::Format("%c%d %02d %06.3f", sign < 0 ? '-' : '+', d, m, dec).c_str(), "Object Declination in dms");
+                    hdr.write("OBJCTDEC", wxString::Format("%c%d %02d %06.3f", sign < 0 ? '-' : '+', d, m, dec).c_str(),
+                              "Object Declination in dms");
                 }
             }
 
@@ -415,8 +436,8 @@ bool usImage::Load(const wxString& fname)
             throw ERROR_INFO("File does not exist");
         }
 
-        int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        fitsfile *fptr;  // FITS file pointer
+        int status = 0; // CFITSIO status value MUST be initialized to zero!
+        fitsfile *fptr; // FITS file pointer
         if (!PHD_fits_open_diskfile(&fptr, fname, READONLY, &status))
         {
             int hdutype;
@@ -433,7 +454,8 @@ bool usImage::Load(const wxString& fname)
             fits_get_img_size(fptr, 2, fsize, &status);
             int nhdus = 0;
             fits_get_num_hdus(fptr, &nhdus, &status);
-            if ((nhdus != 1) || (naxis != 2)) {
+            if ((nhdus != 1) || (naxis != 2))
+            {
                 pFrame->Alert(wxString::Format(_("Unsupported type or read error loading FITS file %s"), fname));
                 throw ERROR_INFO("unsupported type");
             }
@@ -443,7 +465,8 @@ bool usImage::Load(const wxString& fname)
                 throw ERROR_INFO("Memory Allocation failure");
             }
             long fpixel[3] = { 1, 1, 1 };
-            if (fits_read_pix(fptr, TUSHORT, fpixel, (int)(fsize[0] * fsize[1]), nullptr, ImageData, nullptr, &status)) { // Read image
+            if (fits_read_pix(fptr, TUSHORT, fpixel, (int) (fsize[0] * fsize[1]), nullptr, ImageData, nullptr, &status))
+            { // Read image
                 pFrame->Alert(wxString::Format(_("Error reading data from FITS file %s"), fname));
                 throw ERROR_INFO("Error reading");
             }
@@ -461,7 +484,7 @@ bool usImage::Load(const wxString& fname)
 
             int pedestal;
             if (fhdr_int(fptr, "PEDESTAL", &pedestal))
-              Pedestal = (unsigned short) pedestal;
+                Pedestal = (unsigned short) pedestal;
 
             int saturate;
             if (fhdr_int(fptr, "SATURATE", &saturate))
@@ -469,10 +492,14 @@ bool usImage::Load(const wxString& fname)
 
             wxRect subf;
             bool ok = fhdr_int(fptr, "PHDSUBFX", &subf.x);
-            if (ok) ok = fhdr_int(fptr, "PHDSUBFY", &subf.y);
-            if (ok) ok = fhdr_int(fptr, "PHDSUBFW", &subf.width);
-            if (ok) ok = fhdr_int(fptr, "PHDSUBFH", &subf.height);
-            if (ok) Subframe = subf;
+            if (ok)
+                ok = fhdr_int(fptr, "PHDSUBFY", &subf.y);
+            if (ok)
+                ok = fhdr_int(fptr, "PHDSUBFW", &subf.width);
+            if (ok)
+                ok = fhdr_int(fptr, "PHDSUBFH", &subf.height);
+            if (ok)
+                Subframe = subf;
 
             PHD_fits_close_file(fptr);
 
@@ -516,7 +543,7 @@ bool usImage::Rotate(double theta, bool mirror)
         mirrored = pImg->Mirror(false);
     }
 
-    wxImage rotated = mirrored.Rotate(theta, wxPoint(0,0));
+    wxImage rotated = mirrored.Rotate(theta, wxPoint(0, 0));
 
     CopyFromImage(rotated);
 

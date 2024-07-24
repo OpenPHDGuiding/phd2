@@ -35,7 +35,10 @@
 #include "phd.h"
 #include "imagelogger.h"
 
-enum { SAVE_IMAGES = 2 }; // number of images to log preceding and following the trigger image
+enum
+{
+    SAVE_IMAGES = 2
+}; // number of images to log preceding and following the trigger image
 
 struct IL
 {
@@ -158,12 +161,12 @@ void ImageLogger::GetSettings(ImageLoggerSettings *settings)
 
 void ImageLogger::ApplySettings(const ImageLoggerSettings& settings)
 {
-    Debug.Write(wxString::Format("ImgLogger: Settings LogEnabled=%d Log Rel=%d, %.2f Log Px=%d, %.2f LogFrameDrop=%d LogAutoSel=%d NextN=%d\n",
-        settings.loggingEnabled,
-        settings.logFramesOverThreshRel, settings.logFramesOverThreshRel ? settings.guideErrorThreshRel : 0.,
-        settings.logFramesOverThreshPx, settings.logFramesOverThreshPx ? settings.guideErrorThreshPx : 0.,
-        settings.logFramesDropped, settings.logAutoSelectFrames,
-        settings.logNextNFrames ? settings.logNextNFramesCount : 0));
+    Debug.Write(wxString::Format(
+        "ImgLogger: Settings LogEnabled=%d Log Rel=%d, %.2f Log Px=%d, %.2f LogFrameDrop=%d LogAutoSel=%d NextN=%d\n",
+        settings.loggingEnabled, settings.logFramesOverThreshRel,
+        settings.logFramesOverThreshRel ? settings.guideErrorThreshRel : 0., settings.logFramesOverThreshPx,
+        settings.logFramesOverThreshPx ? settings.guideErrorThreshPx : 0., settings.logFramesDropped,
+        settings.logAutoSelectFrames, settings.logNextNFrames ? settings.logNextNFramesCount : 0));
 
     s_il.settings = settings;
     if (settings.loggingEnabled && settings.logNextNFrames && s_il.imagesToLog < settings.logNextNFramesCount)
@@ -187,10 +190,11 @@ void ImageLogger::LogImageStarDeselected(const usImage *img)
 
 void ImageLogger::LogImage(const usImage *img, const FrameDroppedInfo& info)
 {
-    if (s_il.settings.loggingEnabled && s_il.settings.logFramesDropped &&
-        pFrame->pGuider->IsCalibratingOrGuiding() && !pFrame->pGuider->IsPaused())
+    if (s_il.settings.loggingEnabled && s_il.settings.logFramesDropped && pFrame->pGuider->IsCalibratingOrGuiding() &&
+        !pFrame->pGuider->IsPaused())
     {
-        Debug.Write(wxString::Format("ImgLogger: star lost (%d) frame %u event %u\n", info.starError, img->FrameNum, s_il.eventNumber));
+        Debug.Write(
+            wxString::Format("ImgLogger: star lost (%d) frame %u event %u\n", info.starError, img->FrameNum, s_il.eventNumber));
         s_il.BeginLogging(img, "StarLost");
         return;
     }
@@ -201,10 +205,12 @@ void ImageLogger::LogImage(const usImage *img, const FrameDroppedInfo& info)
 void ImageLogger::LogImage(const usImage *img, double distance)
 {
     if (s_il.settings.loggingEnabled && (s_il.settings.logFramesOverThreshRel || s_il.settings.logFramesOverThreshPx) &&
-        pFrame->pGuider->IsGuiding() && !pFrame->pGuider->IsPaused() &&
-        !PhdController::IsSettling())
+        pFrame->pGuider->IsGuiding() && !pFrame->pGuider->IsPaused() && !PhdController::IsSettling())
     {
-        enum { MIN_FRAMES_FOR_STATS = 10 };
+        enum
+        {
+            MIN_FRAMES_FOR_STATS = 10
+        };
         unsigned int frameCount = pFrame->pGuider->CurrentErrorFrameCount();
 
         if (frameCount >= MIN_FRAMES_FOR_STATS)
@@ -228,8 +234,9 @@ void ImageLogger::LogImage(const usImage *img, double distance)
 
             if (logit)
             {
-                Debug.Write(wxString::Format("ImgLogger: large offset frame %u event %u dist px %.2f vs %.2f rel %.2f vs %.2f cur %.2f\n",
-                    img->FrameNum, s_il.eventNumber, distance, threshPx, relErr, threshRel, curErr));
+                Debug.Write(wxString::Format(
+                    "ImgLogger: large offset frame %u event %u dist px %.2f vs %.2f rel %.2f vs %.2f cur %.2f\n", img->FrameNum,
+                    s_il.eventNumber, distance, threshPx, relErr, threshRel, curErr));
 
                 s_il.BeginLogging(img, "LargeOffset");
                 return;

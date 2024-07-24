@@ -82,12 +82,12 @@
 #define PHDSUBVER _T("dev5")
 #define FULLVER PHDVERSION PHDSUBVER
 
-#if defined (__WINDOWS__)
-# pragma warning(disable:4189)
-# pragma warning(disable:4018)
-# pragma warning(disable:4305)
-# pragma warning(disable:4100)
-# pragma warning(disable:4996)
+#if defined(__WINDOWS__)
+# pragma warning(disable : 4189)
+# pragma warning(disable : 4018)
+# pragma warning(disable : 4305)
+# pragma warning(disable : 4100)
+# pragma warning(disable : 4996)
 # if HAVE_VLD
 #  include <vld.h>
 # endif
@@ -96,36 +96,36 @@
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
-#if defined (__WINDOWS__)
-#define PHD_OSNAME _T("Windows")
-#define PATHSEPCH '\\'
-#define PATHSEPSTR "\\"
+#if defined(__WINDOWS__)
+# define PHD_OSNAME _T("Windows")
+# define PATHSEPCH '\\'
+# define PATHSEPSTR "\\"
 #endif
 
-#if defined (__APPLE__)
-#define PHD_OSNAME _T("OSX")
-#define PATHSEPCH '/'
-#define PATHSEPSTR "/"
+#if defined(__APPLE__)
+# define PHD_OSNAME _T("OSX")
+# define PATHSEPCH '/'
+# define PATHSEPSTR "/"
 #endif
 
-#if defined (__WXGTK__)
-#define PHD_OSNAME _T("Linux")
-#define PATHSEPCH '/'
-#define PATHSEPSTR _T("/")
+#if defined(__WXGTK__)
+# define PHD_OSNAME _T("Linux")
+# define PATHSEPCH '/'
+# define PATHSEPSTR _T("/")
 #endif
 
 #define DEGREES_SYMBOL "\u00B0"
 #define MICRONS_SYMBOL "\u00B5m"
 
-//#define TEST_TRANSFORMS
+// #define TEST_TRANSFORMS
 
 #define ROUND(x) (int) floor((x) + 0.5)
 #define ROUNDF(x) (int) floorf((x) + 0.5)
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
 /* eliminate warnings for unused variables */
-#define POSSIBLY_UNUSED(x) (void)(x)
-//#define POSSIBLY_UNUSED(x) printf(x)
+#define POSSIBLY_UNUSED(x) (void) (x)
+// #define POSSIBLY_UNUSED(x) printf(x)
 
 // these macros are used for building messages for thrown exceptions
 // It is surprisingly hard to get the line number into a string...
@@ -137,18 +137,18 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define THROW_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Throw from", __FILE__, __LINE__) "->" s)))
 #define ERROR_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Error thrown from", __FILE__, __LINE__) "->" s)))
 
-#if defined (__WINDOWS__)
-#define PHD_MESSAGES_CATALOG "messages"
+#if defined(__WINDOWS__)
+# define PHD_MESSAGES_CATALOG "messages"
 #endif
 
-#if defined (__APPLE__)
-#define PHD_MESSAGES_CATALOG "messages"
+#if defined(__APPLE__)
+# define PHD_MESSAGES_CATALOG "messages"
 #endif
 
-#if defined (__linux__) || defined (__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__)
 // On Linux the messages catalogs for all the applications are in the same directory
 // in /usr/share/locale, so the catalog name must be the application name.
-#define PHD_MESSAGES_CATALOG "phd2"
+# define PHD_MESSAGES_CATALOG "phd2"
 #endif
 
 #include "phdconfig.h"
@@ -194,7 +194,7 @@ class wxSingleInstanceChecker;
 
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
-extern Scope *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
+extern Scope *pPointingSource; // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
 
 inline static Scope *TheScope()
@@ -220,16 +220,14 @@ class PhdApp : public wxApp
     wxDateTime m_logFileTime;
 
 protected:
-
     wxLocale m_locale;
 
 public:
-
     PhdApp();
     bool OnInit();
     int OnExit();
     void OnInitCmdLine(wxCmdLineParser& parser);
-    bool OnCmdLineParsed(wxCmdLineParser & parser);
+    bool OnCmdLineParsed(wxCmdLineParser& parser);
     void TerminateApp();
     void RestartApp();
     void HandleRestart();

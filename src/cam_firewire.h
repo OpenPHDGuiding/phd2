@@ -35,37 +35,36 @@
 #ifndef FIREWIREDEF
 #define FIREWIREDEF
 
-#if defined (__APPLE__)
-#include <dc1394/control.h>
-#include <dc1394/utils.h>
-#elif defined (CLOSED_SOURCE)
-#include "tisudshl.h"
+#if defined(__APPLE__)
+# include <dc1394/control.h>
+# include <dc1394/utils.h>
+#elif defined(CLOSED_SOURCE)
+# include "tisudshl.h"
 #endif
 
 class CameraFirewire : public GuideCamera
 {
-#if defined (__APPLE__)
+#if defined(__APPLE__)
     dc1394_t *m_dcContext;
     dc1394camera_t *camera;
-#elif defined (CLOSED_SOURCE)
-    DShowLib::Grabber* m_pGrabber;
+#elif defined(CLOSED_SOURCE)
+    DShowLib::Grabber *m_pGrabber;
     DShowLib::tFrameHandlerSinkPtr pSink;
-    DShowLib::tIVCDAbsoluteValuePropertyPtr  m_pExposureAbs;
-    DShowLib::tIVCDRangePropertyPtr  m_pGain;
+    DShowLib::tIVCDAbsoluteValuePropertyPtr m_pExposureAbs;
+    DShowLib::tIVCDRangePropertyPtr m_pGain;
     long GainMax;
 #endif
 
 public:
-
     CameraFirewire();
     ~CameraFirewire();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    HasNonGuiCapture() override;
-    wxByte  BitsPerPixel() override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    InitCapture() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void InitCapture() override;
 };
 
 #endif

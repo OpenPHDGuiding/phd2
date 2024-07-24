@@ -39,12 +39,10 @@
 
 ScopeOnCamera::ScopeOnCamera()
 {
-    m_Name =  "On Camera";
+    m_Name = "On Camera";
 }
 
-ScopeOnCamera::~ScopeOnCamera()
-{
-}
+ScopeOnCamera::~ScopeOnCamera() { }
 
 bool ScopeOnCamera::Connect()
 {

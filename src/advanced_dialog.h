@@ -43,7 +43,8 @@ class CameraConfigDialogPane;
 class GuiderConfigDialogPane;
 class wxTipWindow;
 
-enum TAB_PAGES {
+enum TAB_PAGES
+{
     AD_GLOBAL_PAGE,
     AD_GUIDER_PAGE,
     AD_CAMERA_PAGE,
@@ -58,7 +59,7 @@ class AdvancedDialog : public wxDialog
     MyFrame *m_pFrame;
     wxBookCtrlBase *m_pNotebook;
     MyFrameConfigDialogPane *m_pGlobalPane;
-    Guider::GuiderConfigDialogPane* m_pGuiderPane;
+    Guider::GuiderConfigDialogPane *m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     Mount::MountConfigDialogPane *m_pMountPane;
     AOConfigDialogPane *m_pAOPane;
@@ -82,7 +83,6 @@ class AdvancedDialog : public wxDialog
     bool m_imageScaleChanged;
 
 public:
-
     static const double MIN_FOCAL_LENGTH;
     static const double MAX_FOCAL_LENGTH;
 
@@ -103,7 +103,10 @@ public:
 
     bool Validate() override;
     void ShowInvalid(wxWindow *ctrl, const wxString& message);
-    void FlagImageScaleChange() { m_imageScaleChanged = true; }     // Allows image scale adjustment to be made only once when AD is closed
+    void FlagImageScaleChange()
+    {
+        m_imageScaleChanged = true;
+    } // Allows image scale adjustment to be made only once when AD is closed
     int GetFocalLength();
     void SetFocalLength(int val);
     double GetPixelSize();
@@ -111,7 +114,7 @@ public:
     int GetBinning();
     void SetBinning(int binning);
     void MakeImageScaleAdjustments();
-    Mount::MountConfigDialogPane* GetCurrentMountPane() { return m_pMountPane; }
+    Mount::MountConfigDialogPane *GetCurrentMountPane() { return m_pMountPane; }
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
 

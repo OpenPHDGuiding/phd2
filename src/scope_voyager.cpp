@@ -49,7 +49,8 @@ bool ScopeVoyager::Connect(const wxString& hostname)
     VoyagerClient.Connect(addr, false);
     VoyagerClient.WaitOnConnect(5);
 
-    if (VoyagerClient.IsConnected()) {
+    if (VoyagerClient.IsConnected())
+    {
         wxMessageBox(_("Connection established"));
         bError = false;
     }
@@ -87,40 +88,41 @@ Mount::MOVE_RESULT ScopeVoyager::Guide(GUIDE_DIRECTION direction, int duration)
         }
 
         // Disable input notification
-        VoyagerClient.SetNotify(wxSOCKET_LOST_FLAG);  // Disable input for now
+        VoyagerClient.SetNotify(wxSOCKET_LOST_FLAG); // Disable input for now
         VoyagerClient.SetTimeout(2); // set to 2s timeout
         char msg[64], dir;
 
         snprintf(msg, sizeof(msg), "RATE 100\n\n");
-        VoyagerClient.Write(msg,strlen(msg));
-        VoyagerClient.Read(&msg,10);
+        VoyagerClient.Write(msg, strlen(msg));
+        VoyagerClient.Read(&msg, 10);
 
-        if (strstr(msg,"ERROR"))
+        if (strstr(msg, "ERROR"))
         {
             throw ERROR_INFO("Voyager Scope: error setting rate");
         }
 
-        switch (direction) {
-            case NORTH:
-                dir = 'N';
-                break;
-            case SOUTH:
-                dir = 'S';
-                break;
-            case EAST:
-                dir = 'E';
-                break;
-            case WEST:
-                dir = 'W';
-                break;
+        switch (direction)
+        {
+        case NORTH:
+            dir = 'N';
+            break;
+        case SOUTH:
+            dir = 'S';
+            break;
+        case EAST:
+            dir = 'E';
+            break;
+        case WEST:
+            dir = 'W';
+            break;
         }
         snprintf(msg, sizeof(msg), "MOVE %c\n\n", dir);
-        VoyagerClient.Write(msg,strlen(msg));
-        VoyagerClient.Read(&msg,10);
+        VoyagerClient.Write(msg, strlen(msg));
+        VoyagerClient.Read(&msg, 10);
         WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
         snprintf(msg, sizeof(msg), "STOP %c\n\n", dir);
-        VoyagerClient.Write(msg,strlen(msg));
-        VoyagerClient.Read(&msg,10);
+        VoyagerClient.Write(msg, strlen(msg));
+        VoyagerClient.Read(&msg, 10);
     }
     catch (const wxString& Msg)
     {

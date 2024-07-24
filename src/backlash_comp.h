@@ -44,7 +44,7 @@ class BLCHistory;
 struct RunningStats
 {
     int count;
-    double currentSS;            // Sum of squares
+    double currentSS; // Sum of squares
     double currentMean;
 
     RunningStats();
@@ -62,7 +62,7 @@ class BacklashTool
     int m_acceptedMoves;
     double m_lastClearRslt;
     double m_lastDecGuideRate;
-    double m_backlashResultPx;                // units of pixels
+    double m_backlashResultPx; // units of pixels
     double m_cumClearingDistance;
     bool m_backlashExemption;
     int m_backlashResultMs;
@@ -71,8 +71,8 @@ class BacklashTool
     PHD_Point m_startingPoint;
     PHD_Point m_markerPoint;
     PHD_Point m_endSouth;
-    wxString m_lastStatus;                          // Translated for UI
-    wxString m_lastStatusDebug;                     // Always English for debug log
+    wxString m_lastStatus; // Translated for UI
+    wxString m_lastStatusDebug; // Always English for debug log
     Scope *m_scope;
     std::vector<double> m_northBLSteps;
     std::vector<double> m_southBLSteps;
@@ -96,7 +96,7 @@ public:
         BLT_STATE_COMPLETED
     } m_bltState;
 
-    enum MeasurementConstants               // To control the behavior of the measurement process
+    enum MeasurementConstants // To control the behavior of the measurement process
     {
         BACKLASH_MIN_COUNT = 3,
         BACKLASH_EXPECTED_DISTANCE = 4,
@@ -104,7 +104,7 @@ public:
         MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
         MAX_NORTH_PULSES = 8000,
-        TRIAL_TOLERANCE_AS = 2              // arc-secs
+        TRIAL_TOLERANCE_AS = 2 // arc-secs
     };
 
     enum MeasurementResults
@@ -117,10 +117,9 @@ public:
     } m_Rslt;
 
 private:
-    MeasurementResults ComputeBacklashPx(double* bltPx, int* bltMs, double* northRate);
+    MeasurementResults ComputeBacklashPx(double *bltPx, int *bltMs, double *northRate);
 
 public:
-
     BacklashTool();
     ~BacklashTool();
     void StartMeasurement(double DriftPerMin);
@@ -132,11 +131,11 @@ public:
     int GetBLTMsmtPulseSize() const { return m_pulseWidth; }
     double GetBacklashResultPx() const { return m_backlashResultPx; }
     int GetBacklashResultMs() const { return m_backlashResultMs; }
-    void GetBacklashSigma(double* SigmaPx, double* SigmaMs);
+    void GetBacklashSigma(double *SigmaPx, double *SigmaMs);
     bool GetBacklashExempted() const { return m_backlashExemption; }
     wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt);
-    void ShowGraph(wxDialog *pGA, const std::vector<double> &northSteps, const std::vector<double> &southSteps, int PulseSize);
+    void ShowGraph(wxDialog *pGA, const std::vector<double>& northSteps, const std::vector<double>& southSteps, int PulseSize);
     bool IsGraphable();
     const std::vector<double>& GetNorthSteps() const { return m_northBLSteps; }
     const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
@@ -157,7 +156,6 @@ class BacklashComp
     void SetCompValues(int requestSize, int floor, int ceiling);
 
 public:
-
     BacklashComp(Scope *scope);
     ~BacklashComp();
 

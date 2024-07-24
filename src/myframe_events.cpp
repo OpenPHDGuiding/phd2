@@ -78,13 +78,13 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& evt)
 
         int customVal = *(GetExposureDurations().end() - 1);
         wxTextEntryDialog dlg(this, _("Custom exposure duration (seconds)"), _("Edit custom exposure"),
-            wxString::Format("%g", (double) customVal / 1000.), wxOK | wxCANCEL);
+                              wxString::Format("%g", (double) customVal / 1000.), wxOK | wxCANCEL);
         if (dlg.ShowModal() == wxID_OK)
         {
             double val;
             if (dlg.GetValue().ToDouble(&val) && val > 0.0 && val < 3600.)
             {
-                int ms = (int)(val * 1000.0);
+                int ms = (int) (val * 1000.0);
                 SetCustomExposureDuration(ms);
             }
         }
@@ -186,8 +186,8 @@ PHD2 will then calibrate itself and begin guiding.  That's it!\n\n \
 To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need to \n \
 tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n \
 panel. Use the 'View' menu to watch your guiding performance. If you have\n \
-problems, read the 'Best Practices' document and the help files! ")),_("Instructions"));
-
+problems, read the 'Best Practices' document and the help files! ")),
+                 _("Instructions"));
 }
 
 void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
@@ -241,10 +241,12 @@ struct SlitPropertiesDlg : public wxDialog
     wxSpinCtrl *m_angle;
 
     SlitPropertiesDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Spectrograph Slit Overlay"),
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(390, 181), long style = wxDEFAULT_DIALOG_STYLE);
+                      const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(390, 181),
+                      long style = wxDEFAULT_DIALOG_STYLE);
 };
 
-SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos,
+                                     const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
     wxSize textSz = pFrame->GetTextExtent("888888");
@@ -261,7 +263,7 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     szPosition->Add(hXSizer, 0, wxEXPAND, 5);
 
     wxBoxSizer *hYSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* yLabel = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *yLabel = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
     hYSizer->Add(yLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_y = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, 0, 8000, 0);
     hYSizer->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -292,9 +294,9 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
 
     vSizer->Add(hSizer, 0, wxEXPAND, 5);
     // Angle controls
-    wxBoxSizer* hAngleSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* staticText1 = new wxStaticText(this, wxID_ANY, _("Angle (degrees)"), wxDefaultPosition, wxDefaultSize, 0);
-    //staticText1->Wrap(-1);
+    wxBoxSizer *hAngleSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *staticText1 = new wxStaticText(this, wxID_ANY, _("Angle (degrees)"), wxDefaultPosition, wxDefaultSize, 0);
+    // staticText1->Wrap(-1);
     hAngleSizer->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     m_angle = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, textSz, wxSP_ARROW_KEYS, -90, 90, 0);
     hAngleSizer->Add(m_angle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -302,9 +304,7 @@ SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxSt
     vSizer->Add(hAngleSizer, 0, wxEXPAND, 5);
 
     // ok/cancel buttons
-    vSizer->Add(
-        CreateButtonSizer(wxOK | wxCANCEL),
-        wxSizerFlags(0).Expand().Border(wxALL, 10));
+    vSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 10));
 
     SetSizerAndFit(vSizer);
 }
@@ -354,13 +354,11 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
     if (!pGuider->CurrentImage()->ImageData)
         return;
 
-    wxString fname = wxFileSelector( _("Save FITS Image"), (const wxChar *)NULL,
-                          (const wxChar *)NULL,
-                           wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT,
-                           this);
+    wxString fname = wxFileSelector(_("Save FITS Image"), (const wxChar *) NULL, (const wxChar *) NULL, wxT("fit"),
+                                    wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
 
     if (fname.IsEmpty())
-        return;  // Check for canceled dialog
+        return; // Check for canceled dialog
 
     if (pGuider->SaveCurrentImage(fname))
     {
@@ -372,9 +370,7 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event))
-{
-}
+void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) { }
 
 void MyFrame::StartLoopingInteractive(const wxString& context)
 {
@@ -429,8 +425,10 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FullSize != pCamera->DarkFrameSize())
     {
-        pFrame->SuppressableAlert(RawModeWarningKey(), _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
-            SuppressRawModeWarning, 0);
+        pFrame->SuppressableAlert(RawModeWarningKey(),
+                                  _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "
+                                    "different size from ordinary guide frames for this camera."),
+                                  SuppressRawModeWarning, 0);
     }
 }
 
@@ -508,8 +506,8 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 
         PhdController::UpdateControllerState();
 
-        Debug.Write(wxString::Format("OnExposeComplete: CaptureActive=%d m_continueCapturing=%d\n",
-            CaptureActive, m_continueCapturing));
+        Debug.Write(wxString::Format("OnExposeComplete: CaptureActive=%d m_continueCapturing=%d\n", CaptureActive,
+                                     m_continueCapturing));
 
         CaptureActive = m_continueCapturing;
 
@@ -559,8 +557,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event_)
 
         // deliver the outstanding GuidingStopped notification if this is a late-arriving
         // move completion event
-        if (!pGuider->IsCalibratingOrGuiding() &&
-            (!pMount || !pMount->IsBusy()) &&
+        if (!pGuider->IsCalibratingOrGuiding() && (!pMount || !pMount->IsBusy()) &&
             (!pSecondaryMount || !pSecondaryMount->IsBusy()))
         {
             pFrame->NotifyGuidingStopped();
@@ -583,18 +580,18 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event_)
                 if (pGuider->IsCalibrating())
                 {
                     pFrame->Alert(wxString::Format(_("The AO exceeded its travel limit stepping"
-                        " from (%d, %d) to (%d, %d) and calibration cannot proceed. Try reducing"
-                        " the AO Travel setting to %d or lower and try again."),
-                        step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
+                                                     " from (%d, %d) to (%d, %d) and calibration cannot proceed. Try reducing"
+                                                     " the AO Travel setting to %d or lower and try again."),
+                                                   step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
 
                     pGuider->StopGuiding();
                 }
                 else // Guiding
                 {
                     pFrame->Alert(wxString::Format(_("The AO exceeded its travel limit stepping"
-                        " from (%d, %d) to (%d, %d) and has been re-centered. Try reducing the AO"
-                        " Travel setting to %d or lower."),
-                        step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
+                                                     " from (%d, %d) to (%d, %d) and has been re-centered. Try reducing the AO"
+                                                     " Travel setting to %d or lower."),
+                                                   step.x, step.y, step.x + step.dx, step.y + step.dy, newval));
 
                     // Attempt to restart guiding after centering, otherwise the AO will
                     // just bounce right back to the failing position
@@ -648,7 +645,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
     DarksDialog dlg(this, true);
     dlg.ShowModal();
 
-    pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
+    pCamera->SelectDark(RequestedExposureDuration()); // Might be req'd if user cancelled in midstream
 }
 
 // Outside event handler because loading a dark library will automatically unload a defect map
@@ -661,7 +658,7 @@ bool MyFrame::LoadDarkHandler(bool checkIt)
         return false;
     }
     pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
-    if (checkIt)  // enable it
+    if (checkIt) // enable it
     {
         m_useDarksMenuItem->Check(true);
         if (pCamera->CurrentDefectMap)
@@ -678,7 +675,7 @@ bool MyFrame::LoadDarkHandler(bool checkIt)
     {
         if (!pCamera->CurrentDarkFrame)
         {
-            m_useDarksMenuItem->Check(false);      // shouldn't have gotten here
+            m_useDarksMenuItem->Check(false); // shouldn't have gotten here
             return false;
         }
         pCamera->ClearDarks();
@@ -725,7 +722,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
     {
         if (!pCamera->CurrentDefectMap)
         {
-            m_useDefectMapMenuItem->Check(false);  // Shouldn't have gotten here
+            m_useDefectMapMenuItem->Check(false); // Shouldn't have gotten here
             return;
         }
         pCamera->ClearDefectMap();
@@ -751,17 +748,17 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     if (!pRefineDefMap)
         pRefineDefMap = new RefineDefMap(this);
 
-    if (pRefineDefMap->InitUI())                    // Required data present, UI built and ready to go
+    if (pRefineDefMap->InitUI()) // Required data present, UI built and ready to go
     {
         pRefineDefMap->Show();
 
         // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
         // to have a defect map loaded if the user wants to refine it
-        m_takeDarksMenuItem->Enable(false);             // Dialog restores it when its window is closed
+        m_takeDarksMenuItem->Enable(false); // Dialog restores it when its window is closed
         LoadDefectMapHandler(true);
     }
     else
-        pRefineDefMap->Destroy();                       // user cancelled out before starting the process
+        pRefineDefMap->Destroy(); // user cancelled out before starting the process
 }
 
 void MyFrame::OnImportCamCal(wxCommandEvent& evt)
@@ -781,8 +778,8 @@ void MyFrame::OnToolBar(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
-        //wxSize toolBarSize = MainToolbar->GetSize();
-        m_mgr.GetPane(_T("MainToolBar")).Show().Bottom()/*.MinSize(toolBarSize)*/;
+        // wxSize toolBarSize = MainToolbar->GetSize();
+        m_mgr.GetPane(_T("MainToolBar")).Show().Bottom() /*.MinSize(toolBarSize)*/;
     }
     else
     {
@@ -823,7 +820,7 @@ void MyFrame::OnAoGraph(wxCommandEvent& evt)
 {
     if (pStepGuiderGraph->SetState(evt.IsChecked()))
     {
-        m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293,208);
+        m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293, 208);
     }
     else
     {
@@ -836,11 +833,11 @@ void MyFrame::OnStarProfile(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
-#if defined (__APPLE__)
-        m_mgr.GetPane(_T("Profile")).Show().Float().MinSize(110,72);
+#if defined(__APPLE__)
+        m_mgr.GetPane(_T("Profile")).Show().Float().MinSize(110, 72);
 #else
-        m_mgr.GetPane(_T("Profile")).Show().Right().Position(0).MinSize(115,85);
-        //m_mgr.GetPane(_T("Profile")).Show().Bottom().Layer(1).Position(2).MinSize(115,85);
+        m_mgr.GetPane(_T("Profile")).Show().Right().Position(0).MinSize(115, 85);
+        // m_mgr.GetPane(_T("Profile")).Show().Bottom().Layer(1).Position(2).MinSize(115,85);
 #endif
     }
     else
@@ -855,7 +852,7 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
-        m_mgr.GetPane(_T("Target")).Show().Right().Position(2).MinSize(293,208);
+        m_mgr.GetPane(_T("Target")).Show().Right().Position(2).MinSize(293, 208);
     }
     else
     {
@@ -872,12 +869,12 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 
     // Start by restoring the main window although it doesn't seem like this could be much of a problem
     pFrame->SetSize(wxSize(800, 600));
-    pFrame->SetPosition(wxPoint(20, 20));           // Should work on any screen size
+    pFrame->SetPosition(wxPoint(20, 20)); // Should work on any screen size
     // Now re-dock all the windows that are being managed by wxAuiManager
     int lim = panes.GetCount();
     for (int i = 0; i < lim; i++)
     {
-        panes.Item(i).Dock();                       // Already docked, shown or not, doesn't matter
+        panes.Item(i).Dock(); // Already docked, shown or not, doesn't matter
         if (panes.Item(i).name == _("Guider"))
             panes.Item(i).Show(true);
     }
@@ -950,7 +947,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
 
 static wxString DarksWarningEnabledKey()
 {
-    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
+    // to be per-profile
     return wxString::Format("/Confirm/%d/DarksWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
@@ -964,9 +962,10 @@ static void ValidateDarksLoaded(void)
     if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
     {
         pFrame->SuppressableAlert(DarksWarningEnabledKey(),
-            _("For best results, use a Dark Library or a Bad-pixel Map "
-            "while guiding. This will help prevent PHD from locking on to a hot pixel. "
-            "Use the Darks menu to build a Dark Library or Bad-pixel Map."), SuppressDarksAlert, 0);
+                                  _("For best results, use a Dark Library or a Bad-pixel Map "
+                                    "while guiding. This will help prevent PHD from locking on to a hot pixel. "
+                                    "Use the Darks menu to build a Dark Library or Bad-pixel Map."),
+                                  SuppressDarksAlert, 0);
     }
 }
 
@@ -980,17 +979,16 @@ static bool UseCalibrationAssistant()
     {
         double ha = norm(lst - ra, -12.0, 12.0);
         if ((fabs(dec) > 20 && dec < degrees(Scope::DEC_COMP_LIMIT)) || fabs(ha) > 3)
-            dontUse = ConfirmDialog::Confirm(
-            _("Scope isn't pointing in recommended sky area for calibration - run the Calibration Assistant to improve results."),
-            "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-            );
+            dontUse = ConfirmDialog::Confirm(_("Scope isn't pointing in recommended sky area for calibration - run the "
+                                               "Calibration Assistant to improve results."),
+                                             "/v2_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant..."));
         else if (fabs(dec) > degrees(Scope::DEC_COMP_LIMIT))
             dontUse = ConfirmDialog::Confirm(
-            _("With the scope pointing this close to the pole, calibration can be degraded and may ") + "\n" +
-            _("fail altogether.  Run the Calibration Assistant and follow the instructions to eliminate these risks, ") + "\n" +
-            _("including slewing the scope as close as practical to the recommended position."),
-            "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant...")
-            );
+                _("With the scope pointing this close to the pole, calibration can be degraded and may ") + "\n" +
+                    _("fail altogether.  Run the Calibration Assistant and follow the instructions to eliminate these "
+                      "risks, ") +
+                    "\n" + _("including slewing the scope as close as practical to the recommended position."),
+                "/v2_very_highdec_calibration_ok", _("Calibrate here"), _("Calibration Assistant..."));
     }
     else
     {
@@ -1038,7 +1036,7 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
             if (pMount->IsCalibrated() || (pSecondaryMount && pSecondaryMount->IsCalibrated()))
             {
                 recalibrate = ConfirmDialog::Confirm(_("Are you sure you want to force recalibration?"),
-                    "/force_recalibration_ok", _("Force Recalibration"));
+                                                     "/force_recalibration_ok", _("Force Recalibration"));
             }
             if (recalibrate)
             {
@@ -1050,13 +1048,13 @@ void MyFrame::GuideButtonClick(bool interactive, const wxString& context)
                 return;
         }
 
-        if (interactive && pPointingSource && pPointingSource->IsConnected() &&
-            pPointingSource->CanReportPosition())
+        if (interactive && pPointingSource && pPointingSource->IsConnected() && pPointingSource->CanReportPosition())
         {
-            // If it's being used, the ask-for-coordinates dialog will populate scope position info needed for UseCalibrationAssistant() and StartGuiding()
-            if (pPointingSource->PreparePositionInteractive())  // Returns true only if user cancels ask-for-coordinates dialog
+            // If it's being used, the ask-for-coordinates dialog will populate scope position info needed for
+            // UseCalibrationAssistant() and StartGuiding()
+            if (pPointingSource->PreparePositionInteractive()) // Returns true only if user cancels ask-for-coordinates dialog
                 return;
-            if (!TheScope()->IsCalibrated())  // Either cleared above or not calibrated for other reasons
+            if (!TheScope()->IsCalibrated()) // Either cleared above or not calibrated for other reasons
             {
                 if (UseCalibrationAssistant())
                 {
@@ -1186,10 +1184,9 @@ static void CheckDecGuideModeAlert()
                 wxString msg = _("With your current setting for Dec guide mode, this version of PHD2 will "
                                  "dither in Declination. To restore the old behavior you can set the RA-only "
                                  "option in the Dither Settings of the Advanced Dialog.");
-                pFrame->Alert(msg, 0,
-                              _("Set RA-only now"), AlertSetRAOnly, 0);
+                pFrame->Alert(msg, 0, _("Set RA-only now"), AlertSetRAOnly, 0);
 
-               pConfig->Profile.SetBoolean("/ShowDecModeWarning", false);
+                pConfig->Profile.SetBoolean("/ShowDecModeWarning", false);
             }
         }
     }
@@ -1207,10 +1204,10 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
         if (pConfig->NumProfiles() == 1 && pGearDialog->IsEmptyProfile())
         {
             if (ConfirmDialog::Confirm(
-                _("It looks like this is a first-time connection to your camera and mount. The Setup Wizard can help\n"
-                  "you with that and will also establish baseline guiding parameters for your new configuration.\n"
-                  "Would you like to use the Setup Wizard now?"),
-                  "/use_new_profile_wizard", _("Yes"), _("No"), _("Setup Wizard Recommendation")))
+                    _("It looks like this is a first-time connection to your camera and mount. The Setup Wizard can help\n"
+                      "you with that and will also establish baseline guiding parameters for your new configuration.\n"
+                      "Would you like to use the Setup Wizard now?"),
+                    "/use_new_profile_wizard", _("Yes"), _("No"), _("Setup Wizard Recommendation")))
             {
                 pGearDialog->ShowProfileWizard(evt);
                 return;

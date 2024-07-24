@@ -1,44 +1,44 @@
 /*
-*  cam_qhy.cpp
-*  Open PHD Guiding
-*
-*  Created by Andy Galasso.
-*  Copyright (c) 2015-2019 Andy Galasso.
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of openphdguiding.org nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  cam_qhy.cpp
+ *  Open PHD Guiding
+ *
+ *  Created by Andy Galasso.
+ *  Copyright (c) 2015-2019 Andy Galasso.
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of openphdguiding.org nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 
 #if defined(QHY_CAMERA)
 
-#include "camera.h"
-#include "cam_qhy.h"
-#include "qhyccd.h"
+# include "camera.h"
+# include "cam_qhy.h"
+# include "qhyccd.h"
 
 class Camera_QHY : public GuideCamera
 {
@@ -57,7 +57,6 @@ class Camera_QHY : public GuideCamera
     wxByte m_bpp;
 
 public:
-
     Camera_QHY();
     ~Camera_QHY();
 
@@ -80,13 +79,13 @@ static bool s_qhySdkInitDone = false;
 
 static wxString GetQHYSDKVersion()
 {
-#if defined (__APPLE__)
+# if defined(__APPLE__)
     return "V7.4.16.4"; // FIXME - remove this when we update to the newer SDK that implements GetQHYCCDSDKVersion
-#else
+# else
     uint32_t YMDS[4] = {};
     GetQHYCCDSDKVersion(&YMDS[0], &YMDS[1], &YMDS[2], &YMDS[3]);
     return wxString::Format("V20%02d%02d%02d_%d", YMDS[0], YMDS[1], YMDS[2], YMDS[3]);
-#endif
+# endif
 }
 
 static bool QHYSDKInit()
@@ -103,20 +102,20 @@ static bool QHYSDKInit()
     long ll;
     if (wxGetEnv("QHY_LOG_LEVEL", &s) && s.ToLong(&ll))
         lvl = static_cast<uint8_t>(std::min(std::max(ll, 0L), 6L));
-#if !defined(__WINDOWS__)
+# if !defined(__WINDOWS__)
     EnableQHYCCDLogFile(false);
-#endif
+# endif
     SetQHYCCDLogLevel(lvl);
 
     uint32_t ret;
 
     if ((ret = InitQHYCCDResource()) != 0)
     {
-        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", (int)ret));
+        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", (int) ret));
         return true;
     }
 
-#if defined (__APPLE__)
+# if defined(__APPLE__)
     Debug.Write("QHY: call OSXInitQHYCCDFirmwareArray()\n");
     ret = OSXInitQHYCCDFirmwareArray();
     Debug.Write(wxString::Format("QHY: OSXInitQHYCCDFirmwareArray() returns %d\n", ret));
@@ -134,7 +133,7 @@ static bool QHYSDKInit()
         }
     }
     // non-zero result indicates camera already has firmware
-#endif
+# endif
 
     s_qhySdkInitDone = true;
     return false;
@@ -183,7 +182,10 @@ bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
 
 int Camera_QHY::GetDefaultCameraGain()
 {
-    enum { DefaultQHYCameraGain = 40 };
+    enum
+    {
+        DefaultQHYCameraGain = 40
+    };
     return DefaultQHYCameraGain;
 }
 
@@ -207,8 +209,9 @@ bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
             uint32_t ret = IsQHYCCDControlAvailable(h, CONTROL_ST4PORT);
             if (ret == QHYCCD_SUCCESS)
                 st4 = true;
-            //CloseQHYCCD(h); // CloseQHYCCD() would proform a reset, so the other software that use QHY camera would be impacted.
-            // Do not call this,would not cause memory leak.The SDk has already process this.
+            // CloseQHYCCD(h); // CloseQHYCCD() would proform a reset, so the other software that use QHY camera would be
+            // impacted.
+            //  Do not call this,would not cause memory leak.The SDk has already process this.
         }
         Debug.Write(wxString::Format("QHY cam [%d] %s avail %s st4 %s\n", i, camid, h ? "Yes" : "No", st4 ? "Yes" : "No"));
         if (st4)
@@ -305,7 +308,8 @@ bool Camera_QHY::Connect(const wxString& camId)
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
 
     Color = false;
-    switch ((BAYER_ID)bayer) {
+    switch ((BAYER_ID) bayer)
+    {
     case BAYER_GB:
     case BAYER_GR:
     case BAYER_BG:
@@ -314,13 +318,21 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
 
     // check bin modes
-    CONTROL_ID modes[] = { CAM_BIN2X2MODE, CAM_BIN3X3MODE, CAM_BIN4X4MODE, };
-    int bin[] = { 2, 3, 4, };
+    CONTROL_ID modes[] = {
+        CAM_BIN2X2MODE,
+        CAM_BIN3X3MODE,
+        CAM_BIN4X4MODE,
+    };
+    int bin[] = {
+        2,
+        3,
+        4,
+    };
     int maxBin = 1;
     for (int i = 0; i < WXSIZEOF(modes); i++)
     {
         ret = IsQHYCCDControlAvailable(m_camhandle, modes[i]);
-#if 0
+# if 0
         // FIXME- IsQHYCCDControlAvailable is supposed to return QHYCCD_ERROR_NOTSUPPORT for a
         // bin mode that is not supported, but in fact it returns QHYCCD_ERROR, so we cannot
         // distinguish "not supported" from "error".
@@ -330,7 +342,7 @@ bool Camera_QHY::Connect(const wxString& camId)
             m_camhandle = 0;
             return CamConnectFailed(_("Failed to get camera bin info"));
         }
-#endif
+# endif
         if (ret == QHYCCD_SUCCESS)
             maxBin = bin[i];
         else
@@ -362,7 +374,7 @@ bool Camera_QHY::Connect(const wxString& camId)
 
     m_curGain = -1;
     m_curExposure = -1;
-    m_roi = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());  // binned coordinates
+    m_roi = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight()); // binned coordinates
 
     Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
     ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
@@ -388,10 +400,10 @@ static void StopCapture(qhyccd_handle *handle)
 bool Camera_QHY::Disconnect()
 {
     StopCapture(m_camhandle);
-#if !defined(__APPLE__)
+# if !defined(__APPLE__)
     // this crashes on macOS, but seems to work ok without it
     CloseQHYCCD(m_camhandle);
-#endif
+# endif
     m_camhandle = 0;
     Connected = false;
     delete[] RawBuffer;
@@ -405,11 +417,20 @@ bool Camera_QHY::ST4PulseGuideScope(int direction, int duration)
 
     switch (direction)
     {
-    case NORTH: qdir = 1; break;
-    case SOUTH: qdir = 2; break;
-    case EAST:  qdir = 0; break;
-    case WEST:  qdir = 3; break;
-    default: return true; // bad direction passed in
+    case NORTH:
+        qdir = 1;
+        break;
+    case SOUTH:
+        qdir = 2;
+        break;
+    case EAST:
+        qdir = 0;
+        break;
+    case WEST:
+        qdir = 3;
+        break;
+    default:
+        return true; // bad direction passed in
     }
     if (duration > (uint16_t) (-1))
         duration = (uint16_t) (-1);
@@ -429,7 +450,7 @@ inline static int round_up(int v, int m)
 }
 
 // stopping capture causes problems on some cameras on Windows, disable it for now until we can test with a newer SDK
-//#define CAN_STOP_CAPTURE
+// #define CAN_STOP_CAPTURE
 
 bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
@@ -459,7 +480,10 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         // Use a larger ROI around the subframe to avoid changing the ROI as the centroid
         // wobbles around. Changing the ROI introduces a lag of several seconds.
         // This also satifies the constraint that ROI width and height must be multiples of 4.
-        enum { PAD = 1 << 5 };
+        enum
+        {
+            PAD = 1 << 5
+        };
         roi.SetLeft(round_down(subframe.GetLeft(), PAD));
         roi.SetRight(round_up(subframe.GetRight() + 1, PAD) - 1);
         roi.SetTop(round_down(subframe.GetTop(), PAD));
@@ -475,7 +499,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
-        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int)ret));
+        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int) ret));
     }
 
     if (m_roi != roi)
@@ -498,8 +522,8 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n",
-                roi.GetLeft(), roi.GetTop(), roi.GetWidth(), roi.GetHeight(), (int)ret));
+            Debug.Write(wxString::Format("SetQHYCCDResolution(%d,%d,%d,%d) failed! ret = %d\n", roi.GetLeft(), roi.GetTop(),
+                                         roi.GetWidth(), roi.GetHeight(), (int) ret));
         }
     }
 
@@ -512,7 +536,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int)ret));
+            Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int) ret));
             pFrame->Alert(_("Failed to set camera exposure"));
         }
     }
@@ -529,7 +553,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            Debug.Write(wxString::Format("QHY set gain ret %d\n", (int)ret));
+            Debug.Write(wxString::Format("QHY set gain ret %d\n", (int) ret));
             pFrame->Alert(_("Failed to set camera gain"));
         }
     }
@@ -537,17 +561,17 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     ret = ExpQHYCCDSingleFrame(m_camhandle);
     if (ret == QHYCCD_ERROR)
     {
-        Debug.Write(wxString::Format("QHY exp single frame ret %d\n", (int)ret));
+        Debug.Write(wxString::Format("QHY exp single frame ret %d\n", (int) ret));
         DisconnectWithAlert(_("QHY exposure failed"), NO_RECONNECT);
         return true;
     }
-#ifdef CAN_STOP_CAPTURE
+# ifdef CAN_STOP_CAPTURE
     if (WorkerThread::InterruptRequested())
     {
         StopCapture(m_camhandle);
         return true;
     }
-#endif
+# endif
     if (ret == QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("QHY: 200ms delay needed\n"));
@@ -555,7 +579,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     if (ret == QHYCCD_READ_DIRECTLY)
     {
-        //Debug.Write("QHYCCD_READ_DIRECTLY\n");
+        // Debug.Write("QHYCCD_READ_DIRECTLY\n");
     }
 
     uint32_t w, h, bpp, channels;
@@ -563,22 +587,22 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
     if (ret != QHYCCD_SUCCESS || (bpp != 8 && bpp != 16))
     {
         Debug.Write(wxString::Format("QHY get single frame ret %d bpp %u\n", ret, bpp));
-#ifdef CAN_STOP_CAPTURE
+# ifdef CAN_STOP_CAPTURE
         StopCapture(m_camhandle);
-#endif
+# endif
         // users report that reconnecting the camera after this failure allows
         // them to resume guiding so we'll try to reconnect automatically
         DisconnectWithAlert(_("QHY get frame failed"), RECONNECT);
         return true;
     }
 
-#ifdef CAN_STOP_CAPTURE
+# ifdef CAN_STOP_CAPTURE
     if (WorkerThread::InterruptRequested())
     {
         StopCapture(m_camhandle);
         return true;
     }
-#endif
+# endif
 
     if (useSubframe)
     {

@@ -39,12 +39,10 @@
 
 ScopeOnStepGuider::ScopeOnStepGuider(void)
 {
-    m_Name =  "On StepGuider";
+    m_Name = "On StepGuider";
 }
 
-ScopeOnStepGuider::~ScopeOnStepGuider(void)
-{
-}
+ScopeOnStepGuider::~ScopeOnStepGuider(void) { }
 
 bool ScopeOnStepGuider::Connect(void)
 {

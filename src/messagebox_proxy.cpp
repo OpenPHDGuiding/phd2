@@ -74,7 +74,7 @@ int wxMessageBoxProxy::wxMessageBox(const wxString& message, const wxString& cap
 
 void MyFrame::OnMessageBoxProxy(wxCommandEvent& evt)
 {
-    wxMessageBoxProxy *pRequest = (wxMessageBoxProxy *)evt.GetClientData();
+    wxMessageBoxProxy *pRequest = (wxMessageBoxProxy *) evt.GetClientData();
 
     pRequest->showMessageBox();
 }

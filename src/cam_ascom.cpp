@@ -37,19 +37,19 @@
 
 #if defined(ASCOM_CAMERA)
 
-#include "camera.h"
-#include "comdispatch.h"
-#include "time.h"
-#include "image_math.h"
-#include <wx/stopwatch.h>
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
-#include <wx/stdpaths.h>
+# include "camera.h"
+# include "comdispatch.h"
+# include "time.h"
+# include "image_math.h"
+# include <wx/stopwatch.h>
+# include <wx/wfstream.h>
+# include <wx/txtstrm.h>
+# include <wx/stdpaths.h>
 
-#include "cam_ascom.h"
+# include "cam_ascom.h"
 
-#include <wx/msw/ole/oleutils.h>
-#include <comdef.h>
+# include <wx/msw/ole/oleutils.h>
+# include <comdef.h>
 
 class CameraASCOM : public GuideCamera
 {
@@ -68,27 +68,25 @@ class CameraASCOM : public GuideCamera
     double m_driverPixelSize;
 
 public:
-
     bool Color;
 
     CameraASCOM(const wxString& choice);
     ~CameraASCOM();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    HasNonGuiCapture() override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    ShowPropertyDialog() override;
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-    wxByte  BitsPerPixel() override;
-    bool    GetDevicePixelSize(double *devPixelSize) override;
-    bool    SetCoolerOn(bool on) override;
-    bool    SetCoolerSetpoint(double temperature) override;
-    bool    GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
-    bool    GetSensorTemperature(double *temperature) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool HasNonGuiCapture() override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void ShowPropertyDialog() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
 
 private:
-
     bool Create(DispatchObj *obj, DispatchClass *cls);
 
     bool AbortExposure();
@@ -97,11 +95,8 @@ private:
 };
 
 // Frequently used IDs
-static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
-    dispid_numx, dispid_numy,
-    dispid_startexposure, dispid_abortexposure, dispid_stopexposure,
-    dispid_imageready, dispid_imagearray,
-    dispid_ispulseguiding, dispid_pulseguide,
+static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty, dispid_numx, dispid_numy, dispid_startexposure,
+    dispid_abortexposure, dispid_stopexposure, dispid_imageready, dispid_imagearray, dispid_ispulseguiding, dispid_pulseguide,
     dispid_cooleron, dispid_coolerpower, dispid_ccdtemperature, dispid_setccdtemperature;
 
 inline static void LogExcep(HRESULT hr, const wxString& prefix, const EXCEPINFO& excep)
@@ -125,20 +120,20 @@ static bool ASCOM_SetBin(IDispatch *cam, int binning, EXCEPINFO *excep)
     DISPPARAMS dispParms;
     dispParms.cArgs = 1;
     dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;                   // PropPut kludge
+    dispParms.cNamedArgs = 1; // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "invoke setxbin", *excep);
         return true;
     }
-    if (FAILED(hr = cam->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "invoke setybin", *excep);
         return true;
@@ -158,39 +153,39 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
     DISPPARAMS dispParms;
     dispParms.cArgs = 1;
     dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;                   // PropPut kludge
+    dispParms.cNamedArgs = 1; // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
     Variant vRes;
     HRESULT hr;
 
     rgvarg[0].lVal = roi.GetLeft();
-    if (FAILED(hr = cam->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "set startx", *excep);
         return true;
     }
 
     rgvarg[0].lVal = roi.GetTop();
-    if (FAILED(hr = cam->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "set starty", *excep);
         return true;
     }
 
     rgvarg[0].lVal = roi.GetWidth();
-    if (FAILED(hr = cam->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "set numx", *excep);
         return true;
     }
 
     rgvarg[0].lVal = roi.GetHeight();
-    if (FAILED(hr = cam->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "set numy", *excep);
         return true;
@@ -212,8 +207,8 @@ static bool ASCOM_AbortExposure(IDispatch *cam, EXCEPINFO *excep)
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_abortexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_abortexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "invoke abortexposure", *excep);
         return true;
@@ -235,8 +230,8 @@ static bool ASCOM_StopExposure(IDispatch *cam, EXCEPINFO *excep)
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "invoke stopexposure", *excep);
         return true;
@@ -251,7 +246,7 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
 
     VARIANTARG rgvarg[2];
     rgvarg[1].vt = VT_R8;
-    rgvarg[1].dblVal =  duration;
+    rgvarg[1].dblVal = duration;
     rgvarg[0].vt = VT_BOOL;
     rgvarg[0].boolVal = dark ? VARIANT_FALSE : VARIANT_TRUE;
 
@@ -264,8 +259,8 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_startexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_startexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, &vRes, excep,
+                                nullptr)))
     {
         LogExcep(hr, "invoke startexposure", *excep);
         return true;
@@ -287,8 +282,8 @@ static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_imageready, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_imageready, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes,
+                                excep, nullptr)))
     {
         LogExcep(hr, "invoke imageready", *excep);
         return true;
@@ -298,8 +293,8 @@ static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
     return false;
 }
 
-static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wxRect& roi,
-                        wxSize *size, const wxSize& max_size, bool *swap_axes, EXCEPINFO *excep)
+static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wxRect& roi, wxSize *size, const wxSize& max_size,
+                        bool *swap_axes, EXCEPINFO *excep)
 {
     // returns true on error, false if OK
 
@@ -312,8 +307,8 @@ static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wx
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes,
+                                excep, nullptr)))
     {
         LogExcep(hr, "invoke imagearray", *excep);
         return true;
@@ -328,7 +323,7 @@ static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wx
     SafeArrayGetLBound(rawarray, 2, &lbound2);
 
     long *rawdata;
-    hr = SafeArrayAccessData(rawarray, (void**)&rawdata);
+    hr = SafeArrayAccessData(rawarray, (void **) &rawdata);
     if (hr != S_OK)
     {
         hr = SafeArrayDestroyData(rawarray);
@@ -340,8 +335,8 @@ static bool ASCOM_Image(IDispatch *cam, usImage& img, bool is_subframe, const wx
 
     if (!is_subframe && !*swap_axes && xsize < ysize && max_size.x > max_size.y)
     {
-        Debug.Write(wxString::Format("ASCOM camera: array axes are flipped (%dx%d) vs (%dx%d)\n",
-            xsize, ysize, max_size.x, max_size.y));
+        Debug.Write(wxString::Format("ASCOM camera: array axes are flipped (%dx%d) vs (%dx%d)\n", xsize, ysize, max_size.x,
+                                     max_size.y));
 
         *swap_axes = true;
     }
@@ -414,10 +409,12 @@ static bool ASCOM_IsMoving(IDispatch *cam)
     ExcepInfo excep;
     Variant vRes;
 
-    if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, nullptr)))
+    if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes,
+                                &excep, nullptr)))
     {
         LogExcep(hr, "invoke ispulseguiding", excep);
-        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."), excep));
+        pFrame->Alert(
+            ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."), excep));
         return false;
     }
 
@@ -439,9 +436,7 @@ CameraASCOM::CameraASCOM(const wxString& choice)
     m_bitsPerPixel = 0;
 }
 
-CameraASCOM::~CameraASCOM()
-{
-}
+CameraASCOM::~CameraASCOM() { }
 
 wxByte CameraASCOM::BitsPerPixel()
 {
@@ -587,21 +582,27 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
         Debug.AddLine(ExcepMsg("CanPulseGuide", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanPulseGuide"));
+        return CamConnectFailed(
+            wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."),
+                             "CanPulseGuide"));
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
 
     if (!driver.GetProp(&vRes, L"CanAbortExposure"))
     {
         Debug.AddLine(ExcepMsg("CanAbortExposure", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanAbortExposure"));
+        return CamConnectFailed(
+            wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."),
+                             "CanAbortExposure"));
     }
     m_canAbortExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
 
     if (!driver.GetProp(&vRes, L"CanStopExposure"))
     {
         Debug.AddLine(ExcepMsg("CanStopExposure", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanStopExposure"));
+        return CamConnectFailed(
+            wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."),
+                             "CanStopExposure"));
     }
     m_canStopExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
 
@@ -616,14 +617,16 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
         Debug.AddLine(ExcepMsg("CameraXSize", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraXSize"));
+        return CamConnectFailed(wxString::Format(
+            _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraXSize"));
     }
     m_maxSize.SetWidth((int) vRes.lVal);
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
         Debug.AddLine(ExcepMsg("CameraYSize", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraYSize"));
+        return CamConnectFailed(wxString::Format(
+            _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CameraYSize"));
     }
     m_maxSize.SetHeight((int) vRes.lVal);
 
@@ -632,7 +635,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"MaxADU"))
     {
         Debug.AddLine(ExcepMsg("MaxADU", driver.Excep()));
-        m_bitsPerPixel = 16;  // assume 16 BPP
+        m_bitsPerPixel = 16; // assume 16 BPP
     }
     else
     {
@@ -647,9 +650,8 @@ bool CameraASCOM::Connect(const wxString& camId)
         DriverVersion = vRes.iVal;
     }
 
-    if (DriverVersion > 1 &&  // We can check the color sensor status of the cam
-        driver.GetProp(&vRes, L"SensorType") &&
-        vRes.iVal > 1)
+    if (DriverVersion > 1 && // We can check the color sensor status of the cam
+        driver.GetProp(&vRes, L"SensorType") && vRes.iVal > 1)
     {
         Color = true;
     }
@@ -659,14 +661,16 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeX", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeX"));
+        return CamConnectFailed(wxString::Format(
+            _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeX"));
     }
     m_driverPixelSize = vRes.dblVal;
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
         Debug.AddLine(ExcepMsg("PixelSizeY", driver.Excep()));
-        return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeY"));
+        return CamConnectFailed(wxString::Format(
+            _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "PixelSizeY"));
     }
     m_driverPixelSize = wxMax(m_driverPixelSize, vRes.dblVal);
 
@@ -690,14 +694,18 @@ bool CameraASCOM::Connect(const wxString& camId)
         if (!driver.GetProp(&vRes, L"CanSetCCDTemperature"))
         {
             Debug.AddLine(ExcepMsg("CanSetCCDTemperature", driver.Excep()));
-            return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanSetCCDTemperature"));
+            return CamConnectFailed(wxString::Format(
+                _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."),
+                "CanSetCCDTemperature"));
         }
         m_canSetCoolerTemperature = vRes.boolVal != VARIANT_FALSE ? true : false;
 
         if (!driver.GetProp(&vRes, L"CanGetCoolerPower"))
         {
             Debug.AddLine(ExcepMsg("CanGetCoolerPower", driver.Excep()));
-            return CamConnectFailed(wxString::Format(_("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."), "CanGetCoolerPower"));
+            return CamConnectFailed(wxString::Format(
+                _("ASCOM driver missing the %s property. Please report this error to your ASCOM driver provider."),
+                "CanGetCoolerPower"));
         }
         m_canGetCoolerPower = vRes.boolVal != VARIANT_FALSE ? true : false;
     }
@@ -836,7 +844,8 @@ bool CameraASCOM::SetCoolerOn(bool on)
     if (!cam.PutProp(dispid_cooleron, on))
     {
         Debug.AddLine(ExcepMsg(wxString::Format("ASCOM error turning camera cooler %s", on ? "on" : "off"), cam.Excep()));
-        pFrame->Alert(ExcepMsg(wxString::Format(_("ASCOM error turning camera cooler %s"), on ? _("on") : _("off")), cam.Excep()));
+        pFrame->Alert(
+            ExcepMsg(wxString::Format(_("ASCOM error turning camera cooler %s"), on ? _("on") : _("off")), cam.Excep()));
         return true;
     }
 
@@ -1039,7 +1048,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     bool takeDark = HasShutter && ShutterClosed;
 
     // Start the exposure
-    if (ASCOM_StartExposure(cam.IDisp(), (double)duration / 1000.0, takeDark, &excep))
+    if (ASCOM_StartExposure(cam.IDisp(), (double) duration / 1000.0, takeDark, &excep))
     {
         Debug.AddLine(ExcepMsg("ASCOM_StartExposure failed", excep));
         pFrame->Alert(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep));
@@ -1058,7 +1067,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
         }
     }
 
-    while (true)  // wait for image to finish and d/l
+    while (true) // wait for image to finish and d/l
     {
         wxMilliSleep(20);
         bool ready;
@@ -1071,8 +1080,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
         }
         if (ready)
             break;
-        if (WorkerThread::InterruptRequested() &&
-            (WorkerThread::TerminateRequested() || AbortExposure()))
+        if (WorkerThread::InterruptRequested() && (WorkerThread::TerminateRequested() || AbortExposure()))
         {
             return true;
         }
@@ -1104,14 +1112,15 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
     if (!m_hasGuideOutput)
         return true;
 
-    if (!pMount || !pMount->IsConnected()) return false;
+    if (!pMount || !pMount->IsConnected())
+        return false;
 
     GITObjRef cam(m_gitEntry);
 
     // Start the motion (which may stop on its own)
     VARIANTARG rgvarg[2];
     rgvarg[1].vt = VT_I2;
-    rgvarg[1].iVal =  direction;
+    rgvarg[1].iVal = direction;
     rgvarg[0].vt = VT_I4;
     rgvarg[0].lVal = (long) duration;
 
@@ -1127,14 +1136,14 @@ bool CameraASCOM::ST4PulseGuideScope(int direction, int duration)
     Variant vRes;
     HRESULT hr;
 
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, &excep, nullptr)))
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, &vRes,
+                                        &excep, nullptr)))
     {
         LogExcep(hr, "invoke pulseguide", excep);
         return true;
     }
 
-    if (watchdog.Time() < duration)  // likely returned right away and not after move - enter poll loop
+    if (watchdog.Time() < duration) // likely returned right away and not after move - enter poll loop
     {
         while (ASCOM_IsMoving(cam.IDisp()))
         {

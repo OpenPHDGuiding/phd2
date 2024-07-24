@@ -35,21 +35,16 @@
 
 #ifdef GUIDE_EQUINOX
 
-#include <Carbon/Carbon.h>
+# include <Carbon/Carbon.h>
 
 class ScopeEquinox : public Scope
 {
 public:
-    ScopeEquinox() {
-        m_Name = wxString("Equinox");
-    }
+    ScopeEquinox() { m_Name = wxString("Equinox"); }
 
     bool Connect() override;
 
-    bool Disconnect() override
-    {
-        return false;
-    }
+    bool Disconnect() override { return false; }
 
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
@@ -59,6 +54,5 @@ private:
     SInt16 E6ReturnCode;
 
     OSErr E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode);
-
 };
 #endif /* GUIDE_EQUINOX */

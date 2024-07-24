@@ -43,16 +43,16 @@ class CameraQHY5 : public GuideCamera
 public:
     CameraQHY5();
     ~CameraQHY5();
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    InitCapture() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void InitCapture() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration) override;
-    bool    ST4HasNonGuiMove() override { return true; }
-    bool    HasNonGuiCapture() override { return true; }
-    void    ClearGuidePort();
-    wxByte  BitsPerPixel() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasNonGuiMove() override { return true; }
+    bool HasNonGuiCapture() override { return true; }
+    void ClearGuidePort();
+    wxByte BitsPerPixel() override;
 };
 
 #endif // QHY5IIIBASE_H_INCLUDED

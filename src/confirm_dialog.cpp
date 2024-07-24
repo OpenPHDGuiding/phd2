@@ -34,7 +34,8 @@
 
 #include "phd.h"
 
-ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmLabel, const wxString& negativeLabel)
+ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmLabel,
+                             const wxString& negativeLabel)
     : wxDialog(pFrame, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     dont_ask_again = new wxCheckBox(this, wxID_ANY, _("Don't ask again"));
@@ -60,16 +61,15 @@ ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title, cons
     SetSizerAndFit(topLevelSizer);
 }
 
-ConfirmDialog::~ConfirmDialog(void)
-{
-}
+ConfirmDialog::~ConfirmDialog(void) { }
 
 static wxString ConfigKey(const wxString& name)
 {
     return "/Confirm" + name;
 }
 
-bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmLabel, const wxString& negativeLabel, const wxString& title_arg)
+bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmLabel,
+                            const wxString& negativeLabel, const wxString& title_arg)
 {
     wxString key(ConfigKey(config_key));
 

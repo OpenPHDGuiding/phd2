@@ -38,8 +38,9 @@
 
 class StepGuider;
 
-// The AO has two representations in AdvancedDialog.  One is as a 'mount' sub-class where the AO algorithms are shown in the Algos tab.  The second
-// is as a unique device appearing on the Other_Devices tab.  So there are two distinct ConfigDialogCtrlSet classes to support these two views
+// The AO has two representations in AdvancedDialog.  One is as a 'mount' sub-class where the AO algorithms are shown in the
+// Algos tab.  The second is as a unique device appearing on the Other_Devices tab.  So there are two distinct
+// ConfigDialogCtrlSet classes to support these two views
 class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
 {
     StepGuider *m_pStepGuider;
@@ -53,7 +54,7 @@ class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
     wxCheckBox *m_pEnableAOGuide;
 
 public:
-    AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+    AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     ~AOConfigDialogCtrlSet() {};
 
     virtual void LoadValues();
@@ -105,13 +106,13 @@ class StepGuider : public Mount, public OnboardST4
     long m_bumpStartTime;
     double m_bumpStepWeight;
 
-    StepInfo m_failedStep;  // position info for failed ao step
+    StepInfo m_failedStep; // position info for failed ao step
 
     // Calibration variables
-    int   m_calibrationStepsPerIteration;
-    int   m_calibrationIterations;
+    int m_calibrationStepsPerIteration;
+    int m_calibrationIterations;
     PHD_Point m_calibrationStartingLocation;
-    int   m_calibrationAverageSamples;
+    int m_calibrationAverageSamples;
     PHD_Point m_calibrationAveragedLocation;
 
     Calibration m_calibration;
@@ -149,7 +150,7 @@ protected:
     virtual bool SetSamplesToAverage(int samplesToAverage);
 
     virtual int GetBumpPercentage() const;
-    virtual bool SetBumpPercentage(int bumpPercentage, bool updateGraph=false);
+    virtual bool SetBumpPercentage(int bumpPercentage, bool updateGraph = false);
 
     virtual double GetBumpMaxStepsPerCycle() const;
     virtual bool SetBumpMaxStepsPerCycle(double maxBumpPerCycle);
@@ -166,12 +167,16 @@ protected:
 
 public:
     MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
-    MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) override { return nullptr; };
+    MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog,
+                                                     BrainCtrlIdMap& CtrlMap) override
+    {
+        return nullptr;
+    };
     wxString GetSettingsSummary() const override;
     wxString CalibrationSettingsSummary() const override;
     wxString GetMountClassName() const override;
     void AdjustCalibrationForScopePointing() override;
-    bool IsStepGuider() const  override;
+    bool IsStepGuider() const override;
     wxPoint GetAoPos() const override;
     wxPoint GetAoMaxPos() const override;
     const char *DirectionStr(GUIDE_DIRECTION d) const override;
@@ -219,13 +224,15 @@ private:
     void InitBumpPositions();
 
     double CalibrationTime(int nCalibrationSteps);
+
 protected:
     void ZeroCurrentPosition();
 
-    enum STEP_RESULT {
-        STEP_OK,              // step succeeded
-        STEP_LIMIT_REACHED,   // step failed and limit was reached, must recenter
-        STEP_ERROR,           // step failed for some other unspecified reason
+    enum STEP_RESULT
+    {
+        STEP_OK, // step succeeded
+        STEP_LIMIT_REACHED, // step failed and limit was reached, must recenter
+        STEP_ERROR, // step failed for some other unspecified reason
     };
 
     // pure virutal functions -- these MUST be overridden by a subclass

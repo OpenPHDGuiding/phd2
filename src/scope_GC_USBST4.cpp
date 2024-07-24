@@ -34,31 +34,31 @@
 
 #include "phd.h"
 #ifdef GUIDE_GCUSBST4
-//#include "scope_GC_USBST4.h"
-#include    <sys/ioctl.h>
-#include <termios.h>
+// #include "scope_GC_USBST4.h"
+# include <sys/ioctl.h>
+# include <termios.h>
 
-#ifdef __linux__
-#include <errno.h>
-#endif
+# ifdef __linux__
+#  include <errno.h>
+# endif
 
-#define _U(String)  wxString(String, wxConvUTF8).c_str()
+# define _U(String) wxString(String, wxConvUTF8).c_str()
 
-#ifdef __APPLE__
+# ifdef __APPLE__
 
-#include <IOKit/serial/IOSerialKeys.h>
+#  include <IOKit/serial/IOSerialKeys.h>
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 120000
-# define IOMainPort IOMasterPort
-#endif
+#  if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 120000
+#   define IOMainPort IOMasterPort
+#  endif
 
-#define IOSSDATALAT    _IOW('T', 0, unsigned long)
+#  define IOSSDATALAT _IOW('T', 0, unsigned long)
 
 static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
 {
-    kern_return_t   kernResult;
-    mach_port_t     masterPort;
-    CFMutableDictionaryRef  classesToMatch;
+    kern_return_t kernResult;
+    mach_port_t masterPort;
+    CFMutableDictionaryRef classesToMatch;
     if ((kernResult = IOMainPort(0, &masterPort)) != KERN_SUCCESS)
     {
         printf("IOMainPort returned %d\n", kernResult);
@@ -71,8 +71,8 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
     }
     // GC device is a "modem"
     CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),
-//                         CFSTR(kIOSerialBSDRS232Type));
-                            CFSTR(kIOSerialBSDModemType));
+                         //                         CFSTR(kIOSerialBSDRS232Type));
+                         CFSTR(kIOSerialBSDModemType));
     kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, serialIterator);
     if (kernResult != KERN_SUCCESS)
     {
@@ -87,41 +87,42 @@ static char *getRegistryString(io_object_t sObj, const char *propName)
     //   CFTypeRef  nameCFstring;
     CFStringRef nameCFstring;
     resultStr[0] = 0;
-    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(sObj,
-                                                                 CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII),
-                                                                 kCFAllocatorDefault, 0);
-    if (nameCFstring) {
-        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr),
-                           kCFStringEncodingASCII);
+    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(
+        sObj, CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII), kCFAllocatorDefault, 0);
+    if (nameCFstring)
+    {
+        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr), kCFStringEncodingASCII);
         CFRelease(nameCFstring);
     }
     return resultStr;
 }
 
-#endif
+# endif
 
 Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
 {
     char buf[16];
-    switch (direction) {
-        case NORTH:
-            snprintf(buf, sizeof(buf), ":Mg0%4d#", duration);
-            break;
-        case SOUTH:
-            snprintf(buf, sizeof(buf), ":Mg1%4d#", duration);
-            break;
-        case EAST:
-            snprintf(buf, sizeof(buf), ":Mg2%4d#", duration);
-            break;
-        case WEST:
-            snprintf(buf, sizeof(buf), ":Mg3%4d#", duration);
-            break;
-        case NONE:
-            return MOVE_OK;
+    switch (direction)
+    {
+    case NORTH:
+        snprintf(buf, sizeof(buf), ":Mg0%4d#", duration);
+        break;
+    case SOUTH:
+        snprintf(buf, sizeof(buf), ":Mg1%4d#", duration);
+        break;
+    case EAST:
+        snprintf(buf, sizeof(buf), ":Mg2%4d#", duration);
+        break;
+    case WEST:
+        snprintf(buf, sizeof(buf), ":Mg3%4d#", duration);
+        break;
+    case NONE:
+        return MOVE_OK;
     }
-    int num_bytes = write(portFID,buf,strlen(buf));
-    if (num_bytes == -1) {
-        pFrame->Alert(wxString::Format(_("Error writing to GC USB ST4: %s(%d)"),_U(strerror(errno)),errno));
+    int num_bytes = write(portFID, buf, strlen(buf));
+    if (num_bytes == -1)
+    {
+        pFrame->Alert(wxString::Format(_("Error writing to GC USB ST4: %s(%d)"), _U(strerror(errno)), errno));
     }
     WorkerThread::MilliSleep(duration + 50);
     return MOVE_OK;
@@ -129,16 +130,17 @@ Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
 
 bool ScopeGCUSBST4::Connect()
 {
-#ifdef __APPLE__
+# ifdef __APPLE__
 
     wxArrayString DeviceNames;
     wxArrayString PortNames;
     char tempstr[256];
-    io_iterator_t   theSerialIterator;
-    io_object_t     theObject;
+    io_iterator_t theSerialIterator;
+    io_object_t theObject;
 
-    if (createSerialIterator(&theSerialIterator) != KERN_SUCCESS) {
-        wxMessageBox(_T("Error in finding serial ports"),_("Error"));
+    if (createSerialIterator(&theSerialIterator) != KERN_SUCCESS)
+    {
+        wxMessageBox(_T("Error in finding serial ports"), _("Error"));
         return false;
     }
     bool found_device = false;
@@ -155,31 +157,34 @@ bool ScopeGCUSBST4::Connect()
     }
     IOObjectRelease(theSerialIterator); // Release the iterator.
 
-    if (!found_device) {
-        wxMessageBox("Could not find device - searched for usbmodem* to no avail...",_("Error"));
+    if (!found_device)
+    {
+        wxMessageBox("Could not find device - searched for usbmodem* to no avail...", _("Error"));
         return true;
     }
 
-#endif   //__APPLE__
+# endif //__APPLE__
 
-#ifdef  __linux__
-       char tempstr[256] = "/dev/ttyACM0";
-#endif
+# ifdef __linux__
+    char tempstr[256] = "/dev/ttyACM0";
+# endif
 
     portFID = open(tempstr, O_RDWR | O_NOCTTY | O_NONBLOCK);
-    if (portFID == -1) { // error on opening
-        wxMessageBox(wxString::Format(_T("Error opening serial port %s: %s(%d)"),
-                                        _U(tempstr), _U(strerror(errno)), errno),_("Error"));
+    if (portFID == -1)
+    { // error on opening
+        wxMessageBox(wxString::Format(_T("Error opening serial port %s: %s(%d)"), _U(tempstr), _U(strerror(errno)), errno),
+                     _("Error"));
         return true;
     }
     ioctl(portFID, TIOCEXCL);
     fcntl(portFID, F_SETFL, 0);
 
     // Setup port
-    struct termios  options;
-    //options = gOriginalTTYAttrs;
-    if (tcgetattr(portFID, &options) == -1) {
-        wxMessageBox(_T("Error getting port options"),_("Error"));
+    struct termios options;
+    // options = gOriginalTTYAttrs;
+    if (tcgetattr(portFID, &options) == -1)
+    {
+        wxMessageBox(_T("Error getting port options"), _("Error"));
         close(portFID);
         return true;
     }
@@ -187,69 +192,75 @@ bool ScopeGCUSBST4::Connect()
     options.c_cflag = CREAD | CLOCAL;
     options.c_cflag |= CS8;
     options.c_iflag |= IXON | IXOFF;
-//  options.c_cc[VMIN] = 1;
- //   options.c_cc[VTIME] = 10;
-    options.c_cc[VSTART]=0x11;
-    options.c_cc[VSTOP]=0x13;
+    //  options.c_cc[VMIN] = 1;
+    //   options.c_cc[VTIME] = 10;
+    options.c_cc[VSTART] = 0x11;
+    options.c_cc[VSTOP] = 0x13;
     cfsetspeed(&options, B9600);
-    //options.c_cflag = 0x8b00;
+    // options.c_cflag = 0x8b00;
     /*wxMessageBox(wxString::Format("SET termios: iFlag %x  oFlag %x  cFlag %x  lFlag %x  speed %d\n",
            options.c_iflag,
            options.c_oflag,
            options.c_cflag,
            options.c_lflag,
            options.c_ispeed));*/
-    if (tcsetattr(portFID, TCSANOW, &options) == -1) {
-        wxMessageBox(_T("Error setting port options"),_("Error"));
+    if (tcsetattr(portFID, TCSANOW, &options) == -1)
+    {
+        wxMessageBox(_T("Error setting port options"), _("Error"));
         close(portFID);
         return true;
     }
-/*  int handshake;
-    if (ioctl(portFID, TIOCMGET, &handshake) == -1) {
-        wxMessageBox("Error getting port handshake");
-        close(portFID);
-        return false;
-    }
-    unsigned long mics = 1UL;
-    if (ioctl(portFID, IOSSDATALAT, &mics) == -1) {
-        wxMessageBox("Error setting port latency");
-        close(portFID);
-        return false;
+    /*  int handshake;
+        if (ioctl(portFID, TIOCMGET, &handshake) == -1) {
+            wxMessageBox("Error getting port handshake");
+            close(portFID);
+            return false;
+        }
+        unsigned long mics = 1UL;
+        if (ioctl(portFID, IOSSDATALAT, &mics) == -1) {
+            wxMessageBox("Error setting port latency");
+            close(portFID);
+            return false;
 
-    }*/
-//  wxMessageBox(wxString::Format("%d",(int) cfgetispeed(&options)));
+        }*/
+    //  wxMessageBox(wxString::Format("%d",(int) cfgetispeed(&options)));
 
     // Init / check the device
     char buf[2];
     int num_bytes;
 
     // Send the '#' needed to kickstart things
-    buf[0]='#';
-    buf[1]=0;
-    num_bytes = write(portFID,buf,1);
-    if (num_bytes == -1) {
-        wxMessageBox(wxString::Format(_T("Error during initial kickstart: %s(%d)"),_U(strerror(errno)),errno),_("Error"));
+    buf[0] = '#';
+    buf[1] = 0;
+    num_bytes = write(portFID, buf, 1);
+    if (num_bytes == -1)
+    {
+        wxMessageBox(wxString::Format(_T("Error during initial kickstart: %s(%d)"), _U(strerror(errno)), errno), _("Error"));
         close(portFID);
         return true;
     }
 
     // Do a quick check
-    buf[0]=0x6;
-    buf[1]=0;
-    num_bytes = write(portFID,buf,1);
-    if (num_bytes == -1) {
-        wxMessageBox(wxString::Format(_T("Error during test polling of device: %s(%d)"),_U(strerror(errno)),errno),_("Error"));
+    buf[0] = 0x6;
+    buf[1] = 0;
+    num_bytes = write(portFID, buf, 1);
+    if (num_bytes == -1)
+    {
+        wxMessageBox(wxString::Format(_T("Error during test polling of device: %s(%d)"), _U(strerror(errno)), errno),
+                     _("Error"));
         close(portFID);
         return true;
     }
-    num_bytes = read(portFID,buf,1);
-    if (num_bytes == -1) {
+    num_bytes = read(portFID, buf, 1);
+    if (num_bytes == -1)
+    {
         wxMessageBox(_T("Error during test read of device"));
         close(portFID);
         return true;
     }
-    if (buf[0] != 'A') {
-        wxMessageBox(wxString::Format(_T("Device returned %x instead of %x on test poll"),buf[0],'A'));
+    if (buf[0] != 'A')
+    {
+        wxMessageBox(wxString::Format(_T("Device returned %x instead of %x on test poll"), buf[0], 'A'));
         close(portFID);
         return true;
     }
@@ -259,8 +270,10 @@ bool ScopeGCUSBST4::Connect()
     return false;
 }
 
-bool ScopeGCUSBST4::Disconnect() {
-    if (portFID > 0) {
+bool ScopeGCUSBST4::Disconnect()
+{
+    if (portFID > 0)
+    {
         close(portFID);
         portFID = 0;
     }
@@ -269,4 +282,4 @@ bool ScopeGCUSBST4::Disconnect() {
     return false;
 }
 
-#endif  //GUIDE_GCUSBST4
+#endif // GUIDE_GCUSBST4

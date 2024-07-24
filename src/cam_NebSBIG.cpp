@@ -35,16 +35,16 @@
 #include "phd.h"
 
 #ifdef NEB_SBIG
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include "cam_NebSBIG.h"
-#include "socket_server.h"
+# include "camera.h"
+# include "time.h"
+# include "image_math.h"
+# include "cam_NebSBIG.h"
+# include "socket_server.h"
 
 CameraNebSBIG::CameraNebSBIG()
 {
     Connected = false;
-    Name=_T("Nebulosity SBIG Guide chip");
+    Name = _T("Nebulosity SBIG Guide chip");
 }
 
 wxByte CameraNebSBIG::BitsPerPixel()
@@ -56,8 +56,9 @@ bool CameraNebSBIG::Connect(const wxString& camId)
 {
     int xsize, ysize;
     bool retval = ServerSendCamConnect(xsize, ysize);
-    if (retval) return true;
-    FullSize = wxSize(xsize,ysize);
+    if (retval)
+        return true;
+    FullSize = wxSize(xsize, ysize);
     Connected = true;
     return false;
 }
@@ -77,10 +78,10 @@ bool CameraNebSBIG::Capture(int duration, usImage& img, int options, const wxRec
         return true;
     }
     bool retval = ServerReqFrame(duration, img);
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return retval;
-
 }
 
 bool CameraNebSBIG::ST4PulseGuideScope(int direction, int duration)

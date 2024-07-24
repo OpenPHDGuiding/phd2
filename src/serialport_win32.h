@@ -33,8 +33,8 @@
  *
  */
 
-#if !defined(SERIALPORT_WIN32_H_INCLUDED) && defined (__WINDOWS__)
-#define SERIALPORT_WIN32_H_INCLUDED
+#if !defined(SERIALPORT_WIN32_H_INCLUDED) && defined(__WINDOWS__)
+# define SERIALPORT_WIN32_H_INCLUDED
 
 class SerialPortWin32 : public SerialPort
 {
@@ -43,13 +43,13 @@ class SerialPortWin32 : public SerialPort
     bool SerialPortWin32::EscapeFunction(DWORD command);
 
 public:
-
     wxArrayString GetSerialPortList() override;
 
     SerialPortWin32();
     virtual ~SerialPortWin32();
 
-    bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) override;
+    bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS,
+                 bool useDTR) override;
     bool Disconnect() override;
 
     bool Send(const unsigned char *pData, unsigned count) override;

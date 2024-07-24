@@ -35,12 +35,14 @@
 #ifndef CONFIG_DIALOG_H_INCLUDED
 #define CONFIG_DIALOG_H_INCLUDED
 
-// Design Notes:  The goal here is to separate the ownership of various controls from where they are displayed in the AD.  A class that "owns" a control
-// will create it and handle all its behavior - loading, unloading, all the semantics.  This part is handled by the ConfigDlgControlSet.  Where those controls
-// are displayed is determined by the BrainIDControlMap, a dictionary that maps the control ids to the AD panel where they will be displayed.  The owner of the
-// AD panel - the "host" - is responsible for creating the panel UI and rendering all the controls that belong on that panel.  This will be handled in the
-// LayoutControls() method of the hosting class.  Beyond that, the host class has no involvement with controls that are owned by a different class.
-// Example: the focal length control (AD_szFocalLength) is owned by MyFrame but is displayed on the guiding tab
+// Design Notes:  The goal here is to separate the ownership of various controls from where they are displayed in the AD.  A
+// class that "owns" a control will create it and handle all its behavior - loading, unloading, all the semantics.  This part is
+// handled by the ConfigDlgControlSet.  Where those controls are displayed is determined by the BrainIDControlMap, a dictionary
+// that maps the control ids to the AD panel where they will be displayed.  The owner of the AD panel - the "host" - is
+// responsible for creating the panel UI and rendering all the controls that belong on that panel.  This will be handled in the
+// LayoutControls() method of the hosting class.  Beyond that, the host class has no involvement with controls that are owned by
+// a different class. Example: the focal length control (AD_szFocalLength) is owned by MyFrame but is displayed on the guiding
+// tab
 
 // Segmented by the tab page location seen in the UI
 // "sz" => element is a sizer
@@ -56,7 +58,7 @@ enum BRAIN_CTRL_IDS
     AD_cbEnableImageLogging,
     AD_szImageLoggingOptions,
     AD_szDither,
-    AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
+    AD_GLOBAL_TAB_BOUNDARY, //-----end of global tab controls
 
     AD_cbUseSubFrames,
     AD_szNoiseReduction,
@@ -71,7 +73,7 @@ enum BRAIN_CTRL_IDS
     AD_szPort,
     AD_szBinning,
     AD_szCooler,
-    AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+    AD_CAMERA_TAB_BOUNDARY, // ------ end of camera tab controls
 
     AD_cbScaleImages,
     AD_szFocalLength,
@@ -86,13 +88,13 @@ enum BRAIN_CTRL_IDS
     AD_cbSlewDetection,
     AD_cbUseDecComp,
     AD_cbBeepForLostStar,
-    AD_GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
+    AD_GUIDER_TAB_BOUNDARY, // --------------- end of guiding tab controls
 
     AD_szBLCompCtrls,
     AD_szMaxRAAmt,
     AD_szMaxDecAmt,
     AD_szDecGuideMode,
-    AD_MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+    AD_MOUNT_TAB_BOUNDARY, // ----------- end of mount tab controls
 
     AD_AOTravel,
     AD_szCalStepsPerIteration,
@@ -104,27 +106,17 @@ enum BRAIN_CTRL_IDS
     AD_cbClearAOCalibration,
     AD_cbEnableAOGuiding,
     AD_cbRotatorReverse,
-    AD_DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
+    AD_DEVICES_TAB_BOUNDARY // ----------- end of devices tab controls
 };
 
 struct BrainCtrlInfo
 {
     wxObject *panelCtrl;
-    bool isPositioned;           // debug only
+    bool isPositioned; // debug only
 
-    BrainCtrlInfo()
-        :
-        panelCtrl(0),
-        isPositioned(false)
-    {
-    }
+    BrainCtrlInfo() : panelCtrl(0), isPositioned(false) { }
 
-    BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject *ctrl)
-        :
-        panelCtrl(ctrl),
-        isPositioned(false)
-    {
-    }
+    BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject *ctrl) : panelCtrl(ctrl), isPositioned(false) { }
 };
 
 typedef std::map<BRAIN_CTRL_IDS, BrainCtrlInfo> BrainCtrlIdMap;
@@ -133,6 +125,7 @@ class ConfigDialogPane : public wxStaticBoxSizer
 {
 protected:
     wxWindow *m_pParent;
+
 public:
     ConfigDialogPane(const wxString& heading, wxWindow *pParent);
     virtual ~ConfigDialogPane(void) {};
@@ -144,11 +137,13 @@ public:
     wxWindow *GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
     wxSizer *GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
     void CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags = 0);
-    virtual void OnImageScaleChange();         // Only for adjustments made within the AD panels
-    virtual void EnableDecControls(bool enable);        // Needed for guide algo ConfigDialogPanes which inherit directly from this class
+    virtual void OnImageScaleChange(); // Only for adjustments made within the AD panels
+    virtual void
+    EnableDecControls(bool enable); // Needed for guide algo ConfigDialogPanes which inherit directly from this class
 
 protected:
-    wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = nullptr);
+    wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip,
+                                wxWindow *pControl2 = nullptr);
     void DoAdd(wxSizer *pSizer);
     void DoAdd(wxWindow *pWindow);
     void DoAdd(wxWindow *pWindow, const wxString& toolTip);
@@ -177,10 +172,11 @@ public:
 public:
     wxSizer *MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl, const wxString& toolTip);
     void AddMapElement(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS, wxObject *pElem);
-    void AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer);      // Sizer
-    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl);      // Bare control
-    void AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
-    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
+    void AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer); // Sizer
+    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl); // Bare control
+    void AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl,
+                        const wxString& toolTip);
+    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip); // Control with tooltip
 
     wxWindow *GetParentWindow(BRAIN_CTRL_IDS id);
 

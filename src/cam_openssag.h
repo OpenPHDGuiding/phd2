@@ -35,13 +35,15 @@
 #ifndef CAM_OPENSSAG_H_INCLUDED
 #define CAM_OPENSSAG_H_INCLUDED
 
-namespace OpenSSAG {
-    class SSAG;
+namespace OpenSSAG
+{
+class SSAG;
 }
 
 class CameraOpenSSAG : public GuideCamera
 {
     OpenSSAG::SSAG *ssag;
+
 public:
     CameraOpenSSAG();
     ~CameraOpenSSAG();

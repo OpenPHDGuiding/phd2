@@ -43,4 +43,4 @@ public:
     static void ManualGuideUpdateControls();
 };
 
-#endif //TESTGUIDE_H_INCLUDED
+#endif // TESTGUIDE_H_INCLUDED

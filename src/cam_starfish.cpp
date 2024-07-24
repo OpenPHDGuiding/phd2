@@ -35,13 +35,13 @@
 
 #if defined(STARFISH_CAMERA)
 
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
+# include "camera.h"
+# include "time.h"
+# include "image_math.h"
 
-#include "cam_starfish.h"
+# include "cam_starfish.h"
 
-#include <fcCamFw/fcCamFw.h>
+# include <fcCamFw/fcCamFw.h>
 
 class CameraStarfish : public GuideCamera
 {
@@ -54,48 +54,105 @@ class CameraStarfish : public GuideCamera
 public:
     CameraStarfish();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    void    InitCapture() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    void InitCapture() override;
 
-    bool    ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
 
-    bool    HasNonGuiCapture() override { return true; }
-    bool    ST4HasNonGuiMove() override { return true; }
-    wxByte  BitsPerPixel() override;
+    bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    wxByte BitsPerPixel() override;
 };
 
-#if defined (__WINDOWS__)
-#define kIOReturnSuccess 0
+# if defined(__WINDOWS__)
+#  define kIOReturnSuccess 0
 typedef int IOReturn;
 using namespace FcCamSpace;
-void    fcUsb_init(void) { FcCamFuncs::fcUsb_init(); }
-void    fcUsb_close(void) { FcCamFuncs::fcUsb_close(); }
-void    fcUsb_CloseCameraDriver(void) { FcCamFuncs::fcUsb_close(); }
-int fcUsb_FindCameras(void) { return FcCamFuncs::fcUsb_FindCameras(); }
-int fcUsb_cmd_setRegister(int camNum, UInt16 regAddress, UInt16 dataValue) { return FcCamFuncs::fcUsb_cmd_setRegister(camNum, regAddress, dataValue); }
-UInt16 fcUsb_cmd_getRegister(int camNum, UInt16 regAddress) { return FcCamFuncs::fcUsb_cmd_getRegister(camNum, regAddress); }
-int fcUsb_cmd_setIntegrationTime(int camNum, UInt32 theTime) { return FcCamFuncs::fcUsb_cmd_setIntegrationTime(camNum, theTime); }
-int fcUsb_cmd_startExposure(int camNum) { return FcCamFuncs::fcUsb_cmd_startExposure(camNum); }
-int fcUsb_cmd_abortExposure(int camNum) { return FcCamFuncs::fcUsb_cmd_abortExposure(camNum); }
-UInt16 fcUsb_cmd_getState(int camNum) { return FcCamFuncs::fcUsb_cmd_getState(camNum); }
-int fcUsb_cmd_setRoi(int camNum, UInt16 left, UInt16 top, UInt16 right, UInt16 bottom) { return FcCamFuncs::fcUsb_cmd_setRoi(camNum,left,top,right,bottom); }
-int fcUsb_cmd_setRelay(int camNum, int whichRelay) { return FcCamFuncs::fcUsb_cmd_setRelay(camNum,whichRelay); }
-int fcUsb_cmd_clearRelay(int camNum, int whichRelay) { return FcCamFuncs::fcUsb_cmd_clearRelay(camNum,whichRelay); }
-int fcUsb_cmd_pulseRelay(int camNum, int whichRelay, int onMs, int offMs, bool repeats) { return FcCamFuncs::fcUsb_cmd_pulseRelay(camNum,whichRelay, onMs, offMs, repeats); }
-int fcUsb_cmd_setTemperature(int camNum, SInt16 theTemp) { return FcCamFuncs::fcUsb_cmd_setTemperature(camNum,theTemp); }
-bool fcUsb_cmd_getTECInPowerOK(int camNum) { return FcCamFuncs::fcUsb_cmd_getTECInPowerOK(camNum); }
-int fcUsb_cmd_getRawFrame(int camNum, UInt16 numRows, UInt16 numCols, UInt16 *frameBuffer) { return FcCamFuncs::fcUsb_cmd_getRawFrame(camNum,numRows,numCols, frameBuffer); }
-int fcUsb_cmd_setReadMode(int camNum, int DataXfrReadMode, int DataFormat) { return FcCamFuncs::fcUsb_cmd_setReadMode(camNum,DataXfrReadMode,DataFormat); }
-bool fcUsb_haveCamera(void) { return FcCamFuncs::fcUsb_haveCamera(); }
-#endif
+void fcUsb_init(void)
+{
+    FcCamFuncs::fcUsb_init();
+}
+void fcUsb_close(void)
+{
+    FcCamFuncs::fcUsb_close();
+}
+void fcUsb_CloseCameraDriver(void)
+{
+    FcCamFuncs::fcUsb_close();
+}
+int fcUsb_FindCameras(void)
+{
+    return FcCamFuncs::fcUsb_FindCameras();
+}
+int fcUsb_cmd_setRegister(int camNum, UInt16 regAddress, UInt16 dataValue)
+{
+    return FcCamFuncs::fcUsb_cmd_setRegister(camNum, regAddress, dataValue);
+}
+UInt16 fcUsb_cmd_getRegister(int camNum, UInt16 regAddress)
+{
+    return FcCamFuncs::fcUsb_cmd_getRegister(camNum, regAddress);
+}
+int fcUsb_cmd_setIntegrationTime(int camNum, UInt32 theTime)
+{
+    return FcCamFuncs::fcUsb_cmd_setIntegrationTime(camNum, theTime);
+}
+int fcUsb_cmd_startExposure(int camNum)
+{
+    return FcCamFuncs::fcUsb_cmd_startExposure(camNum);
+}
+int fcUsb_cmd_abortExposure(int camNum)
+{
+    return FcCamFuncs::fcUsb_cmd_abortExposure(camNum);
+}
+UInt16 fcUsb_cmd_getState(int camNum)
+{
+    return FcCamFuncs::fcUsb_cmd_getState(camNum);
+}
+int fcUsb_cmd_setRoi(int camNum, UInt16 left, UInt16 top, UInt16 right, UInt16 bottom)
+{
+    return FcCamFuncs::fcUsb_cmd_setRoi(camNum, left, top, right, bottom);
+}
+int fcUsb_cmd_setRelay(int camNum, int whichRelay)
+{
+    return FcCamFuncs::fcUsb_cmd_setRelay(camNum, whichRelay);
+}
+int fcUsb_cmd_clearRelay(int camNum, int whichRelay)
+{
+    return FcCamFuncs::fcUsb_cmd_clearRelay(camNum, whichRelay);
+}
+int fcUsb_cmd_pulseRelay(int camNum, int whichRelay, int onMs, int offMs, bool repeats)
+{
+    return FcCamFuncs::fcUsb_cmd_pulseRelay(camNum, whichRelay, onMs, offMs, repeats);
+}
+int fcUsb_cmd_setTemperature(int camNum, SInt16 theTemp)
+{
+    return FcCamFuncs::fcUsb_cmd_setTemperature(camNum, theTemp);
+}
+bool fcUsb_cmd_getTECInPowerOK(int camNum)
+{
+    return FcCamFuncs::fcUsb_cmd_getTECInPowerOK(camNum);
+}
+int fcUsb_cmd_getRawFrame(int camNum, UInt16 numRows, UInt16 numCols, UInt16 *frameBuffer)
+{
+    return FcCamFuncs::fcUsb_cmd_getRawFrame(camNum, numRows, numCols, frameBuffer);
+}
+int fcUsb_cmd_setReadMode(int camNum, int DataXfrReadMode, int DataFormat)
+{
+    return FcCamFuncs::fcUsb_cmd_setReadMode(camNum, DataXfrReadMode, DataFormat);
+}
+bool fcUsb_haveCamera(void)
+{
+    return FcCamFuncs::fcUsb_haveCamera();
+}
+# endif
 
 CameraStarfish::CameraStarfish()
 {
     Connected = false;
     Name = _T("Fishcamp Starfish");
-    FullSize = wxSize(1280,1024);
+    FullSize = wxSize(1280, 1024);
     HasSubframes = true;
     HasGainControl = true;
     m_hasGuideOutput = true;
@@ -109,26 +166,29 @@ wxByte CameraStarfish::BitsPerPixel()
 
 bool CameraStarfish::Connect(const wxString& camId)
 {
-// returns true on error
+    // returns true on error
 
     wxBeginBusyCursor();
-    if (!DriverLoaded) {
-        fcUsb_init();               // Init the driver
+    if (!DriverLoaded)
+    {
+        fcUsb_init(); // Init the driver
         DriverLoaded = true;
     }
     NCams = fcUsb_FindCameras();
     wxEndBusyCursor();
     if (NCams == 0)
         return true;
-    else {
-        CamNum = 1;  // Assume just the one cam for now
+    else
+    {
+        CamNum = 1; // Assume just the one cam for now
         // set to polling mode and turn off black adjustment but turn on auto balancing of the offsets in the 2x2 matrix
         IOReturn rval = fcUsb_cmd_setReadMode(CamNum, fc_classicDataXfr, fc_16b_data);
-        if (rval != kIOReturnSuccess) return true;
+        if (rval != kIOReturnSuccess)
+            return true;
         if (fcUsb_cmd_getTECInPowerOK(CamNum))
-            fcUsb_cmd_setTemperature(CamNum,10);
+            fcUsb_cmd_setTemperature(CamNum, 10);
     }
-    lastSubFrame = wxRect(wxSize(1, 1));        // To differentiate between full-frame "null" subframe
+    lastSubFrame = wxRect(wxSize(1, 1)); // To differentiate between full-frame "null" subframe
     Connected = true;
     return false;
 }
@@ -145,18 +205,21 @@ void CameraStarfish::InitCapture()
 {
     // Set gain
     unsigned short Gain = (unsigned short) GuideCameraGain;
-    if (Gain < 25 ) {  // Low noise 1x-4x in .125x mode maps on 0-24
-        Gain = 8 + Gain;        //103
+    if (Gain < 25)
+    { // Low noise 1x-4x in .125x mode maps on 0-24
+        Gain = 8 + Gain; // 103
     }
-    else if (Gain < 57) { // 4.25x-8x in .25x steps maps onto 25-56
-        Gain = 0x51 + (Gain - 25)/2;  // 81-96 aka 0x51-0x60
+    else if (Gain < 57)
+    { // 4.25x-8x in .25x steps maps onto 25-56
+        Gain = 0x51 + (Gain - 25) / 2; // 81-96 aka 0x51-0x60
     }
-    else { // 9x-15x in 1x steps maps onto 57-95
-        Gain = 0x61 + (Gain - 57)/6;
+    else
+    { // 9x-15x in 1x steps maps onto 57-95
+        Gain = 0x61 + (Gain - 57) / 6;
     }
-    if (Gain > 0x67) Gain = 0x67;
-    fcUsb_cmd_setRegister(CamNum,0x35,Gain);
-
+    if (Gain > 0x67)
+        Gain = 0x67;
+    fcUsb_cmd_setRegister(CamNum, 0x35, Gain);
 }
 
 static bool StopExposure(int camNum)
@@ -174,7 +237,8 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     IOReturn rval;
 
     // init memory
-    if (img.Init(FullSize)) {
+    if (img.Init(FullSize))
+    {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
@@ -200,17 +264,29 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     // set ROI if something has changed
     if (lastSubFrame != subframe)
     {
-        rval = fcUsb_cmd_setRoi(CamNum, (unsigned short)xpos, (unsigned short)ypos, (unsigned short)(xpos + xsize - 1), (unsigned short)(ypos + ysize - 1));
-        //Debug.AddLine(wxString::Format("Starfish: using %s", usingSubFrames ? " sub-frames" : " full frames"));
-        //Debug.AddLine(wxString::Format("Starfish: ROI set from {%d,%d} to {%d,%d)", xpos, ypos, xpos + xsize - 1, ypos + ysize - 1));
-        if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
+        rval = fcUsb_cmd_setRoi(CamNum, (unsigned short) xpos, (unsigned short) ypos, (unsigned short) (xpos + xsize - 1),
+                                (unsigned short) (ypos + ysize - 1));
+        // Debug.AddLine(wxString::Format("Starfish: using %s", usingSubFrames ? " sub-frames" : " full frames"));
+        // Debug.AddLine(wxString::Format("Starfish: ROI set from {%d,%d} to {%d,%d)", xpos, ypos, xpos + xsize - 1, ypos +
+        // ysize - 1));
+        if (rval != kIOReturnSuccess)
+        {
+            if (debug)
+                pFrame->Alert(_T("Starfish Err 1"));
+            return true;
+        }
         lastSubFrame = subframe;
     }
     // set duration
     fcUsb_cmd_setIntegrationTime(CamNum, (unsigned int) duration);
 
     rval = fcUsb_cmd_startExposure(CamNum);
-    if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 2")); return true; }
+    if (rval != kIOReturnSuccess)
+    {
+        if (debug)
+            pFrame->Alert(_T("Starfish Err 2"));
+        return true;
+    }
 
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
@@ -228,8 +304,7 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     while (fcUsb_cmd_getState(CamNum) != 0)
     {
         wxMilliSleep(50);
-        if (WorkerThread::InterruptRequested() &&
-            (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
+        if (WorkerThread::InterruptRequested() && (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
         {
             return true;
         }
@@ -242,7 +317,7 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
 
     if (usingSubFrames)
     {
-        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, subImage.ImageData);
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short) ysize, (unsigned short) xsize, subImage.ImageData);
         // Transfer the subframe to the corresponding location in the full-size frame
         for (int y = 0; y < ysize; y++)
         {
@@ -254,7 +329,7 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     }
     else
     {
-        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, img.ImageData);
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short) ysize, (unsigned short) xsize, img.ImageData);
     }
 
     /*  if (rval != kIOReturnSuccess) {
@@ -262,15 +337,19 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
         //return true;
     }*/
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return false;
 }
 
-bool CameraStarfish::ST4PulseGuideScope(int direction, int duration) {
+bool CameraStarfish::ST4PulseGuideScope(int direction, int duration)
+{
 
-    if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
-    else if (direction == EAST) direction = WEST;
+    if (direction == WEST)
+        direction = EAST; // my ENUM and theirs are flipped
+    else if (direction == EAST)
+        direction = WEST;
 
     if (fcUsb_cmd_pulseRelay(CamNum, direction, duration, 0, false) != kIOReturnSuccess)
         return true;

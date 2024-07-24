@@ -36,10 +36,10 @@
 
 #if defined(SKYRAIDER_CAMERA)
 
-#include "cam_skyraider.h"
+# include "cam_skyraider.h"
 
-#include "MallincamGuider/MallincamGuider.h"
-#include "MallincamGuider/toupcam.h"
+# include "MallincamGuider/MallincamGuider.h"
+# include "MallincamGuider/toupcam.h"
 
 static bool verbose = true;
 
@@ -74,22 +74,15 @@ struct SkyraiderCamera : public GuideCamera
     void FrameReady();
     bool StopCapture();
 
-    int gain_pct(int val) const
-    {
-        return (val - m_minGain) * 100 / (m_maxGain - m_minGain);
-    }
+    int gain_pct(int val) const { return (val - m_minGain) * 100 / (m_maxGain - m_minGain); }
 
-    int cam_gain(int pct) const
-    {
-        return m_minGain + pct * (m_maxGain - m_minGain) / 100;
-    }
+    int cam_gain(int pct) const { return m_minGain + pct * (m_maxGain - m_minGain) / 100; }
 };
 
-//#define USE_PUSH_MODE
+// #define USE_PUSH_MODE
 
-#ifdef USE_PUSH_MODE
-static void __stdcall CameraPushDataCallback(const void *pData, const BITMAPINFOHEADER *pHeader,
-                                             BOOL bSnap, void *pCallbackCtx)
+# ifdef USE_PUSH_MODE
+static void __stdcall CameraPushDataCallback(const void *pData, const BITMAPINFOHEADER *pHeader, BOOL bSnap, void *pCallbackCtx)
 {
     if (pData)
     {
@@ -97,7 +90,7 @@ static void __stdcall CameraPushDataCallback(const void *pData, const BITMAPINFO
         pCam->FrameReady();
     }
 }
-#else // USE_PUSH_MODE
+# else // USE_PUSH_MODE
 static void __stdcall CameraCallback(unsigned nEvent, void *pCallbackCtx)
 {
     if (nEvent == MALLINCAM_EVENT_IMAGE)
@@ -106,11 +99,9 @@ static void __stdcall CameraCallback(unsigned nEvent, void *pCallbackCtx)
         pCam->FrameReady();
     }
 }
-#endif // USE_PUSH_MODE
+# endif // USE_PUSH_MODE
 
-SkyraiderCamera::SkyraiderCamera()
-    : m_buffer(nullptr),
-      m_capturing(false)
+SkyraiderCamera::SkyraiderCamera() : m_buffer(nullptr), m_capturing(false)
 {
     Connected = false;
     Name = _T("MallinCam SkyRaider");
@@ -174,8 +165,8 @@ bool SkyraiderCamera::Connect(const wxString& camId)
         m_maxGain = max;
         HasGainControl = max > min;
         m_defaultGainPct = gain_pct(def);
-        Debug.Write(wxString::Format("SKYRAIDER: gain range %d .. %d, default = %d (%d%%)\n",
-                                     m_minGain, m_maxGain, def, m_defaultGainPct));
+        Debug.Write(wxString::Format("SKYRAIDER: gain range %d .. %d, default = %d (%d%%)\n", m_minGain, m_maxGain, def,
+                                     m_defaultGainPct));
     }
 
     if (m_buffer)
@@ -185,8 +176,8 @@ bool SkyraiderCamera::Connect(const wxString& camId)
 
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
-    //Mallincam_put_AutoExpoEnable(m_Guider.m_Hmallincam, 0);
-    //Toupcam_put_AutoExpoEnable(reinterpret_cast<HToupCam>(m_Guider.m_Hmallincam), 0);
+    // Mallincam_put_AutoExpoEnable(m_Guider.m_Hmallincam, 0);
+    // Toupcam_put_AutoExpoEnable(reinterpret_cast<HToupCam>(m_Guider.m_Hmallincam), 0);
 
     return false;
 }
@@ -210,18 +201,16 @@ bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxR
     int res = m_Guider.Mallincam_get_ExpoTime(m_Guider.m_Hmallincam, &cur_exp);
     if ((res == MC_SUCCESS) && (cur_exp != exposureUS))
     {
-        Debug.Write(wxString::Format("SKYRAIDER: exposure value is %u, updating to %ld\n",
-                                     cur_exp, exposureUS));
+        Debug.Write(wxString::Format("SKYRAIDER: exposure value is %u, updating to %ld\n", cur_exp, exposureUS));
         res = m_Guider.Mallincam_put_ExpoTime(m_Guider.m_Hmallincam, exposureUS);
     }
 
     unsigned short new_gain = cam_gain(GuideCameraGain);
     unsigned short cur_gain;
-    if (m_Guider.Mallincam_get_ExpoAGain(m_Guider.m_Hmallincam, &cur_gain) == MC_SUCCESS &&
-        new_gain != cur_gain)
+    if (m_Guider.Mallincam_get_ExpoAGain(m_Guider.m_Hmallincam, &cur_gain) == MC_SUCCESS && new_gain != cur_gain)
     {
-        Debug.Write(wxString::Format("SKYRAIDER: gain value is %hu (%d%%), updating to %hu (%d%%)\n",
-                                     cur_gain, gain_pct(cur_gain), new_gain, GuideCameraGain));
+        Debug.Write(wxString::Format("SKYRAIDER: gain value is %hu (%d%%), updating to %hu (%d%%)\n", cur_gain,
+                                     gain_pct(cur_gain), new_gain, GuideCameraGain));
         m_Guider.Mallincam_put_ExpoAGain(m_Guider.m_Hmallincam, new_gain);
     }
 
@@ -230,21 +219,21 @@ bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxR
     // get is current
 
     unsigned int width, height;
-#if 0 // TODO: this is almost certainly required, but it was excluded for some reason and I have no way to test it
+# if 0 // TODO: this is almost certainly required, but it was excluded for some reason and I have no way to test it
     while (SUCCEEDED(m_sdk.PullImage(m_handle, m_buffer, 8, &width, &height)))
     {
     }
-#endif
+# endif
 
     if (!m_capturing)
     {
         Debug.Write("SKYRAIDER: startcapture\n");
         m_frameReady = false;
-#ifdef USE_PUSH_MODE
+# ifdef USE_PUSH_MODE
         m_Guider.Mallincam_StartPushMode(m_Guider.m_Hmallincam, CameraPushDataCallback, this);
-#else
+# else
         m_Guider.Mallincam_StartPullModeWithCallback(m_Guider.m_Hmallincam, CameraCallback, this);
-#endif
+# endif
         m_capturing = true;
     }
 
@@ -252,28 +241,31 @@ bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxR
 
     CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
-// do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
-//  if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-//        (WorkerThread::TerminateRequested() || StopCapture()))
-//    {
-//        return true;
-//    }
+    // do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
+    //  if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+    //        (WorkerThread::TerminateRequested() || StopCapture()))
+    //    {
+    //        return true;
+    //    }
 
     while (true)
     {
         if (m_frameReady)
         {
-            if (verbose) Debug.Write("SKYRAIDER: frame is ready, pull image\n");
+            if (verbose)
+                Debug.Write("SKYRAIDER: frame is ready, pull image\n");
             m_frameReady = false;
             int result = m_Guider.Mallincam_PullImage(m_Guider.m_Hmallincam, m_buffer, 8, &width, &height);
-            if (verbose) Debug.Write(wxString::Format("SKYRAIDER: pull image ret %d\n", res));
+            if (verbose)
+                Debug.Write(wxString::Format("SKYRAIDER: pull image ret %d\n", res));
             if (result == MC_SUCCESS)
                 break;
         }
         WorkerThread::MilliSleep(poll, WorkerThread::INT_ANY);
         if (WorkerThread::InterruptRequested())
         {
-            if (verbose) Debug.Write("SKYRAIDER: interrupt requested\n");
+            if (verbose)
+                Debug.Write("SKYRAIDER: interrupt requested\n");
             StopCapture();
             return true;
         }
@@ -289,7 +281,8 @@ bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxR
     for (int i = 0; i < img.NPixels; i++)
         img.ImageData[i] = m_buffer[i];
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
 
     return false;
 }
@@ -307,7 +300,8 @@ bool SkyraiderCamera::StopCapture()
 
 void SkyraiderCamera::FrameReady()
 {
-    if (verbose) Debug.Write("SKYRAIDER: frameready callback\n");
+    if (verbose)
+        Debug.Write("SKYRAIDER: frameready callback\n");
     m_frameReady = true;
 }
 

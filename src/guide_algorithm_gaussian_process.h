@@ -64,7 +64,7 @@ protected:
     {
         wxSpinCtrlDouble *m_pPeriodLengthsInference;
         wxSpinCtrlDouble *m_pPeriodLengthsPeriodEstimation;
-        wxSpinCtrl       *m_pNumPointsApproximation;
+        wxSpinCtrl *m_pNumPointsApproximation;
         wxSpinCtrlDouble *m_pSE0KLengthScale;
         wxSpinCtrlDouble *m_pSE0KSignalVariance;
         wxSpinCtrlDouble *m_pPKLengthScale;
@@ -97,10 +97,9 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    GPExpertDialog *m_expertDialog;       // Exactly one per GP instance independent from ConfigDialogPane lifetimes
+    GPExpertDialog *m_expertDialog; // Exactly one per GP instance independent from ConfigDialogPane lifetimes
 
 private:
-
     /**
      * Holds all data that is needed for the GP guiding.
      */
@@ -120,8 +119,8 @@ private:
      * Dark tracking mode is for debugging: only deduceResult is called if enabled.
      */
     bool dark_tracking_mode_;
-    bool block_updates_;             // Don't update GP if guiding is disabled
-    double guiding_ra_;              // allow resuming guiding after guiding stopped if there is no change in RA
+    bool block_updates_; // Don't update GP if guiding is disabled
+    double guiding_ra_; // allow resuming guiding after guiding stopped if there is no change in RA
     PierSide guiding_pier_side_;
     std::chrono::system_clock::time_point guiding_stopped_time_; // time guiding stopped
 
@@ -235,7 +234,6 @@ public:
     void GetParamNames(wxArrayString& names) const override;
     bool GetParam(const wxString& name, double *val) const override;
     bool SetParam(const wxString& name, double val) override;
-
 };
 
-#endif  // GUIDE_GAUSSIAN_PROCESS
+#endif // GUIDE_GAUSSIAN_PROCESS

@@ -69,7 +69,6 @@ public:
 
 private:
     bool buildDarkLib;
-
 };
 
 #endif

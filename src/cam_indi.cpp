@@ -38,160 +38,156 @@
 
 #ifdef INDI_CAMERA
 
-#include "cam_indi.h"
-#include "camera.h"
-#include "config_indi.h"
-#include "image_math.h"
-#include "indi_gui.h"
-#include <libindi/baseclient.h>
+# include "cam_indi.h"
+# include "camera.h"
+# include "config_indi.h"
+# include "image_math.h"
+# include "indi_gui.h"
+# include <libindi/baseclient.h>
 
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+# include <libindi/basedevice.h>
+# include <libindi/indiproperty.h>
 
 class CapturedFrame
 {
-    public:
-        void     *m_data;
-        size_t   m_size;
-        char     m_format[MAXINDIBLOBFMT];
+public:
+    void *m_data;
+    size_t m_size;
+    char m_format[MAXINDIBLOBFMT];
 
-        CapturedFrame()
-        {
-            m_data = nullptr;
-            m_size = 0;
-            m_format[0] = 0;
-        }
+    CapturedFrame()
+    {
+        m_data = nullptr;
+        m_size = 0;
+        m_format[0] = 0;
+    }
 
-        ~CapturedFrame()
-        {
-#ifdef INDI_SHARED_BLOB_SUPPORT
-            IDSharedBlobFree(m_data);
-#else
-            free(m_data);
-#endif
-        }
+    ~CapturedFrame()
+    {
+# ifdef INDI_SHARED_BLOB_SUPPORT
+        IDSharedBlobFree(m_data);
+# else
+        free(m_data);
+# endif
+    }
 
-        // Take ownership of this blob's data, so INDI won't overwrite/free the memory
-        void steal(IBLOB *bp)
-        {
-            m_data = bp->blob;
-            m_size = bp->size;
-            strncpy(m_format, bp->format, MAXINDIBLOBFMT);
+    // Take ownership of this blob's data, so INDI won't overwrite/free the memory
+    void steal(IBLOB *bp)
+    {
+        m_data = bp->blob;
+        m_size = bp->size;
+        strncpy(m_format, bp->format, MAXINDIBLOBFMT);
 
-            bp->blob = nullptr;
-            bp->size = 0;
-        }
+        bp->blob = nullptr;
+        bp->size = 0;
+    }
 };
 
 class CameraINDI : public GuideCamera, public INDI::BaseClient
 {
-    private:
-        ISwitchVectorProperty *connection_prop;
-        INumberVectorProperty *expose_prop;
-        INumberVectorProperty *frame_prop;
-        INumber               *frame_x;
-        INumber               *frame_y;
-        INumber               *frame_width;
-        INumber               *frame_height;
-        ISwitchVectorProperty *frame_type_prop;
-        INumberVectorProperty *ccdinfo_prop;
-        INumberVectorProperty *binning_prop;
-        INumber               *binning_x;
-        INumber               *binning_y;
-        ISwitchVectorProperty *video_prop;
-        ITextVectorProperty   *camera_port;
-        INDI::BaseDevice      camera_device;
-        INumberVectorProperty *pulseGuideNS_prop;
-        INumber               *pulseN_prop;
-        INumber               *pulseS_prop;
-        INumberVectorProperty *pulseGuideEW_prop;
-        INumber               *pulseE_prop;
-        INumber               *pulseW_prop;
+private:
+    ISwitchVectorProperty *connection_prop;
+    INumberVectorProperty *expose_prop;
+    INumberVectorProperty *frame_prop;
+    INumber *frame_x;
+    INumber *frame_y;
+    INumber *frame_width;
+    INumber *frame_height;
+    ISwitchVectorProperty *frame_type_prop;
+    INumberVectorProperty *ccdinfo_prop;
+    INumberVectorProperty *binning_prop;
+    INumber *binning_x;
+    INumber *binning_y;
+    ISwitchVectorProperty *video_prop;
+    ITextVectorProperty *camera_port;
+    INDI::BaseDevice camera_device;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber *pulseN_prop;
+    INumber *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber *pulseE_prop;
+    INumber *pulseW_prop;
 
-        wxMutex sync_lock;
-        wxCondition sync_cond;
-        bool guide_active;
-        GuideAxis guide_active_axis;
+    wxMutex sync_lock;
+    wxCondition sync_cond;
+    bool guide_active;
+    GuideAxis guide_active_axis;
 
-        IndiGui  *m_gui;
+    IndiGui *m_gui;
 
-        wxMutex  m_lastFrame_lock;
-        wxCondition m_lastFrame_cond;
-        CapturedFrame *m_lastFrame;
+    wxMutex m_lastFrame_lock;
+    wxCondition m_lastFrame_cond;
+    CapturedFrame *m_lastFrame;
 
-        usImage  *StackImg;
-        int      StackFrames;
-        volatile bool stacking; // TODO: use a wxCondition to signal completion
-        bool     has_blob;
-        bool     has_old_videoprop;
-        bool     first_frame;
-        volatile bool modal;
-        bool     ready;
-        wxByte   m_bitsPerPixel;
-        double   PixSize;
-        double   PixSizeX;
-        double   PixSizeY;
-        wxRect   m_maxSize;
-        wxByte   m_curBinning;
-        bool     HasBayer;
-        long     INDIport;
-        wxString INDIhost;
-        wxString INDICameraName;
-        long     INDICameraCCD;
-        wxString INDICameraCCDCmd;
-        wxString INDICameraBlobName;
-        bool     INDICameraForceVideo;
-        bool     INDICameraForceExposure;
-        wxRect   m_roi;
+    usImage *StackImg;
+    int StackFrames;
+    volatile bool stacking; // TODO: use a wxCondition to signal completion
+    bool has_blob;
+    bool has_old_videoprop;
+    bool first_frame;
+    volatile bool modal;
+    bool ready;
+    wxByte m_bitsPerPixel;
+    double PixSize;
+    double PixSizeX;
+    double PixSizeY;
+    wxRect m_maxSize;
+    wxByte m_curBinning;
+    bool HasBayer;
+    long INDIport;
+    wxString INDIhost;
+    wxString INDICameraName;
+    long INDICameraCCD;
+    wxString INDICameraCCDCmd;
+    wxString INDICameraBlobName;
+    bool INDICameraForceVideo;
+    bool INDICameraForceExposure;
+    wxRect m_roi;
 
-        bool     ConnectToDriver(RunInBg *ctx);
-        void     SetCCDdevice();
-        void     ClearStatus();
-        void     CheckState();
-        void     CameraDialog();
-        void     CameraSetup();
-        bool     ReadFITS(CapturedFrame *cf, usImage& img, bool takeSubframe, const wxRect& subframe);
-        bool     StackStream(CapturedFrame *cf);
-        void     SendBinning();
+    bool ConnectToDriver(RunInBg *ctx);
+    void SetCCDdevice();
+    void ClearStatus();
+    void CheckState();
+    void CameraDialog();
+    void CameraSetup();
+    bool ReadFITS(CapturedFrame *cf, usImage& img, bool takeSubframe, const wxRect& subframe);
+    bool StackStream(CapturedFrame *cf);
+    void SendBinning();
 
-        // Update the last frame, discarding any missed frame
-        void updateLastFrame(IBLOB *bp);
+    // Update the last frame, discarding any missed frame
+    void updateLastFrame(IBLOB *bp);
 
-        // Wait until a frame was acquired, for limited amout of time.
-        // If non null is returned, caller is responsible for deletion
-        CapturedFrame *waitFrame(unsigned long waitTime);
+    // Wait until a frame was acquired, for limited amout of time.
+    // If non null is returned, caller is responsible for deletion
+    CapturedFrame *waitFrame(unsigned long waitTime);
 
-    protected:
-        void newDevice(INDI::BaseDevice dp) override;
-        void removeDevice(INDI::BaseDevice dp) override;
-        void newProperty(INDI::Property property) override;
-        void updateProperty(INDI::Property property) override;
-        void removeProperty(INDI::Property property) override {}
-        void newMessage(INDI::BaseDevice dp, int messageID) override;
-        void serverConnected() override;
-        void serverDisconnected(int exit_code) override;
+protected:
+    void newDevice(INDI::BaseDevice dp) override;
+    void removeDevice(INDI::BaseDevice dp) override;
+    void newProperty(INDI::Property property) override;
+    void updateProperty(INDI::Property property) override;
+    void removeProperty(INDI::Property property) override { }
+    void newMessage(INDI::BaseDevice dp, int messageID) override;
+    void serverConnected() override;
+    void serverDisconnected(int exit_code) override;
 
-    public:
-        CameraINDI();
-        ~CameraINDI();
-        bool    Connect(const wxString& camId) override;
-        bool    Disconnect() override;
-        bool    HasNonGuiCapture() override;
-        wxByte  BitsPerPixel() override;
-        bool    GetDevicePixelSize(double *pixSize) override;
-        void    ShowPropertyDialog() override;
+public:
+    CameraINDI();
+    ~CameraINDI();
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *pixSize) override;
+    void ShowPropertyDialog() override;
 
-        bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
 
-        bool    ST4PulseGuideScope(int direction, int duration) override;
-        bool    ST4HasNonGuiMove() override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool ST4HasNonGuiMove() override;
 };
 
-CameraINDI::CameraINDI()
-    :
-    sync_cond(sync_lock),
-    m_lastFrame_cond(m_lastFrame_lock),
-    m_gui(nullptr)
+CameraINDI::CameraINDI() : sync_cond(sync_lock), m_lastFrame_cond(m_lastFrame_lock), m_gui(nullptr)
 {
     m_lastFrame = nullptr;
     ClearStatus();
@@ -317,149 +313,144 @@ void CameraINDI::updateProperty(INDI::Property property)
 
     switch (property.getType())
     {
-        case INDI_SWITCH:
+    case INDI_SWITCH:
+    {
+        auto svp = property.getSwitch();
+
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Received Switch: %s = %i\n", svp->name, svp->sp->s));
+
+        if (strcmp(svp->name, "CONNECTION") == 0)
         {
-            auto svp = property.getSwitch();
-
-            if (INDIConfig::Verbose())
-                Debug.Write(wxString::Format("INDI Camera Received Switch: %s = %i\n", svp->name, svp->sp->s));
-
-            if (strcmp(svp->name, "CONNECTION") == 0)
+            ISwitch *connectswitch = IUFindSwitch(svp, "CONNECT");
+            if (connectswitch->s == ISS_ON)
             {
-                ISwitch *connectswitch = IUFindSwitch(svp, "CONNECT");
-                if (connectswitch->s == ISS_ON)
-                {
-                    Connected = true;
-                    CheckState();
-                }
-                else
-                {
-                    if (ready)
-                    {
-                        ClearStatus();
-
-                        // call Disconnect in the main thread since that will
-                        // want to join the INDI worker thread which is
-                        // probably the current thread
-
-                        PhdApp::ExecInMainThread(
-                            [this]()
-                        {
-                            DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT);
-                        });
-                    }
-                }
+                Connected = true;
+                CheckState();
             }
-
-        }
-        break;
-        case INDI_NUMBER:
-        {
-            auto nvp = property.getNumber();
-
-            if (INDIConfig::Verbose())
+            else
             {
-                if (strcmp(nvp->name, "CCD_EXPOSURE") == 0 )
+                if (ready)
                 {
-                    // rate limit this one, it's too noisy
-                    static double s_lastval;
-                    if (nvp->np->value > 0.0 && fabs(nvp->np->value - s_lastval) < 0.5)
-                        return;
-                    s_lastval = nvp->np->value;
-                }
-                std::ostringstream os;
-                for (int i = 0; i < nvp->nnp; i++)
-                {
-                    if (i) os << ',';
-                    os << nvp->np[i].name << ':' << nvp->np[i].value;
-                }
-                Debug.Write(wxString::Format("INDI Camera Received Number: %s = %s state = %s\n", nvp->name, os.str().c_str(),
-                                             property.getStateAsString()));
-            }
+                    ClearStatus();
 
-            if (nvp == ccdinfo_prop)
-            {
-                PixSize = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE")->value;
-                PixSizeX = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_X")->value;
-                PixSizeY = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_Y")->value;
-                m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
-                m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
-                // defer defining FullSize since it is not simply derivable from max size and binning
-                // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-                m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
-            }
-            else if (nvp == binning_prop)
-            {
-                MaxBinning = wxMin(binning_x->max, binning_y->max);
-                m_curBinning = wxMin(binning_x->value, binning_y->value);
-                if (Binning > MaxBinning)
-                    Binning = MaxBinning;
-                // defer defining FullSize since it is not simply derivable from max size and binning
-                // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-            }
-            else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
-            {
-                bool notify = false;
-                {
-                    wxMutexLocker lck(sync_lock);
-                    if (guide_active && nvp->s != IPS_BUSY &&
-                            ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) ||
-                             (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
-                    {
-                        guide_active = false;
-                        notify = true;
-                    }
-                    else if (!guide_active && nvp->s == IPS_BUSY)
-                    {
-                        guide_active = true;
-                        guide_active_axis = nvp == pulseGuideEW_prop ? GUIDE_RA : GUIDE_DEC;
-                    }
-                }
-                if (notify)
-                    sync_cond.Broadcast();
-            }
-        }
-        break;
-        case INDI_TEXT:
-        {
-            auto tvp = property.getText();
+                    // call Disconnect in the main thread since that will
+                    // want to join the INDI worker thread which is
+                    // probably the current thread
 
-            if (INDIConfig::Verbose())
-                Debug.Write(wxString::Format("INDI Camera Received Text: %s = %s\n", tvp->name, tvp->tp->text));
-
-        }
-        break;
-        case INDI_BLOB:
-        {
-            // we go here every time a new blob is available
-            // this is normally the image from the camera
-
-            auto bvp = property.getBLOB();
-            auto bp = bvp->at(0);
-
-            if (INDIConfig::Verbose())
-                Debug.Write(wxString::Format("INDI Camera Received BLOB %s len=%d size=%d\n", bp->name, bp->bloblen, bp->size));
-
-            if (expose_prop && !INDICameraForceVideo)
-            {
-                if (bp->name == INDICameraBlobName)
-                {
-                    updateLastFrame(bp);
-                }
-            }
-            else if (video_prop)
-            {
-                if (modal && !stacking)
-                {
-                    CapturedFrame cf;
-                    cf.steal(bp);
-                    StackStream(&cf);
+                    PhdApp::ExecInMainThread([this]() { DisconnectWithAlert(_("INDI camera disconnected"), NO_RECONNECT); });
                 }
             }
         }
+    }
+    break;
+    case INDI_NUMBER:
+    {
+        auto nvp = property.getNumber();
+
+        if (INDIConfig::Verbose())
+        {
+            if (strcmp(nvp->name, "CCD_EXPOSURE") == 0)
+            {
+                // rate limit this one, it's too noisy
+                static double s_lastval;
+                if (nvp->np->value > 0.0 && fabs(nvp->np->value - s_lastval) < 0.5)
+                    return;
+                s_lastval = nvp->np->value;
+            }
+            std::ostringstream os;
+            for (int i = 0; i < nvp->nnp; i++)
+            {
+                if (i)
+                    os << ',';
+                os << nvp->np[i].name << ':' << nvp->np[i].value;
+            }
+            Debug.Write(wxString::Format("INDI Camera Received Number: %s = %s state = %s\n", nvp->name, os.str().c_str(),
+                                         property.getStateAsString()));
+        }
+
+        if (nvp == ccdinfo_prop)
+        {
+            PixSize = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE")->value;
+            PixSizeX = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_X")->value;
+            PixSizeY = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_Y")->value;
+            m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
+            m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
+            // defer defining FullSize since it is not simply derivable from max size and binning
+            // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
+        }
+        else if (nvp == binning_prop)
+        {
+            MaxBinning = wxMin(binning_x->max, binning_y->max);
+            m_curBinning = wxMin(binning_x->value, binning_y->value);
+            if (Binning > MaxBinning)
+                Binning = MaxBinning;
+            // defer defining FullSize since it is not simply derivable from max size and binning
+            // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        }
+        else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
+        {
+            bool notify = false;
+            {
+                wxMutexLocker lck(sync_lock);
+                if (guide_active && nvp->s != IPS_BUSY &&
+                    ((guide_active_axis == GUIDE_RA && nvp == pulseGuideEW_prop) ||
+                     (guide_active_axis == GUIDE_DEC && nvp == pulseGuideNS_prop)))
+                {
+                    guide_active = false;
+                    notify = true;
+                }
+                else if (!guide_active && nvp->s == IPS_BUSY)
+                {
+                    guide_active = true;
+                    guide_active_axis = nvp == pulseGuideEW_prop ? GUIDE_RA : GUIDE_DEC;
+                }
+            }
+            if (notify)
+                sync_cond.Broadcast();
+        }
+    }
+    break;
+    case INDI_TEXT:
+    {
+        auto tvp = property.getText();
+
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Received Text: %s = %s\n", tvp->name, tvp->tp->text));
+    }
+    break;
+    case INDI_BLOB:
+    {
+        // we go here every time a new blob is available
+        // this is normally the image from the camera
+
+        auto bvp = property.getBLOB();
+        auto bp = bvp->at(0);
+
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Received BLOB %s len=%d size=%d\n", bp->name, bp->bloblen, bp->size));
+
+        if (expose_prop && !INDICameraForceVideo)
+        {
+            if (bp->name == INDICameraBlobName)
+            {
+                updateLastFrame(bp);
+            }
+        }
+        else if (video_prop)
+        {
+            if (modal && !stacking)
+            {
+                CapturedFrame cf;
+                cf.steal(bp);
+                StackStream(&cf);
+            }
+        }
+    }
+    break;
+    default:
         break;
-        default:
-            break;
     }
 }
 
@@ -494,10 +485,10 @@ void CameraINDI::newProperty(INDI::Property property)
             // set option to receive blob and messages for the selected CCD
             setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
 
-#ifdef INDI_SHARED_BLOB_SUPPORT
+# ifdef INDI_SHARED_BLOB_SUPPORT
             // Allow faster mode provided we don't modify the blob content or free/realloc it
             enableDirectBlobAccess(INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
-#endif
+# endif
         }
     }
     else if (PropName == INDICameraCCDCmd + "EXPOSURE" && Proptype == INDI_NUMBER)
@@ -655,7 +646,6 @@ bool CameraINDI::Connect(const wxString& camId)
 
             // We need to return FALSE if we are successful
             return !cam->Connected;
-
         }
     };
 
@@ -847,18 +837,11 @@ void CameraINDI::SetCCDdevice()
 
 bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe, const wxRect& subframe)
 {
-    fitsfile *fptr;  // FITS file pointer
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+    fitsfile *fptr; // FITS file pointer
+    int status = 0; // CFITSIO status value MUST be initialized to zero!
 
     // load blob to CFITSIO
-    if (fits_open_memfile(&fptr,
-                          "",
-                          READONLY,
-                          &frame->m_data,
-                          &frame->m_size,
-                          0,
-                          nullptr,
-                          &status))
+    if (fits_open_memfile(&fptr, "", READONLY, &frame->m_data, &frame->m_size, 0, nullptr, &status))
     {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
@@ -897,7 +880,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         return true;
     }
 
-    long fpixel[3] = {1, 1, 1};
+    long fpixel[3] = { 1, 1, 1 };
 
     if (takeSubframe)
     {
@@ -970,7 +953,8 @@ bool CameraINDI::StackStream(CapturedFrame *cf)
 
     if (cf->m_size != StackImg->NPixels)
     {
-        Debug.Write(wxString::Format("INDI Camera: discarding blob with size %d, expected %u\n", cf->m_size, StackImg->NPixels));
+        Debug.Write(
+            wxString::Format("INDI Camera: discarding blob with size %d, expected %u\n", cf->m_size, StackImg->NPixels));
         return true;
     }
 
@@ -1113,11 +1097,11 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                     // try to use video stream instead of exposure
                     // See: http://www.indilib.org/forum/ccds-dslrs/3078-v4l2-ccd-exposure-property.html
                     // TODO : check if an updated INDI v4l2 driver offer a better solution
-                    pFrame->Alert(wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."),
-                                                   INDICameraName));
+                    pFrame->Alert(
+                        wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
                     INDICameraForceVideo = true;
                     first_frame = false;
-                    return Capture(duration, img,  options, subframeArg);
+                    return Capture(duration, img, options, subframeArg);
                 }
                 else
                 {
@@ -1230,7 +1214,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 modal = false;
         }
 
-        if (WorkerThread::StopRequested() ||  WorkerThread::TerminateRequested())
+        if (WorkerThread::StopRequested() || WorkerThread::TerminateRequested())
         {
             // Stop video streaming when Stop button is pressed or exiting the program
             v_on->s = ISS_OFF;
@@ -1287,14 +1271,14 @@ bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
 {
     switch (direction)
     {
-        case EAST:
-        case WEST:
-        case NORTH:
-        case SOUTH:
-            break;
-        default:
-            Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
-            return true;
+    case EAST:
+    case WEST:
+    case NORTH:
+    case SOUTH:
+        break;
+    default:
+        Debug.Write("INDI Camera error CameraINDI::Guide NONE\n");
+        return true;
     }
 
     if (!pulseGuideNS_prop || !pulseGuideEW_prop)
@@ -1322,26 +1306,26 @@ bool CameraINDI::ST4PulseGuideScope(int direction, int duration)
 
     switch (direction)
     {
-        case EAST:
-            pulseE_prop->value = duration;
-            pulseW_prop->value = 0;
-            sendNewNumber(pulseGuideEW_prop);
-            break;
-        case WEST:
-            pulseE_prop->value = 0;
-            pulseW_prop->value = duration;
-            sendNewNumber(pulseGuideEW_prop);
-            break;
-        case NORTH:
-            pulseN_prop->value = duration;
-            pulseS_prop->value = 0;
-            sendNewNumber(pulseGuideNS_prop);
-            break;
-        case SOUTH:
-            pulseN_prop->value = 0;
-            pulseS_prop->value = duration;
-            sendNewNumber(pulseGuideNS_prop);
-            break;
+    case EAST:
+        pulseE_prop->value = duration;
+        pulseW_prop->value = 0;
+        sendNewNumber(pulseGuideEW_prop);
+        break;
+    case WEST:
+        pulseE_prop->value = 0;
+        pulseW_prop->value = duration;
+        sendNewNumber(pulseGuideEW_prop);
+        break;
+    case NORTH:
+        pulseN_prop->value = duration;
+        pulseS_prop->value = 0;
+        sendNewNumber(pulseGuideNS_prop);
+        break;
+    case SOUTH:
+        pulseN_prop->value = 0;
+        pulseS_prop->value = duration;
+        sendNewNumber(pulseGuideNS_prop);
+        break;
     }
 
     if (INDIConfig::Verbose())

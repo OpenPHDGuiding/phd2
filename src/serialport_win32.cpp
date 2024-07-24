@@ -50,7 +50,7 @@ wxArrayString SerialPortWin32::GetSerialPortList(void)
         do
         {
             bufferSize *= 2;
-            delete [] pBuffer;
+            delete[] pBuffer;
             pBuffer = new char[bufferSize];
             if (pBuffer == NULL)
             {
@@ -64,7 +64,7 @@ wxArrayString SerialPortWin32::GetSerialPortList(void)
             throw ERROR_INFO("QueryDosDevice failed");
         }
 
-        for (char *pEntry=pBuffer;*pEntry; pEntry += strlen(pEntry) + 1)
+        for (char *pEntry = pBuffer; *pEntry; pEntry += strlen(pEntry) + 1)
         {
             if (strncmp(pEntry, "COM", 3) == 0)
             {
@@ -77,7 +77,7 @@ wxArrayString SerialPortWin32::GetSerialPortList(void)
         POSSIBLY_UNUSED(Msg);
     }
 
-    delete [] pBuffer;
+    delete[] pBuffer;
 
     return ret;
 }
@@ -95,24 +95,24 @@ SerialPortWin32::~SerialPortWin32(void)
     }
 }
 
-bool SerialPortWin32::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
+bool SerialPortWin32::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS,
+                              bool useDTR)
 {
     bool bError = false;
 
     try
     {
         wxString portPath = "\\\\.\\" + portName;
-        m_handle = CreateFile(portPath,
-                               GENERIC_READ | GENERIC_WRITE,
-                               0,    // must be opened with exclusive-access
-                               NULL, // no security attributes
-                               OPEN_EXISTING, // must use OPEN_EXISTING
-                               0,    // not overlapped I/O
-                               NULL  // hTemplate must be NULL for comm devices
-                               );
+        m_handle = CreateFile(portPath, GENERIC_READ | GENERIC_WRITE,
+                              0, // must be opened with exclusive-access
+                              NULL, // no security attributes
+                              OPEN_EXISTING, // must use OPEN_EXISTING
+                              0, // not overlapped I/O
+                              NULL // hTemplate must be NULL for comm devices
+        );
         if (m_handle == INVALID_HANDLE_VALUE)
         {
-            throw ERROR_INFO("SerialPortWin32: CreateFile("+portName+") failed");
+            throw ERROR_INFO("SerialPortWin32: CreateFile(" + portName + ") failed");
         }
 
         DCB dcb;
@@ -127,15 +127,15 @@ bool SerialPortWin32::Connect(const wxString& portName, int baud, int dataBits, 
 
         switch (stopBits)
         {
-            case 1:
-                dcb.StopBits = ONESTOPBIT;
-                break;
-            case 2:
-                dcb.StopBits = TWOSTOPBITS;
-                break;
-            default:
-                throw ERROR_INFO("SerialPortWin32: invalid stopBits");
-                break;
+        case 1:
+            dcb.StopBits = ONESTOPBIT;
+            break;
+        case 2:
+            dcb.StopBits = TWOSTOPBITS;
+            break;
+        default:
+            throw ERROR_INFO("SerialPortWin32: invalid stopBits");
+            break;
         }
 
         // no need to map the parity enum --- ours matches theirs
@@ -227,7 +227,6 @@ bool SerialPortWin32::Send(const unsigned char *pData, unsigned count)
         {
             throw ERROR_INFO("SerialPortWin32: nBytesWritten != count");
         }
-
     }
     catch (const wxString& Msg)
     {
@@ -291,12 +290,12 @@ bool SerialPortWin32::EscapeFunction(DWORD command)
 
 bool SerialPortWin32::SetRTS(bool asserted)
 {
-    return SerialPortWin32::EscapeFunction(asserted?SETRTS:CLRRTS);
+    return SerialPortWin32::EscapeFunction(asserted ? SETRTS : CLRRTS);
 }
 
 bool SerialPortWin32::SetDTR(bool asserted)
 {
-    return SerialPortWin32::EscapeFunction(asserted?SETDTR:CLRDTR);
+    return SerialPortWin32::EscapeFunction(asserted ? SETDTR : CLRDTR);
 }
 
 #endif // _WINDOWS_

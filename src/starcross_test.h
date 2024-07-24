@@ -62,19 +62,19 @@ class StarCrossDialog : public wxDialog
 public:
     StarCrossDialog(wxWindow *parent);
     ~StarCrossDialog();
-private:
 
-    wxSpinCtrlDouble* m_CtlGuideSpeed;
-    wxSpinCtrlDouble* m_CtlNumPulses;
-    wxSpinCtrlDouble* m_CtlPulseSize;
-    wxSpinCtrlDouble* m_CtlLegDuration;
-    wxSpinCtrlDouble* m_CtlTotalDuration;
-    wxStaticBoxSizer* m_DetailsGroup;
-    wxGauge* m_Progress;
-    wxButton* m_StartBtn;
-    wxButton* m_StopBtn;
-    wxButton* m_ViewControlBtn;
-    wxStaticText* m_Explanations;
+private:
+    wxSpinCtrlDouble *m_CtlGuideSpeed;
+    wxSpinCtrlDouble *m_CtlNumPulses;
+    wxSpinCtrlDouble *m_CtlPulseSize;
+    wxSpinCtrlDouble *m_CtlLegDuration;
+    wxSpinCtrlDouble *m_CtlTotalDuration;
+    wxStaticBoxSizer *m_DetailsGroup;
+    wxGauge *m_Progress;
+    wxButton *m_StartBtn;
+    wxButton *m_StopBtn;
+    wxButton *m_ViewControlBtn;
+    wxStaticText *m_Explanations;
     bool m_CancelTest;
     int m_DirectionalPulseCount;
     int m_Amount;
@@ -83,6 +83,7 @@ private:
     void SuggestParams();
     void SynchDetailSliders();
     void SynchSummarySliders();
+
 public:
     void OnSuggest(wxCommandEvent& evt);
     void OnViewControl(wxCommandEvent& evt);

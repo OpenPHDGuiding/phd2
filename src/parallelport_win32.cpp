@@ -46,9 +46,7 @@ ParallelPortWin32::ParallelPortWin32(void)
     m_portAddr = 0;
 }
 
-ParallelPortWin32::~ParallelPortWin32(void)
-{
-}
+ParallelPortWin32::~ParallelPortWin32(void) { }
 
 struct ParallelPortChooser : public wxDialog
 {
@@ -74,7 +72,7 @@ wxString ParallelPortWin32::ChooseParallelPort(const wxString& dflt)
     sz1->Add(portlb);
 
     wxWindow *label = new wxStaticText(&dlg, wxID_ANY, _("Custom Port Address:"));
-    wxTextCtrl *customtxt = new wxTextCtrl(&dlg ,wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(70, -1));
+    wxTextCtrl *customtxt = new wxTextCtrl(&dlg, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(70, -1));
 
     wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
     sz2->Add(label, wxSizerFlags(0).Border(wxALL, 10));
@@ -82,8 +80,7 @@ wxString ParallelPortWin32::ChooseParallelPort(const wxString& dflt)
 
     sz1->Add(sz2);
 
-    sz1->Add(dlg.CreateButtonSizer(wxOK | wxCANCEL),
-        wxSizerFlags(0).Right().Border(wxALL, 10));
+    sz1->Add(dlg.CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Right().Border(wxALL, 10));
 
     dlg.SetSizerAndFit(sz1);
 

@@ -61,16 +61,8 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
     unsigned int m_popupDelayMillis;
 
     RunInBgImpl(RunInBg *bg, wxWindow *parent, const wxString& title, const wxString& message)
-        : m_bg(bg),
-        m_parent(parent),
-        m_title(title),
-        m_message(message),
-        m_updateMsg(nullptr),
-        m_win(0),
-        m_shown(false),
-        m_done(false),
-        m_canceled(false),
-        m_popupDelayMillis(2500)
+        : m_bg(bg), m_parent(parent), m_title(title), m_message(message), m_updateMsg(nullptr), m_win(0), m_shown(false),
+          m_done(false), m_canceled(false), m_popupDelayMillis(2500)
     {
     }
 
@@ -226,10 +218,6 @@ bool RunInBg::IsCanceled(void)
     return m_impl->m_canceled;
 }
 
-void RunInBg::OnCancel()
-{
-}
+void RunInBg::OnCancel() { }
 
-void RunInBg::OnKill()
-{
-}
+void RunInBg::OnKill() { }

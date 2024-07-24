@@ -40,4 +40,4 @@ public:
     static GuideCamera *MakeStarfishCamera();
 };
 
-#endif  // CAM_STARFISH_INCLUDED
+#endif // CAM_STARFISH_INCLUDED

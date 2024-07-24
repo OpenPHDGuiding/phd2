@@ -64,8 +64,7 @@ class CameraWDM : public GuideCamera
     volatile int m_nFrames;
     volatile int m_nAttempts;
     usImage *m_stack;
-    volatile enum E_CAPTURE_MODE
-    {
+    volatile enum E_CAPTURE_MODE {
         NOT_CAPTURING = 0,
         STOP_CAPTURING,
         CAPTURE_ONE_FRAME,
@@ -95,8 +94,9 @@ public:
     bool OnCapture(const cbdata& p);
 
 protected:
-    enum SelectionContext {
-        CTX_SELECT,  // selecting device and mode in response to camera selection button
+    enum SelectionContext
+    {
+        CTX_SELECT, // selecting device and mode in response to camera selection button
         CTX_CONNECT, // selecting device and mode in response to camera connect button
     };
     virtual bool SelectDeviceAndMode(SelectionContext ctx);
@@ -122,7 +122,6 @@ protected:
     };
 
 public:
-
     CameraLEWebcam();
     ~CameraLEWebcam();
 

@@ -1,37 +1,37 @@
 /*
-*  aui_controls.cpp
-*  PHD Guiding
-*
-*  Created by Bruce Waddington
-*  Copyright (c) 2016 Bruce Waddington and Andy Galasso
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Bret McKee, Dad Dog Development,
-*     Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  aui_controls.cpp
+ *  PHD Guiding
+ *
+ *  Created by Bruce Waddington
+ *  Copyright (c) 2016 Bruce Waddington and Andy Galasso
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 #include "aui_controls.h"
@@ -39,15 +39,15 @@
 #include <algorithm>
 #include <unordered_set>
 
-//#define ICON_DEV
+// #define ICON_DEV
 #ifndef ICON_DEV
-#include "icons/sb_led_green.png.h"
-#include "icons/sb_led_yellow.png.h"
-#include "icons/sb_led_red.png.h"
-#include "icons/sb_arrow_left_16.png.h"
-#include "icons/sb_arrow_right_16.png.h"
-#include "icons/sb_arrow_up_16.png.h"
-#include "icons/sb_arrow_down_16.png.h"
+# include "icons/sb_led_green.png.h"
+# include "icons/sb_led_yellow.png.h"
+# include "icons/sb_led_red.png.h"
+# include "icons/sb_arrow_left_16.png.h"
+# include "icons/sb_arrow_right_16.png.h"
+# include "icons/sb_arrow_up_16.png.h"
+# include "icons/sb_arrow_down_16.png.h"
 #endif
 
 // clang-format off
@@ -77,11 +77,15 @@ class SBPanel : public wxPanel
 {
     std::vector<int> m_fieldOffsets;
     wxString m_overlayText;
-    std::unordered_set<wxWindow *> m_hidden;   // controls that are hidden by the overlay text
+    std::unordered_set<wxWindow *> m_hidden; // controls that are hidden by the overlay text
 
-    enum { OVERLAY_HPADDING = 10 };
+    enum
+    {
+        OVERLAY_HPADDING = 10
+    };
 
-    int OverlayWidth() const {
+    int OverlayWidth() const
+    {
         wxSize sz = GetTextExtent(m_overlayText);
         return OVERLAY_HPADDING + sz.GetWidth() + OVERLAY_HPADDING;
     }
@@ -121,7 +125,7 @@ class SBStateIndicatorItem;
 
 class SBStateIndicators
 {
-    std::vector <SBStateIndicatorItem *> m_stateItems;
+    std::vector<SBStateIndicatorItem *> m_stateItems;
     SBPanel *m_parentPanel;
 
 public:
@@ -149,8 +153,8 @@ public:
     wxString otherInfo;
 
 public:
-    SBStateIndicatorItem(SBPanel *panel, SBStateIndicators *container,
-        int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths);
+    SBStateIndicatorItem(SBPanel *panel, SBStateIndicators *container, int indField, const wxString& indLabel,
+                         SBFieldTypes indType, std::vector<int>& fldWidths);
     void PositionControl();
     void UpdateState();
     wxString GearToolTip(int quadState);
@@ -188,25 +192,23 @@ public:
     SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths);
     void PositionControls();
     void UpdateState(double MassPct, double SNR, bool Saturated);
-
 };
 
 // How this works:
 // PHDStatusBar is a child of wxStatusBar and is composed of various control groups - properties of the guide star, info about
-// current guide commands, and state information about the current app session.  Each group is managed by its own class, and that class
-// is responsible for building, positioning, and updating its controls. The various controls are positioned (via the OnSize event) on top of the SBPanel that
-// is the single underlying field in the base-class statusbar.  The SBPanel class handles its own Paint event in order to render
-// the borders and field separators the way we want.
+// current guide commands, and state information about the current app session.  Each group is managed by its own class, and
+// that class is responsible for building, positioning, and updating its controls. The various controls are positioned (via the
+// OnSize event) on top of the SBPanel that is the single underlying field in the base-class statusbar.  The SBPanel class
+// handles its own Paint event in order to render the borders and field separators the way we want.
 
 // ----------------------------------------------------------------------------
 // SBPanel - parent control is the parent for all the status bar items
 //
-SBPanel::SBPanel(wxStatusBar *parent, const wxSize& panelSize)
-        : wxPanel(parent, wxID_ANY, wxDefaultPosition, panelSize)
+SBPanel::SBPanel(wxStatusBar *parent, const wxSize& panelSize) : wxPanel(parent, wxID_ANY, wxDefaultPosition, panelSize)
 {
     m_fieldOffsets.reserve(12);
     int txtHeight;
-    parent->GetTextExtent("M", &emWidth, &txtHeight);       // Horizontal spacer used by various controls
+    parent->GetTextExtent("M", &emWidth, &txtHeight); // Horizontal spacer used by various controls
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 #ifdef __APPLE__
@@ -397,14 +399,15 @@ SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths)
     txtSNRLabel->Show(false);
     txtSNRValue->SetBackgroundColour(*wxBLACK);
     txtSNRValue->SetForegroundColour(*wxGREEN);
-    txtSNRValue->SetToolTip(_("Signal-to-noise ratio of guide star\nGreen means SNR >= 10\nYellow means  4 <= SNR < 10\nRed means SNR < 4"));
+    txtSNRValue->SetToolTip(
+        _("Signal-to-noise ratio of guide star\nGreen means SNR >= 10\nYellow means  4 <= SNR < 10\nRed means SNR < 4"));
 
     m_parentPanel = panel;
 }
 
 void SBStarIndicators::PositionControls()
 {
-    int fieldNum = (int)Field_Sat;
+    int fieldNum = (int) Field_Sat;
     wxPoint snrPos;
     wxPoint satPos;
 
@@ -473,7 +476,7 @@ SBGuideIndicators::SBGuideIndicators(SBPanel *panel, std::vector<int>& fldWidths
     arrowUp = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_up_16));
     arrowDown = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_arrow_down_16));
 #endif
-    wxColor fgColor(200, 200, 200);           // reduced brightness
+    wxColor fgColor(200, 200, 200); // reduced brightness
     int guideAmtWidth;
     int txtHeight;
     panel->GetTextExtent("5555 ms, 555 px", &guideAmtWidth, &txtHeight);
@@ -482,24 +485,26 @@ SBGuideIndicators::SBGuideIndicators(SBPanel *panel, std::vector<int>& fldWidths
     bitmapRA = new wxStaticBitmap(panel, wxID_ANY, arrowLeft);
     wxSize bitmapSize = bitmapRA->GetSize();
     bitmapRA->Show(false);
-    txtRaAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_CENTER);
+    txtRaAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y),
+                                    wxALIGN_CENTER);
     txtRaAmounts->SetBackgroundColour(*wxBLACK);
     txtRaAmounts->SetForegroundColour(fgColor);
-    txtDecAmounts = new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
+    txtDecAmounts =
+        new wxStaticText(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(guideAmtWidth, bitmapSize.y), wxALIGN_RIGHT);
     txtDecAmounts->SetBackgroundColour(*wxBLACK);
     txtDecAmounts->SetForegroundColour(fgColor);
     bitmapDec = new wxStaticBitmap(panel, wxID_ANY, arrowUp);
     bitmapDec->Show(false);
     m_parentPanel = panel;
-    // Since we don't want separators between the arrows and the text info, we lump the two together and treat them as one field for the purpose
-    // of positioning
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth);          // RA info
-    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth);          // Dec info
+    // Since we don't want separators between the arrows and the text info, we lump the two together and treat them as one field
+    // for the purpose of positioning
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth); // RA info
+    fldWidths.push_back(bitmapSize.x + guideAmtWidth + 2 * panel->emWidth); // Dec info
 }
 
 void SBGuideIndicators::PositionControls()
 {
-    int fieldNum = (int)Field_RAInfo;
+    int fieldNum = (int) Field_RAInfo;
     int txtWidth;
     int txtHeight;
     wxPoint loc;
@@ -511,7 +516,7 @@ void SBGuideIndicators::PositionControls()
     txtRaAmounts->SetPosition(raPosition);
 
     fieldNum++;
-    wxString txtSizer =  wxString::Format(_("%d ms, %0.1f px"), 120, 4.38);
+    wxString txtSizer = wxString::Format(_("%d ms, %0.1f px"), 120, 4.38);
     m_parentPanel->GetTextExtent(txtSizer, &txtWidth, &txtHeight);
     wxPoint decPosition = m_parentPanel->FieldLoc(fieldNum);
     txtDecAmounts->SetPosition(decPosition);
@@ -562,7 +567,8 @@ void SBGuideIndicators::UpdateState(int raDirection, int decDirection, double ra
 //------------------------------------------------------------------------------------------
 // ---SBStateIndicatorItem - individual state indicators
 //
-SBStateIndicatorItem::SBStateIndicatorItem(SBPanel *panel, SBStateIndicators *host, int indField, const wxString& indLabel, SBFieldTypes indType, std::vector<int>& fldWidths)
+SBStateIndicatorItem::SBStateIndicatorItem(SBPanel *panel, SBStateIndicators *host, int indField, const wxString& indLabel,
+                                           SBFieldTypes indType, std::vector<int>& fldWidths)
 {
     m_type = indType;
     lastState = -2;
@@ -575,7 +581,8 @@ SBStateIndicatorItem::SBStateIndicatorItem(SBPanel *panel, SBStateIndicators *ho
     // Use default positions for control creation - positioning is handled explicitly in PositionControls()
     if (indType != Field_Gear)
     {
-        ctrl = new wxStaticText(m_parentPanel, wxID_ANY, indLabel, wxDefaultPosition, wxSize(txtWidth + m_parentPanel->emWidth, -1), wxALIGN_CENTER);
+        ctrl = new wxStaticText(m_parentPanel, wxID_ANY, indLabel, wxDefaultPosition,
+                                wxSize(txtWidth + m_parentPanel->emWidth, -1), wxALIGN_CENTER);
         fldWidths.push_back(txtWidth + 2 * m_parentPanel->emWidth);
     }
     else
@@ -601,8 +608,8 @@ static int CalibrationQuadState(wxString *tip)
 {
     // For calib quad state: -1 => no cal, 0 => cal but no pointing compensation, 1 => golden
 
-    bool calibrated = (pMount || pSecondaryMount) &&
-        (!pMount || pMount->IsCalibrated()) && (!pSecondaryMount || pSecondaryMount->IsCalibrated());
+    bool calibrated = (pMount || pSecondaryMount) && (!pMount || pMount->IsCalibrated()) &&
+        (!pSecondaryMount || pSecondaryMount->IsCalibrated());
 
     if (!calibrated)
     {
@@ -649,7 +656,8 @@ static wxString Join(const wxString& delim, const std::vector<wxString>& vec)
     wxString buf;
     buf.reserve(l + delim.length() * (vec.size() - 1));
     std::for_each(vec.begin(), vec.end(),
-                  [&buf, &delim](const wxString& s) {
+                  [&buf, &delim](const wxString& s)
+                  {
                       if (!buf.empty())
                           buf += delim;
                       buf += s;
@@ -664,7 +672,8 @@ void SBStateIndicatorItem::UpdateState()
 
     switch (m_type)
     {
-    case Field_Gear: {
+    case Field_Gear:
+    {
         std::vector<wxString> MIAs;
         bool cameraOk = true;
         bool problems = false;
@@ -732,7 +741,7 @@ void SBStateIndicatorItem::UpdateState()
                 if (cameraOk)
                     pic->SetIcon(container->icoYellowLed);
                 else
-                    pic->SetIcon(container->icoRedLed);     // What good are we without a camera
+                    pic->SetIcon(container->icoRedLed); // What good are we without a camera
                 quadState = 0;
                 otherInfo = Join(_(", "), MIAs);
                 pic->SetToolTip(GearToolTip(quadState));
@@ -765,11 +774,12 @@ void SBStateIndicatorItem::UpdateState()
 
         break;
 
-    case Field_Calib: {
+    case Field_Calib:
+    {
         quadState = CalibrationQuadState(&cal_tooltip);
         lastState = -2; // force tool-tip update even if state did not change
         break;
-      }
+    }
 
     default:
         break;
@@ -853,9 +863,10 @@ SBStateIndicators::SBStateIndicators(SBPanel *panel, std::vector<int>& fldWidths
     led = wxBitmap(wxBITMAP_PNG_FROM_DATA(sb_led_red));
     icoRedLed.CopyFromBitmap(led);
 #endif
-    for (int inx = (int)Field_Darks; inx <= (int)Field_Gear; inx++)
+    for (int inx = (int) Field_Darks; inx <= (int) Field_Gear; inx++)
     {
-        SBStateIndicatorItem *item = new SBStateIndicatorItem(m_parentPanel, this, inx, labels[inx - Field_Darks], (SBFieldTypes)(inx), fldWidths);
+        SBStateIndicatorItem *item =
+            new SBStateIndicatorItem(m_parentPanel, this, inx, labels[inx - Field_Darks], (SBFieldTypes) (inx), fldWidths);
         m_stateItems.push_back(item);
         item->UpdateState();
     }
@@ -883,7 +894,8 @@ void SBStateIndicators::UpdateState()
     }
 }
 
-enum {
+enum
+{
     SB_HEIGHT = 16
 };
 
@@ -895,7 +907,7 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
     std::vector<int> fieldWidths;
 
     // Set up the only field the wxStatusBar base class will know about
-    int widths[] = {-1};
+    int widths[] = { -1 };
 
     SetFieldsCount(1);
     SetStatusWidths(1, widths);
@@ -907,10 +919,10 @@ PHDStatusBar::PHDStatusBar(wxWindow *parent, long style)
     // Build the leftmost text status field, the only field managed at this level
     m_Msg1 = new wxStaticText(m_ctrlPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(150, -1));
     int txtWidth, txtHeight;
-    GetTextExtent(_("Selected star at (999.9, 999.9)"), &txtWidth, &txtHeight);         // only care about the width
+    GetTextExtent(_("Selected star at (999.9, 999.9)"), &txtWidth, &txtHeight); // only care about the width
     m_Msg1->SetBackgroundColour(*wxBLACK);
     m_Msg1->SetForegroundColour(*wxWHITE);
-    fieldWidths.push_back(txtWidth);                    // Doesn't matter but we need to occupy the position in fieldWidths
+    fieldWidths.push_back(txtWidth); // Doesn't matter but we need to occupy the position in fieldWidths
 
     // Build the star status fields
     m_StarIndicators = new SBStarIndicators(m_ctrlPanel, fieldWidths);
@@ -935,7 +947,7 @@ PHDStatusBar *PHDStatusBar::CreateInstance(wxWindow *parent, long style)
 // Destructor
 PHDStatusBar::~PHDStatusBar()
 {
-    this->DestroyChildren();        // any wxWidgets objects will be deleted
+    this->DestroyChildren(); // any wxWidgets objects will be deleted
     delete m_StateIndicators;
     delete m_GuideIndicators;
     delete m_StarIndicators;
@@ -978,8 +990,8 @@ void PHDStatusBar::UpdateStarInfo(double SNR, bool Saturated)
 
 void PHDStatusBar::UpdateGuiderInfo(const GuideStepInfo& info)
 {
-    m_GuideIndicators->UpdateState(info.directionRA, info.directionDec, fabs(info.mountOffset.X),
-        info.durationRA, fabs(info.mountOffset.Y), info.durationDec);
+    m_GuideIndicators->UpdateState(info.directionRA, info.directionDec, fabs(info.mountOffset.X), info.durationRA,
+                                   fabs(info.mountOffset.Y), info.durationDec);
 }
 
 void PHDStatusBar::ClearGuiderInfo()

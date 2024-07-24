@@ -38,19 +38,16 @@
 
 #if defined(LE_CAMERA)
 
-#include "cam_wdm_base.h"
+# include "cam_wdm_base.h"
 
-CameraLEWebcam::CameraLEWebcam(void)
-     : CameraWDM()
+CameraLEWebcam::CameraLEWebcam(void) : CameraWDM()
 {
     Name = _T("Generic LE Webcam");
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = true;
 }
 
-CameraLEWebcam::~CameraLEWebcam(void)
-{
-}
+CameraLEWebcam::~CameraLEWebcam(void) { }
 
 bool CameraLEWebcam::Connect(const wxString& camId)
 {
@@ -99,12 +96,14 @@ bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRe
         else
         {
             // do the "amp on" part of the exposure
-            LEControl(LECAMERA_LED_GREEN | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B | LECAMERA_AMP_ON);
+            LEControl(LECAMERA_LED_GREEN | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B |
+                      LECAMERA_AMP_ON);
             wxMilliSleep(ampOnTime);
         }
 
         // do the "amp off" part of the exposure.
-        LEControl(LECAMERA_LED_RED | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B | LECAMERA_AMP_OFF);
+        LEControl(LECAMERA_LED_RED | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B |
+                  LECAMERA_AMP_OFF);
         wxMilliSleep(ampOffTime);
 
         // exposure complete - release the frame
@@ -140,15 +139,15 @@ bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRe
         unsigned short *dptr2 = frame2.ImageData;
         unsigned short *dptr3 = frame3.ImageData;
 
-        UINT64 sum1=0;
-        UINT64 sum2=0;
-        UINT64 sum3=0;
+        UINT64 sum1 = 0;
+        UINT64 sum2 = 0;
+        UINT64 sum3 = 0;
 
         // we only use the data from the frame with the largest sum.
         // This is because we are not exactly sure when we will capture the "Long Exposure"
         // frame
 
-        for (unsigned int i = 0;i < frame1.NPixels; i++)
+        for (unsigned int i = 0; i < frame1.NPixels; i++)
         {
             sum1 += *dptr1++;
             sum2 += *dptr2++;

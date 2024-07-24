@@ -40,13 +40,13 @@
 
 class CameraStarShootDSCI : public GuideCamera
 {
-    bool USB2;  // Is it a USB2 connection?
-    int RawX;  // Raw size of array
+    bool USB2; // Is it a USB2 connection?
+    int RawX; // Raw size of array
     int RawY;
     int lastdur; // duration last asked for -- if same, don't need to resend registers
-    float XPixelSize;  // pixel dimensions - needed for squaring
+    float XPixelSize; // pixel dimensions - needed for squaring
     float YPixelSize;
-    HINSTANCE CameraDLL;               // Handle to DLL
+    HINSTANCE CameraDLL; // Handle to DLL
     V_V_DLLFUNC OCP_sendEP1_1BYTE;
     OCPREGFUNC OCP_sendRegister;
     B_I_DLLFUNC OCP_Exposure;
@@ -55,9 +55,9 @@ class CameraStarShootDSCI : public GuideCamera
 
 public:
     CameraStarShootDSCI();
-    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool   Connect(const wxString& camId) override;
-    bool   Disconnect() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
     bool HasNonGuiCapture() override { return true; }
     wxByte BitsPerPixel() override;
 };

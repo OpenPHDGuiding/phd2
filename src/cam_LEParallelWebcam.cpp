@@ -38,14 +38,15 @@
 
 #if defined(LE_PARALLEL_CAMERA)
 
-#include "cam_LEParallelWebcam.h"
-#include "cam_wdm_base.h"
+# include "cam_LEParallelWebcam.h"
+# include "cam_wdm_base.h"
 
 class CameraLEParallelWebcam : public CameraLEWebcam
 {
 private:
     virtual bool LEControl(int actions);
     ParallelPort *m_pParallelPort;
+
 public:
     CameraLEParallelWebcam();
     virtual ~CameraLEParallelWebcam();
@@ -58,10 +59,9 @@ public:
 short _stdcall Inp32(short PortAddress);
 void _stdcall Out32(short PortAddress, short data);
 
-CameraLEParallelWebcam::CameraLEParallelWebcam(void)
-    : CameraLEWebcam()
+CameraLEParallelWebcam::CameraLEParallelWebcam(void) : CameraLEWebcam()
 {
-    Name=_T("Parallel LE Webcam");
+    Name = _T("Parallel LE Webcam");
     m_pParallelPort = NULL;
 }
 
@@ -155,10 +155,10 @@ bool CameraLEParallelWebcam::LEControl(int actions)
 
         enum
         {
-            PARALLEL_BIT_TRANSFER  = 1,
-            PARALLEL_BIT_UNUSED    = 2,
+            PARALLEL_BIT_TRANSFER = 1,
+            PARALLEL_BIT_UNUSED = 2,
             PARALLEL_BIT_AMPLIFIER = 4,
-            PARALLEL_BIT_SHUTTER   = 8
+            PARALLEL_BIT_SHUTTER = 8
         };
 
         BYTE bitsToClear = 0;

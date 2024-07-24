@@ -31,17 +31,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef  GUIDE_GCUSBST4
+#ifdef GUIDE_GCUSBST4
 
 class ScopeGCUSBST4 : public Scope
 {
     int portFID;
 
 public:
-
-    ScopeGCUSBST4() {
-        m_Name = wxString("GCUSB-ST4");
-    }
+    ScopeGCUSBST4() { m_Name = wxString("GCUSB-ST4"); }
 
     bool Connect() override;
 

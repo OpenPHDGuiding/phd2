@@ -61,14 +61,22 @@ static wxString state_name(EXPOSED_STATE st)
 {
     switch (st)
     {
-        case EXPOSED_STATE_NONE:             return "Stopped";
-        case EXPOSED_STATE_SELECTED:         return "Selected";
-        case EXPOSED_STATE_CALIBRATING:      return "Calibrating";
-        case EXPOSED_STATE_GUIDING_LOCKED:   return "Guiding";
-        case EXPOSED_STATE_GUIDING_LOST:     return "LostLock";
-        case EXPOSED_STATE_PAUSED:           return "Paused";
-        case EXPOSED_STATE_LOOPING:          return "Looping";
-        default:                             return "Unknown";
+    case EXPOSED_STATE_NONE:
+        return "Stopped";
+    case EXPOSED_STATE_SELECTED:
+        return "Selected";
+    case EXPOSED_STATE_CALIBRATING:
+        return "Calibrating";
+    case EXPOSED_STATE_GUIDING_LOCKED:
+        return "Guiding";
+    case EXPOSED_STATE_GUIDING_LOST:
+        return "LostLock";
+    case EXPOSED_STATE_PAUSED:
+        return "Paused";
+    case EXPOSED_STATE_LOOPING:
+        return "Looping";
+    default:
+        return "Unknown";
     }
 }
 
@@ -97,8 +105,17 @@ struct JSeq
     bool m_first;
     bool m_closed;
     JSeq() : m_first(true), m_closed(false) { m_s << LDELIM; }
-    void close() { m_s << RDELIM; m_closed = true; }
-    wxString str() { if (!m_closed) close(); return m_s; }
+    void close()
+    {
+        m_s << RDELIM;
+        m_closed = true;
+    }
+    wxString str()
+    {
+        if (!m_closed)
+            close();
+        return m_s;
+    }
 };
 
 typedef JSeq<'[', ']'> JAry;
@@ -129,13 +146,16 @@ static wxString json_format(const json_value *j)
     if (!j)
         return literal_null;
 
-    switch (j->type) {
+    switch (j->type)
+    {
     default:
-    case JSON_NULL: return literal_null;
-    case JSON_OBJECT: {
+    case JSON_NULL:
+        return literal_null;
+    case JSON_OBJECT:
+    {
         wxString ret("{");
         bool first = true;
-        json_for_each (jj, j)
+        json_for_each(jj, j)
         {
             if (first)
                 first = false;
@@ -146,10 +166,11 @@ static wxString json_format(const json_value *j)
         ret << "}";
         return ret;
     }
-    case JSON_ARRAY: {
+    case JSON_ARRAY:
+    {
         wxString ret("[");
         bool first = true;
-        json_for_each (jj, j)
+        json_for_each(jj, j)
         {
             if (first)
                 first = false;
@@ -160,14 +181,20 @@ static wxString json_format(const json_value *j)
         ret << "]";
         return ret;
     }
-    case JSON_STRING: return '"' + json_escape(j->string_value) + '"';
-    case JSON_INT:    return wxString::Format("%d", j->int_value);
-    case JSON_FLOAT:  return wxString::Format("%g", (double) j->float_value);
-    case JSON_BOOL:   return j->int_value ? literal_true : literal_false;
+    case JSON_STRING:
+        return '"' + json_escape(j->string_value) + '"';
+    case JSON_INT:
+        return wxString::Format("%d", j->int_value);
+    case JSON_FLOAT:
+        return wxString::Format("%g", (double) j->float_value);
+    case JSON_BOOL:
+        return j->int_value ? literal_true : literal_false;
     }
 }
 
-struct NULL_TYPE { } NULL_VALUE;
+struct NULL_TYPE
+{
+} NULL_VALUE;
 
 // name-value pair
 struct NV
@@ -187,15 +214,29 @@ struct NV
     NV(const wxString& n_, JAry& ary) : n(n_), v(ary.str()) { }
     NV(const wxString& n_, JObj& obj) : n(n_), v(obj.str()) { }
     NV(const wxString& n_, const json_value *v_) : n(n_), v(json_format(v_)) { }
-    NV(const wxString& n_, const PHD_Point& p) : n(n_) { JAry ary; ary << p.X << p.Y; v = ary.str(); }
-    NV(const wxString& n_, const wxPoint& p) : n(n_) { JAry ary; ary << p.x << p.y; v = ary.str(); }
-    NV(const wxString& n_, const wxSize& s) : n(n_) { JAry ary; ary << s.x << s.y; v = ary.str(); }
+    NV(const wxString& n_, const PHD_Point& p) : n(n_)
+    {
+        JAry ary;
+        ary << p.X << p.Y;
+        v = ary.str();
+    }
+    NV(const wxString& n_, const wxPoint& p) : n(n_)
+    {
+        JAry ary;
+        ary << p.x << p.y;
+        v = ary.str();
+    }
+    NV(const wxString& n_, const wxSize& s) : n(n_)
+    {
+        JAry ary;
+        ary << s.x << s.y;
+        v = ary.str();
+    }
     NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
 template<typename T>
-NV::NV(const wxString& n_, const std::vector<T>& vec)
-    : n(n_)
+NV::NV(const wxString& n_, const std::vector<T>& vec) : n(n_)
 {
     std::ostringstream os;
     os << '[';
@@ -239,20 +280,16 @@ struct Ev : public JObj
     Ev(const wxString& event)
     {
         double const now = ::wxGetUTCTimeMillis().ToDouble() / 1000.0;
-        *this << NV("Event", event)
-            << NV("Timestamp", now, 3)
-            << NV("Host", wxGetHostName())
-            << NV("Inst", wxGetApp().GetInstanceNumber());
+        *this << NV("Event", event) << NV("Timestamp", now, 3) << NV("Host", wxGetHostName())
+              << NV("Inst", wxGetApp().GetInstanceNumber());
     }
 };
 
 static Ev ev_message_version()
 {
     Ev ev("Version");
-    ev << NV("PHDVersion", PHDVERSION)
-        << NV("PHDSubver", PHDSUBVER)
-        << NV("OverlapSupport", true)
-        << NV("MsgVersion", MSG_PROTOCOL_VERSION);
+    ev << NV("PHDVersion", PHDVERSION) << NV("PHDSubver", PHDSUBVER) << NV("OverlapSupport", true)
+       << NV("MsgVersion", MSG_PROTOCOL_VERSION);
     return ev;
 }
 
@@ -311,10 +348,7 @@ static Ev ev_settling(double distance, double time, double settleTime, bool star
 {
     Ev ev("Settling");
 
-    ev << NV("Distance", distance, 2)
-       << NV("Time", time, 1)
-       << NV("SettleTime", settleTime, 1)
-       << NV("StarLocked", starLocked);
+    ev << NV("Distance", distance, 2) << NV("Time", time, 1) << NV("SettleTime", settleTime, 1) << NV("StarLocked", starLocked);
 
     return ev;
 }
@@ -332,15 +366,17 @@ static Ev ev_settle_done(const wxString& errorMsg, int settleFrames, int dropped
         ev << NV("Error", errorMsg);
     }
 
-    ev << NV("TotalFrames", settleFrames)
-        << NV("DroppedFrames", droppedFrames);
+    ev << NV("TotalFrames", settleFrames) << NV("DroppedFrames", droppedFrames);
 
     return ev;
 }
 
 struct ClientReadBuf
 {
-    enum { SIZE = 1024 };
+    enum
+    {
+        SIZE = 1024
+    };
     char m_buf[SIZE];
     char *dest;
 
@@ -385,18 +421,30 @@ inline static wxMutex *client_wrlock(wxSocketClient *cli)
 
 static wxString SockErrStr(wxSocketError e)
 {
-    switch (e) {
-    case wxSOCKET_NOERROR:    return "";
-    case wxSOCKET_INVOP:      return "Invalid operation";
-    case wxSOCKET_IOERR:      return "Input / Output error";
-    case wxSOCKET_INVADDR:    return "Invalid address";
-    case wxSOCKET_INVSOCK:    return "Invalid socket(uninitialized)";
-    case wxSOCKET_NOHOST:     return "No corresponding host";
-    case wxSOCKET_INVPORT:    return "Invalid port";
-    case wxSOCKET_WOULDBLOCK: return "operation would block";
-    case wxSOCKET_TIMEDOUT:   return "timeout expired";
-    case wxSOCKET_MEMERR:     return "Memory exhausted";
-    default: return wxString::Format("unknown socket error %d", e);
+    switch (e)
+    {
+    case wxSOCKET_NOERROR:
+        return "";
+    case wxSOCKET_INVOP:
+        return "Invalid operation";
+    case wxSOCKET_IOERR:
+        return "Input / Output error";
+    case wxSOCKET_INVADDR:
+        return "Invalid address";
+    case wxSOCKET_INVSOCK:
+        return "Invalid socket(uninitialized)";
+    case wxSOCKET_NOHOST:
+        return "No corresponding host";
+    case wxSOCKET_INVPORT:
+        return "Invalid port";
+    case wxSOCKET_WOULDBLOCK:
+        return "operation would block";
+    case wxSOCKET_TIMEDOUT:
+        return "timeout expired";
+    case wxSOCKET_MEMERR:
+        return "Memory exhausted";
+    default:
+        return wxString::Format("unknown socket error %d", e);
     }
 }
 
@@ -406,9 +454,9 @@ static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
     client->Write(buf.data(), buf.length());
     if (client->LastWriteCount() != buf.length())
     {
-        Debug.Write(wxString::Format("evsrv: cli %p short write %u/%u %s\n",
-            client, client->LastWriteCount(), (unsigned int) buf.length(),
-            SockErrStr(client->Error() ? client->LastError() : wxSOCKET_NOERROR)));
+        Debug.Write(wxString::Format("evsrv: cli %p short write %u/%u %s\n", client, client->LastWriteCount(),
+                                     (unsigned int) buf.length(),
+                                     SockErrStr(client->Error() ? client->LastError() : wxSOCKET_NOERROR)));
     }
 }
 
@@ -426,8 +474,7 @@ static void do_notify(const EventServer::CliSockSet& cli, const JObj& jj)
 {
     wxCharBuffer buf = (JObj(jj).str() + "\r\n").ToUTF8();
 
-    for (EventServer::CliSockSet::const_iterator it = cli.begin();
-        it != cli.end(); ++it)
+    for (EventServer::CliSockSet::const_iterator it = cli.begin(); it != cli.end(); ++it)
     {
         send_buf(*it, buf);
     }
@@ -480,7 +527,8 @@ static void send_catchup_events(wxSocketClient *cli)
             mount = pSecondaryMount;
         do_notify1(cli, ev_start_calibration(mount));
     }
-    else if (st == EXPOSED_STATE_PAUSED) {
+    else if (st == EXPOSED_STATE_PAUSED)
+    {
         do_notify1(cli, ev_paused());
     }
 
@@ -503,7 +551,8 @@ static void drain_input(wxSocketInputStream& sis)
     }
 }
 
-enum {
+enum
+{
     JSONRPC_PARSE_ERROR = -32700,
     JSONRPC_INVALID_REQUEST = -32600,
     JSONRPC_METHOD_NOT_FOUND = -32601,
@@ -542,19 +591,17 @@ struct JRpcResponse : public JObj
 
 static wxString parser_error(const JsonParser& parser)
 {
-    return wxString::Format("invalid JSON request: %s on line %d at \"%.12s...\"",
-        parser.ErrorDesc(), parser.ErrorLine(), parser.ErrorPos());
+    return wxString::Format("invalid JSON request: %s on line %d at \"%.12s...\"", parser.ErrorDesc(), parser.ErrorLine(),
+                            parser.ErrorPos());
 }
 
-static void
-parse_request(const json_value *req, const json_value **pmethod, const json_value **pparams,
-              const json_value **pid)
+static void parse_request(const json_value *req, const json_value **pmethod, const json_value **pparams, const json_value **pid)
 {
     *pmethod = *pparams = *pid = 0;
 
     if (req)
     {
-        json_for_each (t, req)
+        json_for_each(t, req)
         {
             if (t->name)
             {
@@ -570,13 +617,15 @@ parse_request(const json_value *req, const json_value **pmethod, const json_valu
 }
 
 // paranoia
-#define VERIFY_GUIDER(response) do { \
-    if (!pFrame || !pFrame->pGuider) \
-    { \
-        response << jrpc_error(1, "internal error"); \
-        return; \
-    } \
-} while (0)
+#define VERIFY_GUIDER(response)                                                                                                \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        if (!pFrame || !pFrame->pGuider)                                                                                       \
+        {                                                                                                                      \
+            response << jrpc_error(1, "internal error");                                                                       \
+            return;                                                                                                            \
+        }                                                                                                                      \
+    } while (0)
 
 static void deselect_star(JObj& response, const json_value *params)
 {
@@ -710,7 +759,7 @@ static void get_current_equipment(JObj& response, const json_value *params)
     JObj t;
 
     if (pCamera)
-       devstat(t, "camera", pCamera->Name, pCamera->Connected);
+        devstat(t, "camera", pCamera->Name, pCamera->Connected);
 
     Mount *mount = TheScope();
     if (mount)
@@ -733,8 +782,7 @@ static void get_current_equipment(JObj& response, const json_value *params)
 
 static bool all_equipment_connected()
 {
-    return pCamera && pCamera->Connected &&
-        (!pMount || pMount->IsConnected()) &&
+    return pCamera && pCamera->Connected && (!pMount || pMount->IsConnected()) &&
         (!pSecondaryMount || pSecondaryMount->IsConnected());
 }
 
@@ -781,8 +829,7 @@ static void set_connected(JObj& response, const json_value *params)
     VERIFY_GUIDER(response);
 
     wxString errMsg;
-    bool error = val->int_value ? pFrame->pGearDialog->ConnectAll(&errMsg) :
-        pFrame->pGearDialog->DisconnectAll(&errMsg);
+    bool error = val->int_value ? pFrame->pGearDialog->ConnectAll(&errMsg) : pFrame->pGearDialog->DisconnectAll(&errMsg);
 
     if (error)
     {
@@ -1028,7 +1075,10 @@ inline static const char *string_val(const json_value *j)
 
 enum WHICH_MOUNT
 {
-    MOUNT, AO, WHICH_MOUNT_BOTH, WHICH_MOUNT_ERR
+    MOUNT,
+    AO,
+    WHICH_MOUNT_BOTH,
+    WHICH_MOUNT_ERR
 };
 
 static WHICH_MOUNT which_mount(const json_value *p)
@@ -1068,9 +1118,15 @@ static void clear_calibration(JObj& response, const json_value *params)
         WHICH_MOUNT which = which_mount(p.param("which"));
         switch (which)
         {
-        case MOUNT: clear_mount = true; break;
-        case AO: clear_ao = true; break;
-        case WHICH_MOUNT_BOTH: clear_mount = clear_ao = true; break;
+        case MOUNT:
+            clear_mount = true;
+            break;
+        case AO:
+            clear_ao = true;
+            break;
+        case WHICH_MOUNT_BOTH:
+            clear_mount = clear_ao = true;
+            break;
         case WHICH_MOUNT_ERR:
             response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected param \"mount\", \"ao\", or \"both\"");
             return;
@@ -1131,8 +1187,7 @@ static bool is_camera_shift_req(const json_value *params)
     if (j)
     {
         const char *axes = string_val(j);
-        if (wxStricmp(axes, "x/y") == 0 ||
-            wxStricmp(axes, "camera") == 0)
+        if (wxStricmp(axes, "x/y") == 0 || wxStricmp(axes, "camera") == 0)
         {
             return true;
         }
@@ -1145,8 +1200,7 @@ static JObj& operator<<(JObj& j, const LockPosShiftParams& l)
     j << NV("enabled", l.shiftEnabled);
     if (l.shiftRate.IsValid())
     {
-        j << NV("rate", l.shiftRate)
-          << NV("units", l.shiftUnits == UNIT_ARCSEC ? "arcsec/hr" : "pixels/hr")
+        j << NV("rate", l.shiftRate) << NV("units", l.shiftUnits == UNIT_ARCSEC ? "arcsec/hr" : "pixels/hr")
           << NV("axes", l.shiftIsMountCoords ? "RA/Dec" : "X/Y");
     }
     return j;
@@ -1233,8 +1287,7 @@ static bool parse_lock_shift_params(LockPosShiftParams *shift, const json_value 
     j = p.param("units");
     const char *units = j ? string_val(j) : "";
 
-    if (wxStricmp(units, "arcsec/hr") == 0 ||
-        wxStricmp(units, "arc-sec/hr") == 0)
+    if (wxStricmp(units, "arcsec/hr") == 0 || wxStricmp(units, "arc-sec/hr") == 0)
     {
         shift->shiftUnits = UNIT_ARCSEC;
     }
@@ -1371,20 +1424,14 @@ struct B64Encode
     unsigned int t;
     size_t nread;
 
-    B64Encode()
-        : t(0), nread(0)
-    {
-    }
+    B64Encode() : t(0), nread(0) { }
     void append1(unsigned char ch)
     {
         t <<= 8;
         t |= ch;
         if (++nread % 3 == 0)
         {
-            os << E[t >> 18]
-               << E[(t >> 12) & 0x3F]
-               << E[(t >> 6) & 0x3F]
-               << E[t & 0x3F];
+            os << E[t >> 18] << E[(t >> 12) & 0x3F] << E[(t >> 6) & 0x3F] << E[t & 0x3F];
             t = 0;
         }
     }
@@ -1397,17 +1444,13 @@ struct B64Encode
     }
     std::string finish()
     {
-        switch (nread % 3) {
+        switch (nread % 3)
+        {
         case 1:
-            os << E[t >> 2]
-               << E[(t & 0x3) << 4]
-               << "==";
+            os << E[t >> 2] << E[(t & 0x3) << 4] << "==";
             break;
         case 2:
-            os << E[t >> 10]
-                << E[(t >> 4) & 0x3F]
-                << E[(t & 0xf) << 2]
-                << '=';
+            os << E[t >> 10] << E[(t >> 4) & 0x3F] << E[(t & 0xf) << 2] << '=';
             break;
         }
         return os.str();
@@ -1463,11 +1506,8 @@ static void get_star_image(JObj& response, const json_value *params)
     pos.Y -= rect.GetTop();
 
     JObj rslt;
-    rslt << NV("frame", img->FrameNum)
-        << NV("width", rect.GetWidth())
-        << NV("height", rect.GetHeight())
-        << NV("star_pos", pos)
-        << NV("pixels", enc.finish());
+    rslt << NV("frame", img->FrameNum) << NV("width", rect.GetWidth()) << NV("height", rect.GetHeight()) << NV("star_pos", pos)
+         << NV("pixels", enc.finish());
 
     response << jrpc_result(rslt);
 }
@@ -1476,7 +1516,7 @@ static bool parse_settle(SettleParams *settle, const json_value *j, wxString *er
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
 
-    json_for_each (t, j)
+    json_for_each(t, j)
     {
         if (float_param("pixels", t, &settle->tolerancePx))
         {
@@ -1593,7 +1633,8 @@ static void dither(JObj& response, const json_value *params)
     //
     // {"method": "dither", "params": [10, false, {"pixels": 1.5, "time": 8, "timeout": 30}], "id": 42}
     //    or
-    // {"method": "dither", "params": {"amount": 10, "raOnly": false, "settle": {"pixels": 1.5, "time": 8, "timeout": 30}}, "id": 42}
+    // {"method": "dither", "params": {"amount": 10, "raOnly": false, "settle": {"pixels": 1.5, "time": 8, "timeout": 30}},
+    // "id": 42}
 
     Params p("amount", "raOnly", "settle", params);
     const json_value *jv;
@@ -1863,24 +1904,23 @@ static void get_settling(JObj& response, const json_value *params)
     response << jrpc_result(settling);
 }
 
-static void get_variable_delay_settings(JObj& response, const json_value* params)
+static void get_variable_delay_settings(JObj& response, const json_value *params)
 {
     JObj rslt;
 
     VarDelayCfg delayParams = pFrame->GetVariableDelayConfig();
-    rslt << NV("Enabled", delayParams.enabled)
-        << NV("ShortDelaySeconds", delayParams.shortDelay / 1000)
-        << NV("LongDelaySeconds", delayParams.longDelay / 1000);
+    rslt << NV("Enabled", delayParams.enabled) << NV("ShortDelaySeconds", delayParams.shortDelay / 1000)
+         << NV("LongDelaySeconds", delayParams.longDelay / 1000);
     response << jrpc_result(rslt);
 }
 
 // set_variable_delay values are in units of seconds to match the UI convention in the Advanced Settings dialog
-static void set_variable_delay_settings(JObj& response, const json_value* params)
+static void set_variable_delay_settings(JObj& response, const json_value *params)
 {
     Params p("Enabled", "ShortDelaySeconds", "LongDelaySeconds", params);
-    const json_value* p0 = p.param("Enabled");
-    const json_value* p1 = p.param("ShortDelaySeconds");
-    const json_value* p2 = p.param("LongDelaySeconds");
+    const json_value *p0 = p.param("Enabled");
+    const json_value *p1 = p.param("ShortDelaySeconds");
+    const json_value *p2 = p.param("LongDelaySeconds");
     bool enabled;
     double shortDelaySec;
     double longDelaySec;
@@ -1890,7 +1930,7 @@ static void set_variable_delay_settings(JObj& response, const json_value* params
         return;
     }
     VarDelayCfg currParams;
-    pFrame->SetVariableDelayConfig(enabled, (int)shortDelaySec * 1000, (int)longDelaySec * 1000);
+    pFrame->SetVariableDelayConfig(enabled, (int) shortDelaySec * 1000, (int) longDelaySec * 1000);
     response << jrpc_result(0);
 }
 
@@ -1899,21 +1939,15 @@ static GUIDE_DIRECTION dir_param(const json_value *p)
     if (!p || p->type != JSON_STRING)
         return GUIDE_DIRECTION::NONE;
 
-    struct {
-        const char *s; GUIDE_DIRECTION d;
+    struct
+    {
+        const char *s;
+        GUIDE_DIRECTION d;
     } dirs[] = {
-        { "n", GUIDE_DIRECTION::NORTH },
-        { "s", GUIDE_DIRECTION::SOUTH },
-        { "e", GUIDE_DIRECTION::EAST },
-        { "w", GUIDE_DIRECTION::WEST },
-        { "north", GUIDE_DIRECTION::NORTH },
-        { "south", GUIDE_DIRECTION::SOUTH },
-        { "east", GUIDE_DIRECTION::EAST },
-        { "west", GUIDE_DIRECTION::WEST },
-        { "up", GUIDE_DIRECTION::UP },
-        { "down", GUIDE_DIRECTION::DOWN },
-        { "left", GUIDE_DIRECTION::LEFT },
-        { "right", GUIDE_DIRECTION::RIGHT },
+        { "n", GUIDE_DIRECTION::NORTH },   { "s", GUIDE_DIRECTION::SOUTH },     { "e", GUIDE_DIRECTION::EAST },
+        { "w", GUIDE_DIRECTION::WEST },    { "north", GUIDE_DIRECTION::NORTH }, { "south", GUIDE_DIRECTION::SOUTH },
+        { "east", GUIDE_DIRECTION::EAST }, { "west", GUIDE_DIRECTION::WEST },   { "up", GUIDE_DIRECTION::UP },
+        { "down", GUIDE_DIRECTION::DOWN }, { "left", GUIDE_DIRECTION::LEFT },   { "right", GUIDE_DIRECTION::RIGHT },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(dirs); i++)
@@ -1925,12 +1959,18 @@ static GUIDE_DIRECTION dir_param(const json_value *p)
 
 static GUIDE_DIRECTION opposite(GUIDE_DIRECTION d)
 {
-    switch (d) {
-    case UP: return DOWN;
-    case DOWN: return UP;
-    case LEFT: return RIGHT;
-    case RIGHT: return LEFT;
-    default: return d;
+    switch (d)
+    {
+    case UP:
+        return DOWN;
+    case DOWN:
+        return UP;
+    case LEFT:
+        return RIGHT;
+    case RIGHT:
+        return LEFT;
+    default:
+        return d;
     }
 }
 
@@ -1956,8 +1996,12 @@ static void guide_pulse(JObj& response, const json_value *params)
     Mount *m = nullptr;
     switch (which)
     {
-    case MOUNT: m = TheScope(); break;
-    case AO: m = TheAO(); break;
+    case MOUNT:
+        m = TheScope();
+        break;
+    case AO:
+        m = TheAO();
+        break;
     case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
         response << jrpc_error(1, "invalid 'which' param");
@@ -1990,10 +2034,14 @@ static void guide_pulse(JObj& response, const json_value *params)
 
 static const char *parity_str(GuideParity p)
 {
-    switch (p) {
-    case GUIDE_PARITY_EVEN: return "+";
-    case GUIDE_PARITY_ODD: return "-";
-    default: return "?";
+    switch (p)
+    {
+    case GUIDE_PARITY_EVEN:
+        return "+";
+    case GUIDE_PARITY_ODD:
+        return "-";
+    default:
+        return "?";
     }
 }
 
@@ -2005,14 +2053,18 @@ static void get_calibration_data(JObj& response, const json_value *params)
     Mount *m = nullptr;
     switch (which)
     {
-    case MOUNT: m = TheScope(); break;
-    case AO: m = TheAO(); break;
+    case MOUNT:
+        m = TheScope();
+        break;
+    case AO:
+        m = TheAO();
+        break;
     case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
-        {
-            response << jrpc_error(1, "invalid 'which' param");
-            return;
-        }
+    {
+        response << jrpc_error(1, "invalid 'which' param");
+        return;
+    }
     }
 
     if (!m || !m->IsConnected())
@@ -2026,13 +2078,10 @@ static void get_calibration_data(JObj& response, const json_value *params)
 
     if (m->IsCalibrated())
     {
-        rslt << NV("xAngle", degrees(m->xAngle()), 1)
-            << NV("xRate", m->xRate() * 1000.0, 3)
-            << NV("xParity", parity_str(m->RAParity()))
-            << NV("yAngle", degrees(m->yAngle()), 1)
-            << NV("yRate", m->yRate() * 1000.0, 3)
-            << NV("yParity", parity_str(m->DecParity()))
-            << NV("declination", degrees(m->GetCalibrationDeclination()));
+        rslt << NV("xAngle", degrees(m->xAngle()), 1) << NV("xRate", m->xRate() * 1000.0, 3)
+             << NV("xParity", parity_str(m->RAParity())) << NV("yAngle", degrees(m->yAngle()), 1)
+             << NV("yRate", m->yRate() * 1000.0, 3) << NV("yParity", parity_str(m->DecParity()))
+             << NV("declination", degrees(m->GetCalibrationDeclination()));
     }
 
     response << jrpc_result(rslt);
@@ -2058,13 +2107,11 @@ static void get_cooler_status(JObj& response, const json_value *params)
 
     JObj rslt;
 
-    rslt << NV("coolerOn", on)
-         << NV("temperature", temperature, 1);
+    rslt << NV("coolerOn", on) << NV("temperature", temperature, 1);
 
     if (on)
     {
-        rslt << NV("setpoint", setpoint, 1)
-             << NV("power", power, 1);
+        rslt << NV("setpoint", setpoint, 1) << NV("power", power, 1);
     }
 
     response << jrpc_result(rslt);
@@ -2164,62 +2211,208 @@ static bool handle_request(JRpcCall& call)
         return true;
     }
 
-    static struct {
+    static struct
+    {
         const char *name;
         void (*fn)(JObj& response, const json_value *params);
-    } methods[] = {
-        { "clear_calibration", &clear_calibration, },
-        { "deselect_star", &deselect_star, },
-        { "get_exposure", &get_exposure, },
-        { "set_exposure", &set_exposure, },
-        { "get_exposure_durations", &get_exposure_durations, },
-        { "get_profiles", &get_profiles, },
-        { "get_profile", &get_profile, },
-        { "set_profile", &set_profile, },
-        { "get_connected", &get_connected, },
-        { "set_connected", &set_connected, },
-        { "get_calibrated", &get_calibrated, },
-        { "get_paused", &get_paused, },
-        { "set_paused", &set_paused, },
-        { "get_lock_position", &get_lock_position, },
-        { "set_lock_position", &set_lock_position, },
-        { "loop", &loop, },
-        { "stop_capture", &stop_capture, },
-        { "guide", &guide, },
-        { "dither", &dither, },
-        { "find_star", &find_star, },
-        { "get_pixel_scale", &get_pixel_scale, },
-        { "get_app_state", &get_app_state, },
-        { "flip_calibration", &flip_calibration, },
-        { "get_lock_shift_enabled", &get_lock_shift_enabled, },
-        { "set_lock_shift_enabled", &set_lock_shift_enabled, },
-        { "get_lock_shift_params", &get_lock_shift_params, },
-        { "set_lock_shift_params", &set_lock_shift_params, },
-        { "save_image", &save_image, },
-        { "get_star_image", &get_star_image, },
-        { "get_use_subframes", &get_use_subframes, },
-        { "get_search_region", &get_search_region, },
-        { "shutdown", &shutdown, },
-        { "get_camera_binning", &get_camera_binning, },
-        { "get_camera_frame_size", &get_camera_frame_size, },
-        { "get_current_equipment", &get_current_equipment, },
-        { "get_guide_output_enabled", &get_guide_output_enabled, },
-        { "set_guide_output_enabled", &set_guide_output_enabled, },
-        { "get_algo_param_names", &get_algo_param_names, },
-        { "get_algo_param", &get_algo_param, },
-        { "set_algo_param", &set_algo_param, },
-        { "get_dec_guide_mode", &get_dec_guide_mode, },
-        { "set_dec_guide_mode", &set_dec_guide_mode, },
-        { "get_settling", &get_settling, },
-        { "guide_pulse", &guide_pulse, },
-        { "get_calibration_data", &get_calibration_data, },
-        { "capture_single_frame", &capture_single_frame, },
-        { "get_cooler_status", &get_cooler_status, },
-        { "get_ccd_temperature", &get_sensor_temperature, },
-        { "export_config_settings", &export_config_settings, },
-        { "get_variable_delay_settings", &get_variable_delay_settings},
-        { "set_variable_delay_settings", &set_variable_delay_settings}
-    };
+    } methods[] = { {
+                        "clear_calibration",
+                        &clear_calibration,
+                    },
+                    {
+                        "deselect_star",
+                        &deselect_star,
+                    },
+                    {
+                        "get_exposure",
+                        &get_exposure,
+                    },
+                    {
+                        "set_exposure",
+                        &set_exposure,
+                    },
+                    {
+                        "get_exposure_durations",
+                        &get_exposure_durations,
+                    },
+                    {
+                        "get_profiles",
+                        &get_profiles,
+                    },
+                    {
+                        "get_profile",
+                        &get_profile,
+                    },
+                    {
+                        "set_profile",
+                        &set_profile,
+                    },
+                    {
+                        "get_connected",
+                        &get_connected,
+                    },
+                    {
+                        "set_connected",
+                        &set_connected,
+                    },
+                    {
+                        "get_calibrated",
+                        &get_calibrated,
+                    },
+                    {
+                        "get_paused",
+                        &get_paused,
+                    },
+                    {
+                        "set_paused",
+                        &set_paused,
+                    },
+                    {
+                        "get_lock_position",
+                        &get_lock_position,
+                    },
+                    {
+                        "set_lock_position",
+                        &set_lock_position,
+                    },
+                    {
+                        "loop",
+                        &loop,
+                    },
+                    {
+                        "stop_capture",
+                        &stop_capture,
+                    },
+                    {
+                        "guide",
+                        &guide,
+                    },
+                    {
+                        "dither",
+                        &dither,
+                    },
+                    {
+                        "find_star",
+                        &find_star,
+                    },
+                    {
+                        "get_pixel_scale",
+                        &get_pixel_scale,
+                    },
+                    {
+                        "get_app_state",
+                        &get_app_state,
+                    },
+                    {
+                        "flip_calibration",
+                        &flip_calibration,
+                    },
+                    {
+                        "get_lock_shift_enabled",
+                        &get_lock_shift_enabled,
+                    },
+                    {
+                        "set_lock_shift_enabled",
+                        &set_lock_shift_enabled,
+                    },
+                    {
+                        "get_lock_shift_params",
+                        &get_lock_shift_params,
+                    },
+                    {
+                        "set_lock_shift_params",
+                        &set_lock_shift_params,
+                    },
+                    {
+                        "save_image",
+                        &save_image,
+                    },
+                    {
+                        "get_star_image",
+                        &get_star_image,
+                    },
+                    {
+                        "get_use_subframes",
+                        &get_use_subframes,
+                    },
+                    {
+                        "get_search_region",
+                        &get_search_region,
+                    },
+                    {
+                        "shutdown",
+                        &shutdown,
+                    },
+                    {
+                        "get_camera_binning",
+                        &get_camera_binning,
+                    },
+                    {
+                        "get_camera_frame_size",
+                        &get_camera_frame_size,
+                    },
+                    {
+                        "get_current_equipment",
+                        &get_current_equipment,
+                    },
+                    {
+                        "get_guide_output_enabled",
+                        &get_guide_output_enabled,
+                    },
+                    {
+                        "set_guide_output_enabled",
+                        &set_guide_output_enabled,
+                    },
+                    {
+                        "get_algo_param_names",
+                        &get_algo_param_names,
+                    },
+                    {
+                        "get_algo_param",
+                        &get_algo_param,
+                    },
+                    {
+                        "set_algo_param",
+                        &set_algo_param,
+                    },
+                    {
+                        "get_dec_guide_mode",
+                        &get_dec_guide_mode,
+                    },
+                    {
+                        "set_dec_guide_mode",
+                        &set_dec_guide_mode,
+                    },
+                    {
+                        "get_settling",
+                        &get_settling,
+                    },
+                    {
+                        "guide_pulse",
+                        &guide_pulse,
+                    },
+                    {
+                        "get_calibration_data",
+                        &get_calibration_data,
+                    },
+                    {
+                        "capture_single_frame",
+                        &capture_single_frame,
+                    },
+                    {
+                        "get_cooler_status",
+                        &get_cooler_status,
+                    },
+                    {
+                        "get_ccd_temperature",
+                        &get_sensor_temperature,
+                    },
+                    {
+                        "export_config_settings",
+                        &export_config_settings,
+                    },
+                    { "get_variable_delay_settings", &get_variable_delay_settings },
+                    { "set_variable_delay_settings", &set_variable_delay_settings } };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
     {
@@ -2269,7 +2462,7 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
         JAry ary;
 
         bool found = false;
-        json_for_each (req, root)
+        json_for_each(req, root)
         {
             JRpcCall call(cli, req);
             if (handle_request(call))
@@ -2349,14 +2542,9 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
     }
 }
 
-EventServer::EventServer()
-    : m_configEventDebouncer(nullptr)
-{
-}
+EventServer::EventServer() : m_configEventDebouncer(nullptr) { }
 
-EventServer::~EventServer()
-{
-}
+EventServer::~EventServer() { }
 
 bool EventServer::EventServerStart(unsigned int instanceId)
 {
@@ -2395,8 +2583,7 @@ void EventServer::EventServerStop()
     if (!m_serverSocket)
         return;
 
-    for (CliSockSet::const_iterator it = m_eventServerClients.begin();
-         it != m_eventServerClients.end(); ++it)
+    for (CliSockSet::const_iterator it = m_eventServerClients.begin(); it != m_eventServerClients.end(); ++it)
     {
         destroy_client(*it);
     }
@@ -2472,13 +2659,8 @@ void EventServer::NotifyCalibrationStep(const CalibrationStepInfo& info)
 
     Ev ev("Calibrating");
 
-    ev << NVMount(info.mount)
-        << NV("dir", info.direction)
-        << NV("dist", info.dist)
-        << NV("dx", info.dx)
-        << NV("dy", info.dy)
-        << NV("pos", info.pos)
-        << NV("step", info.stepNumber);
+    ev << NVMount(info.mount) << NV("dir", info.direction) << NV("dist", info.dist) << NV("dx", info.dx) << NV("dy", info.dy)
+       << NV("pos", info.pos) << NV("step", info.stepNumber);
 
     if (!info.msg.empty())
         ev << NV("State", info.msg);
@@ -2549,9 +2731,7 @@ void EventServer::NotifyLooping(unsigned int exposure, const Star *star, const F
 
     if (mass)
     {
-        ev << NV("StarMass", mass, 0)
-           << NV("SNR", snr, 2)
-           << NV("HFD", hfd, 2);
+        ev << NV("StarMass", mass, 0) << NV("SNR", snr, 2) << NV("HFD", hfd, 2);
     }
 
     if (err)
@@ -2580,12 +2760,8 @@ void EventServer::NotifyStarLost(const FrameDroppedInfo& info)
 
     Ev ev("StarLost");
 
-    ev << NV("Frame", info.frameNumber)
-       << NV("Time", info.time, 3)
-       << NV("StarMass", info.starMass, 0)
-       << NV("SNR", info.starSNR, 2)
-       << NV("HFD", info.starHFD, 2)
-       << NV("AvgDist", info.avgDist, 2);
+    ev << NV("Frame", info.frameNumber) << NV("Time", info.time, 3) << NV("StarMass", info.starMass, 0)
+       << NV("SNR", info.starSNR, 2) << NV("HFD", info.starHFD, 2) << NV("AvgDist", info.avgDist, 2);
 
     if (info.starError)
         ev << NV("ErrorCode", info.starError);
@@ -2623,26 +2799,21 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
 
     Ev ev("GuideStep");
 
-    ev << NV("Frame", step.frameNumber)
-       << NV("Time", step.time, 3)
-       << NVMount(step.mount)
-       << NV("dx", step.cameraOffset.X, 3)
-       << NV("dy", step.cameraOffset.Y, 3)
-       << NV("RADistanceRaw", step.mountOffset.X, 3)
-       << NV("DECDistanceRaw", step.mountOffset.Y, 3)
-       << NV("RADistanceGuide", step.guideDistanceRA, 3)
+    ev << NV("Frame", step.frameNumber) << NV("Time", step.time, 3) << NVMount(step.mount) << NV("dx", step.cameraOffset.X, 3)
+       << NV("dy", step.cameraOffset.Y, 3) << NV("RADistanceRaw", step.mountOffset.X, 3)
+       << NV("DECDistanceRaw", step.mountOffset.Y, 3) << NV("RADistanceGuide", step.guideDistanceRA, 3)
        << NV("DECDistanceGuide", step.guideDistanceDec, 3);
 
     if (step.durationRA > 0)
     {
-       ev << NV("RADuration", step.durationRA)
-          << NV("RADirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionRA));
+        ev << NV("RADuration", step.durationRA)
+           << NV("RADirection", step.mount->DirectionStr((GUIDE_DIRECTION) step.directionRA));
     }
 
     if (step.durationDec > 0)
     {
         ev << NV("DECDuration", step.durationDec)
-           << NV("DECDirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionDec));
+           << NV("DECDirection", step.mount->DirectionStr((GUIDE_DIRECTION) step.directionDec));
     }
 
     if (step.mount->IsStepGuider())
@@ -2650,13 +2821,11 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
         ev << NV("Pos", step.aoPos);
     }
 
-    ev << NV("StarMass", step.starMass, 0)
-       << NV("SNR", step.starSNR, 2)
-       << NV("HFD", step.starHFD, 2)
+    ev << NV("StarMass", step.starMass, 0) << NV("SNR", step.starSNR, 2) << NV("HFD", step.starHFD, 2)
        << NV("AvgDist", step.avgDist, 2);
 
     if (step.starError)
-       ev << NV("ErrorCode", step.starError);
+        ev << NV("ErrorCode", step.starError);
 
     if (step.raLimited)
         ev << NV("RALimited", true);

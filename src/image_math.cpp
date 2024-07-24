@@ -41,7 +41,7 @@
 
 #include <algorithm>
 
-int dbl_sort_func (double *first, double *second)
+int dbl_sort_func(double *first, double *second)
 {
     if (*first < *second)
         return -1;
@@ -64,7 +64,7 @@ double CalcSlope(const ArrayOfDbl& y)
 
     for (int x = 0; x < nn; x++)
     {
-        s_xy += (double)(x + 1) * y[x];
+        s_xy += (double) (x + 1) * y[x];
         s_y += y[x];
     }
 
@@ -114,17 +114,17 @@ bool QuickLRecon(usImage& img)
 
         for (int x = 0; x <= RW - 2; x++)
         {
-            t  = img.ImageData[IX(x    , y    )];
-            t += img.ImageData[IX(x + 1, y    )];
-            t += img.ImageData[IX(x    , y + 1)];
+            t = img.ImageData[IX(x, y)];
+            t += img.ImageData[IX(x + 1, y)];
+            t += img.ImageData[IX(x, y + 1)];
             t += img.ImageData[IX(x + 1, y + 1)];
-            *d++ = (unsigned short)(t >> 2);
+            *d++ = (unsigned short) (t >> 2);
         }
 
         // last col
-        t  = img.ImageData[IX(RW - 1, y    )];
+        t = img.ImageData[IX(RW - 1, y)];
         t += img.ImageData[IX(RW - 1, y + 1)];
-        *d = (unsigned short)(t >> 1);
+        *d = (unsigned short) (t >> 1);
     }
 
     // last row
@@ -133,9 +133,9 @@ bool QuickLRecon(usImage& img)
 
     for (int x = 0; x <= RW - 2; x++)
     {
-        t  = img.ImageData[IX(x    , RH - 1)];
+        t = img.ImageData[IX(x, RH - 1)];
         t += img.ImageData[IX(x + 1, RH - 1)];
-        *d++ = (unsigned short)(t >> 1);
+        *d++ = (unsigned short) (t >> 1);
     }
 
     // bottom-right pixel
@@ -184,34 +184,58 @@ inline static unsigned short median9(const unsigned short l[9])
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2], l3 = l[3], l4 = l[4];
     unsigned short x;
     x = l[5];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
     x = l[6];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
     x = l[7];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
     x = l[8];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
 
-    if (l1 > l0) l0 = l1;
-    if (l2 > l0) l0 = l2;
-    if (l3 > l0) l0 = l3;
-    if (l4 > l0) l0 = l4;
+    if (l1 > l0)
+        l0 = l1;
+    if (l2 > l0)
+        l0 = l2;
+    if (l3 > l0)
+        l0 = l3;
+    if (l4 > l0)
+        l0 = l4;
 
     return l0;
 }
@@ -222,34 +246,55 @@ inline static unsigned short median8(const unsigned short l[8])
     unsigned short x;
 
     x = l[5];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
     x = l[6];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
     x = l[7];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
-    if (x < l4) swap(x, l4);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
+    if (x < l4)
+        swap(x, l4);
 
-    if (l2 > l0) swap(l2, l0);
-    if (l2 > l1) swap(l2, l1);
+    if (l2 > l0)
+        swap(l2, l0);
+    if (l2 > l1)
+        swap(l2, l1);
 
-    if (l3 > l0) swap(l3, l0);
-    if (l3 > l1) swap(l3, l1);
+    if (l3 > l0)
+        swap(l3, l0);
+    if (l3 > l1)
+        swap(l3, l1);
 
-    if (l4 > l0) swap(l4, l0);
-    if (l4 > l1) swap(l4, l1);
+    if (l4 > l0)
+        swap(l4, l0);
+    if (l4 > l1)
+        swap(l4, l1);
 
-    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
+    return (unsigned short) (((unsigned int) l0 + (unsigned int) l1) / 2);
 }
 
 inline static unsigned short median6(const unsigned short l[6])
@@ -258,23 +303,35 @@ inline static unsigned short median6(const unsigned short l[6])
     unsigned short x;
 
     x = l[4];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
     x = l[5];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
-    if (x < l3) swap(x, l3);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
+    if (x < l3)
+        swap(x, l3);
 
-    if (l2 > l0) swap(l2, l0);
-    if (l2 > l1) swap(l2, l1);
+    if (l2 > l0)
+        swap(l2, l0);
+    if (l2 > l1)
+        swap(l2, l1);
 
-    if (l3 > l0) swap(l3, l0);
-    if (l3 > l1) swap(l3, l1);
+    if (l3 > l0)
+        swap(l3, l0);
+    if (l3 > l1)
+        swap(l3, l1);
 
-    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
+    return (unsigned short) (((unsigned int) l0 + (unsigned int) l1) / 2);
 }
 
 inline static unsigned short median5(const unsigned short l[5])
@@ -282,16 +339,24 @@ inline static unsigned short median5(const unsigned short l[5])
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
     unsigned short x;
     x = l[3];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
     x = l[4];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
 
-    if (l1 > l0) l0 = l1;
-    if (l2 > l0) l0 = l2;
+    if (l1 > l0)
+        l0 = l1;
+    if (l2 > l0)
+        l0 = l2;
 
     return l0;
 }
@@ -301,22 +366,30 @@ inline static unsigned short median4(const unsigned short l[4])
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
     unsigned short x;
     x = l[3];
-    if (x < l0) swap(x, l0);
-    if (x < l1) swap(x, l1);
-    if (x < l2) swap(x, l2);
+    if (x < l0)
+        swap(x, l0);
+    if (x < l1)
+        swap(x, l1);
+    if (x < l2)
+        swap(x, l2);
 
-    if (l2 > l0) swap(l2, l0);
-    if (l2 > l1) swap(l2, l1);
+    if (l2 > l0)
+        swap(l2, l0);
+    if (l2 > l1)
+        swap(l2, l1);
 
-    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
+    return (unsigned short) (((unsigned int) l0 + (unsigned int) l1) / 2);
 }
 
 inline static unsigned short median3(const unsigned short l[3])
 {
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
-    if (l2 < l0) swap(l2, l0);
-    if (l2 < l1) swap(l2, l1);
-    if (l1 > l0) l0 = l1;
+    if (l2 < l0)
+        swap(l2, l0);
+    if (l2 < l1)
+        swap(l2, l1);
+    if (l1 > l0)
+        l0 = l1;
     return l0;
 }
 
@@ -347,10 +420,10 @@ void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
     for (int x = 1; x <= RW - 2; x++)
     {
         a[0] = src[IX(x - 1, 0)];
-        a[1] = src[IX(x,     0)];
+        a[1] = src[IX(x, 0)];
         a[2] = src[IX(x + 1, 0)];
         a[3] = src[IX(x - 1, 1)];
-        a[4] = src[IX(x,     1)];
+        a[4] = src[IX(x, 1)];
         a[5] = src[IX(x + 1, 1)];
         *d++ = median6(a);
     }
@@ -369,8 +442,8 @@ void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
         // leftmost pixel
         a[0] = src[IX(0, y - 1)];
         a[1] = src[IX(1, y - 1)];
-        a[2] = src[IX(0, y    )];
-        a[3] = src[IX(1, y    )];
+        a[2] = src[IX(0, y)];
+        a[3] = src[IX(1, y)];
         a[4] = src[IX(0, y + 1)];
         a[5] = src[IX(1, y + 1)];
         *d++ = median6(a);
@@ -378,13 +451,13 @@ void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
         for (int x = 1; x <= RW - 2; x++)
         {
             a[0] = src[IX(x - 1, y - 1)];
-            a[1] = src[IX(x    , y - 1)];
+            a[1] = src[IX(x, y - 1)];
             a[2] = src[IX(x + 1, y - 1)];
-            a[3] = src[IX(x - 1, y    )];
-            a[4] = src[IX(x    , y    )];
-            a[5] = src[IX(x + 1, y    )];
+            a[3] = src[IX(x - 1, y)];
+            a[4] = src[IX(x, y)];
+            a[5] = src[IX(x + 1, y)];
             a[6] = src[IX(x - 1, y + 1)];
-            a[7] = src[IX(x    , y + 1)];
+            a[7] = src[IX(x, y + 1)];
             a[8] = src[IX(x + 1, y + 1)];
             *d++ = median9(a);
         }
@@ -392,8 +465,8 @@ void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
         // rightmost pixel
         a[0] = src[IX(RW - 2, y - 1)];
         a[1] = src[IX(RW - 1, y - 1)];
-        a[2] = src[IX(RW - 2, y    )];
-        a[3] = src[IX(RW - 1, y    )];
+        a[2] = src[IX(RW - 2, y)];
+        a[3] = src[IX(RW - 1, y)];
         a[4] = src[IX(RW - 2, y + 1)];
         a[5] = src[IX(RW - 1, y + 1)];
         *d++ = median6(a);
@@ -413,10 +486,10 @@ void Median3(unsigned short *dst, const unsigned short *src, const wxSize& size,
     for (int x = 1; x <= RW - 2; x++)
     {
         a[0] = src[IX(x - 1, RH - 2)];
-        a[1] = src[IX(x    , RH - 2)];
+        a[1] = src[IX(x, RH - 2)];
         a[2] = src[IX(x + 1, RH - 2)];
         a[3] = src[IX(x - 1, RH - 1)];
-        a[4] = src[IX(x    , RH - 1)];
+        a[4] = src[IX(x, RH - 1)];
         a[5] = src[IX(x + 1, RH - 1)];
         *d++ = median6(a);
     }
@@ -439,24 +512,24 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
 
     if (x > 0 && y > 0 && x < xsize - 1 && y < ysize - 1)
     {
-        array[0] = img.ImageData[(x-1) + (y-1) * xsize];
-        array[1] = img.ImageData[(x)   + (y-1) * xsize];
-        array[2] = img.ImageData[(x+1) + (y-1) * xsize];
-        array[3] = img.ImageData[(x-1) + (y)   * xsize];
-        array[4] = img.ImageData[(x+1) + (y)   * xsize];
-        array[5] = img.ImageData[(x-1) + (y+1) * xsize];
-        array[6] = img.ImageData[(x)   + (y+1) * xsize];
-        array[7] = img.ImageData[(x+1) + (y+1) * xsize];
+        array[0] = img.ImageData[(x - 1) + (y - 1) * xsize];
+        array[1] = img.ImageData[(x) + (y - 1) * xsize];
+        array[2] = img.ImageData[(x + 1) + (y - 1) * xsize];
+        array[3] = img.ImageData[(x - 1) + (y) *xsize];
+        array[4] = img.ImageData[(x + 1) + (y) *xsize];
+        array[5] = img.ImageData[(x - 1) + (y + 1) * xsize];
+        array[6] = img.ImageData[(x) + (y + 1) * xsize];
+        array[7] = img.ImageData[(x + 1) + (y + 1) * xsize];
         return median8(array);
     }
 
     if (x == 0 && y > 0 && y < ysize - 1)
     {
         // On left edge
-        array[0] = img.ImageData[(x)     + (y - 1) * xsize];
-        array[1] = img.ImageData[(x)     + (y + 1) * xsize];
+        array[0] = img.ImageData[(x) + (y - 1) * xsize];
+        array[1] = img.ImageData[(x) + (y + 1) * xsize];
         array[2] = img.ImageData[(x + 1) + (y - 1) * xsize];
-        array[3] = img.ImageData[(x + 1) + (y)     * xsize];
+        array[3] = img.ImageData[(x + 1) + (y) *xsize];
         array[4] = img.ImageData[(x + 1) + (y + 1) * xsize];
         return median5(array);
     }
@@ -464,10 +537,10 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     if (x == xsize - 1 && y > 0 && y < ysize - 1)
     {
         // On right edge
-        array[0] = img.ImageData[(x)     + (y - 1) * xsize];
-        array[1] = img.ImageData[(x)     + (y + 1) * xsize];
+        array[0] = img.ImageData[(x) + (y - 1) * xsize];
+        array[1] = img.ImageData[(x) + (y + 1) * xsize];
         array[2] = img.ImageData[(x - 1) + (y - 1) * xsize];
-        array[3] = img.ImageData[(x - 1) + (y)     * xsize];
+        array[3] = img.ImageData[(x - 1) + (y) *xsize];
         array[4] = img.ImageData[(x - 1) + (y + 1) * xsize];
         return median5(array);
     }
@@ -475,10 +548,10 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     if (y == 0 && x > 0 && x < xsize - 1)
     {
         // On bottom edge
-        array[0] = img.ImageData[(x - 1) + (y)     * xsize];
+        array[0] = img.ImageData[(x - 1) + (y) *xsize];
         array[1] = img.ImageData[(x - 1) + (y + 1) * xsize];
-        array[2] = img.ImageData[(x)     + (y + 1) * xsize];
-        array[3] = img.ImageData[(x + 1) + (y)     * xsize];
+        array[2] = img.ImageData[(x) + (y + 1) * xsize];
+        array[3] = img.ImageData[(x + 1) + (y) *xsize];
         array[4] = img.ImageData[(x + 1) + (y + 1) * xsize];
         return median5(array);
     }
@@ -486,10 +559,10 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     if (y == ysize - 1 && x > 0 && x < xsize - 1)
     {
         // On top edge
-        array[0] = img.ImageData[(x - 1) + (y)     * xsize];
+        array[0] = img.ImageData[(x - 1) + (y) *xsize];
         array[1] = img.ImageData[(x - 1) + (y - 1) * xsize];
-        array[2] = img.ImageData[(x)     + (y - 1) * xsize];
-        array[3] = img.ImageData[(x + 1) + (y)     * xsize];
+        array[2] = img.ImageData[(x) + (y - 1) * xsize];
+        array[3] = img.ImageData[(x + 1) + (y) *xsize];
         array[4] = img.ImageData[(x + 1) + (y - 1) * xsize];
         return median5(array);
     }
@@ -497,29 +570,29 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     if (x == 0 && y == 0)
     {
         // At lower left corner
-        array[0] = img.ImageData[(x + 1) + (y)     * xsize];
-        array[1] = img.ImageData[(x)     + (y + 1) * xsize];
+        array[0] = img.ImageData[(x + 1) + (y) *xsize];
+        array[1] = img.ImageData[(x) + (y + 1) * xsize];
         array[2] = img.ImageData[(x + 1) + (y + 1) * xsize];
     }
     else if (x == 0 && y == ysize - 1)
     {
         // At upper left corner
-        array[0] = img.ImageData[(x + 1) + (y)     * xsize];
-        array[1] = img.ImageData[(x)     + (y - 1) * xsize];
+        array[0] = img.ImageData[(x + 1) + (y) *xsize];
+        array[1] = img.ImageData[(x) + (y - 1) * xsize];
         array[2] = img.ImageData[(x + 1) + (y - 1) * xsize];
     }
     else if (x == xsize - 1 && y == ysize - 1)
     {
         // At upper right corner
-        array[0] = img.ImageData[(x - 1) + (y)     * xsize];
-        array[1] = img.ImageData[(x)     + (y - 1) * xsize];
+        array[0] = img.ImageData[(x - 1) + (y) *xsize];
+        array[1] = img.ImageData[(x) + (y - 1) * xsize];
         array[2] = img.ImageData[(x - 1) + (y - 1) * xsize];
     }
     else if (x == xsize - 1 && y == 0)
     {
         // At lower right corner
-        array[0] = img.ImageData[(x - 1) + (y)     * xsize];
-        array[1] = img.ImageData[(x)     + (y + 1) * xsize];
+        array[0] = img.ImageData[(x - 1) + (y) *xsize];
+        array[1] = img.ImageData[(x) + (y + 1) * xsize];
         array[2] = img.ImageData[(x - 1) + (y + 1) * xsize];
     }
     else
@@ -551,10 +624,10 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
 
     // if X > Y, when viewing stock, Y is unnaturally stretched, so stretch X to match
     double ratio = ysize / xsize;
-    int newsize = ROUND((double) tempimg.Size.GetWidth() / ratio);  // make new image correct size
-    img.Init(newsize,tempimg.Size.GetHeight());
+    int newsize = ROUND((double) tempimg.Size.GetWidth() / ratio); // make new image correct size
+    img.Init(newsize, tempimg.Size.GetHeight());
     unsigned short *optr = img.ImageData;
-    int linesize = tempimg.Size.GetWidth();  // size of an original line
+    int linesize = tempimg.Size.GetWidth(); // size of an original line
     for (int y = 0; y < img.Size.GetHeight(); y++)
     {
         for (int x = 0; x < newsize; x++, optr++)
@@ -565,7 +638,8 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
             if (ind2 > (tempimg.Size.GetWidth() - 1))
                 ind2 = tempimg.Size.GetWidth() - 1;
             double weight = ceil(oldposition) - oldposition;
-            *optr = (unsigned short) (((float) *(tempimg.ImageData + y*linesize + ind1) * weight) + ((float) *(tempimg.ImageData + y*linesize + ind1) * (1.0 - weight)));
+            *optr = (unsigned short) (((float) *(tempimg.ImageData + y * linesize + ind1) * weight) +
+                                      ((float) *(tempimg.ImageData + y * linesize + ind1) * (1.0 - weight)));
         }
     }
 
@@ -584,7 +658,7 @@ bool Subtract(usImage& light, const usImage& dark)
 
     unsigned int left, top, width, height;
     unsigned short median_light, median_dark;
-    median_light = light.MedianADU;    // median of frame or subframe
+    median_light = light.MedianADU; // median of frame or subframe
 
     if (!light.Subframe.IsEmpty())
     {
@@ -619,13 +693,12 @@ bool Subtract(usImage& light, const usImage& dark)
     if (median_dark > median_light)
     {
         // dark was brighter than light
-        light.Pedestal = median_dark - median_light;   // Needed for saturation detection in find-star
+        light.Pedestal = median_dark - median_light; // Needed for saturation detection in find-star
     }
 
     unsigned short *pl0 = &light.Pixel(left, top);
     const unsigned short *pd0 = &dark.Pixel(left, top);
-    for (unsigned int r = 0; r < height;
-         r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
+    for (unsigned int r = 0; r < height; r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
     {
         unsigned short *const endl = pl0 + width;
         unsigned short *pl;
@@ -633,8 +706,10 @@ bool Subtract(usImage& light, const usImage& dark)
         for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
         {
             int newval = (int) *pl + light.Pedestal - (int) *pd;
-            if (newval < 0) newval = 0; // hot pixel in dark frame isn't present in light frame
-            else if (newval > 65535) newval = 65535;
+            if (newval < 0)
+                newval = 0; // hot pixel in dark frame isn't present in light frame
+            else if (newval > 65535)
+                newval = 65535;
             *pl = (unsigned short) newval;
         }
     }
@@ -791,7 +866,10 @@ static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& w
 
 void DefectMapDarks::BuildFilteredDark()
 {
-    enum { WINDOW = 15 };
+    enum
+    {
+        WINDOW = 15
+    };
     filteredDark.Init(masterDark.Size);
     MedianFilter(filteredDark, masterDark, WINDOW);
 }
@@ -859,19 +937,10 @@ struct DefectMapBuilderImpl
     unsigned int hotPxSelected;
     bool threshValid;
 
-    DefectMapBuilderImpl()
-        :
-        darks(0),
-        aggrCold(100),
-        aggrHot(100),
-        threshValid(false)
-    { }
+    DefectMapBuilderImpl() : darks(0), aggrCold(100), aggrHot(100), threshValid(false) { }
 };
 
-DefectMapBuilder::DefectMapBuilder()
-    : m_impl(new DefectMapBuilderImpl())
-{
-}
+DefectMapBuilder::DefectMapBuilder() : m_impl(new DefectMapBuilderImpl()) { }
 
 DefectMapBuilder::~DefectMapBuilder()
 {
@@ -881,7 +950,7 @@ DefectMapBuilder::~DefectMapBuilder()
 inline static double AggrToSigma(int val)
 {
     // Aggressiveness of 0 to 100 maps to signma factor from 8.0 to 0.125
-    return exp2(3.0 - (6.0 / 100.0) * (double)val);
+    return exp2(3.0 - (6.0 / 100.0) * (double) val);
 }
 
 void DefectMapBuilder::Init(DefectMapDarks& darks)
@@ -891,7 +960,7 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
     Debug.AddLine("DefectMapBuilder: Init");
 
     ::GetImageStats(m_impl->w, darks.masterDark,
-        wxRect(0, 0, darks.masterDark.Size.GetWidth(), darks.masterDark.Size.GetHeight()));
+                    wxRect(0, 0, darks.masterDark.Size.GetWidth(), darks.masterDark.Size.GetHeight()));
 
     const ImageStats& stats = m_impl->w.stats;
 
@@ -900,7 +969,7 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
 
     // load potential defects
 
-    int thresh = (int)(AggrToSigma(100) * stats.stdev);
+    int thresh = (int) (AggrToSigma(100) * stats.stdev);
 
     Debug.Write(wxString::Format("DefectMapBuilder: load potential defects thresh = %d\n", thresh));
 
@@ -954,8 +1023,8 @@ static void FindThresh(DefectMapBuilderImpl *impl)
     int coldThresh = (int) (multCold * impl->w.stats.stdev);
     int hotThresh = (int) (multHot * impl->w.stats.stdev);
 
-    Debug.Write(wxString::Format("DefectMap: find thresholds aggr:(%d,%d) sigma:(%.1f,%.1f) px:(%+d,%+d)\n",
-                                 impl->aggrCold, impl->aggrHot, multCold, multHot, -coldThresh, hotThresh));
+    Debug.Write(wxString::Format("DefectMap: find thresholds aggr:(%d,%d) sigma:(%.1f,%.1f) px:(%+d,%+d)\n", impl->aggrCold,
+                                 impl->aggrHot, multCold, multHot, -coldThresh, hotThresh));
 
     impl->coldPxThresh = impl->coldPx.lower_bound(BadPx(0, 0, coldThresh));
     impl->hotPxThresh = impl->hotPx.lower_bound(BadPx(0, 0, hotThresh));
@@ -980,7 +1049,8 @@ int DefectMapBuilder::GetHotPixelCnt() const
     return m_impl->hotPxSelected;
 }
 
-inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_iterator p0, BadPxSet::const_iterator p1, double stdev, int sign, bool verbose)
+inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_iterator p0, BadPxSet::const_iterator p1,
+                                        double stdev, int sign, bool verbose)
 {
     unsigned int cnt = 0;
     for (BadPxSet::const_iterator it = p0; it != p1; ++it, ++cnt)
@@ -988,7 +1058,8 @@ inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_it
         if (verbose)
         {
             int v = sign * it->v;
-            Debug.Write(wxString::Format("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)\n", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0));
+            Debug.Write(wxString::Format("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)\n", it->x, it->y, v,
+                                         stdev > 0.1 ? (double) v / stdev : 0.0));
         }
         defectMap.push_back(wxPoint(it->x, it->y));
     }
@@ -1017,13 +1088,14 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap, bool verbose) const
     info.push_back(wxString::Format("Median: %d", stats.median));
     info.push_back(wxString::Format("MAD: %d", stats.mad));
 
-    int deltaCold = (int)(multCold * stats.stdev);
-    int deltaHot = (int)(multHot * stats.stdev);
+    int deltaCold = (int) (multCold * stats.stdev);
+    int deltaHot = (int) (multHot * stats.stdev);
 
     info.push_back(wxString::Format("DeltaCold: %+d", -deltaCold));
     info.push_back(wxString::Format("DeltaHot: %+d", deltaHot));
 
-    if (verbose) Debug.Write(wxString::Format("DefectMap: deltaCold = %+d deltaHot = %+d\n", -deltaCold, deltaHot));
+    if (verbose)
+        Debug.Write(wxString::Format("DefectMap: deltaCold = %+d deltaHot = %+d\n", -deltaCold, deltaHot));
 
     FindThresh(m_impl);
 
@@ -1031,7 +1103,9 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap, bool verbose) const
     unsigned int nr_cold = emit_defects(defectMap, m_impl->coldPxThresh, m_impl->coldPx.end(), stats.stdev, -1, verbose);
     unsigned int nr_hot = emit_defects(defectMap, m_impl->hotPxThresh, m_impl->hotPx.end(), stats.stdev, +1, verbose);
 
-    if (verbose) Debug.Write(wxString::Format("New defect map created, count=%d (cold=%d, hot=%d)\n", defectMap.size(), nr_cold, nr_hot));
+    if (verbose)
+        Debug.Write(
+            wxString::Format("New defect map created, count=%d (cold=%d, hot=%d)\n", defectMap.size(), nr_cold, nr_hot));
 }
 
 const wxArrayString& DefectMapBuilder::GetMapInfo() const
@@ -1096,7 +1170,8 @@ bool DefectMap::ImportFromProfile(int srcId, int destId)
     rslt = wxCopyFile(sourceName, destName, true);
     if (rslt != 1)
     {
-        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map copy of %s to %s\n", sourceName, destName));
+        Debug.Write(
+            wxString::Format("DefectMap::ImportFromProfile failed on defect map copy of %s to %s\n", sourceName, destName));
         return false;
     }
     sourceName = DefectMapMasterPath(srcId);
@@ -1104,7 +1179,8 @@ bool DefectMap::ImportFromProfile(int srcId, int destId)
     rslt = wxCopyFile(sourceName, destName, true);
     if (rslt != 1)
     {
-        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master dark copy of %s to %s\n", sourceName, destName));
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master dark copy of %s to %s\n",
+                                     sourceName, destName));
         return false;
     }
     sourceName = DefectMapFilterPath(srcId);
@@ -1112,10 +1188,11 @@ bool DefectMap::ImportFromProfile(int srcId, int destId)
     rslt = wxCopyFile(sourceName, destName, true);
     if (rslt != 1)
     {
-        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master filtered dark copy of %s to %s\n", sourceName, destName));
+        Debug.Write(wxString::Format(
+            "DefectMap::ImportFromProfile failed on defect map master filtered dark copy of %s to %s\n", sourceName, destName));
         return false;
     }
-    return (true);
+    return true;
 }
 
 bool DefectMap::DefectMapExists(int profileId, bool showAlert)
@@ -1134,7 +1211,7 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
         else
         {
             fitsfile *fptr;
-            int status = 0;  // CFITSIO status value MUST be initialized to zero!
+            int status = 0; // CFITSIO status value MUST be initialized to zero!
 
             if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
             {
@@ -1144,8 +1221,10 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
                     bOk = true;
                 else
                 {
-                    Debug.AddLine(wxString::Format("BPM check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
-                        " BPM dimensions = {%d,%d}", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
+                    Debug.AddLine(
+                        wxString::Format("BPM check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
+                                         " BPM dimensions = {%d,%d}",
+                                         status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
                     if (showAlert)
                         pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be replaced."));
                 }
@@ -1189,15 +1268,9 @@ void DefectMap::Save(const wxArrayString& info) const
     Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
 }
 
-DefectMap::DefectMap()
-    : m_profileId(pConfig->GetCurrentProfileId())
-{
-}
+DefectMap::DefectMap() : m_profileId(pConfig->GetCurrentProfileId()) { }
 
-DefectMap::DefectMap(int profileId)
-    : m_profileId(profileId)
-{
-}
+DefectMap::DefectMap(int profileId) : m_profileId(profileId) { }
 
 bool DefectMap::FindDefect(const wxPoint& pt) const
 {

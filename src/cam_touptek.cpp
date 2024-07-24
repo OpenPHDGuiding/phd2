@@ -36,22 +36,22 @@
 
 #if defined(TOUPTEK_CAMERA)
 
-#include "cam_touptek.h"
-#include "cameras/toupcam.h"
-#include "image_math.h"
+# include "cam_touptek.h"
+# include "cameras/toupcam.h"
+# include "image_math.h"
 
 // Touptek API uses these Windows definitions even on non-Windows platforms
-#ifndef S_OK
-#define S_OK    ((HRESULT)0L)
-#define S_FALSE ((HRESULT)1L)
-#endif
+# ifndef S_OK
+#  define S_OK ((HRESULT) 0L)
+#  define S_FALSE ((HRESULT) 1L)
+# endif
 
 struct ToupCam
 {
     HToupCam m_h;
     void *m_buffer;
     void *m_tmpbuf;
-    wxByte m_bpp;  // bits per pixel: 8 or 16
+    wxByte m_bpp; // bits per pixel: 8 or 16
     bool m_isColor;
     bool m_hasGuideOutput;
     double m_devicePixelSize;
@@ -66,13 +66,7 @@ struct ToupCam
     wxMutex m_lock;
     wxCondition m_cond;
 
-    ToupCam() :
-        m_h(nullptr),
-        m_buffer(nullptr),
-        m_tmpbuf(nullptr),
-        m_started(false),
-        m_cond(m_lock)
-    { }
+    ToupCam() : m_h(nullptr), m_buffer(nullptr), m_tmpbuf(nullptr), m_started(false), m_cond(m_lock) { }
 
     ~ToupCam()
     {
@@ -80,21 +74,15 @@ struct ToupCam
         ::free(m_tmpbuf);
     }
 
-    int gain_pct(int val) const
-    {
-        return (val - m_minGain) * 100 / (m_maxGain - m_minGain);
-    }
+    int gain_pct(int val) const { return (val - m_minGain) * 100 / (m_maxGain - m_minGain); }
 
-    int cam_gain(int pct) const
-    {
-        return m_minGain + pct * (m_maxGain - m_minGain) / 100;
-    }
+    int cam_gain(int pct) const { return m_minGain + pct * (m_maxGain - m_minGain) / 100; }
 
     void StopCapture()
     {
         if (m_started)
         {
-            //Debug.Write("TOUPTEK: stopcapture\n");
+            // Debug.Write("TOUPTEK: stopcapture\n");
             HRESULT hr;
             if (FAILED(hr = Toupcam_Stop(m_h)))
                 Debug.Write(wxString::Format("TOUPTEK: Toupcam_Stop failed with status 0x%x\n", hr));
@@ -114,7 +102,7 @@ struct ToupCam
         case TOUPCAM_EVENT_NOFRAMETIMEOUT:
         case TOUPCAM_EVENT_NOPACKETTIMEOUT:
         case TOUPCAM_EVENT_TRIGGERFAIL:
-            //Debug.Write(wxString::Format("TOUPTEK: cam event 0x%x\n", event));
+            // Debug.Write(wxString::Format("TOUPTEK: cam event 0x%x\n", event));
             {
                 wxMutexLocker lck(cam->m_lock);
                 cam->m_captureResult = event;
@@ -132,7 +120,7 @@ struct ToupCam
         if (m_started)
             return;
 
-        //Debug.Write("TOUPTEK: startcapture\n");
+        // Debug.Write("TOUPTEK: startcapture\n");
 
         HRESULT hr;
         if (FAILED(hr = Toupcam_StartPullModeWithCallback(m_h, &CamEventCb, this)))
@@ -209,15 +197,9 @@ struct ToupCam
         }
     }
 
-    bool SoftwareBinning() const
-    {
-        return m_isColor;
-    }
+    bool SoftwareBinning() const { return m_isColor; }
 
-    bool SetHwBinning(unsigned int binning)
-    {
-        return SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning));
-    }
+    bool SetHwBinning(unsigned int binning) { return SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)); }
 
     bool SetBinning(unsigned int binning)
     {
@@ -262,7 +244,6 @@ class CameraToupTek : public GuideCamera
     ToupCam m_cam;
 
 public:
-
     CameraToupTek();
     ~CameraToupTek();
 
@@ -294,16 +275,15 @@ CameraToupTek::CameraToupTek()
     Connected = false;
     m_cam.m_hasGuideOutput = true;
     HasSubframes = true;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     m_cam.m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ToupTek/bpp", 8);
     m_cam.m_bpp = value == 8 ? 8 : 16;
     MaxBinning = 4;
 }
 
-CameraToupTek::~CameraToupTek()
-{
-}
+CameraToupTek::~CameraToupTek() { }
 
 bool CameraToupTek::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
@@ -377,8 +357,8 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
     m_cam.m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
 
-    Debug.Write(wxString::Format("TOUPTEK: isColor = %d, hasCooler = %d, hasST4 = %d\n",
-        m_cam.m_isColor, HasCooler, m_cam.m_hasGuideOutput));
+    Debug.Write(wxString::Format("TOUPTEK: isColor = %d, hasCooler = %d, hasST4 = %d\n", m_cam.m_isColor, HasCooler,
+                                 m_cam.m_hasGuideOutput));
 
     if (FAILED(Toupcam_get_Resolution(m_cam.m_h, 0, &m_cam.m_maxSize.x, &m_cam.m_maxSize.y)))
     {
@@ -445,7 +425,8 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         m_cam.m_maxGain = maxGain;
         HasGainControl = maxGain > minGain;
         m_cam.m_defaultGainPct = m_cam.gain_pct(defaultGain);
-        Debug.Write(wxString::Format("TOUPTEK: gain range %d .. %d, default = %d (%d%%)\n", minGain, maxGain, defaultGain, m_cam.m_defaultGainPct));
+        Debug.Write(wxString::Format("TOUPTEK: gain range %d .. %d, default = %d (%d%%)\n", minGain, maxGain, defaultGain,
+                                     m_cam.m_defaultGainPct));
     }
     else
     {
@@ -470,14 +451,14 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_RAW, 1);
     m_cam.SetOption(TOUPCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
     m_cam.SetOption(TOUPCAM_OPTION_LINEAR, 0);
-    //m_cam.SetOption(TOUPCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
+    // m_cam.SetOption(TOUPCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
     m_cam.SetOption(TOUPCAM_OPTION_COLORMATIX, 0);
     m_cam.SetOption(TOUPCAM_OPTION_WBGAIN, 0);
-    m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 1);  // software trigger
+    m_cam.SetOption(TOUPCAM_OPTION_TRIGGER, 1); // software trigger
     m_cam.SetOption(TOUPCAM_OPTION_AUTOEXP_POLICY, 0); // 0="Exposure Only" 1="Exposure Preferred"
     m_cam.SetOption(TOUPCAM_OPTION_ROTATE, 0);
     m_cam.SetOption(TOUPCAM_OPTION_UPSIDE_DOWN, 0);
-    //m_cam.SetOption(TOUPCAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
+    // m_cam.SetOption(TOUPCAM_OPTION_CG, 0); // "Conversion Gain" 0=LCG 1=HCG 2=HDR // setting this fails
     m_cam.SetOption(TOUPCAM_OPTION_FFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
@@ -502,12 +483,8 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     unsigned int fourcc, bpp;
     if (SUCCEEDED(hr = Toupcam_get_RawFormat(m_cam.m_h, &fourcc, &bpp)))
     {
-        Debug.Write(wxString::Format("TOUPTEK: raw format = %c%c%c%c bit depth = %u\n",
-            fourcc & 0xff,
-            (fourcc >> 8) & 0xff,
-            (fourcc >> 16) & 0xff,
-            fourcc >> 24,
-            bpp));
+        Debug.Write(wxString::Format("TOUPTEK: raw format = %c%c%c%c bit depth = %u\n", fourcc & 0xff, (fourcc >> 8) & 0xff,
+                                     (fourcc >> 16) & 0xff, fourcc >> 24, bpp));
     }
     else
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_RawFormat failed with status 0x%x\n", hr));
@@ -561,7 +538,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     unsigned int const binning = m_cam.m_curBin;
 
-    wxRect roi;     // un-binned coordinates
+    wxRect roi; // un-binned coordinates
 
     if (useSubframe)
     {
@@ -606,7 +583,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     m_cam.StartCapture();
 
-    //Debug.Write("TOUPTEK: capture: trigger\n");
+    // Debug.Write("TOUPTEK: capture: trigger\n");
     if (FAILED(hr = Toupcam_Trigger(m_cam.m_h, 1)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_Trigger(1) failed with status 0x%x\n", hr));
 
@@ -659,7 +636,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
         return true;
     }
 
-    //Debug.Write("TOUPTEK: capture: image ready\n");
+    // Debug.Write("TOUPTEK: capture: image ready\n");
 
     void *buf;
     wxSize sz;
@@ -725,7 +702,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
         }
     }
 
-    //Debug.Write("TOUPTEK: capture: pull done\n");
+    // Debug.Write("TOUPTEK: capture: pull done\n");
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
@@ -750,10 +727,14 @@ inline static int GetToupcamDirection(int direction)
     switch (direction)
     {
     default:
-    case NORTH: return 0;
-    case EAST:  return 2;
-    case WEST:  return 3;
-    case SOUTH: return 1;
+    case NORTH:
+        return 0;
+    case EAST:
+        return 2;
+    case WEST:
+        return 3;
+    case SOUTH:
+        return 1;
     }
 }
 
@@ -796,8 +777,7 @@ struct ToupTekCameraDlg : public wxDialog
     ToupTekCameraDlg();
 };
 
-ToupTekCameraDlg::ToupTekCameraDlg()
-    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
+ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -812,7 +792,7 @@ ToupTekCameraDlg::ToupTekCameraDlg()
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
-    wxButton* sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -868,13 +848,13 @@ bool CameraToupTek::SetCoolerOn(bool on)
 
 bool CameraToupTek::SetCoolerSetpoint(double temperature)
 {
-    int val = (int)(temperature * 10.);
-#if defined(TOUPCAM_TEC_TARGET_MIN)
+    int val = (int) (temperature * 10.);
+# if defined(TOUPCAM_TEC_TARGET_MIN)
     val = wxMax(val, TOUPCAM_TEC_TARGET_MIN);
-#endif
-#if defined(TOUPCAM_TEC_TARGET_MAX)
+# endif
+# if defined(TOUPCAM_TEC_TARGET_MAX)
     val = wxMin(val, TOUPCAM_TEC_TARGET_MAX);
-#endif
+# endif
 
     return m_cam.SetOption(TOUPCAM_OPTION_TECTARGET, val) ? false : true;
 }
@@ -894,8 +874,7 @@ bool CameraToupTek::GetCoolerStatus(bool *on, double *setpoint, double *power, d
     else
         err = true;
 
-    if (m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE, &vcur) &&
-        m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
+    if (m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE, &vcur) && m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
         vmax > 0)
     {
         *power = vcur * 100.0 / vmax;

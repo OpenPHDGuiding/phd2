@@ -81,34 +81,36 @@ static wxString TITLE_TRAINING = wxTRANSLATE("Comet Tracking - Training Active")
 static wxString TITLE_ACTIVE = wxTRANSLATE("Comet Tracking - Active");
 
 CometToolWin::CometToolWin()
-    : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1,-1), wxSize(300,300)),
-      m_training(false),
-      m_timer(this)
+    : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1, -1), wxSize(300, 300)), m_training(false), m_timer(this)
 {
-    SetSizeHints( wxDefaultSize, wxDefaultSize );
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     m_enable = new wxToggleButton(this, wxID_ANY, _("Enable"), wxDefaultPosition, wxDefaultSize, 0);
     m_enable->SetToolTip(_("Toggle comet tracking on or off."));
 
-    m_xLabel = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20,-1), wxALIGN_RIGHT);
+    m_xLabel = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxALIGN_RIGHT);
     m_xLabel->Wrap(-1);
     m_yLabel = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(20, -1), wxALIGN_RIGHT);
     m_yLabel->Wrap(-1);
 
-    m_xRate = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -5000., +5000., 0., 1.);
+    m_xRate = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -5000.,
+                                   +5000., 0., 1.);
     m_xRate->SetToolTip(_("Comet tracking rate"));
-    m_yRate = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -5000., +5000., 0., 1.);
+    m_yRate = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -5000.,
+                                   +5000., 0., 1.);
     m_yRate->SetToolTip(_("Comet tracking rate"));
 
     wxString m_unitsChoices[] = { _("Pixels/hr"), _("Arcsec/hr") };
     int m_unitsNChoices = sizeof(m_unitsChoices) / sizeof(wxString);
-    m_units = new wxRadioBox(this, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, m_unitsNChoices, m_unitsChoices, 1, wxRA_SPECIFY_ROWS);
+    m_units = new wxRadioBox(this, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, m_unitsNChoices, m_unitsChoices, 1,
+                             wxRA_SPECIFY_ROWS);
     m_units->SetSelection(1);
     m_units->SetToolTip(_("Tracking rate units"));
 
     wxString m_axesChoices[] = { _("Camera (X/Y)"), _("Mount (RA/Dec)") };
     int m_axesNChoices = sizeof(m_axesChoices) / sizeof(wxString);
-    m_axes = new wxRadioBox(this, wxID_ANY, _("Axes"), wxDefaultPosition, wxDefaultSize, m_axesNChoices, m_axesChoices, 1, wxRA_SPECIFY_ROWS);
+    m_axes = new wxRadioBox(this, wxID_ANY, _("Axes"), wxDefaultPosition, wxDefaultSize, m_axesNChoices, m_axesChoices, 1,
+                            wxRA_SPECIFY_ROWS);
     m_axes->SetSelection(1);
     m_axes->SetToolTip(_("Tracking rate axes"));
 
@@ -118,20 +120,21 @@ CometToolWin::CometToolWin()
     m_stop->SetToolTip(_("Stop training"));
     m_stop->Enable(false);
 
-    // Use a text ctrl for status, wxStaticText flickers. Adding the wxTE_NO_VSCROLL style also causes the control to flicker on Windows 7.
+    // Use a text ctrl for status, wxStaticText flickers. Adding the wxTE_NO_VSCROLL style also causes the control to flicker on
+    // Windows 7.
     long style = wxSTATIC_BORDER | wxTE_MULTILINE /*| wxTE_NO_VSCROLL*/;
     m_status = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400, 60), style);
     m_status->Enable(false);
 
     wxBoxSizer *xSizer = new wxBoxSizer(wxHORIZONTAL);
     xSizer->Add(0, 0, 1, wxEXPAND, 5);
-    xSizer->Add(m_xLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    xSizer->Add(m_xRate, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    xSizer->Add(m_xLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    xSizer->Add(m_xRate, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     xSizer->Add(0, 0, 1, wxEXPAND, 5);
 
     wxBoxSizer *ySizer = new wxBoxSizer(wxHORIZONTAL);
     ySizer->Add(0, 0, 1, wxEXPAND, 5);
-    ySizer->Add(m_yLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    ySizer->Add(m_yLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     ySizer->Add(m_yRate, 0, wxALL, 5);
     ySizer->Add(0, 0, 1, wxEXPAND, 5);
 
@@ -152,7 +155,7 @@ CometToolWin::CometToolWin()
     trainingSizer->Add(m_status, 0, wxALL, 5);
 
     wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
-    topSizer->Add(m_enable, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    topSizer->Add(m_enable, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
     topSizer->Add(ratesSizer, 1, wxEXPAND, 5);
     topSizer->Add(trainingSizer, 0, wxEXPAND, 5);
 
@@ -188,7 +191,7 @@ CometToolWin::~CometToolWin(void)
     pFrame->pCometTool = 0;
 }
 
-static void SetEnabledState(CometToolWin* win, bool active)
+static void SetEnabledState(CometToolWin *win, bool active)
 {
     if (active)
     {
@@ -294,14 +297,14 @@ void CometToolWin::UpdateStatus()
     if (m_training)
     {
         m_status->SetValue(wxString::Format(_("Training, elapsed time %lus.\nUse the "
-            "\"Adjust Lock Position\" controls to center the comet\nin the imaging "
-            "camera and click Stop to complete training."),
-            (long)((::wxGetUTCTimeMillis().GetValue() - m_startTime) / 1000)));
+                                              "\"Adjust Lock Position\" controls to center the comet\nin the imaging "
+                                              "camera and click Stop to complete training."),
+                                            (long) ((::wxGetUTCTimeMillis().GetValue() - m_startTime) / 1000)));
     }
     else
     {
         m_status->SetValue(_("Center the comet in the imaging camera.\nSelect a guide "
-            "star and start Guiding.\nThen, click Start to begin training."));
+                             "star and start Guiding.\nThen, click Start to begin training."));
     }
 }
 

@@ -35,18 +35,18 @@
 
 #include "phd.h"
 #ifdef ORION_DSCI
-#include "camera.h"
-#include "image_math.h"
-#include "cam_StarShootDSCI.h"
+# include "camera.h"
+# include "image_math.h"
+# include "cam_StarShootDSCI.h"
 
 CameraStarShootDSCI::CameraStarShootDSCI()
 {
     Connected = false;
     Name = _T("StarShoot DSCI");
-    FullSize = wxSize(782,582);  // This is *after* squaring
+    FullSize = wxSize(782, 582); // This is *after* squaring
     HasGainControl = true;
 
-    RawX = 752;  // Also re-set in connect routine
+    RawX = 752; // Also re-set in connect routine
     RawY = 582;
     XPixelSize = 6.5;
     YPixelSize = 6.25;
@@ -69,7 +69,7 @@ bool CameraStarShootDSCI::Connect(const wxString& camId)
 {
     // returns true on error
 
-    CameraDLL = LoadLibrary(TEXT("DSCI"));  // load the DLL
+    CameraDLL = LoadLibrary(TEXT("DSCI")); // load the DLL
 
     if (!CameraDLL)
         return CamConnectFailed(wxT("Can't find DSCI.dll"));
@@ -77,59 +77,69 @@ bool CameraStarShootDSCI::Connect(const wxString& camId)
     // assign functions
 
     B_V_DLLFUNC OCP_openUSB = (B_V_DLLFUNC) GetProcAddress(CameraDLL, "openUSB");
-    if (!OCP_openUSB) {
+    if (!OCP_openUSB)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(_("Didn't find openUSB in DLL"));
     }
 
     bool retval = OCP_openUSB();
-    if (!retval) {
+    if (!retval)
+    {
         FreeLibrary(CameraDLL);
         return true;
     }
 
     // Good to go, now get other functions
     B_V_DLLFUNC OCP_isUSB2 = (B_V_DLLFUNC) GetProcAddress(CameraDLL, "IsUSB20");
-    if (!OCP_isUSB2) {
+    if (!OCP_isUSB2)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "IsUSB20"));
     }
 
     UI_V_DLLFUNC OCP_Width = (UI_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Width");
-    if (!OCP_Width) {
+    if (!OCP_Width)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Width"));
     }
 
     UI_V_DLLFUNC OCP_Height = (UI_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Height");
-    if (!OCP_Height) {
+    if (!OCP_Height)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Height"));
     }
 
-    OCP_sendEP1_1BYTE = (V_V_DLLFUNC)GetProcAddress(CameraDLL,"sendEP1_1BYTE");
-    if (!OCP_sendEP1_1BYTE) {
+    OCP_sendEP1_1BYTE = (V_V_DLLFUNC) GetProcAddress(CameraDLL, "sendEP1_1BYTE");
+    if (!OCP_sendEP1_1BYTE)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "sendEP1_1BYTE"));
     }
-    OCP_sendRegister = (OCPREGFUNC)GetProcAddress(CameraDLL,"sendRegister");
-    if (!OCP_sendRegister) {
+    OCP_sendRegister = (OCPREGFUNC) GetProcAddress(CameraDLL, "sendRegister");
+    if (!OCP_sendRegister)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "sendRegister"));
     }
 
-    OCP_Exposure = (B_I_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposure");
-    if (!OCP_Exposure) {
+    OCP_Exposure = (B_I_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Exposure");
+    if (!OCP_Exposure)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Exposure"));
     }
-    OCP_Exposing = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposing");
-    if (!OCP_Exposing) {
+    OCP_Exposing = (B_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_Exposing");
+    if (!OCP_Exposing)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_Exposing"));
     }
-    OCP_ProcessedBuffer = (USP_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_ProcessedBuffer");
-    if (!OCP_ProcessedBuffer) {
+    OCP_ProcessedBuffer = (USP_V_DLLFUNC) GetProcAddress(CameraDLL, "CAM_ProcessedBuffer");
+    if (!OCP_ProcessedBuffer)
+    {
         FreeLibrary(CameraDLL);
         return CamConnectFailed(wxString::Format(_("Didn't find %s in DLL"), "CAM_ProcessedBuffer"));
     }
@@ -154,19 +164,21 @@ bool CameraStarShootDSCI::Capture(int duration, usImage& img, int options, const
     unsigned char retval = 0;
     if (duration != lastdur)
     {
-        retval = OCP_sendRegister(duration,0,(unsigned char) (GuideCameraGain * 63 / 100),120,true,0,false,false,false,false,false,ampoff,false,false);
+        retval = OCP_sendRegister(duration, 0, (unsigned char) (GuideCameraGain * 63 / 100), 120, true, 0, false, false, false,
+                                  false, false, ampoff, false, false);
         lastdur = duration;
     }
 
-    if (retval) {
+    if (retval)
+    {
         pFrame->Alert(_("Problem sending register to StarShoot"));
         return true;
     }
 
     if (USB2)
-        retval = OCP_Exposure(1);  // Start USB2 exposure
+        retval = OCP_Exposure(1); // Start USB2 exposure
     else
-        retval = OCP_Exposure(0);  // Start USB1.1 exposure
+        retval = OCP_Exposure(0); // Start USB1.1 exposure
 
     if (!retval)
     {
@@ -191,12 +203,12 @@ bool CameraStarShootDSCI::Capture(int duration, usImage& img, int options, const
         return true;
     }
 
-    const unsigned short *rawptr = OCP_ProcessedBuffer();  // Copy raw data in
+    const unsigned short *rawptr = OCP_ProcessedBuffer(); // Copy raw data in
     memcpy(img.ImageData, rawptr, img.NPixels * sizeof(unsigned short));
 
     SubtractDark(img);
     QuickLRecon(img);
-    SquarePixels(img,XPixelSize,YPixelSize);
+    SquarePixels(img, XPixelSize, YPixelSize);
     return false;
 }
 

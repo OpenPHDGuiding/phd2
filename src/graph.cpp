@@ -64,17 +64,21 @@ wxEND_EVENT_TABLE();
 // clang-format on
 
 #ifdef __WXOSX__
-# define OSX_SMALL_FONT(lbl) do { (lbl)->SetFont(*wxSMALL_FONT); } while (0)
+# define OSX_SMALL_FONT(lbl)                                                                                                   \
+     do                                                                                                                        \
+     {                                                                                                                         \
+         (lbl)->SetFont(*wxSMALL_FONT);                                                                                        \
+     } while (0)
 #else
 # define OSX_SMALL_FONT(lbl)
 #endif
 
-GraphLogWindow::GraphLogWindow(wxWindow *parent) :
-    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_T("Graph"))
+GraphLogWindow::GraphLogWindow(wxWindow *parent)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("Graph"))
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pMainSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *pClientSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -87,13 +91,13 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     {
         m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
         m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
-        m_pScopePane    = pMount->GetGraphControlPane(this, _("Scope:"));
+        m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
     }
     else
     {
         m_pXControlPane = nullptr;
         m_pYControlPane = nullptr;
-        m_pScopePane    = nullptr;
+        m_pScopePane = nullptr;
     }
 
     if (m_pXControlPane)
@@ -115,26 +119,30 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     SetBackgroundColour(*wxBLACK);
 
-    m_pLengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    m_pLengthButton = new OptionsButton(this, BUTTON_GRAPH_LENGTH, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+                                        wxALIGN_CENTER_HORIZONTAL);
     m_pLengthButton->SetToolTip(_("Select the number of frames of history to display on the X-axis"));
     m_pLengthButton->SetLabel(wxString::Format(_T("x: %3d"), m_pClient->m_length));
     pButtonSizer->Add(m_pLengthButton, wxSizerFlags().Border(wxTOP, 5).Expand());
 
-    m_pHeightButton = new OptionsButton(this,BUTTON_GRAPH_HEIGHT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    m_pHeightButton = new OptionsButton(this, BUTTON_GRAPH_HEIGHT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+                                        wxALIGN_CENTER_HORIZONTAL);
     m_heightButtonLabelVal = 0;
     UpdateHeightButtonLabel();
     pButtonSizer->Add(m_pHeightButton, wxSizerFlags().Expand());
 
-    m_pSettingsButton = new OptionsButton(this, BUTTON_GRAPH_SETTINGS, _("Settings"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    m_pSettingsButton = new OptionsButton(this, BUTTON_GRAPH_SETTINGS, _("Settings"), wxDefaultPosition, wxDefaultSize,
+                                          wxALIGN_CENTER_HORIZONTAL);
     m_pSettingsButton->SetToolTip(_("Graph settings"));
     pButtonSizer->Add(m_pSettingsButton, wxSizerFlags().Expand());
 
     wxButton *clearButton = new wxButton(this, BUTTON_GRAPH_CLEAR, _("Clear"));
-    clearButton->SetToolTip(_("Clear graph data. You can also partially clear the graph by holding down the Ctrl key and clicking on the graph where you want the data to start."));
+    clearButton->SetToolTip(_("Clear graph data. You can also partially clear the graph by holding down the Ctrl key and "
+                              "clicking on the graph where you want the data to start."));
     clearButton->SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
     pButtonSizer->Add(clearButton, wxSizerFlags().Expand());
 
-    m_pCheckboxTrendlines = new wxCheckBox(this,CHECKBOX_GRAPH_TRENDLINES,_("Trendlines"));
+    m_pCheckboxTrendlines = new wxCheckBox(this, CHECKBOX_GRAPH_TRENDLINES, _("Trendlines"));
 #if defined(__WXOSX__)
     // workaround inability to set checkbox foreground color
     m_pCheckboxTrendlines->SetBackgroundColour(wxColor(200, 200, 200));
@@ -144,7 +152,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     m_pCheckboxTrendlines->SetToolTip(_("Plot trend lines"));
     pButtonSizer->Add(m_pCheckboxTrendlines, wxSizerFlags().Expand().Border(wxTOP, 1));
 
-    m_pCheckboxCorrections = new wxCheckBox(this,CHECKBOX_GRAPH_CORRECTIONS,_("Corrections"));
+    m_pCheckboxCorrections = new wxCheckBox(this, CHECKBOX_GRAPH_CORRECTIONS, _("Corrections"));
 #if defined(__WXOSX__)
     // workaround inability to set checkbox foreground color
     m_pCheckboxCorrections->SetBackgroundColour(wxColor(200, 200, 200));
@@ -188,7 +196,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80, -1));
     OSX_SMALL_FONT(m_pClient->m_pRaRMS);
     m_pClient->m_pRaRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pRaRMS->SetBackgroundColour(*wxBLACK);
@@ -201,7 +209,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80, -1));
     OSX_SMALL_FONT(m_pClient->m_pDecRMS);
     m_pClient->m_pDecRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pDecRMS->SetBackgroundColour(*wxBLACK);
@@ -214,7 +222,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80, -1));
     OSX_SMALL_FONT(m_pClient->m_pTotRMS);
     m_pClient->m_pTotRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pTotRMS->SetBackgroundColour(*wxBLACK);
@@ -316,7 +324,7 @@ void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
     }
 
     PopupMenu(menu, m_pSettingsButton->GetPosition().x,
-        m_pSettingsButton->GetPosition().y + m_pSettingsButton->GetSize().GetHeight());
+              m_pSettingsButton->GetPosition().y + m_pSettingsButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -325,14 +333,14 @@ void GraphLogWindow::UpdateRADecDxDyLabels()
 {
     switch (m_pClient->m_mode)
     {
-        case GraphLogClientWindow::MODE_RADEC:
-            m_pLabel1->SetLabel(_("RA"));
-            m_pLabel2->SetLabel(_("Dec"));
-            break;
-        case GraphLogClientWindow::MODE_DXDY:
-            m_pLabel1->SetLabel(_("dx"));
-            m_pLabel2->SetLabel(_("dy"));
-            break;
+    case GraphLogClientWindow::MODE_RADEC:
+        m_pLabel1->SetLabel(_("RA"));
+        m_pLabel2->SetLabel(_("Dec"));
+        break;
+    case GraphLogClientWindow::MODE_DXDY:
+        m_pLabel1->SetLabel(_("dx"));
+        m_pLabel2->SetLabel(_("dy"));
+        break;
     }
 }
 
@@ -373,7 +381,7 @@ void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
         m_pClient->m_heightUnits = UNIT_PIXELS;
         break;
     }
-    pConfig->Global.SetInt("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
+    pConfig->Global.SetInt("/graph/HeightUnits", (int) m_pClient->m_heightUnits);
     Refresh();
 }
 
@@ -451,7 +459,7 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
     wxMenu *menu = GetLengthMenu();
 
     PopupMenu(menu, m_pLengthButton->GetPosition().x,
-        m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
+              m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -507,7 +515,7 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
     }
 
     PopupMenu(menu, m_pHeightButton->GetPosition().x,
-        m_pHeightButton->GetPosition().y + m_pHeightButton->GetSize().GetHeight());
+              m_pHeightButton->GetPosition().y + m_pHeightButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -604,13 +612,13 @@ void GraphLogWindow::UpdateControls()
     {
         m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
         m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
-        m_pScopePane    = pMount->GetGraphControlPane(this, _("Scope:"));
+        m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
     }
     else
     {
         m_pXControlPane = nullptr;
         m_pYControlPane = nullptr;
-        m_pScopePane    = nullptr;
+        m_pScopePane = nullptr;
     }
 
     if (m_pXControlPane)
@@ -676,7 +684,7 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     wxAutoBufferedPaintDC dc(this);
 
     dc.SetBackground(*wxBLACK_BRUSH);
-    //dc.SetBackground(wxColour(10,0,0));
+    // dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
     UpdateHeightButtonLabel();
@@ -756,10 +764,8 @@ wxBEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
 wxEND_EVENT_TABLE();
 // clang-format on
 
-GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
-    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE),
-    m_line1(0),
-    m_line2(0)
+GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401, 200), wxFULL_REPAINT_ON_RESIZE), m_line1(0), m_line2(0)
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -768,12 +774,12 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     if (!m_raOrDxColor.Set(pConfig->Global.GetString("/graph/RAColor", wxEmptyString)))
     {
-        m_raOrDxColor  = wxColour(100,100,255);
+        m_raOrDxColor = wxColour(100, 100, 255);
         pConfig->Global.SetString("/graph/RAColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
     if (!m_decOrDyColor.Set(pConfig->Global.GetString("/graph/DecColor", wxEmptyString)))
     {
-        m_decOrDyColor = wxColour(255,0,0);
+        m_decOrDyColor = wxColour(255, 0, 0);
         pConfig->Global.SetString("/graph/DecColor", m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
 
@@ -792,9 +798,11 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
     m_noDitherDec.ChangeWindowSize(m_length);
     m_noDitherRA.ChangeWindowSize(m_length);
-    Debug.Write(wxString::Format("GraphStats window size = %d\n", (int)m_length));
+    Debug.Write(wxString::Format("GraphStats window size = %d\n", (int) m_length));
     m_height = pConfig->Global.GetInt("/graph/height", m_minHeight * 2 * 2); // match PHD1 4-pixel scale for new users
-    m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt("graph/HeightUnits", (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
+    m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt(
+        "graph/HeightUnits",
+        (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
@@ -805,8 +813,8 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
 GraphLogClientWindow::~GraphLogClientWindow()
 {
-    delete [] m_line1;
-    delete [] m_line2;
+    delete[] m_line1;
+    delete[] m_line2;
 }
 
 static void reset_trend_accums(TrendLineAccum accums[4])
@@ -879,10 +887,10 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
 
     m_history.resize(maxLength);
 
-    delete [] m_line1;
+    delete[] m_line1;
     m_line1 = new wxPoint[maxLength];
 
-    delete [] m_line2;
+    delete[] m_line2;
     m_line2 = new wxPoint[maxLength];
 
     pConfig->Global.SetInt("/graph/maxLength", m_history.capacity());
@@ -966,7 +974,7 @@ static double rms(unsigned int nr, const TrendLineAccum *accum)
 {
     if (nr == 0)
         return 0.0;
-    double const n = (double)nr;
+    double const n = (double) nr;
     double const s1 = accum->sum_y;
     double const s2 = accum->sum_y2;
     return sqrt(n * s2 - s1 * s1) / n;
@@ -983,7 +991,7 @@ void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
 
     if (nr >= 2)
     {
-        m_stats.osc_index = 1.0 - (double) m_raSameSides / (double)(nr - 1);
+        m_stats.osc_index = 1.0 - (double) m_raSameSides / (double) (nr - 1);
         m_stats.osc_alert = m_stats.osc_index > 0.6 || m_stats.osc_index < 0.15;
     }
     else
@@ -1001,12 +1009,13 @@ void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
     }
 }
 
-static double peak_ra(const circular_buffer<S_HISTORY> &history, unsigned int nr)
+static double peak_ra(const circular_buffer<S_HISTORY>& history, unsigned int nr)
 {
     double peak = 0.0;
     const int end = history.size();
     const int begin = end - nr;
-    for (int i = begin; i < end; i++) {
+    for (int i = begin; i < end; i++)
+    {
         double val = fabs(history[i].ra);
         if (val > peak)
             peak = val;
@@ -1014,12 +1023,13 @@ static double peak_ra(const circular_buffer<S_HISTORY> &history, unsigned int nr
     return peak;
 }
 
-static double peak_dec(const circular_buffer<S_HISTORY> &history, unsigned int nr)
+static double peak_dec(const circular_buffer<S_HISTORY>& history, unsigned int nr)
 {
     double peak = 0.0;
     const int end = history.size();
     const int begin = end - nr;
-    for (int i = begin; i < end; i++) {
+    for (int i = begin; i < end; i++)
+    {
         double val = fabs(history[i].dec);
         if (val > peak)
             peak = val;
@@ -1101,7 +1111,8 @@ void GraphLogClientWindow::RecalculateTrendLines()
     reset_trend_accums(m_trendLineAccum);
     unsigned int trend_items = GetItemCount();
     const int begin = m_history.size() - trend_items;
-    for (unsigned int x = 0, i = begin; x < trend_items; i++, x++) {
+    for (unsigned int x = 0, i = begin; x < trend_items; i++, x++)
+    {
         const S_HISTORY& h = m_history[i];
         update_trend(x, trend_items, h.dx, 0.0, &m_trendLineAccum[0]);
         update_trend(x, trend_items, h.dy, 0.0, &m_trendLineAccum[1]);
@@ -1175,10 +1186,11 @@ struct ScaleAndTranslate
 {
     int m_xorig, m_yorig;
     double m_xmag, m_ymag;
-    ScaleAndTranslate(int xorig, int yorig, double xmag, double ymag) : m_xorig(xorig), m_yorig(yorig), m_xmag(xmag), m_ymag(ymag) { }
-    wxPoint pt(double x, double y) const {
-        return wxPoint(m_xorig + (int)(x * m_xmag), m_yorig + (int)(y * m_ymag));
+    ScaleAndTranslate(int xorig, int yorig, double xmag, double ymag)
+        : m_xorig(xorig), m_yorig(yorig), m_xmag(xmag), m_ymag(ymag)
+    {
     }
+    wxPoint pt(double x, double y) const { return wxPoint(m_xorig + (int) (x * m_xmag), m_yorig + (int) (y * m_ymag)); }
 };
 
 static wxString rms_label(double rms, double sampling)
@@ -1229,7 +1241,10 @@ static double GetMaxStarSNR(const circular_buffer<S_HISTORY>& history, int start
     return maxSNR;
 }
 
-enum { GRAPH_BORDER = 5 };
+enum
+{
+    GRAPH_BORDER = 5
+};
 
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
@@ -1262,12 +1277,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetBackground(*wxBLACK_BRUSH);
     dc.Clear();
 
-    wxPen GreyDashPen(wxColour(200,200,200),1, wxPENSTYLE_DOT);
+    wxPen GreyDashPen(wxColour(200, 200, 200), 1, wxPENSTYLE_DOT);
 
     // Draw axes
     dc.SetPen(*wxGREY_PEN);
-    dc.DrawLine(center.x,topEdge,center.x,bottomEdge);
-    dc.DrawLine(leftEdge,center.y,rightEdge,center.y);
+    dc.DrawLine(center.x, topEdge, center.x, bottomEdge);
+    dc.DrawLine(leftEdge, center.y, rightEdge, center.y);
 
     // draw a box around the client area
     dc.DrawLine(leftEdge, topEdge, rightEdge, topEdge);
@@ -1289,12 +1304,15 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     for (int i = 1; i <= m_yDivisions; i++)
     {
         double div_y = center.y - i * yPixelsPerDivision;
-        dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : (i == 3 ? " px" : "")), leftEdge + 3, div_y - 13);
+        dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
+        dc.DrawText(wxString::Format("%g%s", i * (double) m_height / (m_yDivisions + 1),
+                                     units == UNIT_ARCSEC ? "''" : (i == 3 ? " px" : "")),
+                    leftEdge + 3, div_y - 13);
 
         div_y = center.y + i * yPixelsPerDivision;
         dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", -i * (double) m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""),
+                    leftEdge + 3, div_y - 13);
     }
 
     for (int i = 1; i <= xDivisions; i++)
@@ -1304,7 +1322,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     const double xmag = size.x / (double) m_length;
-    const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * (units == UNIT_ARCSEC ? sampling : 1.0);
+    const double ymag =
+        yPixelsPerDivision * (double) (m_yDivisions + 1) / (double) m_height * (units == UNIT_ARCSEC ? sampling : 1.0);
 
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
@@ -1387,7 +1406,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     wxPoint pt(sctr.pt(j, decDur));
                     pt.x += 5;
                     if (decDur < 0)
-                        dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
+                        dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
                     else
                         dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
                 }
@@ -1515,9 +1534,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 {
                     const S_HISTORY& h0 = m_history[start_item];
                     const S_HISTORY& h1 = m_history[m_history.size() - 1];
-                    double dt = (double)(h1.timestamp - h0.timestamp) / (1000.0 * 60.0); // time span in minutes
-                    double ddec = (double) (plot_length - 1) * trendDecOrDy.first;  // dec drift (pixels)
-                    ddec *= sampling;  // convert pixels to arc-seconds
+                    double dt = (double) (h1.timestamp - h0.timestamp) / (1000.0 * 60.0); // time span in minutes
+                    double ddec = (double) (plot_length - 1) * trendDecOrDy.first; // dec drift (pixels)
+                    ddec *= sampling; // convert pixels to arc-seconds
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
                     double err_arcmin = (3.82 * ddec) / (dt * cos(declination));
@@ -1525,15 +1544,15 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     double correction = pFrame->pGuider->GetPolarAlignCircleCorrection();
                     double err_px = polarAlignCircleRadius * correction;
                     dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%s%.f px)", err_arcmin,
-                        correction < 1.0 ? "" : "< ", err_px),
-                        leftEdge + 30, bottomEdge - 18);
+                                                 correction < 1.0 ? "" : "< ", err_px),
+                                leftEdge + 30, bottomEdge - 18);
                 }
             }
         }
         // when drifting, center the polar align circle on the star; when adjusting, center the polar
         // align circle at the lock position
-        const PHD_Point& center = pFrame->pGuider->IsCalibratingOrGuiding() ?
-            pFrame->pGuider->CurrentPosition() : pFrame->pGuider->LockPosition();
+        const PHD_Point& center =
+            pFrame->pGuider->IsCalibratingOrGuiding() ? pFrame->pGuider->CurrentPosition() : pFrame->pGuider->LockPosition();
         pFrame->pGuider->SetPolarAlignCircle(center, polarAlignCircleRadius);
 
         m_pRaRMS->SetLabel(rms_label(m_stats.rms_ra, sampling));
@@ -1542,7 +1561,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         if (m_stats.osc_alert)
         {
-            m_pOscIndex->SetForegroundColour(wxColour(185,20,0));
+            m_pOscIndex->SetForegroundColour(wxColour(185, 20, 0));
         }
         else
         {
@@ -1571,7 +1590,7 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
             unsigned int plot_length = GetItemCount();
             unsigned int start_item = m_history.size() - plot_length;
 
-            unsigned int i = start_item + (unsigned int) floor((double)(evt.GetX() - xorig) / xmag + 0.5);
+            unsigned int i = start_item + (unsigned int) floor((double) (evt.GetX() - xorig) / xmag + 0.5);
             if (i < m_history.size())
             {
                 wxLongLong_t deltaT = m_history[m_history.size() - 1].timestamp - m_history[i].timestamp;
@@ -1580,7 +1599,8 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
 
                 // Some items removed from m_history may not be resident in the "noDither" collections
                 int numDeletes = wxMin(m_noDitherDec.GetCount(), i);
-                long newStart = m_noDitherDec.GetLastEntry().DeltaTime - deltaT;       // mSec for new starting point in noDither collections
+                long newStart =
+                    m_noDitherDec.GetLastEntry().DeltaTime - deltaT; // mSec for new starting point in noDither collections
 
                 while (numDeletes > 0)
                 {
@@ -1616,15 +1636,14 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
     evt.Skip();
 }
 
-GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
-    : wxWindow(pParent, wxID_ANY)
+GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label) : wxWindow(pParent, wxID_ANY)
 {
     m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
 
     SetBackgroundColour(*wxBLACK);
 
-    int width  = StringWidth(label);
-    wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,label, wxDefaultPosition, wxSize(width + 5, -1));
+    int width = StringWidth(label);
+    wxStaticText *pLabel = new wxStaticText(this, wxID_ANY, label, wxDefaultPosition, wxSize(width + 5, -1));
     wxFont f = pLabel->GetFont();
     f.SetWeight(wxFONTWEIGHT_BOLD);
     pLabel->SetFont(f);
@@ -1635,18 +1654,11 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
     SetSizer(m_pControlSizer);
 }
 
-GraphControlPane::~GraphControlPane()
-{
-}
+GraphControlPane::~GraphControlPane() { }
 
-void GraphControlPane::UpdateControls()
-{
-}
+void GraphControlPane::UpdateControls() { }
 
-void GraphControlPane::EnableDecControls(bool enable)
-{
-
-}
+void GraphControlPane::EnableDecControls(bool enable) { }
 
 int GraphControlPane::StringWidth(const wxString& string)
 {

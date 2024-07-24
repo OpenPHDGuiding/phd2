@@ -39,108 +39,108 @@
   to detect or package this
   */
 
-#if defined(__WINDOWS__)
+# if defined(__WINDOWS__)
 // Windows cameras
-# define ALTAIR
-# define ASCOM_CAMERA
-# define ATIK16
-# define ATIK_GEN3
-# define INDI_CAMERA
-# define INOVA_PLC
-# define IOPTRON_CAMERA
-# define LE_CAMERA
-# define LE_LXUSB_CAMERA
-# define LE_PARALLEL_CAMERA
-# define LE_SERIAL_CAMERA
-# define MORAVIAN_CAMERA
-# define OGMA_CAMERA
-# define OPENCV_CAMERA
-# define ORION_DSCI
-# define QGUIDE
-# define QHY_CAMERA
-# define SBIG
-# define SBIGROTATOR_CAMERA
-# define SIMULATOR
-# define SSPIAG
-# define SVB_CAMERA
-# define SXV
-# define TOUPTEK_CAMERA
-# define WDM_CAMERA
-# define ZWO_ASI
-
-//# define OS_PL130  // the Opticstar library is not yet included
-//# define FIREWIRE_CAMERA // the The Imaging Source library is not yet included
-
-# ifdef HAVE_WXVIDCAP   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
-#  define VFW_CAMERA
-# endif
-
-#elif defined(__APPLE__)
-// Mac cameras
-# ifdef HAVE_FIREWIRE_CAMERA
-#  define FIREWIRE_CAMERA
-# endif
-# define INDI_CAMERA
-# ifdef HAVE_KWIQGUIDER_CAMERA
-#  define KWIQGUIDER_CAMERA
-# endif
-# ifdef HAVE_OGMA_CAMERA
+#  define ALTAIR
+#  define ASCOM_CAMERA
+#  define ATIK16
+#  define ATIK_GEN3
+#  define INDI_CAMERA
+#  define INOVA_PLC
+#  define IOPTRON_CAMERA
+#  define LE_CAMERA
+#  define LE_LXUSB_CAMERA
+#  define LE_PARALLEL_CAMERA
+#  define LE_SERIAL_CAMERA
+#  define MORAVIAN_CAMERA
 #  define OGMA_CAMERA
-# endif
-# ifdef HAVE_OPENSSAG_CAMERA
-#  define OPENSSAG_CAMERA
-# endif
-# ifdef HAVE_QHY_CAMERA
+#  define OPENCV_CAMERA
+#  define ORION_DSCI
+#  define QGUIDE
 #  define QHY_CAMERA
-# endif
-# ifdef HAVE_SBIG_CAMERA
 #  define SBIG
-# endif
-# define SIMULATOR
-# ifdef HAVE_SXV_CAMERA
+#  define SBIGROTATOR_CAMERA
+#  define SIMULATOR
+#  define SSPIAG
+#  define SVB_CAMERA
 #  define SXV
-# endif
-# ifdef HAVE_TOUPTEK_CAMERA
 #  define TOUPTEK_CAMERA
-# endif
-#ifdef HAVE_ZWO_CAMERA
-# define ZWO_ASI
-#endif
-#ifdef HAVE_SVB_CAMERA
-# define SVB_CAMERA
-#endif
-
-#elif defined (__linux__) || defined (__FreeBSD__)
-
-# define SIMULATOR
-# define OPENCV_CAMERA
-# define CAM_QHY5
-# ifdef HAVE_OGMA_CAMERA
-#  define OGMA_CAMERA
-# endif
-# ifdef HAVE_QHY_CAMERA
-#  define QHY_CAMERA
-# endif
-# define INDI_CAMERA
-# ifdef HAVE_ZWO_CAMERA
+#  define WDM_CAMERA
 #  define ZWO_ASI
-# endif
-# ifdef HAVE_TOUPTEK_CAMERA
-#  define TOUPTEK_CAMERA
-# endif
-# ifdef HAVE_SXV_CAMERA
-#  define SXV
-# endif
-# ifdef HAVE_SBIG_CAMERA
-#   define SBIG
-# endif
-# ifdef HAVE_SVB_CAMERA
-#   define SVB_CAMERA
-# endif
-// this should work ... needs testing
-//# define OPENSSAG
 
-#endif
+// # define OS_PL130  // the Opticstar library is not yet included
+// # define FIREWIRE_CAMERA // the The Imaging Source library is not yet included
+
+#  ifdef HAVE_WXVIDCAP // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
+#   define VFW_CAMERA
+#  endif
+
+# elif defined(__APPLE__)
+// Mac cameras
+#  ifdef HAVE_FIREWIRE_CAMERA
+#   define FIREWIRE_CAMERA
+#  endif
+#  define INDI_CAMERA
+#  ifdef HAVE_KWIQGUIDER_CAMERA
+#   define KWIQGUIDER_CAMERA
+#  endif
+#  ifdef HAVE_OGMA_CAMERA
+#   define OGMA_CAMERA
+#  endif
+#  ifdef HAVE_OPENSSAG_CAMERA
+#   define OPENSSAG_CAMERA
+#  endif
+#  ifdef HAVE_QHY_CAMERA
+#   define QHY_CAMERA
+#  endif
+#  ifdef HAVE_SBIG_CAMERA
+#   define SBIG
+#  endif
+#  define SIMULATOR
+#  ifdef HAVE_SXV_CAMERA
+#   define SXV
+#  endif
+#  ifdef HAVE_TOUPTEK_CAMERA
+#   define TOUPTEK_CAMERA
+#  endif
+#  ifdef HAVE_ZWO_CAMERA
+#   define ZWO_ASI
+#  endif
+#  ifdef HAVE_SVB_CAMERA
+#   define SVB_CAMERA
+#  endif
+
+# elif defined(__linux__) || defined(__FreeBSD__)
+
+#  define SIMULATOR
+#  define OPENCV_CAMERA
+#  define CAM_QHY5
+#  ifdef HAVE_OGMA_CAMERA
+#   define OGMA_CAMERA
+#  endif
+#  ifdef HAVE_QHY_CAMERA
+#   define QHY_CAMERA
+#  endif
+#  define INDI_CAMERA
+#  ifdef HAVE_ZWO_CAMERA
+#   define ZWO_ASI
+#  endif
+#  ifdef HAVE_TOUPTEK_CAMERA
+#   define TOUPTEK_CAMERA
+#  endif
+#  ifdef HAVE_SXV_CAMERA
+#   define SXV
+#  endif
+#  ifdef HAVE_SBIG_CAMERA
+#   define SBIG
+#  endif
+#  ifdef HAVE_SVB_CAMERA
+#   define SVB_CAMERA
+#  endif
+// this should work ... needs testing
+// # define OPENSSAG
+
+# endif
 
 // Currently unused
 // #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb

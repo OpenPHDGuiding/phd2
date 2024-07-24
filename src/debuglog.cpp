@@ -40,12 +40,7 @@
 #define ALWAYS_FLUSH_DEBUGLOG
 const int RetentionPeriod = 30;
 
-DebugLog::DebugLog()
-    :
-    m_enabled(false),
-    m_lastWriteTime(wxDateTime::UNow())
-{
-}
+DebugLog::DebugLog() : m_enabled(false), m_lastWriteTime(wxDateTime::UNow()) { }
 
 DebugLog::~DebugLog()
 {
@@ -57,8 +52,7 @@ static bool ParseLogTimestamp(wxDateTime *p, const wxString& s)
 {
     wxDateTime dt;
     wxString::const_iterator iter;
-    if (dt.ParseFormat(s, "%Y-%m-%d_%H%M%S", wxDateTime(), &iter) &&
-        iter == s.end())
+    if (dt.ParseFormat(s, "%Y-%m-%d_%H%M%S", wxDateTime(), &iter) && iter == s.end())
     {
         *p = dt;
         return true;
@@ -77,9 +71,8 @@ wxDateTime DebugLog::GetLogFileTime()
     while (cont)
     {
         wxDateTime dt;
-        if (filename.length() == 35 &&
-            ParseLogTimestamp(&dt, filename.substr(14, 17))
-            && (!latest.IsValid() || dt.IsLaterThan(latest)))
+        if (filename.length() == 35 && ParseLogTimestamp(&dt, filename.substr(14, 17)) &&
+            (!latest.IsValid() || dt.IsLaterThan(latest)))
         {
             latest = dt;
         }
@@ -161,7 +154,7 @@ wxString DebugLog::AddBytes(const wxString& str, const unsigned char *pBytes, un
 {
     wxString Line = str + " - ";
 
-    for (unsigned int i=0; i < count; i++)
+    for (unsigned int i = 0; i < count; i++)
     {
         unsigned char ch = pBytes[i];
         Line += wxString::Format("%2.2X (%c) ", ch, isprint(ch) ? ch : '?');
@@ -193,10 +186,8 @@ wxString DebugLog::Write(const wxString& str)
         wxDateTime now = wxDateTime::UNow();
         wxTimeSpan deltaTime = now - m_lastWriteTime;
         m_lastWriteTime = now;
-        wxString outputLine = wxString::Format("%s %s %lu %s", now.Format("%H:%M:%S.%l"),
-                                                              deltaTime.Format("%S.%l"),
-                                                              (unsigned long) wxThread::GetCurrentId(),
-                                                              str);
+        wxString outputLine = wxString::Format("%s %s %lu %s", now.Format("%H:%M:%S.%l"), deltaTime.Format("%S.%l"),
+                                               (unsigned long) wxThread::GetCurrentId(), str);
 
         wxFFile::Write(outputLine);
 #if defined(ALWAYS_FLUSH_DEBUGLOG)
@@ -210,25 +201,25 @@ wxString DebugLog::Write(const wxString& str)
     return str;
 }
 
-DebugLog& operator<< (DebugLog& out, const wxString &str)
+DebugLog& operator<<(DebugLog& out, const wxString& str)
 {
     out.Write(str);
     return out;
 }
 
-DebugLog& operator<< (DebugLog& out, const char *str)
+DebugLog& operator<<(DebugLog& out, const char *str)
 {
     out.Write(str);
     return out;
 }
 
-DebugLog& operator<< (DebugLog& out, const int i)
+DebugLog& operator<<(DebugLog& out, const int i)
 {
     out.Write(wxString::Format(_T("%d"), i));
     return out;
 }
 
-DebugLog& operator<< (DebugLog& out, const double d)
+DebugLog& operator<<(DebugLog& out, const double d)
 {
     out.Write(wxString::Format(_T("%f"), d));
     return out;

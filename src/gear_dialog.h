@@ -40,10 +40,10 @@ class wxGridBagSizer;
 class GearDialog : public wxDialog
 {
     GuideCamera *m_pCamera;
-    Scope       *m_pScope;
-    Scope       *m_pAuxScope;
-    StepGuider  *m_pStepGuider;
-    Rotator     *m_pRotator;
+    Scope *m_pScope;
+    Scope *m_pAuxScope;
+    StepGuider *m_pStepGuider;
+    Rotator *m_pRotator;
 
     bool m_cameraUpdated;
     bool m_mountUpdated;

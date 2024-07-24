@@ -33,31 +33,31 @@
  *
  */
 
-#if defined (__WINDOWS__)
-#define STEPGUIDER_SXAO
+#if defined(__WINDOWS__)
+# define STEPGUIDER_SXAO
 #endif
 
-#if defined (__APPLE__)
-#define STEPGUIDER_SXAO
+#if defined(__APPLE__)
+# define STEPGUIDER_SXAO
 #endif
 
-#if defined (__linux__) || defined (__FreeBSD__)
-#define STEPGUIDER_SXAO
+#if defined(__linux__) || defined(__FreeBSD__)
+# define STEPGUIDER_SXAO
 #endif
 
-#if defined (GUIDE_INDI)
-#define STEPGUIDER_SXAO_INDI
-#define STEPGUIDER_SBIGAO_INDI
+#if defined(GUIDE_INDI)
+# define STEPGUIDER_SXAO_INDI
+# define STEPGUIDER_SBIGAO_INDI
 #endif
 
 #ifndef STEPGUIDERS_H_INCLUDED
-#define STEPGUIDERS_H_INCLUDED
+# define STEPGUIDERS_H_INCLUDED
 
-#define STEPGUIDER_SIMULATOR
+# define STEPGUIDER_SIMULATOR
 
-#include "stepguider.h"
-#include "stepguider_sxao.h"
-#include "stepguider_sxao_indi.h"
-#include "stepguider_sbigao_indi.h"
+# include "stepguider.h"
+# include "stepguider_sxao.h"
+# include "stepguider_sxao_indi.h"
+# include "stepguider_sbigao_indi.h"
 
 #endif /* STEPGUIDERS_H_INCLUDED */

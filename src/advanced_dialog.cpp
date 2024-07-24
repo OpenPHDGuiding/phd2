@@ -116,10 +116,9 @@ static void EnableValidators(wxWindow *win)
         EnableValidators(kid);
 }
 
-AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
-    wxDialog(pFrame, wxID_ANY, _("Advanced Settings"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_tip(nullptr),
-    m_tipTimer(nullptr)
+AdvancedDialog::AdvancedDialog(MyFrame *pFrame)
+    : wxDialog(pFrame, wxID_ANY, _("Advanced Settings"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
+      m_tip(nullptr), m_tipTimer(nullptr)
 {
     /*
      * The advanced dialog is made up of a number of "on the fly" generated panels that configure different things.
@@ -160,9 +159,9 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
 #else
     m_pNotebook = new wxNotebook(this, wxID_ANY);
 #endif
-    m_pFrame = pFrame;      // We get called before global var is initialized
+    m_pFrame = pFrame; // We get called before global var is initialized
 
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2).Expand();
 
     // Build all the panels first - these are needed to create the various ConfigCtrlSets
     // Each panel gets a vertical sizer attached to it
@@ -191,7 +190,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_pDevicesSettingsPanel->SetSizer(pDevicesTabSizer);
     m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Other Devices"));
 
-    BuildCtrlSets();        // Populates the m_brainCtrls map with all UI controls
+    BuildCtrlSets(); // Populates the m_brainCtrls map with all UI controls
 
     // Pane contruction now pulls controls from the map and places them where they make sense to a user
     // Populate global pane
@@ -222,12 +221,11 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxSizer *bsz = CreateButtonSizer(wxOK | wxCANCEL);
     bsz->PrependStretchSpacer();
     wxButton *helpbtn = new wxButton(this, wxID_ANY, _("Help"));
-#   include "icons/help22.png.h"
+#include "icons/help22.png.h"
     wxBitmap help_bmp(wxBITMAP_PNG_FROM_DATA(help22));
     helpbtn->SetBitmap(help_bmp, wxLEFT);
-    helpbtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this](wxCommandEvent& evt) {
-            ::pFrame->help->Display(HelpLink(m_pNotebook));
-        });
+    helpbtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                  [this](wxCommandEvent& evt) { ::pFrame->help->Display(HelpLink(m_pNotebook)); });
     bsz->Prepend(helpbtn);
     pTopLevelSizer->Add(bsz, wxSizerFlags(0).Expand().Border(wxALL, 5));
     SetSizerAndFit(pTopLevelSizer);
@@ -243,7 +241,8 @@ AdvancedDialog::~AdvancedDialog()
     delete m_tipTimer;
 }
 
-// Let a client(GearDialog) ask to preload the UI elements - prevents any visible delay when the AdvancedDialog is shown for the first time
+// Let a client(GearDialog) ask to preload the UI elements - prevents any visible delay when the AdvancedDialog is shown for the
+// first time
 void AdvancedDialog::Preload()
 {
     if (m_rebuildPanels)
@@ -303,15 +302,15 @@ void AdvancedDialog::RebuildPanels()
 
     AddCameraPage();
 
-    m_pGuiderPane->LayoutControls(m_pFrame->pGuider, m_brainCtrls);     // Guider pane doesn't have specific device dependencies
+    m_pGuiderPane->LayoutControls(m_pFrame->pGuider, m_brainCtrls); // Guider pane doesn't have specific device dependencies
     m_pGuiderPane->Layout();
 
     AddMountPage();
 
-    AddAoPage();            // Will handle no AO case
-    AddRotatorPage();       // Will handle no Rotator case
+    AddAoPage(); // Will handle no AO case
+    AddRotatorPage(); // Will handle no Rotator case
 
-    if (m_pAOPane == nullptr && m_pRotatorPane == nullptr)        // Dump the Other Devices tab if not needed
+    if (m_pAOPane == nullptr && m_pRotatorPane == nullptr) // Dump the Other Devices tab if not needed
     {
         int idx = m_pNotebook->FindPage(m_pDevicesSettingsPanel);
         if (idx != wxNOT_FOUND)
@@ -328,7 +327,7 @@ void AdvancedDialog::RebuildPanels()
     GetSizer()->Fit(this);
     m_rebuildPanels = false;
 
-    ConfirmLayouts();             // maybe should be under compiletime option
+    ConfirmLayouts(); // maybe should be under compiletime option
 }
 
 // Needed by ConfigDialogCtrlSets to know what parent to use when creating a control
@@ -346,7 +345,7 @@ wxWindow *AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
         return m_pDevicesSettingsPanel;
     else
     {
-        assert(false);          // Fundamental problem
+        assert(false); // Fundamental problem
         return nullptr;
     }
 }
@@ -511,8 +510,7 @@ void AdvancedDialog::UnloadValues()
 // Any un-do ops need to be handled at the ConfigDialogPane level
 void AdvancedDialog::Undo()
 {
-    ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAOPane, m_pRotatorPane };
+    ConfigDialogPane *const panes[] = { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAOPane, m_pRotatorPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -577,7 +575,6 @@ double AdvancedDialog::DetermineGuideSpeed()
                 else
                     minSpd = raSpd;
                 sidRate = SiderealRateFromGuideSpeed(minSpd);
-
             }
         }
         else
@@ -595,22 +592,23 @@ double AdvancedDialog::DetermineGuideSpeed()
     }
     return sidRate;
 }
-// Reacts to param changes in the AD that change the image scale.  Calibration step-size is recalculated, calibration is cleared, MinMoves are set to defaults based on new image scale
+// Reacts to param changes in the AD that change the image scale.  Calibration step-size is recalculated, calibration is
+// cleared, MinMoves are set to defaults based on new image scale
 void AdvancedDialog::MakeImageScaleAdjustments()
 {
     double guideSpeedX;
     Debug.Write("Image scale has changed via AD UI - step-size and algo adjustments will be made\n");
-    Debug.Write(wxString::Format("New image scale properties:  fl= %d, px= %.3fu, bin= %d\n",
-                                    pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-                                    pCamera->Binning));
+    Debug.Write(wxString::Format("New image scale properties:  fl= %d, px= %.3fu, bin= %d\n", pFrame->GetFocalLength(),
+                                 pCamera->GetCameraPixelSize(), pCamera->Binning));
 
     // Determine a calibration step-size based on recommended distance and best estimator of mount guide speeds
     guideSpeedX = DetermineGuideSpeed();
     int calibrationStep;
-    int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+    int recDistance =
+        CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
     int oldStepSize = TheScope()->GetCalibrationDuration();
-    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, guideSpeedX,
-        CalstepDialog::DEFAULT_STEPS, 0, recDistance, nullptr, &calibrationStep);
+    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning,
+                                          guideSpeedX, CalstepDialog::DEFAULT_STEPS, 0, recDistance, nullptr, &calibrationStep);
     TheScope()->SetCalibrationDuration(calibrationStep);
     Debug.Write(wxString::Format("Cal step-size changed from %d ms to %d ms\n", oldStepSize, calibrationStep));
     // Clear the calibration to force a new one and reset the min-move values
@@ -621,7 +619,8 @@ void AdvancedDialog::MakeImageScaleAdjustments()
             pSecondaryMount->ClearCalibration();
         Debug.Write("Calibrations cleared because of image scale change\n");
 
-        double defMinMove = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        double defMinMove =
+            GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
         Debug.Write(wxString::Format("Guide algo min moves reset to %.3fu\n", defMinMove));
         pMount->GetXGuideAlgorithm()->SetMinMove(defMinMove);
         pMount->GetYGuideAlgorithm()->SetMinMove(defMinMove);
@@ -642,11 +641,7 @@ void AdvancedDialog::SetBinning(int binning)
 size_t AdvancedDialog::FindPage(wxWindow *ctrl)
 {
     wxWindow *a[] = {
-        m_pGlobalSettingsPanel,
-        m_pCameraSettingsPanel,
-        m_pGuiderSettingsPanel,
-        m_pScopeSettingsPanel,
-        m_pDevicesSettingsPanel,
+        m_pGlobalSettingsPanel, m_pCameraSettingsPanel, m_pGuiderSettingsPanel, m_pScopeSettingsPanel, m_pDevicesSettingsPanel,
     };
 
     for (wxWindow *p = ctrl; p; p = p->GetParent())
@@ -684,7 +679,10 @@ void AdvancedDialog::ShowInvalid(wxWindow *ctrl, const wxString& message)
 
     if (!m_tipTimer)
         m_tipTimer = new ClearTipTimer(&m_tip);
-    enum { TIP_TIMER_MILLISECONDS = 9000 };
+    enum
+    {
+        TIP_TIMER_MILLISECONDS = 9000
+    };
     m_tipTimer->StartOnce(TIP_TIMER_MILLISECONDS);
 }
 

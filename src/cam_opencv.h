@@ -41,7 +41,7 @@
 
 class CameraOpenCV : public GuideCamera
 {
-    int     DeviceNum;
+    int DeviceNum;
 
 protected:
     cv::VideoCapture *pCapDev;
@@ -50,11 +50,11 @@ public:
     CameraOpenCV(int devNumber);
     ~CameraOpenCV();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool    Connect(const wxString& camId) override;
-    bool    Disconnect() override;
-    bool    HasNonGuiCapture() override { return true; }
-    wxByte  BitsPerPixel() override;
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool HasNonGuiCapture() override { return true; }
+    wxByte BitsPerPixel() override;
 };
 
-#endif //CAM_OPENCV_H_INCLUDED
+#endif // CAM_OPENCV_H_INCLUDED

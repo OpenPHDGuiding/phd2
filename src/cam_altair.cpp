@@ -37,21 +37,20 @@
 
 #ifdef ALTAIR
 
-#include "cam_altair.h"
-#include "altaircam.h"
+# include "cam_altair.h"
+# include "altaircam.h"
 
-#ifdef __WINDOWS__
+# ifdef __WINDOWS__
 
 struct SDKLib
 {
     HMODULE m_module;
 
-#define SDK(f) \
-    decltype(Altaircam_ ## f) *f;
-#define SDK_OPT(f) SDK(f)
-# include "cameras/altaircam_sdk.h"
-#undef SDK
-#undef SDK_OPT
+#  define SDK(f) decltype(Altaircam_##f) *f;
+#  define SDK_OPT(f) SDK(f)
+#  include "cameras/altaircam_sdk.h"
+#  undef SDK
+#  undef SDK_OPT
 
     SDKLib() : m_module(nullptr) { }
     ~SDKLib() { Unload(); }
@@ -72,23 +71,27 @@ struct SDKLib
 
         try
         {
-#define _GPA(f) \
-            std::ostringstream os; \
-            os << prefix << #f; \
-            std::string name = os.str(); \
-            f = reinterpret_cast<decltype(Altaircam_ ## f) *>(GetProcAddress(m_module, name.c_str()))
-#define SDK(f) do { \
-            _GPA(f); \
-            if (!f) \
-                throw name; \
-        } while (false);
-#define SDK_OPT(f) do { \
-            _GPA(f); \
-        } while (false);
-# include "cameras/altaircam_sdk.h"
-#undef SDK
-#undef SDK_OPT
-#undef _GPA
+#  define _GPA(f)                                                                                                              \
+      std::ostringstream os;                                                                                                   \
+      os << prefix << #f;                                                                                                      \
+      std::string name = os.str();                                                                                             \
+      f = reinterpret_cast<decltype(Altaircam_##f) *>(GetProcAddress(m_module, name.c_str()))
+#  define SDK(f)                                                                                                               \
+      do                                                                                                                       \
+      {                                                                                                                        \
+          _GPA(f);                                                                                                             \
+          if (!f)                                                                                                              \
+              throw name;                                                                                                      \
+      } while (false);
+#  define SDK_OPT(f)                                                                                                           \
+      do                                                                                                                       \
+      {                                                                                                                        \
+          _GPA(f);                                                                                                             \
+      } while (false);
+#  include "cameras/altaircam_sdk.h"
+#  undef SDK
+#  undef SDK_OPT
+#  undef _GPA
         }
         catch (const std::string& name)
         {
@@ -102,15 +105,9 @@ struct SDKLib
         return true;
     }
 
-    bool Load()
-    {
-        return _Load(_T("altaircam.dll"), "Altaircam_");
-    }
+    bool Load() { return _Load(_T("altaircam.dll"), "Altaircam_"); }
 
-    bool LoadLegacy()
-    {
-        return _Load(_T("AltairCam_legacy.dll"), "Toupcam_");
-    }
+    bool LoadLegacy() { return _Load(_T("AltairCam_legacy.dll"), "Toupcam_"); }
 
     void Unload()
     {
@@ -122,11 +119,14 @@ struct SDKLib
     }
 };
 
-#endif // __WINDOWS__
+# endif // __WINDOWS__
 
 struct AltairCamera : public GuideCamera
 {
-    enum { MAX_DISCARD_FRAMES = 5 };
+    enum
+    {
+        MAX_DISCARD_FRAMES = 5
+    };
 
     AltairCamType m_type;
     SDKLib m_sdk;
@@ -187,9 +187,8 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
     wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxVERTICAL);
 
     wxBoxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
-    m_reduceRes = new wxCheckBox(this, wxID_ANY,
-            wxString::Format(_("Reduced Resolution (by ~%d%%)"), 20),
-            wxDefaultPosition, wxDefaultSize, 0);
+    m_reduceRes = new wxCheckBox(this, wxID_ANY, wxString::Format(_("Reduced Resolution (by ~%d%%)"), 20), wxDefaultPosition,
+                                 wxDefaultSize, 0);
     sizer1->Add(m_reduceRes, 0, wxALL, 5);
     sbSizer3->Add(sizer1);
 
@@ -198,9 +197,10 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
     sizer2->Add(txt1, 0, wxALL, 5);
     int width = StringWidth(this, _T("00"));
     m_framesToDiscard = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
-        wxSP_ARROW_KEYS, 0, AltairCamera::MAX_DISCARD_FRAMES, 0);
-    m_framesToDiscard->SetToolTip(_("Discard this many frames whan capturing starts. "
-        "Useful for preventing initial under-exposed frames interfering with automatic star selection."));
+                                             wxSP_ARROW_KEYS, 0, AltairCamera::MAX_DISCARD_FRAMES, 0);
+    m_framesToDiscard->SetToolTip(
+        _("Discard this many frames whan capturing starts. "
+          "Useful for preventing initial under-exposed frames interfering with automatic star selection."));
     sizer2->Add(m_framesToDiscard, 0, wxALL, 5);
     sbSizer3->Add(sizer2);
 
@@ -228,17 +228,14 @@ static int GetConfigDiscardFrames()
     return wxMax(0, wxMin((int) AltairCamera::MAX_DISCARD_FRAMES, n));
 }
 
-AltairCamera::AltairCamera(AltairCamType type)
-    :
-    m_type(type),
-    m_buffer(nullptr),
-    m_capturing(false)
+AltairCamera::AltairCamera(AltairCamType type) : m_type(type), m_buffer(nullptr), m_capturing(false)
 {
     Name = _T("Altair Camera");
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = false;
-    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to true later when the camera is connected
+    HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
+                           // true later when the camera is connected
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
 
     this->m_framesToDiscard = GetConfigDiscardFrames();
@@ -367,8 +364,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     bool hasSkip = (pai->model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
     m_isColor = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
 
-    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n",
-                                 m_isColor, hasROI, hasSkip));
+    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n", m_isColor, hasROI, hasSkip));
 
     int width, height;
     if (FAILED(m_sdk.get_Resolution(m_handle, 0, &width, &height)))
@@ -378,7 +374,8 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     }
 
     delete[] m_buffer;
-    m_buffer = new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
+    m_buffer =
+        new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
 
     m_reduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
     if (hasROI && m_reduceResolution)
@@ -415,7 +412,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
 
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
 
-#if 0
+# if 0
     // TODO: this is the initiailization code copied from cam_touptek.cpp
     // I was hoping this one of these might help with the problem of the first
     // frame exposure being very low, but it had no effect. Leaving these
@@ -435,14 +432,13 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_FFC, 0);
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_DFC, 0);
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_SHARPENING, 0);
-#endif
+# endif
 
     m_sdk.put_AutoExpoEnable(m_handle, 0);
 
     m_frame = wxRect(FullSize);
 
-    Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n",
-        m_frame.x, m_frame.y, m_frame.width, m_frame.height));
+    Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     if (hasROI && m_reduceResolution)
     {
@@ -468,7 +464,7 @@ bool AltairCamera::GetDevicePixelSize(double *devPixelSize)
         return true;
 
     *devPixelSize = m_devicePixelSize;
-    return false;                               // Pixel size is known in any case
+    return false; // Pixel size is known in any case
 }
 
 void AltairCamera::ShowPropertyDialog()
@@ -523,21 +519,21 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
     }
 }
 
-//static void flush_buffered_image(int cameraId, usImage& img)
+// static void flush_buffered_image(int cameraId, usImage& img)
 //{
-//    enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
+//     enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
 //
-//    // clear buffered frames if any
+//     // clear buffered frames if any
 //
-//    for (unsigned int num_cleared = 0; num_cleared < NUM_IMAGE_BUFFERS; num_cleared++)
-//    {
-//        ASI_ERROR_CODE status = ASIGetVideoData(cameraId, (unsigned char *) img.ImageData, img.NPixels * sizeof(unsigned short), 0);
-//        if (status != ASI_SUCCESS)
-//            break; // no more buffered frames
+//     for (unsigned int num_cleared = 0; num_cleared < NUM_IMAGE_BUFFERS; num_cleared++)
+//     {
+//         ASI_ERROR_CODE status = ASIGetVideoData(cameraId, (unsigned char *) img.ImageData, img.NPixels * sizeof(unsigned
+//         short), 0); if (status != ASI_SUCCESS)
+//             break; // no more buffered frames
 //
-//        Debug.Write(wxString::Format("Altair: getimagedata clearbuf %u ret %d\n", num_cleared + 1, status));
-//    }
-//}
+//         Debug.Write(wxString::Format("Altair: getimagedata clearbuf %u ret %d\n", num_cleared + 1, status));
+//     }
+// }
 
 bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
@@ -552,8 +548,7 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;
-    if (m_sdk.get_ExpoTime(m_handle, &cur_exp) == 0 &&
-        cur_exp != exposureUS)
+    if (m_sdk.get_ExpoTime(m_handle, &cur_exp) == 0 && cur_exp != exposureUS)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_EXPOSURE %d\n", exposureUS));
         m_sdk.put_ExpoTime(m_handle, exposureUS);
@@ -561,8 +556,7 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     unsigned short cur_gain;
-    if (m_sdk.get_ExpoAGain(m_handle, &cur_gain) == 0 &&
-        new_gain != cur_gain)
+    if (m_sdk.get_ExpoAGain(m_handle, &cur_gain) == 0 && new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("Altair: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
         m_sdk.put_ExpoAGain(m_handle, new_gain);
@@ -601,11 +595,11 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
         CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
         // do not wait here, as we will miss a frame most likely, leading to poor flow of frames.
-//        if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-//            (WorkerThread::TerminateRequested() || StopCapture()))
-//        {
-//            return true;
-//        }
+        //        if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+        //            (WorkerThread::TerminateRequested() || StopCapture()))
+        //        {
+        //            return true;
+        //        }
 
         while (true) // PullImage retry loop
         {

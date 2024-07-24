@@ -46,6 +46,7 @@ class circular_buffer
     unsigned int m_tail;
     unsigned int m_size;
     unsigned int m_capacity;
+
 public:
     class iterator
     {
@@ -53,13 +54,31 @@ public:
         circular_buffer<T>& m_cb;
         unsigned int m_pos;
         iterator(circular_buffer<T>& cb, unsigned int pos) : m_cb(cb), m_pos(pos) { }
+
     public:
-        iterator& operator++() { ++m_pos; return *this; }
-        iterator operator++(int) { iterator it(*this); m_pos++; return it; }
-        bool operator==(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos == rhs.m_pos; }
-        bool operator!=(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos != rhs.m_pos; }
+        iterator& operator++()
+        {
+            ++m_pos;
+            return *this;
+        }
+        iterator operator++(int)
+        {
+            iterator it(*this);
+            m_pos++;
+            return it;
+        }
+        bool operator==(const iterator& rhs) const
+        {
+            assert(&m_cb == &rhs.m_cb);
+            return m_pos == rhs.m_pos;
+        }
+        bool operator!=(const iterator& rhs) const
+        {
+            assert(&m_cb == &rhs.m_cb);
+            return m_pos != rhs.m_pos;
+        }
         T& operator*() const { return m_cb.m_ary[m_pos % m_cb.m_capacity]; }
-        T* operator->() const { return &m_cb.m_ary[m_pos % m_cb.m_capacity]; }
+        T *operator->() const { return &m_cb.m_ary[m_pos % m_cb.m_capacity]; }
     };
     friend class circular_buffer<T>::iterator;
     circular_buffer();
@@ -77,22 +96,13 @@ public:
 };
 
 template<typename T>
-circular_buffer<T>::circular_buffer()
-    : m_ary(0),
-    m_head(0),
-    m_tail(0),
-    m_size(0),
-    m_capacity(0)
+circular_buffer<T>::circular_buffer() : m_ary(0), m_head(0), m_tail(0), m_size(0), m_capacity(0)
 {
 }
 
 template<typename T>
 circular_buffer<T>::circular_buffer(unsigned int capacity)
-    : m_ary(new T[capacity]),
-    m_head(0),
-    m_tail(0),
-    m_size(0),
-    m_capacity(capacity)
+    : m_ary(new T[capacity]), m_head(0), m_tail(0), m_size(0), m_capacity(capacity)
 {
     assert(capacity > 0);
 }
@@ -100,7 +110,7 @@ circular_buffer<T>::circular_buffer(unsigned int capacity)
 template<typename T>
 circular_buffer<T>::~circular_buffer()
 {
-    delete [] m_ary;
+    delete[] m_ary;
 }
 
 template<typename T>
