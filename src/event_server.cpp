@@ -2442,8 +2442,13 @@ static bool handle_request(JRpcCall& call)
     }
 }
 
-static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonParser& parser)
+static void handle_cli_input_complete(wxSocketClient *cli, char *input)
 {
+    // a dedicated JsonParser instance is used for each line of input since
+    // handle_request can recurse if the request causes the event loop to run and we
+    // don't want the parser to be reused.
+    JsonParser parser;
+
     if (!parser.Parse(input))
     {
         JRpcCall call(cli, nullptr);
@@ -2490,7 +2495,7 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
     }
 }
 
-static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
+static void handle_cli_input(wxSocketClient *cli)
 {
     // Bump refcnt to protect against reentrancy.
     //
@@ -2526,7 +2531,10 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
         char *end;
         while ((end = static_cast<char *>(memchr(rdbuf->buf(), '\n', rdbuf->len()))) != nullptr)
         {
-            // Copy to temporary buffer to avoid rentrancy problem
+            // Move the newline-terminated chunk from the read buffer to a temporary
+            // buffer on the stack, and consume the chunk from the read buffer before
+            // processing the line. This leaves the read buffer in the correct state to
+            // be used again if this function is caller reentrantly.
             char line[ClientReadBuf::SIZE];
             size_t len1 = end - rdbuf->buf();
             memcpy(line, rdbuf->buf(), len1);
@@ -2537,7 +2545,7 @@ static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
             memmove(rdbuf->buf(), next, len2);
             rdbuf->dest = rdbuf->buf() + len2;
 
-            handle_cli_input_complete(cli, line, parser);
+            handle_cli_input_complete(cli, line);
         }
     }
 }
@@ -2639,7 +2647,7 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
     }
     else if (event.GetSocketEvent() == wxSOCKET_INPUT)
     {
-        handle_cli_input(cli, m_parser);
+        handle_cli_input(cli);
     }
     else
     {
