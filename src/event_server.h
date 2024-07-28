@@ -44,7 +44,6 @@ public:
     typedef std::set<wxSocketClient *> CliSockSet;
 
 private:
-    JsonParser m_parser;
     wxSocketServer *m_serverSocket;
     CliSockSet m_eventServerClients;
     wxTimer *m_configEventDebouncer;

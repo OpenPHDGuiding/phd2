@@ -2639,7 +2639,8 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
     }
     else if (event.GetSocketEvent() == wxSOCKET_INPUT)
     {
-        handle_cli_input(cli, m_parser);
+        JsonParser parser;
+        handle_cli_input(cli, parser);
     }
     else
     {
