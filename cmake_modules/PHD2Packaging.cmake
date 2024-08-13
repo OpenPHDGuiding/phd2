@@ -73,12 +73,12 @@ if(UNIX AND NOT APPLE)
           RENAME phd2)
   install(FILES ${PHD_INSTALL_LIBS}
           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/phd2/)
-  install(FILES ${phd_src_dir}/icons/phd2_48.png
+  install(FILES ${PHD_PROJECT_ROOT_DIR}/icons/phd2_48.png
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/
           RENAME "phd2.png")
-  install(FILES ${phd_src_dir}/phd2.desktop
+  install(FILES ${PHD_PROJECT_ROOT_DIR}/phd2.desktop
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
-  install(FILES ${phd_src_dir}/phd2.appdata.xml
+  install(FILES ${PHD_PROJECT_ROOT_DIR}/phd2.appdata.xml
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/metainfo/ )
 
   # Make Debian package
