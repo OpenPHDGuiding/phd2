@@ -292,7 +292,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
         // grab the subframe
         wxBitmap dBmp(*img);
-        int scaledSize = 15 * scaleFactor;
+        // Star region scaling is useful only if scaleFactor >=1. Huge sensors result in a scaleFactor << 1 and an unusable
+        // magnified star view
+        int scaledSize = wxMax(15 * scaleFactor, 15);
         int lkx = ROUND(LockX);
         int l = std::max(0, lkx - scaledSize);
         int r = std::min(dBmp.GetWidth() - 1, lkx + scaledSize);
