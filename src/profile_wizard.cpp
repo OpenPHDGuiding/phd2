@@ -324,7 +324,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     mtSizer->Add(m_pGuideSpeed, 1);
     AddTableEntryPair(this, m_pMountProperties, _("Mount guide speed (n.n x sidereal)"), mtSizer);
 
-    m_pHPEncoders = new wxCheckBox(this, wxID_ANY, _("Mount has high-precision encoders"));
+    m_pHPEncoders = new wxCheckBox(this, wxID_ANY, _("Mount has high-precision encoders on both axes"));
     m_pHPEncoders->SetToolTip(_("Mount has high-precision encoders on both axes with little or no Dec backlash (e.g. 10Micron, "
                                 "Astro-Physics AE, Planewave, iOptron EC2 or other high-end mounts"));
     m_pHPEncoders->SetValue(false);
