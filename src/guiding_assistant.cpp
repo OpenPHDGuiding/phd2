@@ -1342,8 +1342,9 @@ void GuidingAsstWin::MakeRecommendations()
     // ideal exposure ranges in general
     double rarms = m_hpfRAStats.GetSigma();
     double multiplier_ra = 1.0; // 66% prediction interval
-    double ideal_min_exposure = 2.0;
-    double ideal_max_exposure = 4.0;
+    bool hasEncoders = pMount->HasHPEncoders();
+    double ideal_min_exposure = hasEncoders ? 4.0 : 2.0;
+    double ideal_max_exposure = hasEncoders ? 8.0 : 4.0;
     // adjust the min-exposure downward if drift limiting exposure is lower; then adjust range accordingly
     double drift_exp;
     if (maxRateRA > 0)
@@ -1371,8 +1372,12 @@ void GuidingAsstWin::MakeRecommendations()
     wxString allRecommendations;
 
     // Always make a recommendation on exposure times
-    wxString msg =
-        wxString::Format(_("Try to keep your exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
+    wxString msg;
+    if (!hasEncoders)
+        msg = wxString::Format(_("Use exposure times in the range of %.1fs to %.1fs"), m_min_exp_rec, m_max_exp_rec);
+    else
+        msg = wxString::Format(_("Use exposure times from %.1fs to %0.1fs and variable delay feature to control guide cadence"),
+                               ideal_min_exposure, ideal_max_exposure);
     allRecommendations += "Exp:" + msg + "\n";
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
@@ -1506,7 +1511,6 @@ void GuidingAsstWin::MakeRecommendations()
         GuideLog.NotifyGAResult(logStr);
     }
 
-    bool hasEncoders = pMount->HasHPEncoders();
     if (hasEncoders || smallBacklash) // Uses encoders or has zero backlash
     {
         GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();
