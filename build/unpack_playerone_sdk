@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+# usage: unpack_playerone_sdk \
+#   PlayerOne_Camera_SDK_MacOS_V3.6.3.tar.gz \
+#   PlayerOne_Camera_SDK_Windows_V3.6.3.zip \
+#   PlayerOne_Camera_SDK_Linux_V3.6.3.tar.gz
+
+die () {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+# === main ===
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+SCRIPT_NAME=${BASH_SOURCE[0]##*/}
+
+set -x
+set -e
+set -o pipefail
+
+linux=
+mac=
+win=
+
+for file in "$@"; do
+    case $file in
+        *PlayerOne*_Linux_*) linux=$file ;;
+        *PlayerOne*_MacOS_*) mac=$file ;;
+        *PlayerOne*_Windows_*) win=$file ;;
+    esac
+done
+
+if [[ ! -f $linux || ! -f $mac || ! -f $win ]]; then
+    echo "usage: $SCRIPT_NAME LINUX_SDK MAC_SDK WINDOWS_SDK" >&2
+    exit 1
+fi
+
+top=$(cd "$SCRIPT_DIR" && git rev-parse --show-toplevel)
+dest=$top/cameras/playerone
+
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+# linux + include
+tar xf "$linux" -C "$TMP"
+(
+    cd "$TMP"/*_Linux_*
+    install -d -m 0755 "$dest"/include/ "$dest"/linux
+    install -m 0644 include/PlayerOneCamera.h "$dest"/include/
+    cd lib
+    # include shared lib symlinks
+    tar cf - . | tar xf - -C "$dest"/linux
+)
+
+# mac
+tar xf "$mac" -C "$TMP"
+(
+    cd "$TMP"/*_MacOS_*
+    install -d -m 0755 "$dest"/mac
+    install -m 0755 lib/libPlayerOneCamera.dylib "$dest"/mac/
+)
+
+# windows
+mkdir "$TMP/win"
+unzip -d "$TMP/win" "$win"
+(
+    cd "$TMP"/win
+    install -d -m 0755 "$dest"/win
+    install -m 0644 lib/x86/PlayerOneCamera.lib "$dest"/win/
+    install -m 0755 lib/x86/PlayerOneCamera.dll "$dest"/win/
+)
