@@ -655,6 +655,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND cp ${asiCamera2} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @loader_path/libASICamera2.dylib
                    @executable_path/../Frameworks/libASICamera2.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @loader_path/libusb-1.0.0.dylib
@@ -670,6 +671,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND cp ${qhylib} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libqhyccd.20.dylib
                    @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change /usr/local/lib/libusb-1.0.0.dylib
@@ -688,6 +690,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND cp ${toupcam} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libtoupcam.dylib
                    @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libtoupcam.dylib"
@@ -700,6 +703,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND cp ${ogmacam} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libogmacam.dylib
                    @executable_path/../Frameworks/libogmacam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libogmacam.dylib"
@@ -711,6 +715,7 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND cp ${SVBCameraSDK} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libSVBCameraSDK.dylib
                    @executable_path/../Frameworks/libSVBCameraSDK.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @rpath/libusb-1.0.0.dylib
