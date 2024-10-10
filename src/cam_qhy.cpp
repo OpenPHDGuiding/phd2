@@ -40,6 +40,10 @@
 # include "cam_qhy.h"
 # include "qhyccd.h"
 
+# define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
+
+# define DEFAULT_BPP    16
+
 class Camera_QHY : public GuideCamera
 {
     qhyccd_handle *m_camhandle;
@@ -68,6 +72,7 @@ public:
 
     bool ST4PulseGuideScope(int direction, int duration) override;
 
+    void ShowPropertyDialog() override;
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
@@ -150,14 +155,16 @@ static void QHYSDKUninit()
 
 Camera_QHY::Camera_QHY()
 {
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
     Connected = false;
     m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = 0;
     Color = false;
-    m_bpp = 8; // actual value will be determined when camera is connected
     HasSubframes = true;
     m_camhandle = 0;
+    int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
+    m_bpp = value == 8 ? 8 : 16;
 }
 
 Camera_QHY::~Camera_QHY()
@@ -178,6 +185,56 @@ bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
 
     *devPixelSize = m_devicePixelSize;
     return false;
+}
+
+struct QHYCameraDlg : public wxDialog
+{
+    wxRadioButton *m_bpp8;
+    wxRadioButton *m_bpp16;
+    QHYCameraDlg();
+};
+
+QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("QHY Camera Properties"))
+{
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
+
+    m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
+    m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
+    sbSizer3->Add(m_bpp8, 0, wxALL, 5);
+    sbSizer3->Add(m_bpp16, 0, wxALL, 5);
+    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
+    wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
+    wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
+    sdbSizer2->AddButton(sdbSizer2OK);
+    sdbSizer2->AddButton(sdbSizer2Cancel);
+    sdbSizer2->Realize();
+    bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+
+    SetSizer(bSizer12);
+    Layout();
+    Fit();
+
+    Centre(wxBOTH);
+}
+
+void Camera_QHY::ShowPropertyDialog()
+{
+    QHYCameraDlg dlg;
+    int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, m_bpp);
+    if (value == 8)
+        dlg.m_bpp8->SetValue(true);
+    else
+        dlg.m_bpp16->SetValue(true);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
+        pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
+    }
 }
 
 int Camera_QHY::GetDefaultCameraGain()
@@ -301,8 +358,16 @@ bool Camera_QHY::Connect(const wxString& camId)
         return CamConnectFailed(_("Failed to get camera chip info"));
     }
 
-    Debug.Write(wxString::Format("QHY: cam reports BPP = %u\n", bpp));
-    m_bpp = bpp <= 8 ? 8 : 16;
+    ret = SetQHYCCDBitsMode(m_camhandle, (uint32_t)m_bpp);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        Debug.Write(wxString::Format("QHY: failed to set bit mode to %u\n", m_bpp));
+        return CamConnectFailed(_("Failed to set bit mode"));
+    }
+
+    Debug.Write(wxString::Format("QHY: call SetQHYCCDBitsMode bpp = %u\n", m_bpp));
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
