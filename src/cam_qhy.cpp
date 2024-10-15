@@ -41,8 +41,10 @@
 # include "qhyccd.h"
 
 # define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
+# define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
 
 # define DEFAULT_BPP    16
+# define DEFAULT_AMPNR  true
 
 class Camera_QHY : public GuideCamera
 {
@@ -59,6 +61,8 @@ class Camera_QHY : public GuideCamera
     wxRect m_roi;
     bool Color;
     wxByte m_bpp;
+    bool m_ampnr;
+    double coolerSetpoint;
 
 public:
     Camera_QHY();
@@ -165,6 +169,7 @@ Camera_QHY::Camera_QHY()
     m_camhandle = 0;
     int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
     m_bpp = value == 8 ? 8 : 16;
+    m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -191,6 +196,8 @@ struct QHYCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
+    wxCheckBox *m_ampnrCb;
+    wxCheckBox *m_rownr;
     QHYCameraDlg();
 };
 
@@ -206,6 +213,13 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     sbSizer3->Add(m_bpp8, 0, wxALL, 5);
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    wxStaticBoxSizer *sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxHORIZONTAL);
+    m_ampnrCb = new wxCheckBox(this, wxID_ANY, _("Amp noise reduction"));
+    m_ampnrCb->SetToolTip(_("Enable the amp noise reduction feature. Not available on all models."));
+    sbSizer4->Add(m_ampnrCb, 0, wxALL, 5);
+
+    bSizer12->Add(sbSizer4, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -230,10 +244,20 @@ void Camera_QHY::ShowPropertyDialog()
         dlg.m_bpp8->SetValue(true);
     else
         dlg.m_bpp16->SetValue(true);
+
+    m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
+    dlg.m_ampnrCb->SetValue(m_ampnr);
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
         pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
+
+        m_ampnr = dlg.m_ampnrCb->GetValue();
+        pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_AMPNR, m_ampnr);
+
+        m_rownr = dlg.m_rownr->GetValue();
+        pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_ROWNR, m_rownr);
     }
 }
 
@@ -358,7 +382,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         return CamConnectFailed(_("Failed to get camera chip info"));
     }
 
-    ret = SetQHYCCDBitsMode(m_camhandle, (uint32_t)m_bpp);
+    ret = SetQHYCCDBitsMode(m_camhandle, (uint32_t) m_bpp);
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
@@ -366,8 +390,22 @@ bool Camera_QHY::Connect(const wxString& camId)
         Debug.Write(wxString::Format("QHY: failed to set bit mode to %u\n", m_bpp));
         return CamConnectFailed(_("Failed to set bit mode"));
     }
-
     Debug.Write(wxString::Format("QHY: call SetQHYCCDBitsMode bpp = %u\n", m_bpp));
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_AMPV) == QHYCCD_SUCCESS)
+    {
+        double ampv = m_ampnr ? QHYCCD_ON : QHYCCD_OFF;
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_AMPV, ampv);
+        Debug.Write(wxString::Format("QHY: set amp noise reduction to %g\n", ampv));
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write(wxString::Format("QHY: failed to set CONTROL_AMPV. Camera does not actually have this feature\n"));
+        }
+    }
+    else
+    {
+        Debug.Write("QHY: amp noise reduction not available\n");
+    }
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
