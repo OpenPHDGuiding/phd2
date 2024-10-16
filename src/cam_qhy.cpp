@@ -758,14 +758,29 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         return true;
     }
 # endif
-    if (ret == QHYCCD_SUCCESS)
-    {
-        Debug.Write(wxString::Format("QHY: 200ms delay needed\n"));
-        WorkerThread::MilliSleep(200);
-    }
+
+    /*
+     * Guidance regarding exposure handling. From QHY, October 2024
+     *
+     * The return code of ExpQHYCCDSingleFrame() must be considered with the exposure length
+     * to determine when to call GetQHYCCDSingleFrame().
+     *
+     * If return code == QHYCCD_READ_DIRECTLY && exposure duration < 3s, call GetQHYCCDSingleFrame() immediately.
+     * If return code == QHYCCD_READ_DIRECTLY && exposure duration >= 3s, call GetQHYCCDSingleFrame() after 2s.
+     * If return code != QHYCCD_READ_DIRECTLY, call GetQHYCCDSingleFrame() at the end of the exposure duration.
+     */
     if (ret == QHYCCD_READ_DIRECTLY)
     {
-        // Debug.Write("QHYCCD_READ_DIRECTLY\n");
+        if (duration > 3000)
+        {
+            Debug.Write(wxString::Format("QHY: 2000ms delay needed\n"));
+            WorkerThread::MilliSleep(2000);
+        }
+    }
+    else
+    {
+        Debug.Write(wxString::Format("QHY: %dms delay needed\n", duration));
+        WorkerThread::MilliSleep(duration);
     }
 
     uint32_t w, h, bpp, channels;
