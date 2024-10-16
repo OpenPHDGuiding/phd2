@@ -82,6 +82,10 @@ public:
     wxByte BitsPerPixel() override;
     bool GetDevicePixelSize(double *devPixelSize) override;
     int GetDefaultCameraGain() override;
+    bool SetCoolerOn(bool on) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
+    bool SetCoolerSetpoint(double temperature) override;
 };
 
 static bool s_qhySdkInitDone = false;
@@ -163,6 +167,7 @@ Camera_QHY::Camera_QHY()
     Connected = false;
     m_hasGuideOutput = true;
     HasGainControl = true;
+    HasCooler = false;
     RawBuffer = 0;
     Color = false;
     HasSubframes = true;
@@ -268,6 +273,48 @@ int Camera_QHY::GetDefaultCameraGain()
         DefaultQHYCameraGain = 40
     };
     return DefaultQHYCameraGain;
+}
+
+bool Camera_QHY::SetCoolerOn(bool on)
+{
+    if (on)
+    {
+        // "on" entails setting the cooler to a setpoint
+        return true;
+    }
+    else
+    {
+        // "off" entails setting the cooler duty cycle to 0
+        return SetQHYCCDParam(m_camhandle, CONTROL_MANULPWM, QHYCCD_OFF) != QHYCCD_SUCCESS;
+    }
+}
+
+bool Camera_QHY::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+{
+    *on = GetQHYCCDParam(m_camhandle, CONTROL_CURPWM) > 0.;
+    *power = GetQHYCCDParam(m_camhandle, CONTROL_CURPWM) / 255. * 100;
+    *temperature = GetQHYCCDParam(m_camhandle, CONTROL_CURTEMP);
+    *setpoint = coolerSetpoint;
+
+    Debug.Write(wxString::Format("QHY: cooler status: on=%d setpoint=%g power=%g temp=%g\n", *on, *setpoint, *power, *temperature));
+
+    return false;
+}
+
+bool Camera_QHY::GetSensorTemperature(double *temperature)
+{
+    *temperature = GetQHYCCDParam(m_camhandle, CONTROL_CURTEMP);
+    Debug.Write(wxString::Format("QHY: sensor temperature: %g\n", temperature));
+
+    return false;
+}
+
+bool Camera_QHY::SetCoolerSetpoint(double temperature)
+{
+    Debug.Write(wxString::Format("QHY: setting cooler setpoint to %g\n", temperature));
+
+    coolerSetpoint = temperature;
+    return SetQHYCCDParam(m_camhandle, CONTROL_COOLER, temperature) != QHYCCD_SUCCESS;
 }
 
 bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
@@ -405,6 +452,16 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         Debug.Write("QHY: amp noise reduction not available\n");
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_COOLER) == QHYCCD_SUCCESS)
+    {
+        Debug.Write("QHY: cooler control available\n");
+        HasCooler = true;
+    }
+    else
+    {
+        Debug.Write("QHY: cooler control not available\n");
     }
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
