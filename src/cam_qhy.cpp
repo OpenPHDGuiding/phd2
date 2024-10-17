@@ -240,16 +240,16 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
+    wxBoxSizer *cameraParamsSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *cameraModeSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
 
     m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
-    sbSizer3->Add(m_bpp8, 0, wxALL, 5);
-    sbSizer3->Add(m_bpp16, 0, wxALL, 5);
-    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+    cameraModeSizer->Add(m_bpp8, 0, wxALL, 5);
+    cameraModeSizer->Add(m_bpp16, 0, wxALL, 5);
+    cameraParamsSizer->Add(cameraModeSizer, 1, wxEXPAND, 5);
 
-    wxStaticBoxSizer *sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
+    wxStaticBoxSizer *cameraOptionsSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
     wxFlexGridSizer *optionsGrid = new wxFlexGridSizer(2, 5, 5);
 
     m_offsetSpinner =
@@ -257,17 +257,17 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
                       255, 1, _("Data offset value"));
     AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
 
-    sbSizer4->Add(optionsGrid, 1, wxEXPAND, 5);
+    cameraOptionsSizer->Add(optionsGrid, 1, wxEXPAND, 5);
 
     m_ampnrCb = new wxCheckBox(this, wxID_ANY, _("Amp noise reduction"));
-    m_ampnrCb->SetToolTip(_("Enable the amp noise reduction feature. Not available on all models."));
-    sbSizer4->Add(m_ampnrCb, 0, wxALL, 5);
+    m_ampnrCb->SetToolTip(_("Amp noise reduction feature. Not available on all models."));
+    cameraOptionsSizer->Add(m_ampnrCb, 0, wxALL, 5);
 
     m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
-    m_rownrCb->SetToolTip(_("Enable the row noise reduction feature on QHY5II-M family cameras."));
-    sbSizer4->Add(m_rownrCb, 0, wxALL, 5);
+    m_rownrCb->SetToolTip(_("Row noise reduction feature on QHY5II-M family cameras."));
+    cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
 
-    bSizer12->Add(sbSizer4, 1, wxEXPAND, 5);
+    cameraParamsSizer->Add(cameraOptionsSizer, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -275,9 +275,9 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
-    bSizer12->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
+    cameraParamsSizer->Add(sdbSizer2, 0, wxALL | wxEXPAND, 5);
 
-    SetSizer(bSizer12);
+    SetSizer(cameraParamsSizer);
     Layout();
     Fit();
 
