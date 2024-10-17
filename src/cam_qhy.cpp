@@ -42,9 +42,11 @@
 
 # define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
 # define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
+# define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"
 
 # define DEFAULT_BPP    16
 # define DEFAULT_AMPNR  true
+# define DEFAULT_ROWNR  true
 
 class Camera_QHY : public GuideCamera
 {
@@ -62,6 +64,7 @@ class Camera_QHY : public GuideCamera
     bool Color;
     wxByte m_bpp;
     bool m_ampnr;
+    bool m_rownr;
     double coolerSetpoint;
 
 public:
@@ -175,6 +178,7 @@ Camera_QHY::Camera_QHY()
     int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
     m_bpp = value == 8 ? 8 : 16;
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
+    m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -202,7 +206,7 @@ struct QHYCameraDlg : public wxDialog
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
     wxCheckBox *m_ampnrCb;
-    wxCheckBox *m_rownr;
+    wxCheckBox *m_rownrCb;
     QHYCameraDlg();
 };
 
@@ -223,6 +227,10 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     m_ampnrCb = new wxCheckBox(this, wxID_ANY, _("Amp noise reduction"));
     m_ampnrCb->SetToolTip(_("Enable the amp noise reduction feature. Not available on all models."));
     sbSizer4->Add(m_ampnrCb, 0, wxALL, 5);
+
+    m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
+    m_rownrCb->SetToolTip(_("Enable the row noise reduction feature on QHY5II-M family cameras."));
+    sbSizer4->Add(m_rownrCb, 0, wxALL, 5);
 
     bSizer12->Add(sbSizer4, 1, wxEXPAND, 5);
 
@@ -253,6 +261,9 @@ void Camera_QHY::ShowPropertyDialog()
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
     dlg.m_ampnrCb->SetValue(m_ampnr);
 
+    bool m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
+    dlg.m_rownrCb->SetValue(m_rownr);
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
@@ -261,7 +272,7 @@ void Camera_QHY::ShowPropertyDialog()
         m_ampnr = dlg.m_ampnrCb->GetValue();
         pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_AMPNR, m_ampnr);
 
-        m_rownr = dlg.m_rownr->GetValue();
+        m_rownr = dlg.m_rownrCb->GetValue();
         pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_ROWNR, m_rownr);
     }
 }
@@ -452,6 +463,21 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         Debug.Write("QHY: amp noise reduction not available\n");
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_ROWNOISERE) == QHYCCD_SUCCESS)
+    {
+        double rownr = m_rownr ? QHYCCD_ON : QHYCCD_OFF;
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_ROWNOISERE, rownr);
+        Debug.Write(wxString::Format("QHY: set row noise reduction to %d\n", rownr));
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write(wxString::Format("QHY: failed to set CONTROL_ROWNOISERE. Camera does not actually have this feature\n", m_rownr));
+        }
+    }
+    else
+    {
+        Debug.Write("QHY: row noise reduction not available\n");
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_COOLER) == QHYCCD_SUCCESS)
