@@ -43,10 +43,12 @@
 # define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
 # define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
 # define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"
+# define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
 
 # define DEFAULT_BPP    16
 # define DEFAULT_AMPNR  true
 # define DEFAULT_ROWNR  true
+# define DEFAULT_OFFSET 0
 
 class Camera_QHY : public GuideCamera
 {
@@ -54,10 +56,14 @@ class Camera_QHY : public GuideCamera
     double m_gainMin;
     double m_gainMax;
     double m_gainStep;
+    double m_offsetMin;
+    double m_offsetMax;
+    double m_offsetStep;
     double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
     int m_curGain;
+    int m_offset;
     int m_curExposure;
     unsigned short m_curBin;
     wxRect m_roi;
@@ -179,6 +185,7 @@ Camera_QHY::Camera_QHY()
     m_bpp = value == 8 ? 8 : 16;
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
     m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
+    m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -201,10 +208,29 @@ bool Camera_QHY::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
+// Utility function to add the <label, input> pairs to a flexgrid
+static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
+{
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
+    pTable->Add(pLabel, 1, wxALL, 5);
+    pTable->Add(pControl, 1, wxALL, 5);
+}
+
+static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, const wxSize& size, int val, int minval, int maxval, int inc,
+                                 const wxString& tooltip)
+{
+    wxSpinCtrl *pNewCtrl = pFrame->MakeSpinCtrl(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, size, wxSP_ARROW_KEYS,
+                                                minval, maxval, val, _("Exposure time"));
+    pNewCtrl->SetValue(val);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
+}
+
 struct QHYCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
+    wxSpinCtrl *m_offsetSpinner;
     wxCheckBox *m_ampnrCb;
     wxCheckBox *m_rownrCb;
     QHYCameraDlg();
@@ -223,7 +249,16 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
 
-    wxStaticBoxSizer *sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxHORIZONTAL);
+    wxStaticBoxSizer *sbSizer4 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
+    wxFlexGridSizer *optionsGrid = new wxFlexGridSizer(2, 5, 5);
+
+    m_offsetSpinner =
+        NewSpinnerInt(this, pFrame->GetTextExtent("999"), pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0,
+                      255, 1, _("Data offset value"));
+    AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
+
+    sbSizer4->Add(optionsGrid, 1, wxEXPAND, 5);
+
     m_ampnrCb = new wxCheckBox(this, wxID_ANY, _("Amp noise reduction"));
     m_ampnrCb->SetToolTip(_("Enable the amp noise reduction feature. Not available on all models."));
     sbSizer4->Add(m_ampnrCb, 0, wxALL, 5);
@@ -258,6 +293,9 @@ void Camera_QHY::ShowPropertyDialog()
     else
         dlg.m_bpp16->SetValue(true);
 
+    m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
+    dlg.m_offsetSpinner->SetValue(m_offset);
+
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
     dlg.m_ampnrCb->SetValue(m_ampnr);
 
@@ -268,6 +306,9 @@ void Camera_QHY::ShowPropertyDialog()
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
         pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
+
+        m_offset = dlg.m_offsetSpinner->GetValue();
+        pConfig->Profile.SetInt(CONFIG_PATH_QHY_OFFSET, m_offset);
 
         m_ampnr = dlg.m_ampnrCb->GetValue();
         pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_AMPNR, m_ampnr);
@@ -428,6 +469,14 @@ bool Camera_QHY::Connect(const wxString& camId)
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
         return CamConnectFailed(_("Failed to get gain range"));
+    }
+
+    ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_OFFSET, &m_offsetMin, &m_offsetMax, &m_offsetStep);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        return CamConnectFailed(_("Failed to get offset range"));
     }
 
     double chipw, chiph, pixelw, pixelh;
@@ -741,6 +790,25 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         {
             Debug.Write(wxString::Format("QHY set gain ret %d\n", (int) ret));
             pFrame->Alert(_("Failed to set camera gain"));
+        }
+
+        if (m_offset < m_offsetMin)
+        {
+            m_offset = m_offsetMin;
+        }
+
+        if (m_offset > m_offsetMax)
+        {
+            m_offset = m_offsetMax;
+        }
+
+        double offset = floor(m_offset / m_offsetStep) * m_offsetStep;
+        Debug.Write(wxString::Format("QHY set offset %g (%g..%g incr %g)\n", offset, m_offsetMin, m_offsetMax, m_offsetStep));
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_OFFSET, offset);
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write(wxString::Format("QHY set offset ret %d\n", (int) ret));
+            pFrame->Alert(_("Failed to set camera offset"));
         }
     }
 
