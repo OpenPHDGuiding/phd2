@@ -247,7 +247,7 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
     cameraModeSizer->Add(m_bpp8, 0, wxALL, 5);
     cameraModeSizer->Add(m_bpp16, 0, wxALL, 5);
-    cameraParamsSizer->Add(cameraModeSizer, 1, wxEXPAND, 5);
+    cameraParamsSizer->Add(cameraModeSizer, 0, wxEXPAND, 5);
 
     wxStaticBoxSizer *cameraOptionsSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
     wxFlexGridSizer *optionsGrid = new wxFlexGridSizer(2, 5, 5);
