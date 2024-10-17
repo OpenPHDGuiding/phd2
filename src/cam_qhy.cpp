@@ -506,7 +506,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         Debug.Write(wxString::Format("QHY: set amp noise reduction to %g\n", ampv));
         if (ret != QHYCCD_SUCCESS)
         {
-            Debug.Write(wxString::Format("QHY: failed to set CONTROL_AMPV. Camera does not actually have this feature\n"));
+            Debug.Write("QHY: failed to set CONTROL_AMPV. Camera does not actually have this feature\n");
         }
     }
     else
@@ -521,7 +521,7 @@ bool Camera_QHY::Connect(const wxString& camId)
         Debug.Write(wxString::Format("QHY: set row noise reduction to %d\n", rownr));
         if (ret != QHYCCD_SUCCESS)
         {
-            Debug.Write(wxString::Format("QHY: failed to set CONTROL_ROWNOISERE. Camera does not actually have this feature\n", m_rownr));
+            Debug.Write("QHY: failed to set CONTROL_ROWNOISERE. Camera does not actually have this feature\n");
         }
     }
     else
