@@ -320,11 +320,18 @@ void Camera_QHY::ShowPropertyDialog()
 
 int Camera_QHY::GetDefaultCameraGain()
 {
-    enum
+    int gain = 40;
+
+    if (Connected)
     {
-        DefaultQHYCameraGain = 40
-    };
-    return DefaultQHYCameraGain;
+        if (IsQHYCCDControlAvailable(m_camhandle, DefaultGain) == QHYCCD_SUCCESS)
+        {
+            gain = round(GetQHYCCDParam(m_camhandle, DefaultGain) / m_gainMax * 100);
+        }
+    }
+
+    Debug.Write(wxString::Format("QHY: default gain: %d\n", gain));
+    return gain;
 }
 
 bool Camera_QHY::SetCoolerOn(bool on)
