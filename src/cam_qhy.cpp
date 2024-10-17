@@ -529,6 +529,23 @@ bool Camera_QHY::Connect(const wxString& camId)
         Debug.Write("QHY: row noise reduction not available\n");
     }
 
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_DDR) == QHYCCD_SUCCESS)
+    {
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_DDR, QHYCCD_ON);
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write("QHY: failed to set CONTROL_DDR.\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: set CONTROL_DDR %g\n", QHYCCD_ON));
+        }
+    }
+    else
+    {
+        Debug.Write("QHY: DDR buffer not available\n");
+    }
+
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_COOLER) == QHYCCD_SUCCESS)
     {
         Debug.Write("QHY: cooler control available\n");
