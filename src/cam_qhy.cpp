@@ -45,12 +45,14 @@
 # define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"
 # define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
 # define CONFIG_PATH_QHY_HIGHGAIN   "/camera/QHY/highgain"
+# define CONFIG_PATH_QHY_USBTRAFFIC "/camera/QHY/usbtraffic"
 
 # define DEFAULT_BPP    16
 # define DEFAULT_AMPNR  true
 # define DEFAULT_ROWNR  true
 # define DEFAULT_OFFSET 0
 # define DEFAULT_HIGHGAIN false
+# define DEFAULT_USBTRAFFIC 30
 
 class Camera_QHY : public GuideCamera
 {
@@ -74,6 +76,7 @@ class Camera_QHY : public GuideCamera
     bool m_ampnr;
     bool m_rownr;
     bool m_highGain;
+    double m_usbtraffic;
     double coolerSetpoint;
 
 public:
@@ -190,6 +193,7 @@ Camera_QHY::Camera_QHY()
     m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
     m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
     m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
+    m_usbtraffic = pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -235,6 +239,7 @@ struct QHYCameraDlg : public wxDialog
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
     wxSpinCtrl *m_offsetSpinner;
+    wxSpinCtrl *m_usbtrafficSpinner;
     wxCheckBox *m_ampnrCb;
     wxCheckBox *m_rownrCb;
     wxCheckBox *m_highGainCb;
@@ -261,6 +266,13 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
         NewSpinnerInt(this, pFrame->GetTextExtent("999"), pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0,
                       255, 1, _("Data offset value"));
     AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
+
+    // A USB Traffic range of 0..60 seems to be common across all QHY cameras.
+    // This value is checked and, if needed, adjusted during Connect()
+    m_usbtrafficSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
+                                        pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 60, 1,
+                               _("USB traffic value"));
+    AddTableEntryPair(this, optionsGrid, _("USB Traffic"), m_usbtrafficSpinner);
 
     cameraOptionsSizer->Add(optionsGrid, 1, wxEXPAND, 5);
 
@@ -305,6 +317,9 @@ void Camera_QHY::ShowPropertyDialog()
     m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
     dlg.m_offsetSpinner->SetValue(m_offset);
 
+    m_usbtraffic = pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC);
+    dlg.m_usbtrafficSpinner->SetValue(m_usbtraffic);
+
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
     dlg.m_ampnrCb->SetValue(m_ampnr);
 
@@ -321,6 +336,9 @@ void Camera_QHY::ShowPropertyDialog()
 
         m_offset = dlg.m_offsetSpinner->GetValue();
         pConfig->Profile.SetInt(CONFIG_PATH_QHY_OFFSET, m_offset);
+
+        m_usbtraffic = dlg.m_usbtrafficSpinner->GetValue();
+        pConfig->Profile.SetDouble(CONFIG_PATH_QHY_USBTRAFFIC, m_usbtraffic);
 
         m_ampnr = dlg.m_ampnrCb->GetValue();
         pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_AMPNR, m_ampnr);
@@ -567,6 +585,39 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         Debug.Write("QHY: row noise reduction not available\n");
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_USBTRAFFIC) == QHYCCD_SUCCESS)
+    {
+        double usbtrafficMin;
+        double usbtrafficMax;
+        double usbtrafficStep;
+
+        ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_USBTRAFFIC, &usbtrafficMin, &usbtrafficMax, &usbtrafficStep);
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write("QHY: failed to get CONTROL_USBTRAFFIC range\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: CONTROL_USBTRAFFIC range %g..%g step %g\n", usbtrafficMin, usbtrafficMax,
+                                         usbtrafficStep));
+            m_usbtraffic = wxMax(wxMin(m_usbtraffic, usbtrafficMax), usbtrafficMin);
+            pConfig->Profile.SetDouble(CONFIG_PATH_QHY_USBTRAFFIC, m_usbtraffic);
+        }
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_USBTRAFFIC, m_usbtraffic);
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write("QHY: failed to set CONTROL_USBTRAFFIC\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: set CONTROL_USBTRAFFIC %g\n", m_usbtraffic));
+        }
+    }
+    else
+    {
+        Debug.Write("QHY: USB traffic control not available\n");
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_DDR) == QHYCCD_SUCCESS)
