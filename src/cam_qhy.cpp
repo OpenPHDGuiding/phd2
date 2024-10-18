@@ -44,11 +44,13 @@
 # define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
 # define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"
 # define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
+# define CONFIG_PATH_QHY_HIGHGAIN   "/camera/QHY/highgain"
 
 # define DEFAULT_BPP    16
 # define DEFAULT_AMPNR  true
 # define DEFAULT_ROWNR  true
 # define DEFAULT_OFFSET 0
+# define DEFAULT_HIGHGAIN false
 
 class Camera_QHY : public GuideCamera
 {
@@ -71,6 +73,7 @@ class Camera_QHY : public GuideCamera
     wxByte m_bpp;
     bool m_ampnr;
     bool m_rownr;
+    bool m_highGain;
     double coolerSetpoint;
 
 public:
@@ -186,6 +189,7 @@ Camera_QHY::Camera_QHY()
     m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
     m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
     m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
+    m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
 }
 
 Camera_QHY::~Camera_QHY()
@@ -233,6 +237,7 @@ struct QHYCameraDlg : public wxDialog
     wxSpinCtrl *m_offsetSpinner;
     wxCheckBox *m_ampnrCb;
     wxCheckBox *m_rownrCb;
+    wxCheckBox *m_highGainCb;
     QHYCameraDlg();
 };
 
@@ -266,6 +271,10 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
     m_rownrCb->SetToolTip(_("Row noise reduction feature on QHY5II-M family cameras."));
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
+
+    m_highGainCb = new wxCheckBox(this, wxID_ANY, _("QHY178 high gain mode"));
+    m_highGainCb->SetToolTip(_("Sets a QHY5III178 or QHY178 to operate in the high conversion gain domain."));
+    cameraOptionsSizer->Add(m_highGainCb, 0, wxALL, 5);
 
     cameraParamsSizer->Add(cameraOptionsSizer, 1, wxEXPAND, 5);
 
@@ -302,6 +311,9 @@ void Camera_QHY::ShowPropertyDialog()
     bool m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
     dlg.m_rownrCb->SetValue(m_rownr);
 
+    bool m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
+    dlg.m_highGainCb->SetValue(m_highGain);
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
@@ -315,6 +327,9 @@ void Camera_QHY::ShowPropertyDialog()
 
         m_rownr = dlg.m_rownrCb->GetValue();
         pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_ROWNR, m_rownr);
+
+        m_highGain = dlg.m_highGainCb->GetValue();
+        pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_HIGHGAIN, m_highGain);
     }
 }
 
@@ -468,6 +483,24 @@ bool Camera_QHY::Connect(const wxString& camId)
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
         return CamConnectFailed(_("Init camera failed"));
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CAM_LIGHT_PERFORMANCE_MODE) == QHYCCD_SUCCESS)
+    {
+        double highGain = m_highGain ? QHYCCD_ON : QHYCCD_OFF;
+        ret = SetQHYCCDParam(m_camhandle, CAM_LIGHT_PERFORMANCE_MODE, highGain);
+        if (ret != QHYCCD_SUCCESS)
+        {
+            Debug.Write("QHY: failed to set CAM_LIGHT_PERFORMANCE_MODE\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: set CAM_LIGHT_PERFORMANCE_MODE %g\n", highGain));
+        }
+    }
+    else
+    {
+        Debug.Write("QHY: switchable gain modes not available\n");
     }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
