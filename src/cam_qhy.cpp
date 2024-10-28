@@ -264,14 +264,14 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
 
     m_offsetSpinner =
         NewSpinnerInt(this, pFrame->GetTextExtent("999"), pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0,
-                      255, 1, _("Data offset value"));
+                      255, 1, _("Data offset value. 0 - 255"));
     AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
 
     // A USB Traffic range of 0..60 seems to be common across all QHY cameras.
     // This value is checked and, if needed, adjusted during Connect()
     m_usbtrafficSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
                                         pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 60, 1,
-                               _("USB traffic value"));
+                               _("USB traffic value. 0 - 60"));
     AddTableEntryPair(this, optionsGrid, _("USB Traffic"), m_usbtrafficSpinner);
 
     cameraOptionsSizer->Add(optionsGrid, 1, wxEXPAND, 5);
@@ -285,7 +285,8 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
 
     m_highGainCb = new wxCheckBox(this, wxID_ANY, _("QHY178 high gain mode"));
-    m_highGainCb->SetToolTip(_("Sets a QHY5III178 or QHY178 to operate in the high conversion gain domain."));
+    m_highGainCb->SetToolTip(
+        _("Sets a QHY5III178 or QHY178 to operate the sensor in the high conversion gain (HCG) mode. Other QHY models with dual-mode sensors switch between low and high conversion gain depending on gain value."));
     cameraOptionsSizer->Add(m_highGainCb, 0, wxALL, 5);
 
     cameraParamsSizer->Add(cameraOptionsSizer, 1, wxEXPAND, 5);
