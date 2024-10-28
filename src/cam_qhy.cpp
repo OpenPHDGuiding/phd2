@@ -948,15 +948,13 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
      */
     if (ret == QHYCCD_READ_DIRECTLY)
     {
-        if (duration > 3000)
+        if (duration >= 3000)
         {
-            Debug.Write(wxString::Format("QHY: 2000ms delay needed\n"));
             WorkerThread::MilliSleep(2000);
         }
     }
     else
     {
-        Debug.Write(wxString::Format("QHY: %dms delay needed\n", duration));
         WorkerThread::MilliSleep(duration);
     }
 
