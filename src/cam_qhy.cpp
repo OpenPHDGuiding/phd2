@@ -40,6 +40,9 @@
 # include "cam_qhy.h"
 # include "qhyccd.h"
 
+# define QHYCCD_OFF 0.0
+# define QHYCCD_ON  1.0
+
 # define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
 # define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
 # define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"

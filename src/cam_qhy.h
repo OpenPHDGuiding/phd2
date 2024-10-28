@@ -35,9 +35,6 @@
 #ifndef CAM_QHY_INCLUDED
 #define CAM_QHY_INCLUDED
 
-#define QHYCCD_OFF  0.0
-#define QHYCCD_ON   1.0
-
 class QHYCameraFactory
 {
 public:
