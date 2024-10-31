@@ -588,7 +588,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
-    if (ret == QHYCCD_SUCCESS)
+    if (ret == QHYCCD_SUCCESS && m_gainStep > 0)
     {
         m_curGain = GuideCameraGain;
         SetQhyGain(m_curGain);
@@ -600,13 +600,15 @@ bool Camera_QHY::Connect(const wxString& camId)
         return CamConnectFailed(_("Failed to get gain range"));
     }
 
-    if (GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_OFFSET, &m_offsetMin, &m_offsetMax, &m_offsetStep) == QHYCCD_SUCCESS)
+    ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_OFFSET, &m_offsetMin, &m_offsetMax, &m_offsetStep);
+    if (ret == QHYCCD_SUCCESS && m_offsetStep > 0)
     {
         m_hasOffset = true;
         SetQhyOffset(m_offset);
     }
 
-    if (GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_USBTRAFFIC, &m_usbTrafficMin, &m_usbTrafficMax, &m_usbTrafficStep) == QHYCCD_SUCCESS)
+    ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_USBTRAFFIC, &m_usbTrafficMin, &m_usbTrafficMax, &m_usbTrafficStep);
+    if (ret == QHYCCD_SUCCESS && m_usbTrafficStep > 0)
     {
         m_hasUsbTraffic = true;
         SetQhyUsbTraffic(m_usbTraffic);
