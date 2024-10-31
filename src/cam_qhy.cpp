@@ -386,27 +386,22 @@ void Camera_QHY::ShowPropertyDialog()
 
         dlg.m_gainText->SetLabel(wxString::Format("Gain: %d (min: %g, max: %g)", GetQhyGain(), m_gainMin, m_gainMax));
 
-        m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
         dlg.m_offsetSpinner->SetValue(m_offset);
         dlg.m_offsetSpinner->SetRange(m_offsetMin, m_offsetMax);
         dlg.m_offsetSpinner->SetToolTip(wxString::Format("Range: %g - %g", m_offsetMin, m_offsetMax));
         dlg.m_offsetSpinner->Enable(m_hasOffset);
 
-        m_usbTraffic = pConfig->Profile.GetInt(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC);
         dlg.m_usbTrafficSpinner->SetValue(m_usbTraffic);
         dlg.m_usbTrafficSpinner->SetRange(m_usbTrafficMin, m_usbTrafficMax);
         dlg.m_usbTrafficSpinner->SetToolTip(wxString::Format("Range: %g - %g", m_usbTrafficMin, m_usbTrafficMax));
         dlg.m_usbTrafficSpinner->Enable(m_hasUsbTraffic);
 
-        m_ampnr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_AMPNR, DEFAULT_AMPNR);
         dlg.m_ampnrCb->SetValue(m_ampnr);
         dlg.m_ampnrCb->Enable(m_hasAmpnr);
 
-        bool m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
         dlg.m_rownrCb->SetValue(m_rownr);
         dlg.m_rownrCb->Enable(m_hasRownr);
 
-        bool m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
         dlg.m_highGainCb->SetValue(m_highGain);
         dlg.m_highGainCb->Enable(m_hasHighGain);
 
