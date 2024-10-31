@@ -313,7 +313,7 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
 
-    char *modeHint = "Camera must be reconnected after changing the mode";
+    const char *modeHint = "Camera must be reconnected after changing the mode";
     m_bpp8->SetToolTip(modeHint);
     m_bpp16->SetToolTip(modeHint);
 
