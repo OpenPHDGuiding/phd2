@@ -61,7 +61,9 @@ class Camera_QHY : public GuideCamera
 {
     qhyccd_handle *m_camhandle;
 
-    int m_curGain;
+    int m_curGain; // gain in percent of camera's maximum gain value
+
+    double m_curGainValue;
     double m_gainMin;
     double m_gainMax;
     double m_gainStep;
@@ -119,6 +121,7 @@ public:
     bool SetCoolerSetpoint(double temperature) override;
 
 protected:
+    uint32_t GetQhyGain();
     bool SetQhyGain(int gainPercent);
     bool SetQhyOffset(int offset);
     bool SetQhyUsbTraffic(int usbTraffic);
@@ -294,6 +297,7 @@ struct QHYCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
+    wxStaticText *m_gainText;
     wxSpinCtrl *m_offsetSpinner;
     wxSpinCtrl *m_usbTrafficSpinner;
     wxCheckBox *m_ampnrCb;
@@ -326,12 +330,17 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     wxStaticBoxSizer *cameraOptionsSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
     wxFlexGridSizer *optionsGrid = new wxFlexGridSizer(2, 5, 5);
 
+    m_gainText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    m_gainText->SetToolTip(_("The actual gain level the camera is operating at. Gain level is set as a percentage of the camera's maximum possible gain level in Advanced Settings > Camera > Camera gain. Knowing the gain assists in setting the offset value."));
+
+    cameraOptionsSizer->Add(m_gainText, 0, wxALL, 5);
+
     m_offsetSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
-                                    pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0, 1000, 1, "");
+                        pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0, 1000, 1, wxEmptyString);
     AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
 
     m_usbTrafficSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
-                                    pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 1000, 1,"");
+                        pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 1000, 1, wxEmptyString);
     AddTableEntryPair(this, optionsGrid, _("USB Traffic"), m_usbTrafficSpinner);
 
     cameraOptionsSizer->Add(optionsGrid, 1, wxEXPAND, 5);
@@ -374,6 +383,8 @@ void Camera_QHY::ShowPropertyDialog()
             dlg.m_bpp8->SetValue(true);
         else
             dlg.m_bpp16->SetValue(true);
+
+        dlg.m_gainText->SetLabel(wxString::Format("Gain: %d (min: %g, max: %g)", GetQhyGain(), m_gainMin, m_gainMax));
 
         m_offset = pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET);
         dlg.m_offsetSpinner->SetValue(m_offset);
@@ -577,7 +588,12 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
-    if (ret != QHYCCD_SUCCESS)
+    if (ret == QHYCCD_SUCCESS)
+    {
+        m_curGain = GuideCameraGain;
+        SetQhyGain(m_curGain);
+    }
+    else
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
@@ -1081,6 +1097,11 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         QuickLRecon(img);
 
     return false;
+}
+
+uint32_t Camera_QHY::GetQhyGain()
+{
+    return (uint32_t)GetQHYCCDParam(m_camhandle, CONTROL_GAIN);
 }
 
 bool Camera_QHY::SetQhyGain(int gainPercent)
