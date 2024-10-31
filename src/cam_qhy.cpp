@@ -41,18 +41,18 @@
 # include "qhyccd.h"
 
 # define QHYCCD_OFF 0.0
-# define QHYCCD_ON  1.0
+# define QHYCCD_ON 1.0
 
-# define CONFIG_PATH_QHY_BPP    "/camera/QHY/bpp"
-# define CONFIG_PATH_QHY_AMPNR  "/camera/QHY/ampnr"
-# define CONFIG_PATH_QHY_ROWNR  "/camera/QHY/rownr"
+# define CONFIG_PATH_QHY_BPP "/camera/QHY/bpp"
+# define CONFIG_PATH_QHY_AMPNR "/camera/QHY/ampnr"
+# define CONFIG_PATH_QHY_ROWNR "/camera/QHY/rownr"
 # define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
-# define CONFIG_PATH_QHY_HIGHGAIN   "/camera/QHY/highgain"
+# define CONFIG_PATH_QHY_HIGHGAIN "/camera/QHY/highgain"
 # define CONFIG_PATH_QHY_USBTRAFFIC "/camera/QHY/usbtraffic"
 
-# define DEFAULT_BPP    16
-# define DEFAULT_AMPNR  true
-# define DEFAULT_ROWNR  true
+# define DEFAULT_BPP 16
+# define DEFAULT_AMPNR true
+# define DEFAULT_ROWNR true
 # define DEFAULT_OFFSET 0
 # define DEFAULT_HIGHGAIN false
 # define DEFAULT_USBTRAFFIC 30
@@ -324,23 +324,26 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     cameraModeSizer->Add(m_bpp8, 0, wxALL, 5);
     cameraModeSizer->Add(m_bpp16, 0, wxALL, 5);
 
-
     cameraParamsSizer->Add(cameraModeSizer, 0, wxEXPAND, 5);
 
-    wxStaticBoxSizer *cameraOptionsSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
+    wxStaticBoxSizer *cameraOptionsSizer =
+        new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Options")), wxVERTICAL);
     wxFlexGridSizer *optionsGrid = new wxFlexGridSizer(2, 5, 5);
 
     m_gainText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_gainText->SetToolTip(_("The actual gain level the camera is operating at. Gain level is set as a percentage of the camera's maximum possible gain level in Advanced Settings > Camera > Camera gain. Knowing the gain assists in setting the offset value."));
+    m_gainText->SetToolTip(_(
+        "The actual gain level the camera is operating at. Gain level is set as a percentage of the camera's maximum possible "
+        "gain level in Advanced Settings > Camera > Camera gain. Knowing the gain assists in setting the offset value."));
 
     cameraOptionsSizer->Add(m_gainText, 0, wxALL, 5);
 
     m_offsetSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
-                        pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0, 1000, 1, wxEmptyString);
+                                    pConfig->Profile.GetInt(CONFIG_PATH_QHY_OFFSET, DEFAULT_OFFSET), 0, 1000, 1, wxEmptyString);
     AddTableEntryPair(this, optionsGrid, _("Offset"), m_offsetSpinner);
 
-    m_usbTrafficSpinner = NewSpinnerInt(this, pFrame->GetTextExtent("999"),
-                        pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 1000, 1, wxEmptyString);
+    m_usbTrafficSpinner =
+        NewSpinnerInt(this, pFrame->GetTextExtent("999"),
+                      pConfig->Profile.GetDouble(CONFIG_PATH_QHY_USBTRAFFIC, DEFAULT_USBTRAFFIC), 0, 1000, 1, wxEmptyString);
     AddTableEntryPair(this, optionsGrid, _("USB Traffic"), m_usbTrafficSpinner);
 
     cameraOptionsSizer->Add(optionsGrid, 1, wxEXPAND, 5);
@@ -352,7 +355,9 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
 
     m_highGainCb = new wxCheckBox(this, wxID_ANY, _("QHY178 high gain mode"));
-    m_highGainCb->SetToolTip(_("Sets a QHY5III178 or QHY178 to operate the sensor in the high conversion gain mode. This usually means lower noise and a shallower pixel well than the equivalent gain value in low conversion gain mode"));
+    m_highGainCb->SetToolTip(
+        _("Sets a QHY5III178 or QHY178 to operate the sensor in the high conversion gain mode. This usually means lower noise "
+          "and a shallower pixel well than the equivalent gain value in low conversion gain mode"));
     cameraOptionsSizer->Add(m_highGainCb, 0, wxALL, 5);
 
     cameraParamsSizer->Add(cameraOptionsSizer, 1, wxEXPAND, 5);
@@ -467,7 +472,8 @@ bool Camera_QHY::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
     *temperature = GetQHYCCDParam(m_camhandle, CONTROL_CURTEMP);
     *setpoint = coolerSetpoint;
 
-    Debug.Write(wxString::Format("QHY: cooler status: on=%d setpoint=%g power=%g temp=%g\n", *on, *setpoint, *power, *temperature));
+    Debug.Write(
+        wxString::Format("QHY: cooler status: on=%d setpoint=%g power=%g temp=%g\n", *on, *setpoint, *power, *temperature));
 
     return false;
 }
@@ -1098,7 +1104,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 
 uint32_t Camera_QHY::GetQhyGain()
 {
-    return (uint32_t)GetQHYCCDParam(m_camhandle, CONTROL_GAIN);
+    return (uint32_t) GetQHYCCDParam(m_camhandle, CONTROL_GAIN);
 }
 
 bool Camera_QHY::SetQhyGain(int gainPercent)
@@ -1117,8 +1123,7 @@ bool Camera_QHY::SetQhyGain(int gainPercent)
     }
     else
     {
-        Debug.Write(wxString::Format("QHY: set CONTROL_GAIN %g (%g..%g incr %g)\n",
-            gain, m_gainMin, m_gainMax, m_gainStep));
+        Debug.Write(wxString::Format("QHY: set CONTROL_GAIN %g (%g..%g incr %g)\n", gain, m_gainMin, m_gainMax, m_gainStep));
     }
 
     return true;
@@ -1141,7 +1146,7 @@ bool Camera_QHY::SetQhyOffset(int offset)
     if (offset != m_offset)
         pConfig->Profile.SetInt(CONFIG_PATH_QHY_OFFSET, offset);
 
-    uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_OFFSET, (double)offset);
+    uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_OFFSET, (double) offset);
 
     if (rv != QHYCCD_SUCCESS)
     {
@@ -1150,8 +1155,8 @@ bool Camera_QHY::SetQhyOffset(int offset)
     }
     else
     {
-        Debug.Write(wxString::Format("QHY: set CONTROL_OFFSET %d (%g..%g incr %g)\n",
-            offset, m_offsetMin, m_offsetMax, m_offsetStep));
+        Debug.Write(
+            wxString::Format("QHY: set CONTROL_OFFSET %d (%g..%g incr %g)\n", offset, m_offsetMin, m_offsetMax, m_offsetStep));
     }
 
     return true;
@@ -1174,7 +1179,7 @@ bool Camera_QHY::SetQhyUsbTraffic(int usbTraffic)
     if (usbTraffic != m_usbTraffic)
         pConfig->Profile.SetInt(CONFIG_PATH_QHY_USBTRAFFIC, usbTraffic);
 
-    uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_USBTRAFFIC, (double)usbTraffic);
+    uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_USBTRAFFIC, (double) usbTraffic);
 
     if (rv != QHYCCD_SUCCESS)
     {
@@ -1183,8 +1188,8 @@ bool Camera_QHY::SetQhyUsbTraffic(int usbTraffic)
     }
     else
     {
-        Debug.Write(wxString::Format("QHY: set CONTROL_USBTRAFFIC %d (%g..%g incr %g)\n",
-            usbTraffic, m_usbTrafficMin, m_usbTrafficMax, m_usbTrafficStep));
+        Debug.Write(wxString::Format("QHY: set CONTROL_USBTRAFFIC %d (%g..%g incr %g)\n", usbTraffic, m_usbTrafficMin,
+                                     m_usbTrafficMax, m_usbTrafficStep));
     }
 
     return true;
