@@ -1087,7 +1087,7 @@ bool Camera_QHY::SetQhyGain(int gainPercent)
 {
     double gain = m_gainMin + gainPercent * (m_gainMax - m_gainMin) / 100.0;
 
-    if (gain != 0.)
+    if (gain != 0)
         gain = floor(gain / m_gainStep) * m_gainStep;
 
     uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_GAIN, gain);
@@ -1120,6 +1120,9 @@ bool Camera_QHY::SetQhyOffset(int offset)
     if (offset != 0)
         offset = floor(offset / m_offsetStep) * m_offsetStep;
 
+    if (offset != m_offset)
+        pConfig->Profile.SetInt(CONFIG_PATH_QHY_OFFSET, offset);
+
     uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_OFFSET, (double)offset);
 
     if (rv != QHYCCD_SUCCESS)
@@ -1149,6 +1152,9 @@ bool Camera_QHY::SetQhyUsbTraffic(int usbTraffic)
 
     if (usbTraffic != 0)
         usbTraffic = floor(usbTraffic / m_usbTrafficStep) * m_usbTrafficStep;
+
+    if (usbTraffic != m_usbTraffic)
+        pConfig->Profile.SetInt(CONFIG_PATH_QHY_USBTRAFFIC, usbTraffic);
 
     uint32_t rv = SetQHYCCDParam(m_camhandle, CONTROL_USBTRAFFIC, (double)usbTraffic);
 
