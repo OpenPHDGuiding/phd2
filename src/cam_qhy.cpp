@@ -80,6 +80,7 @@ class Camera_QHY : public GuideCamera
     double m_usbTrafficStep;
     bool m_hasUsbTraffic;
 
+    char m_camId[32] = "";
     double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
@@ -307,7 +308,7 @@ struct QHYCameraDlg : public wxDialog
     QHYCameraDlg();
 };
 
-QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("QHY Camera Properties"))
+QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, wxEmptyString)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -382,6 +383,11 @@ void Camera_QHY::ShowPropertyDialog()
     if (Connected)
     {
         QHYCameraDlg dlg;
+
+        char camShortName[32] = "";
+        GetQHYCCDModel(m_camId, camShortName);
+
+        dlg.SetTitle(wxString::Format("%s Settings", camShortName));
 
         int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, m_bpp);
         if (value == 8)
@@ -568,6 +574,9 @@ bool Camera_QHY::Connect(const wxString& camId)
 
     if (!m_camhandle)
         return CamConnectFailed(_("Failed to connect to camera"));
+
+    (void) strncpy(m_camId, qid.c_str(), sizeof(m_camId) - 1);
+    m_camId[sizeof(m_camId) - 1] = '\0';
 
     // before calling InitQHYCCD() we must call SetQHYCCDStreamMode(camhandle, 0 or 1)
     //   0: single frame mode
