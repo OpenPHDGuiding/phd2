@@ -461,7 +461,7 @@ bool Camera_QHY::SetCoolerOn(bool on)
     else
     {
         // "off" entails setting the cooler duty cycle to 0
-        return SetQHYCCDParam(m_camhandle, CONTROL_MANULPWM, QHYCCD_OFF) != QHYCCD_SUCCESS;
+        return SetQHYCCDParam(m_camhandle, CONTROL_MANULPWM, QHYCCD_OFF) == QHYCCD_SUCCESS;
     }
 }
 
