@@ -2089,7 +2089,6 @@ static void get_calibration_data(JObj& response, const json_value *params)
 
 static void set_cooler_state(JObj& response, const json_value *params)
 {
-    bool ret;
     Params p("enabled", params);
     const json_value *val = p.param("enabled");
     bool enable;
@@ -2111,21 +2110,22 @@ static void set_cooler_state(JObj& response, const json_value *params)
         return;
     }
 
+    if (!pCamera->SetCoolerOn(enable))
+    {
+        response << jrpc_error(1, "failed to set cooler state");
+    }
+
     if (enable)
     {
         double setpt = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
-        ret = pCamera->SetCoolerSetpoint(setpt);
-        if (!ret)
+        if (!pCamera->SetCoolerSetpoint(setpt));
         {
             response << jrpc_error(1, "failed to set cooler setpoint");
             return;
         }
     }
 
-    if (pCamera->SetCoolerOn(enable))
-        response << jrpc_result(0);
-    else
-        response << jrpc_error(1, "failed to set cooler state");
+    response << jrpc_result(0);
 }
 
 static void get_cooler_status(JObj& response, const json_value *params)
