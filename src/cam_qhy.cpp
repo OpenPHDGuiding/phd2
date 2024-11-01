@@ -607,6 +607,10 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasOffset = true;
         SetQhyOffset(m_offset);
     }
+    else
+    {
+        m_hasOffset = false;
+    }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_USBTRAFFIC, &m_usbTrafficMin, &m_usbTrafficMax, &m_usbTrafficStep);
     if (ret == QHYCCD_SUCCESS && m_usbTrafficStep > 0)
@@ -614,11 +618,19 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasUsbTraffic = true;
         SetQhyUsbTraffic(m_usbTraffic);
     }
+    else
+    {
+        m_hasUsbTraffic = false;
+    }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_AMPV) == QHYCCD_SUCCESS)
     {
         m_hasAmpnr = true;
         SetQhyAmpNoiseReduction(m_ampnr);
+    }
+    else
+    {
+        m_hasAmpnr = false;
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_ROWNOISERE) == QHYCCD_SUCCESS)
@@ -626,11 +638,19 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasRownr = true;
         SetQhyRowNoiseReduction(m_rownr);
     }
+    else
+    {
+        m_hasRownr = false;
+    }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CAM_LIGHT_PERFORMANCE_MODE) == QHYCCD_SUCCESS)
     {
         m_hasHighGain = true;
         SetQhyHighGainMode(m_highGain);
+    }
+    else
+    {
+        m_hasHighGain = false;
     }
 
     double chipw, chiph, pixelw, pixelh;
@@ -678,6 +698,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         Debug.Write("QHY: cooler control not available\n");
+        HasCooler = false;
     }
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
