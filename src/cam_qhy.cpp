@@ -491,7 +491,7 @@ bool Camera_QHY::SetCoolerSetpoint(double temperature)
     Debug.Write(wxString::Format("QHY: setting cooler setpoint to %g\n", temperature));
 
     coolerSetpoint = temperature;
-    return SetQHYCCDParam(m_camhandle, CONTROL_COOLER, temperature) != QHYCCD_SUCCESS;
+    return SetQHYCCDParam(m_camhandle, CONTROL_COOLER, temperature) == QHYCCD_SUCCESS;
 }
 
 bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
