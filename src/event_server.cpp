@@ -2113,6 +2113,7 @@ static void set_cooler_state(JObj& response, const json_value *params)
     if (pCamera->SetCoolerOn(enable))
     {
         response << jrpc_error(1, "failed to set cooler state");
+        return;
     }
 
     if (enable)
