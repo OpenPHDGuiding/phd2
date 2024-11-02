@@ -2087,6 +2087,48 @@ static void get_calibration_data(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
+static void set_cooler_state(JObj& response, const json_value *params)
+{
+    Params p("enabled", params);
+    const json_value *val = p.param("enabled");
+    bool enable;
+    if (!val || !bool_param(val, &enable))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        return;
+    }
+
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "camera not connected");
+        return;
+    }
+
+    if (!pCamera->HasCooler)
+    {
+        response << jrpc_error(1, "camera lacks a cooler");
+        return;
+    }
+
+    if (pCamera->SetCoolerOn(enable))
+    {
+        response << jrpc_error(1, "failed to set cooler state");
+        return;
+    }
+
+    if (enable)
+    {
+        double setpt = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
+        if (pCamera->SetCoolerSetpoint(setpt))
+        {
+            response << jrpc_error(1, "failed to set cooler setpoint");
+            return;
+        }
+    }
+
+    response << jrpc_result(0);
+}
+
 static void get_cooler_status(JObj& response, const json_value *params)
 {
     if (!pCamera || !pCamera->Connected)
@@ -2402,6 +2444,10 @@ static bool handle_request(JRpcCall& call)
                     {
                         "get_cooler_status",
                         &get_cooler_status,
+                    },
+                    {
+                        "set_cooler_state",
+                        &set_cooler_state,
                     },
                     {
                         "get_ccd_temperature",
