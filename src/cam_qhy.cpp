@@ -408,13 +408,18 @@ void Camera_QHY::ShowPropertyDialog()
         dlg.m_usbTrafficSpinner->Enable(m_hasUsbTraffic);
 
         dlg.m_ampnrCb->SetValue(m_ampnr);
-        dlg.m_ampnrCb->Enable(m_hasAmpnr);
+        if (!m_hasAmpnr)
+            dlg.m_ampnrCb->Hide();
 
         dlg.m_rownrCb->SetValue(m_rownr);
-        dlg.m_rownrCb->Enable(m_hasRownr);
+        if (!m_hasRownr)
+            dlg.m_rownrCb->Hide();
 
         dlg.m_highGainCb->SetValue(m_highGain);
-        dlg.m_highGainCb->Enable(m_hasHighGain);
+        if (!m_hasHighGain)
+            dlg.m_highGainCb->Hide();
+
+        dlg.DoLayoutAdaptation();
 
         if (dlg.ShowModal() == wxID_OK)
         {
