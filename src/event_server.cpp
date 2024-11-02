@@ -2119,7 +2119,7 @@ static void set_cooler_state(JObj& response, const json_value *params)
     if (enable)
     {
         double setpt = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
-        if (pCamera->SetCoolerSetpoint(setpt));
+        if (pCamera->SetCoolerSetpoint(setpt))
         {
             response << jrpc_error(1, "failed to set cooler setpoint");
             return;
