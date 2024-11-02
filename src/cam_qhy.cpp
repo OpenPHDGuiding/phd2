@@ -49,6 +49,7 @@
 # define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
 # define CONFIG_PATH_QHY_HIGHGAIN "/camera/QHY/highgain"
 # define CONFIG_PATH_QHY_USBTRAFFIC "/camera/QHY/usbtraffic"
+# define CONFIG_PATH_QHY_SPEEDMODE "/camera/QHY/speedmode"
 
 # define DEFAULT_BPP 16
 # define DEFAULT_AMPNR true
@@ -56,6 +57,7 @@
 # define DEFAULT_OFFSET 0
 # define DEFAULT_HIGHGAIN false
 # define DEFAULT_USBTRAFFIC 30
+# define DEFAULT_SPEEDMODE false
 
 class Camera_QHY : public GuideCamera
 {
@@ -96,6 +98,8 @@ class Camera_QHY : public GuideCamera
     bool m_rownr;
     bool m_hasHighGain;
     bool m_highGain;
+    bool m_hasSpeedMode;
+    bool m_speedMode;
     double coolerSetpoint;
 
 public:
@@ -128,6 +132,7 @@ protected:
     bool SetQhyUsbTraffic(int usbTraffic);
     bool SetQhyAmpNoiseReduction(bool enable);
     bool SetQhyRowNoiseReduction(bool enable);
+    bool SetQhySpeedMode(bool enable);
     bool SetQhyHighGainMode(bool enable);
 };
 
@@ -249,6 +254,9 @@ Camera_QHY::Camera_QHY()
     m_hasRownr = false;
     m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
 
+    m_hasSpeedMode = false;
+    m_speedMode = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_SPEEDMODE, DEFAULT_SPEEDMODE);
+
     m_hasHighGain = false;
     m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
 
@@ -302,6 +310,7 @@ struct QHYCameraDlg : public wxDialog
     wxSpinCtrl *m_usbTrafficSpinner;
     wxCheckBox *m_ampnrCb;
     wxCheckBox *m_rownrCb;
+    wxCheckBox *m_speedModeCb;
     wxCheckBox *m_highGainCb;
 
     QHYCameraDlg();
@@ -353,6 +362,9 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, wxE
 
     m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
+
+    m_speedModeCb = new wxCheckBox(this, wxID_ANY, _("High speed mode"));
+    cameraOptionsSizer->Add(m_speedModeCb, 0, wxALL, 5);
 
     m_highGainCb = new wxCheckBox(this, wxID_ANY, _("QHY178 high gain mode"));
     m_highGainCb->SetToolTip(
@@ -414,6 +426,10 @@ void Camera_QHY::ShowPropertyDialog()
         if (!m_hasRownr)
             dlg.m_rownrCb->Hide();
 
+        dlg.m_speedModeCb->SetValue(m_speedMode);
+        if (!m_hasSpeedMode)
+            dlg.m_speedModeCb->Hide();
+
         dlg.m_highGainCb->SetValue(m_highGain);
         if (!m_hasHighGain)
             dlg.m_highGainCb->Hide();
@@ -441,6 +457,9 @@ void Camera_QHY::ShowPropertyDialog()
 
             m_rownr = dlg.m_rownrCb->GetValue();
             pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_ROWNR, m_rownr);
+
+            m_speedMode = dlg.m_speedModeCb->GetValue();
+            pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_SPEEDMODE, m_speedMode);
 
             m_highGain = dlg.m_highGainCb->GetValue();
             pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_HIGHGAIN, m_highGain);
@@ -664,6 +683,16 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         m_hasRownr = false;
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_SPEED) == QHYCCD_SUCCESS)
+    {
+        m_hasSpeedMode = true;
+        SetQhySpeedMode(m_speedMode);
+    }
+    else
+    {
+        m_hasSpeedMode = false;
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CAM_LIGHT_PERFORMANCE_MODE) == QHYCCD_SUCCESS)
@@ -1012,6 +1041,15 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
             }
         }
 
+        if (m_hasSpeedMode)
+        {
+            if (!SetQhySpeedMode(m_speedMode))
+            {
+                Debug.Write(wxString::Format("QHY set speed mode ret %d\n", (int) ret));
+                pFrame->Alert(_("Failed to set camera speed mode"));
+            }
+        }
+
         if (m_hasHighGain)
         {
             if (!SetQhyHighGainMode(m_highGain))
@@ -1281,6 +1319,34 @@ bool Camera_QHY::SetQhyRowNoiseReduction(bool enable)
         else
         {
             Debug.Write(wxString::Format("QHY: set CONTROL_ROWNOISERE %g\n", mode));
+        }
+    }
+
+    return rv == QHYCCD_SUCCESS;
+}
+
+/// <summary>
+/// Set the QHY camera speed mode.
+/// true = high speed, false = low speed
+/// </summary>
+bool Camera_QHY::SetQhySpeedMode(bool enable)
+{
+    uint32_t rv = QHYCCD_ERROR;
+
+    if (!m_hasSpeedMode)
+    {
+        Debug.Write("QHY: speed modes are not available\n");
+    }
+    else
+    {
+        double mode = enable ? QHYCCD_ON : QHYCCD_OFF;
+        if ((rv = SetQHYCCDParam(m_camhandle, CONTROL_SPEED, mode) != QHYCCD_SUCCESS))
+        {
+            Debug.Write("QHY: failed to set CONTROL_SPEED\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: set CONTROL_SPEED %g\n", mode));
         }
     }
 
