@@ -222,8 +222,7 @@ Camera_QHY::Camera_QHY()
     m_devicePixelSize = 0;
     coolerSetpoint = 0;
 
-    int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
-    m_bpp = value == 8 ? 8 : 16;
+    m_bpp = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
 
     m_curGain = 0;
     m_gainMin = 0;
@@ -383,14 +382,14 @@ void Camera_QHY::ShowPropertyDialog()
     if (Connected)
     {
         QHYCameraDlg dlg;
+        bool reconnect = false;
 
         char camShortName[32] = "";
         GetQHYCCDModel(m_camId, camShortName);
 
         dlg.SetTitle(wxString::Format("%s Settings", camShortName));
 
-        int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, m_bpp);
-        if (value == 8)
+        if (m_bpp == 8)
             dlg.m_bpp8->SetValue(true);
         else
             dlg.m_bpp16->SetValue(true);
@@ -423,7 +422,12 @@ void Camera_QHY::ShowPropertyDialog()
 
         if (dlg.ShowModal() == wxID_OK)
         {
-            m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
+            bool bit8value = dlg.m_bpp8->GetValue();
+            if (bit8value != (m_bpp == 8))
+            {
+                m_bpp = bit8value ? 8 : 16;
+                reconnect = true;
+            }
             pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
 
             m_offset = dlg.m_offsetSpinner->GetValue();
@@ -442,6 +446,11 @@ void Camera_QHY::ShowPropertyDialog()
             pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_HIGHGAIN, m_highGain);
 
             m_settingsChanged = true;
+        }
+
+        if (reconnect)
+        {
+            pFrame->Alert(_("Camera must be reconnected to set the new bit mode"));
         }
     }
 }
