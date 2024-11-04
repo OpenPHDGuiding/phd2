@@ -363,6 +363,9 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, wxE
     m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
 
+    m_speedModeCb = new wxCheckBox(this, wxID_ANY, _("High speed mode"));
+    cameraOptionsSizer->Add(m_speedModeCb, 0, wxALL, 5);
+
     m_highGainCb = new wxCheckBox(this, wxID_ANY, _("High gain mode"));
     m_highGainCb->SetToolTip(
         _("Sets a QHY5III178 or QHY178 to operate the sensor in the high conversion gain mode. This usually means lower noise "
