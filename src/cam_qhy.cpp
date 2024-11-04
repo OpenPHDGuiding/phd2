@@ -1329,7 +1329,7 @@ bool Camera_QHY::SetQhyRowNoiseReduction(bool enable)
 /// Set the QHY camera speed mode.
 /// true = high speed, false = low speed
 /// </summary>
-bool Camera_QHY::SetQhySpeedMode(bool enable)
+bool Camera_QHY::SetQhySpeedMode(bool highSpeed)
 {
     uint32_t rv = QHYCCD_ERROR;
 
@@ -1339,7 +1339,7 @@ bool Camera_QHY::SetQhySpeedMode(bool enable)
     }
     else
     {
-        double mode = enable ? QHYCCD_ON : QHYCCD_OFF;
+        double mode = highSpeed ? 1.0 : 0.0;
         if ((rv = SetQHYCCDParam(m_camhandle, CONTROL_SPEED, mode) != QHYCCD_SUCCESS))
         {
             Debug.Write("QHY: failed to set CONTROL_SPEED\n");
