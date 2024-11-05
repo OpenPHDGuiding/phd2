@@ -49,6 +49,7 @@
 # define CONFIG_PATH_QHY_OFFSET "/camera/QHY/offset"
 # define CONFIG_PATH_QHY_HIGHGAIN "/camera/QHY/highgain"
 # define CONFIG_PATH_QHY_USBTRAFFIC "/camera/QHY/usbtraffic"
+# define CONFIG_PATH_QHY_SPEEDMODE "/camera/QHY/speedmode"
 
 # define DEFAULT_BPP 16
 # define DEFAULT_AMPNR true
@@ -56,6 +57,7 @@
 # define DEFAULT_OFFSET 0
 # define DEFAULT_HIGHGAIN false
 # define DEFAULT_USBTRAFFIC 30
+# define DEFAULT_SPEEDMODE false
 
 class Camera_QHY : public GuideCamera
 {
@@ -80,6 +82,7 @@ class Camera_QHY : public GuideCamera
     double m_usbTrafficStep;
     bool m_hasUsbTraffic;
 
+    char m_camId[32] = "";
     double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
@@ -95,6 +98,8 @@ class Camera_QHY : public GuideCamera
     bool m_rownr;
     bool m_hasHighGain;
     bool m_highGain;
+    bool m_hasSpeedMode;
+    bool m_speedMode;
     double coolerSetpoint;
 
 public:
@@ -127,6 +132,7 @@ protected:
     bool SetQhyUsbTraffic(int usbTraffic);
     bool SetQhyAmpNoiseReduction(bool enable);
     bool SetQhyRowNoiseReduction(bool enable);
+    bool SetQhySpeedMode(bool enable);
     bool SetQhyHighGainMode(bool enable);
 };
 
@@ -221,8 +227,7 @@ Camera_QHY::Camera_QHY()
     m_devicePixelSize = 0;
     coolerSetpoint = 0;
 
-    int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
-    m_bpp = value == 8 ? 8 : 16;
+    m_bpp = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
 
     m_curGain = 0;
     m_gainMin = 0;
@@ -248,6 +253,9 @@ Camera_QHY::Camera_QHY()
 
     m_hasRownr = false;
     m_rownr = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_ROWNR, DEFAULT_ROWNR);
+
+    m_hasSpeedMode = false;
+    m_speedMode = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_SPEEDMODE, DEFAULT_SPEEDMODE);
 
     m_hasHighGain = false;
     m_highGain = pConfig->Profile.GetBoolean(CONFIG_PATH_QHY_HIGHGAIN, DEFAULT_HIGHGAIN);
@@ -302,12 +310,13 @@ struct QHYCameraDlg : public wxDialog
     wxSpinCtrl *m_usbTrafficSpinner;
     wxCheckBox *m_ampnrCb;
     wxCheckBox *m_rownrCb;
+    wxCheckBox *m_speedModeCb;
     wxCheckBox *m_highGainCb;
 
     QHYCameraDlg();
 };
 
-QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("QHY Camera Properties"))
+QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, wxEmptyString)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
@@ -354,7 +363,10 @@ QHYCameraDlg::QHYCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     m_rownrCb = new wxCheckBox(this, wxID_ANY, _("Row noise reduction"));
     cameraOptionsSizer->Add(m_rownrCb, 0, wxALL, 5);
 
-    m_highGainCb = new wxCheckBox(this, wxID_ANY, _("QHY178 high gain mode"));
+    m_speedModeCb = new wxCheckBox(this, wxID_ANY, _("High speed mode"));
+    cameraOptionsSizer->Add(m_speedModeCb, 0, wxALL, 5);
+
+    m_highGainCb = new wxCheckBox(this, wxID_ANY, _("High gain mode"));
     m_highGainCb->SetToolTip(
         _("Sets a QHY5III178 or QHY178 to operate the sensor in the high conversion gain mode. This usually means lower noise "
           "and a shallower pixel well than the equivalent gain value in low conversion gain mode"));
@@ -382,9 +394,14 @@ void Camera_QHY::ShowPropertyDialog()
     if (Connected)
     {
         QHYCameraDlg dlg;
+        bool reconnect = false;
 
-        int value = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, m_bpp);
-        if (value == 8)
+        char camShortName[32] = "";
+        GetQHYCCDModel(m_camId, camShortName);
+
+        dlg.SetTitle(wxString::Format("%s Settings", camShortName));
+
+        if (m_bpp == 8)
             dlg.m_bpp8->SetValue(true);
         else
             dlg.m_bpp16->SetValue(true);
@@ -402,17 +419,31 @@ void Camera_QHY::ShowPropertyDialog()
         dlg.m_usbTrafficSpinner->Enable(m_hasUsbTraffic);
 
         dlg.m_ampnrCb->SetValue(m_ampnr);
-        dlg.m_ampnrCb->Enable(m_hasAmpnr);
+        if (!m_hasAmpnr)
+            dlg.m_ampnrCb->Hide();
 
         dlg.m_rownrCb->SetValue(m_rownr);
-        dlg.m_rownrCb->Enable(m_hasRownr);
+        if (!m_hasRownr)
+            dlg.m_rownrCb->Hide();
+
+        dlg.m_speedModeCb->SetValue(m_speedMode);
+        if (!m_hasSpeedMode)
+            dlg.m_speedModeCb->Hide();
 
         dlg.m_highGainCb->SetValue(m_highGain);
-        dlg.m_highGainCb->Enable(m_hasHighGain);
+        if (!m_hasHighGain)
+            dlg.m_highGainCb->Hide();
+
+        dlg.DoLayoutAdaptation();
 
         if (dlg.ShowModal() == wxID_OK)
         {
-            m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
+            bool bit8value = dlg.m_bpp8->GetValue();
+            if (bit8value != (m_bpp == 8))
+            {
+                m_bpp = bit8value ? 8 : 16;
+                reconnect = true;
+            }
             pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
 
             m_offset = dlg.m_offsetSpinner->GetValue();
@@ -427,10 +458,18 @@ void Camera_QHY::ShowPropertyDialog()
             m_rownr = dlg.m_rownrCb->GetValue();
             pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_ROWNR, m_rownr);
 
+            m_speedMode = dlg.m_speedModeCb->GetValue();
+            pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_SPEEDMODE, m_speedMode);
+
             m_highGain = dlg.m_highGainCb->GetValue();
             pConfig->Profile.SetBoolean(CONFIG_PATH_QHY_HIGHGAIN, m_highGain);
 
             m_settingsChanged = true;
+        }
+
+        if (reconnect)
+        {
+            pFrame->Alert(_("Camera must be reconnected to set the new bit mode"));
         }
     }
 }
@@ -461,7 +500,7 @@ bool Camera_QHY::SetCoolerOn(bool on)
     else
     {
         // "off" entails setting the cooler duty cycle to 0
-        return SetQHYCCDParam(m_camhandle, CONTROL_MANULPWM, QHYCCD_OFF) == QHYCCD_SUCCESS;
+        return SetQHYCCDParam(m_camhandle, CONTROL_MANULPWM, QHYCCD_OFF) != QHYCCD_SUCCESS;
     }
 }
 
@@ -491,7 +530,7 @@ bool Camera_QHY::SetCoolerSetpoint(double temperature)
     Debug.Write(wxString::Format("QHY: setting cooler setpoint to %g\n", temperature));
 
     coolerSetpoint = temperature;
-    return SetQHYCCDParam(m_camhandle, CONTROL_COOLER, temperature) == QHYCCD_SUCCESS;
+    return SetQHYCCDParam(m_camhandle, CONTROL_COOLER, temperature) != QHYCCD_SUCCESS;
 }
 
 bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
@@ -569,6 +608,9 @@ bool Camera_QHY::Connect(const wxString& camId)
     if (!m_camhandle)
         return CamConnectFailed(_("Failed to connect to camera"));
 
+    (void) strncpy(m_camId, qid.c_str(), sizeof(m_camId) - 1);
+    m_camId[sizeof(m_camId) - 1] = '\0';
+
     // before calling InitQHYCCD() we must call SetQHYCCDStreamMode(camhandle, 0 or 1)
     //   0: single frame mode
     //   1: live frame mode
@@ -607,6 +649,10 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasOffset = true;
         SetQhyOffset(m_offset);
     }
+    else
+    {
+        m_hasOffset = false;
+    }
 
     ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_USBTRAFFIC, &m_usbTrafficMin, &m_usbTrafficMax, &m_usbTrafficStep);
     if (ret == QHYCCD_SUCCESS && m_usbTrafficStep > 0)
@@ -614,11 +660,19 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasUsbTraffic = true;
         SetQhyUsbTraffic(m_usbTraffic);
     }
+    else
+    {
+        m_hasUsbTraffic = false;
+    }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_AMPV) == QHYCCD_SUCCESS)
     {
         m_hasAmpnr = true;
         SetQhyAmpNoiseReduction(m_ampnr);
+    }
+    else
+    {
+        m_hasAmpnr = false;
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_ROWNOISERE) == QHYCCD_SUCCESS)
@@ -626,11 +680,29 @@ bool Camera_QHY::Connect(const wxString& camId)
         m_hasRownr = true;
         SetQhyRowNoiseReduction(m_rownr);
     }
+    else
+    {
+        m_hasRownr = false;
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_SPEED) == QHYCCD_SUCCESS)
+    {
+        m_hasSpeedMode = true;
+        SetQhySpeedMode(m_speedMode);
+    }
+    else
+    {
+        m_hasSpeedMode = false;
+    }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CAM_LIGHT_PERFORMANCE_MODE) == QHYCCD_SUCCESS)
     {
         m_hasHighGain = true;
         SetQhyHighGainMode(m_highGain);
+    }
+    else
+    {
+        m_hasHighGain = false;
     }
 
     double chipw, chiph, pixelw, pixelh;
@@ -678,6 +750,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     else
     {
         Debug.Write("QHY: cooler control not available\n");
+        HasCooler = false;
     }
 
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
@@ -968,6 +1041,15 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
             }
         }
 
+        if (m_hasSpeedMode)
+        {
+            if (!SetQhySpeedMode(m_speedMode))
+            {
+                Debug.Write(wxString::Format("QHY set speed mode ret %d\n", (int) ret));
+                pFrame->Alert(_("Failed to set camera speed mode"));
+            }
+        }
+
         if (m_hasHighGain)
         {
             if (!SetQhyHighGainMode(m_highGain))
@@ -1237,6 +1319,34 @@ bool Camera_QHY::SetQhyRowNoiseReduction(bool enable)
         else
         {
             Debug.Write(wxString::Format("QHY: set CONTROL_ROWNOISERE %g\n", mode));
+        }
+    }
+
+    return rv == QHYCCD_SUCCESS;
+}
+
+/// <summary>
+/// Set the QHY camera speed mode.
+/// true = high speed, false = low speed
+/// </summary>
+bool Camera_QHY::SetQhySpeedMode(bool highSpeed)
+{
+    uint32_t rv = QHYCCD_ERROR;
+
+    if (!m_hasSpeedMode)
+    {
+        Debug.Write("QHY: speed modes are not available\n");
+    }
+    else
+    {
+        double mode = highSpeed ? 1.0 : 0.0;
+        if ((rv = SetQHYCCDParam(m_camhandle, CONTROL_SPEED, mode) != QHYCCD_SUCCESS))
+        {
+            Debug.Write("QHY: failed to set CONTROL_SPEED\n");
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY: set CONTROL_SPEED %g\n", mode));
         }
     }
 
