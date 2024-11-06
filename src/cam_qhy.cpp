@@ -100,6 +100,7 @@ class Camera_QHY : public GuideCamera
     bool m_highGain;
     bool m_hasSpeedMode;
     bool m_speedMode;
+    bool m_has16bitMode;
     double coolerSetpoint;
 
 public:
@@ -228,6 +229,7 @@ Camera_QHY::Camera_QHY()
     coolerSetpoint = 0;
 
     m_bpp = pConfig->Profile.GetInt(CONFIG_PATH_QHY_BPP, DEFAULT_BPP);
+    m_has16bitMode = false;
 
     m_curGain = 0;
     m_gainMin = 0;
@@ -401,10 +403,19 @@ void Camera_QHY::ShowPropertyDialog()
 
         dlg.SetTitle(wxString::Format("%s Settings", camShortName));
 
-        if (m_bpp == 8)
+        if (!m_has16bitMode)
+        {
             dlg.m_bpp8->SetValue(true);
+            dlg.m_bpp8->Enable(false);
+            dlg.m_bpp16->Enable(false);
+        }
         else
-            dlg.m_bpp16->SetValue(true);
+        {
+            if (m_bpp == 8)
+                dlg.m_bpp8->SetValue(true);
+            else
+                dlg.m_bpp16->SetValue(true);
+        }
 
         dlg.m_gainText->SetLabel(wxString::Format("Gain: %d (min: %g, max: %g)", GetQhyGain(), m_gainMin, m_gainMax));
 
@@ -469,7 +480,7 @@ void Camera_QHY::ShowPropertyDialog()
 
         if (reconnect)
         {
-            pFrame->Alert(_("Camera must be reconnected to set the new bit mode"));
+            pFrame->Alert(_("Camera must be reconnected to set the new mode"));
         }
     }
 }
@@ -651,6 +662,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CONTROL_OFFSET is not available\n");
         m_hasOffset = false;
     }
 
@@ -662,6 +674,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CONTROL_USBTRAFFIC is not available\n");
         m_hasUsbTraffic = false;
     }
 
@@ -672,6 +685,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CONTROL_AMPV is not available\n");
         m_hasAmpnr = false;
     }
 
@@ -682,6 +696,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CONTROL_ROWNOISERE is not available\n");
         m_hasRownr = false;
     }
 
@@ -692,6 +707,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CONTROL_SPEED is not available\n");
         m_hasSpeedMode = false;
     }
 
@@ -702,6 +718,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
+        Debug.Write("QHY: CAM_LIGHT_PERFORMANCE_MODE is not available\n");
         m_hasHighGain = false;
     }
 
@@ -713,6 +730,22 @@ bool Camera_QHY::Connect(const wxString& camId)
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
         return CamConnectFailed(_("Failed to get camera chip info"));
+    }
+
+    if (IsQHYCCDControlAvailable(m_camhandle, CAM_16BITS) == QHYCCD_SUCCESS)
+    {
+        m_has16bitMode = true;
+    }
+    else
+    {
+        Debug.Write("QHY: CAM_16BITS is not available\n");
+        m_has16bitMode = false;
+
+        if (m_bpp == 16)
+        {
+            m_bpp = 8;
+            pConfig->Profile.SetInt(CONFIG_PATH_QHY_BPP, m_bpp);
+        }
     }
 
     ret = SetQHYCCDBitsMode(m_camhandle, (uint32_t) m_bpp);
@@ -739,17 +772,17 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
-        Debug.Write("QHY: DDR buffer not available\n");
+        Debug.Write("QHY: CONTROL_DDR is not available\n");
     }
 
     if (IsQHYCCDControlAvailable(m_camhandle, CONTROL_COOLER) == QHYCCD_SUCCESS)
     {
-        Debug.Write("QHY: cooler control available\n");
+        Debug.Write("QHY: CONTROL_COOLER available\n");
         HasCooler = true;
     }
     else
     {
-        Debug.Write("QHY: cooler control not available\n");
+        Debug.Write("QHY: CONTROL_COOLER not available\n");
         HasCooler = false;
     }
 
@@ -1283,7 +1316,7 @@ bool Camera_QHY::SetQhyAmpNoiseReduction(bool enable)
 
     if (!m_hasAmpnr)
     {
-        Debug.Write("QHY: amp noise reduction is not available\n");
+        return false;
     }
     else
     {
@@ -1307,7 +1340,7 @@ bool Camera_QHY::SetQhyRowNoiseReduction(bool enable)
 
     if (!m_hasRownr)
     {
-        Debug.Write("QHY: row noise reduction is not available\n");
+        return false;
     }
     else
     {
@@ -1335,7 +1368,7 @@ bool Camera_QHY::SetQhySpeedMode(bool highSpeed)
 
     if (!m_hasSpeedMode)
     {
-        Debug.Write("QHY: speed modes are not available\n");
+        return false;
     }
     else
     {
@@ -1359,7 +1392,7 @@ bool Camera_QHY::SetQhyHighGainMode(bool enable)
 
     if (!m_hasHighGain)
     {
-        Debug.Write("QHY: selectable gain modes not available\n");
+        return false;
     }
     else
     {
