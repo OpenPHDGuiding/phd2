@@ -1185,8 +1185,14 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     if (m_pCamera->HasSubframes)
     {
-        m_pCamera->UseSubframes = m_pUseSubframes->GetValue();
-        pConfig->Profile.SetBoolean("/camera/UseSubframes", m_pCamera->UseSubframes);
+        bool oldVal = m_pCamera->UseSubframes;
+        bool newVal = m_pUseSubframes->GetValue();
+        m_pCamera->UseSubframes = newVal;
+        pConfig->Profile.SetBoolean("/camera/UseSubframes", newVal);
+        // MultiStar can't track secondary star locations during periods when subframes are used
+        if (oldVal && !newVal)
+            if (pFrame->pGuider->GetMultiStarMode())
+                pFrame->pGuider->SetMultiStarMode(true); // Will force a refresh of secondary stars
     }
 
     if (m_pCamera->HasGainControl)
