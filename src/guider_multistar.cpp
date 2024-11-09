@@ -466,7 +466,8 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
             edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
 
         GuideStar newStar;
-        if (!newStar.AutoFind(*image, edgeAllowance, m_searchRegion, roi, m_guideStars, MAX_LIST_SIZE))
+        if (!newStar.AutoFind(*image, edgeAllowance, m_searchRegion, roi, m_guideStars,
+                              (pCamera->UseSubframes || !m_multiStarMode) ? 1 : MAX_LIST_SIZE))
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
@@ -1213,7 +1214,7 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         }
 
         // show in-use secondary stars
-        if (m_multiStarMode && m_guideStars.size() > 1)
+        if (m_multiStarMode && m_guideStars.size() > 1 && !pCamera->UseSubframes)
         {
             if (m_primaryStar.WasFound())
                 dc.SetPen(wxPen(wxColour(0, 255, 0), 1, wxPENSTYLE_SOLID));
