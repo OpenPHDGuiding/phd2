@@ -33,10 +33,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD 3.6.13 dev3\n"
+"Project-Id-Version: PHD 3.6.13 dev5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-26 16:18-0400\n"
-"PO-Revision-Date: 2024-04-25 16:57+0200\n"
+"PO-Revision-Date: 2024-11-03 08:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: Stanislav Holub\n"
 "Language: cs_CS\n"
@@ -44,7 +44,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: messages.pot\n"
 
@@ -1403,11 +1403,11 @@ msgstr "Expozici nelze spustit - ruší se"
 #: camcal_import_dialog.cpp:56
 #, c-format
 msgid "Import Darks to Profile %s"
-msgstr "Import Dark do Profilu %s"
+msgstr "Import Darků do Profilu %s"
 
 #: camcal_import_dialog.cpp:62 darks_dialog.cpp:105
 msgid "Dark Library"
-msgstr "Knihovna Dark"
+msgstr "Knihovna Darků"
 
 #: camcal_import_dialog.cpp:64
 msgid "Choose the profile with the dark library you want to use:"
@@ -1432,7 +1432,7 @@ msgstr "Žádná"
 
 #: camcal_import_dialog.cpp:75
 msgid "Darks Profiles"
-msgstr "Profily Dark"
+msgstr "Profily Darků"
 
 #: camcal_import_dialog.cpp:78 camcal_import_dialog.cpp:104
 msgid "Import from profile"
@@ -1440,7 +1440,7 @@ msgstr "Import z profilu"
 
 #: camcal_import_dialog.cpp:80 camcal_import_dialog.cpp:106
 msgid "Camera in profile"
-msgstr "Kamera v profilu"
+msgstr "Kamera z profilu"
 
 #: camcal_import_dialog.cpp:84
 msgid "There are no compatible dark libraries available"
@@ -2675,7 +2675,7 @@ msgstr ""
 
 #: darks_dialog.cpp:134
 msgid "Create entirely new dark library"
-msgstr "Vytvořit novou knihovnu dark"
+msgstr "Vytvořit novou knihovnu dark snímků"
 
 #: darks_dialog.cpp:135
 msgid ""
@@ -2684,7 +2684,7 @@ msgid ""
 "alert messages about incompatible frame sizes or mismatches with the current "
 "camera."
 msgstr ""
-"Vytvořené Dark snímky budou nyní použity k vytvoření zcela nové knihovny "
+"Vytvořené dark snímky budou nyní použity k vytvoření zcela nové knihovny "
 "dark snímků - staré dark snímky budou zahozeny. TUTO možnost  MUSÍTE použít, "
 "pokud jste viděli upozornění na nekompatibilní velikost snímků nebo nesoulad "
 "s aktuální kamerou."
@@ -2693,7 +2693,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Existing dark library covers %d exposure times in the range of %g s to %g s"
-msgstr "Stávající dark knihovna pokrývá %d čas expozice v rozsahu %g s až %g s"
+msgstr ""
+"Stávající dark knihovna zahrnuje %d čas expozice v rozsahu %g s až %g s"
 
 #: darks_dialog.cpp:150
 msgid ""
@@ -2753,12 +2754,12 @@ msgstr "Zakrýt pointační dalekohled"
 #: darks_dialog.cpp:280
 #, c-format
 msgid "Building master dark at %.1f sec:"
-msgstr "Sestavování master dark snímků s časem expozice %.1f s:"
+msgstr "Sestavování hlavních dark snímků s časem expozice %.1f s:"
 
 #: darks_dialog.cpp:282
 #, c-format
 msgid "Building master dark at %d mSec:"
-msgstr "Sestavování master dark snímků s časem expozice %d ms:"
+msgstr "Sestavování hlavních dark snímků s časem expozice %d ms:"
 
 #: darks_dialog.cpp:299
 msgid "Operation cancelled - no changes have been made"
@@ -2774,7 +2775,7 @@ msgstr "dark knihovna vytvořena"
 
 #: darks_dialog.cpp:323
 msgid "Taking darks to compute defect map: "
-msgstr "Probíhá pořizování dark snímků pro výpočet mapy defektů: "
+msgstr "Probíhá pořizování dark snímků pro výpočet mapy chyb: "
 
 #: darks_dialog.cpp:336
 msgid "Operation cancelled"
@@ -2782,11 +2783,11 @@ msgstr "Operace zrušena"
 
 #: darks_dialog.cpp:341
 msgid "Analyzing master dark..."
-msgstr "Probíhá analýza master dark snímků..."
+msgstr "Analýza hlavních dark snímků..."
 
 #: darks_dialog.cpp:351 darks_dialog.cpp:353
 msgid "Master dark data files built"
-msgstr "Byly vytvořeny datové soubory pro master dark"
+msgstr "Sestavené hlavní dark datové soubory"
 
 #: darks_dialog.cpp:373
 msgid "Uncover guide scope"
@@ -2809,7 +2810,7 @@ msgstr "Pořizování dark snímku %d/%d"
 #: darks_dialog.cpp:505
 #, c-format
 msgid "%.1f s dark FAILED"
-msgstr "%.1f s dark SELHALO"
+msgstr "%.1f s dark SELHAL"
 
 #: darks_dialog.cpp:537
 msgid "Dark frames complete"
@@ -2826,7 +2827,7 @@ msgstr "Zarovnání Driftovou metodou"
 
 #: drift_tool.cpp:167 scope_manual_pointing.cpp:54
 msgid "Scope Pointing"
-msgstr "Namíření Dalekohledu"
+msgstr "Míření Dalekohledu"
 
 #: drift_tool.cpp:176
 #, c-format
@@ -5972,7 +5973,7 @@ msgstr ""
 #: myframe.cpp:2097
 #, c-format
 msgid "Dither by %.2f,%.2f"
-msgstr "Dithering %.2f,%.2f"
+msgstr "Ditherace %.2f,%.2f"
 
 #: myframe.cpp:2145
 msgid "Are you sure you want to exit while capturing is active?"
@@ -6053,6 +6054,8 @@ msgid ""
 "Binning or camera pixel size changed unexpectedly. You should use separate "
 "profiles for different image scales."
 msgstr ""
+"Neočekávaná změna binningu nebo velikosti pixelů kamery. Pro různá měřítka "
+"obrazu byste měli používat samostatné profily."
 
 #: myframe.cpp:2861
 msgid "Global Settings"
@@ -6061,7 +6064,7 @@ msgstr "Globální Nastavení"
 #: myframe.cpp:2908
 #, c-format
 msgid "Enter a focal length in millimeters, between %.f and %.f"
-msgstr ""
+msgstr "Zadejte ohniskovou vzdálenost v milimetrech mezi %.f a %.f"
 
 #: myframe.cpp:2959 myframe.cpp:3042
 msgid "System default"
@@ -6265,7 +6268,7 @@ msgstr "Počet snímků, které mají být uloženy"
 
 #: myframe.cpp:3133
 msgid "Dither Settings"
-msgstr "Nastavení Ditheru"
+msgstr "Nastavení Ditherace"
 
 #: myframe.cpp:3134
 msgid "Random"
@@ -6295,11 +6298,11 @@ msgstr "Pouze RA"
 
 #: myframe.cpp:3145
 msgid "Constrain dither to RA only"
-msgstr "Omezí ditherace pouze na RA"
+msgstr "Omezí ditheraci pouze na RA"
 
 #: myframe.cpp:3151
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
-msgstr "Měřítko pro příkazy dither. Výchozí hodnota = 1.0 (0.01-100.0)"
+msgstr "Měřítko pro příkazy ditherace. Výchozí hodnota = 1.0 (0.01-100.0)"
 
 #: myframe.cpp:3155 testguide.cpp:119
 msgid "Scale"
@@ -6641,8 +6644,8 @@ msgid ""
 "option in the Dither Settings of the Advanced Dialog."
 msgstr ""
 "Při aktuálním nastavení řídicího režimu Dec bude tato verze PHD2 provádět "
-"dithering pouze v deklinaci. Chcete-li obnovit původní chování, můžete v "
-"dialogovém okně Pokročilé nastavení ditheringu změnit možnost pouze na RA."
+"ditheraci pouze v deklinaci. Chcete-li obnovit původní chování, můžete v "
+"dialogovém okně Pokročilé nastavení ditherace změnit možnost pouze na RA."
 
 #: myframe_events.cpp:1190
 msgid "Set RA-only now"
@@ -7450,12 +7453,12 @@ msgid ""
 "you are new to PHD2 or encounter problems, please use the 'Help' function "
 "for assistance."
 msgstr ""
-"Váš profil je kompletní a připravený k uložení.  Prosím, pojmenujte ho a "
-"případně vytvořte pro něj knihovnu dark snímků, což doporučujeme pro "
-"dosažení nejlepších výsledků. Pokud máte stabilní nastavení z jedné noci na "
-"druhou, můžete se rozhodnout, že při načtení tohoto profilu automaticky "
-"použijete poslední kalibraci. Pokud jste nový v programu PHD2 nebo máte "
-"nějaké problémy, použijte pro pomoc funkci \"Nápověda\"."
+"Váš profil je kompletní a připravený k uložení.  Pojmenujte jej a případně "
+"pro něj vytvořte knihovnu dark snímků. Tento postup se doporučuje, abyste "
+"dosáhli nejlepších výsledků. Pokud je vaše nastavení stabilní od jedné noci "
+"k druhé, můžete zvolit automatické opětovné použití poslední kalibrace při "
+"načtení tohoto profilu. Pokud jste v programu PHD2 noví nebo se setkáte s "
+"problémy, použijte pro pomoc funkci „Nápověda“."
 
 #: profile_wizard.cpp:485
 msgid "Configuration Suggestion"
@@ -7471,10 +7474,10 @@ msgid ""
 "your mount.\n"
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
-"Tato konfigurace nezajišťuje PHD2 žádné informace o poloze a umístění "
+"Tato konfigurace neposkytuje PHD2 žádné informace o poloze a umístění "
 "dalekohledu.  To znamená, že budete muset provést novou kalibraci \n"
 "vždy, když je pohyb dalekohledu nesprávný, a některé funkce PHD2 budou "
-"vypnuty. Doporučujeme zvolit připojení montáže pomocí rozhraní \n"
+"vypnuty. Měli byste zvolit připojení montáže rozhraní \n"
 "ASCOM nebo INDI pro 'montáž' nebo 'aux-montáž', pokud nejsou k dispozici "
 "ovladače pro vaši montáž. Podrobnější informace naleznete v nápovědě \n"
 "v sekci Připojit Zařízení."
@@ -7644,7 +7647,7 @@ msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
-"Tento ovladač kamery nehlásí velikost pixlů, takže je nutné hodnotu zadat "
+"Tento ovladač kamery neuvádí velikost pixlů, takže je nutné hodnotu zadat "
 "ručně"
 
 #: profile_wizard.cpp:1168
@@ -7768,12 +7771,12 @@ msgid ""
 "Click to display detailed statistics of master dark frame used to compute "
 "bad-pixel map"
 msgstr ""
-"Klikněte zde pro podrobnou statistiku použitého master dark snímku a "
+"Klikněte zde pro podrobnou statistiku použitého hlavního dark snímku a "
 "vypočtenou mapu chybných pixlů"
 
 #: Refine_DefMap.cpp:84
 msgid "Show defect pixels"
-msgstr "Zobrazit vadné pixely"
+msgstr "Zobrazit chybné pixely"
 
 #: Refine_DefMap.cpp:85
 msgid "Check to show hot/cold pixels in the main image window."
@@ -7793,11 +7796,11 @@ msgstr "Kamera:"
 
 #: Refine_DefMap.cpp:106 Refine_DefMap.cpp:111
 msgid "Master Dark Exposure Time:"
-msgstr "Čas Expozice Master Dark:"
+msgstr "Čas Expozice Hlavní Dark:"
 
 #: Refine_DefMap.cpp:108 Refine_DefMap.cpp:112
 msgid "Master Dark Exposure Count:"
-msgstr "Počet Expozic Master Dark:"
+msgstr "Počet Expozic Hlavní Dark:"
 
 #: Refine_DefMap.cpp:115
 msgid "Aggressiveness, hot pixels:"
@@ -7923,7 +7926,7 @@ msgstr "Nová mapa chybných pixlů se používá"
 
 #: Refine_DefMap.cpp:369
 msgid "Master dark frames NOT rebuilt"
-msgstr "Master dark snímek NEBYL na začátku vytvořen"
+msgstr "Hlavní dark snímek NEBYL na začátku vytvořen"
 
 #: Refine_DefMap.cpp:453
 msgid "You must first load a bad-pixel map"
@@ -8107,11 +8110,11 @@ msgstr ""
 
 #: scope.cpp:662
 msgid "Max RA Duration setting"
-msgstr "Nastavení maximální délky trvání RA"
+msgstr "Max. nastavení délky trvání RA"
 
 #: scope.cpp:662
 msgid "Max Dec Duration setting"
-msgstr "Nastavení maximální délky trvání Dec"
+msgstr "Max. nastavení délky trvání Dec"
 
 #: scope.cpp:664
 #, c-format
@@ -8363,7 +8366,7 @@ msgstr "Kompenzaci Zpětné vůle Montáže"
 
 #: scope.cpp:1977
 msgid "Backlash Compensation"
-msgstr "Kompenzace zpětné Vůle"
+msgstr "Kompenzace Zpětné Vůle"
 
 #: scope.cpp:1988
 msgid "Minimum length of backlash compensation pulse (mSec)."
@@ -9330,8 +9333,8 @@ msgid ""
 "Select the dither amount type. Imaging applications have the option of "
 "sending each of these dither amounts to PHD."
 msgstr ""
-"Umožňuje výběr typu ditheringu. Zobrazovací aplikace mají možnost odeslat "
-"PHD každou z těchto hodnot ditheringu."
+"Umožňuje výběr typu ditherace. Zobrazovací aplikace mají možnost odeslat PHD "
+"každou z těchto hodnot ditherace."
 
 #: testguide.cpp:124
 msgid ""
@@ -9339,9 +9342,9 @@ msgid ""
 "value to get the actual dither amount. Changing the value here affects both "
 "manual dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"Faktor měřítka pro dithering. Množství ditheringu je vynásobeno tímto "
-"faktorem, aby se získala skutečná hodnota ditheringu. Změna hodnoty zde "
-"ovlivňuje jak manuální dithering, tak dithering z obrazových aplikací "
+"Faktor měřítka pro ditheraci. Množství ditherace je vynásobeno tímto "
+"faktorem, aby se získala skutečná hodnota ditherace. Změna hodnoty zde "
+"ovlivňuje jak manuální ditheraci, tak ditheraci v obrazových aplikací "
 "připojených k programu PHD."
 
 #: testguide.cpp:127
@@ -9353,8 +9356,8 @@ msgid ""
 "Dither on RA axis only. Changing the value here affects both manual "
 "dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"Dither pouze ve směru RA. Změna hodnoty zde ovlivňuje jak manuální "
-"dithering, tak dithering z obrazových aplikací připojených k programu PHD."
+"Ditherace pouze ve směru RA. Změna hodnoty zde ovlivňuje jak manuální "
+"ditheraci, tak ditheraci v obrazových aplikací připojených k programu PHD."
 
 #: testguide.cpp:133
 msgid ""
@@ -9362,7 +9365,7 @@ msgid ""
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
 "Náhodně posune pozici řízení na každé ose až po maximální hodnotu určenou "
-"typem ditheru a faktorem měřítka ditheru."
+"typem ditherace a faktorem měřítka ditherování."
 
 #: usImage.cpp:414
 msgid "File does not exist - cannot load "
@@ -9405,23 +9408,6 @@ msgstr "Připojování ke Kameře ..."
 #: runinbg.h:103
 msgid "Connecting to Rotator..."
 msgstr "Připojování k Rotátoru ..."
-
-#~ msgid ""
-#~ "Guiding parameters have been reset because the binning or pixel size "
-#~ "changed unexpectedly. You should use separate profiles for different "
-#~ "image scales."
-#~ msgstr ""
-#~ "Řídící parametry byly resetovány, protože došlo nečekaně ke změně "
-#~ "velikosti binningu nebo pixelů. Pro různá měřítka obrázků je vhodné "
-#~ "použít samostatné profily."
-
-#, c-format
-#~ msgid ""
-#~ "Enter a focal length in millimeters, between %.f and %.f,\n"
-#~ "or enter 0 if the focal length is not known"
-#~ msgstr ""
-#~ "Zadejte ohniskovou vzdálenost v milimetrech mezi %.f a %.f,\n"
-#~ "nebo zadejte 0, pokud ohnisková vzdálenost není známa"
 
 #, c-format
 #~ msgid "Cannot connect to camera %s: %s"
