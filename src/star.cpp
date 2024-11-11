@@ -1021,22 +1021,25 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     double minSNR = pFrame->pGuider->GetAFMinStarSNR();
     double maxHFD = pFrame->pGuider->GetMaxStarHFD();
     foundStars.clear();
-    for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
+    if (maxStars > 1)
     {
-        GuideStar tmp;
-        tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD,
-                 pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
-        // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
-        if (tmp.WasFound() && tmp.SNR >= minSNR)
+        for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
-            bool duplicate = std::find_if(foundStars.begin(), foundStars.end(), [&tmp](const GuideStar& other)
-                                          { return CloseToReference(tmp, other); }) != foundStars.end();
-
-            if (!duplicate)
+            GuideStar tmp;
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID, pFrame->pGuider->GetMinStarHFD(), maxHFD,
+                     pCamera->GetSaturationADU(), FIND_LOGGING_VERBOSE);
+            // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
+            if (tmp.WasFound() && tmp.SNR >= minSNR)
             {
-                tmp.referencePoint.X = tmp.X;
-                tmp.referencePoint.Y = tmp.Y;
-                foundStars.push_back(tmp);
+                bool duplicate = std::find_if(foundStars.begin(), foundStars.end(), [&tmp](const GuideStar& other)
+                                              { return CloseToReference(tmp, other); }) != foundStars.end();
+
+                if (!duplicate)
+                {
+                    tmp.referencePoint.X = tmp.X;
+                    tmp.referencePoint.Y = tmp.Y;
+                    foundStars.push_back(tmp);
+                }
             }
         }
     }
@@ -1117,6 +1120,12 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
                         foundStars.push_back(tmp);
                         Debug.Write("MultiStar: primary star forcibly inserted in list\n");
                     }
+                }
+                else
+                {
+                    tmp.referencePoint.X = tmp.X;
+                    tmp.referencePoint.Y = tmp.Y;
+                    foundStars.push_back(tmp);
                 }
                 return true;
             }
