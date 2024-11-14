@@ -780,7 +780,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     else
     {
-        Debug.Write("QHY: CONTROL_COOLER not available\n");
+        Debug.Write("QHY: CONTROL_COOLER is not available\n");
         HasCooler = false;
     }
 
