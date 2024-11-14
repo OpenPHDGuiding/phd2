@@ -86,7 +86,6 @@ class Camera_QHY : public GuideCamera
     double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
-    int m_curExposure;
     unsigned short m_curBin;
     wxRect m_roi;
     bool Color;
@@ -224,7 +223,6 @@ Camera_QHY::Camera_QHY()
     m_camhandle = 0;
 
     m_curBin = 1;
-    m_curExposure = 0;
     m_devicePixelSize = 0;
     coolerSetpoint = 0;
 
@@ -855,7 +853,6 @@ bool Camera_QHY::Connect(const wxString& camId)
     m_devicePixelSize = sqrt(pixelw * pixelh);
 
     m_curGain = -1;
-    m_curExposure = -1;
     m_roi = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight()); // binned coordinates
 
     Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
@@ -1009,20 +1006,6 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
     }
 
-    if (duration != m_curExposure)
-    {
-        ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
-        if (ret == QHYCCD_SUCCESS)
-        {
-            m_curExposure = duration;
-        }
-        else
-        {
-            Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int) ret));
-            pFrame->Alert(_("Failed to set camera exposure"));
-        }
-    }
-
     if (GuideCameraGain != m_curGain)
     {
         if (SetQhyGain(GuideCameraGain))
@@ -1093,6 +1076,13 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         }
 
         m_settingsChanged = false;
+    }
+
+    ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
+    if (ret == QHYCCD_ERROR)
+    {
+        Debug.Write(wxString::Format("QHY set exposure ret %d\n", (int) ret));
+        pFrame->Alert(_("Failed to set camera exposure length"));
     }
 
     ret = ExpQHYCCDSingleFrame(m_camhandle);
