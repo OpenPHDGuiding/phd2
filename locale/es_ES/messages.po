@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: PHD2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-26 16:18-0400\n"
-"PO-Revision-Date: 2024-02-06 21:10-0300\n"
+"PO-Revision-Date: 2024-11-07 13:24-0300\n"
 "Last-Translator: Javier R. <frjaraur@gmail.com>\n"
 "Language-Team: <LL@li.org>\n"
 "Language: es\n"
@@ -44,7 +44,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: about_dialog.cpp:45 myframe.cpp:577
@@ -1825,11 +1825,11 @@ msgstr "El archivo FITS no es una imagen"
 
 #: cam_indi.cpp:889
 msgid "RGB images are not supported, please switch the INDI driver to Mono"
-msgstr ""
+msgstr "No soporta imágenes RGB, por favor, cambiar driver INDI a Mono"
 
 #: cam_indi.cpp:895
 msgid "Unsupported FITS file"
-msgstr ""
+msgstr "Archivo FITS no soportado"
 
 #: cam_indi.cpp:926 cam_indi.cpp:956 gear_simulator.cpp:728
 #: gear_simulator.cpp:1559
@@ -1994,11 +1994,11 @@ msgstr "desconocido"
 
 #: cam_ogma.cpp:332
 msgid "No OGMA cameras detected"
-msgstr ""
+msgstr "No se detectó cámaras OGMA"
 
 #: cam_ogma.cpp:352
 msgid "Selected OGMA camera not found."
-msgstr ""
+msgstr "No se encontró cámara OGMA seleccionada."
 
 #: cam_ogma.cpp:357 cam_touptek.cpp:358
 msgid "Camera does not support software trigger"
@@ -2006,11 +2006,11 @@ msgstr "La cámara no soporta disparo por software"
 
 #: cam_ogma.cpp:363
 msgid "Failed to open OGMA camera."
-msgstr ""
+msgstr "Fallo al iniciar cámara OGMA."
 
 #: cam_ogma.cpp:386
 msgid "Failed to get camera resolution for OGMA camera."
-msgstr ""
+msgstr "Falló al obtener resolución de cámara OGMA."
 
 #: cam_ogma.cpp:394 cam_ogma.cpp:407 cam_touptek.cpp:395 cam_touptek.cpp:408
 msgid "Failed to initialize camera binning."
@@ -2034,7 +2034,7 @@ msgstr "Falló la captura: no se pudo obtener la imagen de la cámara"
 
 #: cam_ogma.cpp:799
 msgid "Ogma Camera Properties"
-msgstr ""
+msgstr "Propiedades de Cámara OGMA"
 
 #: cam_openssag.cpp:111 cam_qhy5.cpp:117
 msgid "Could not initialize USB library"
@@ -6104,6 +6104,8 @@ msgid ""
 "Binning or camera pixel size changed unexpectedly. You should use separate "
 "profiles for different image scales."
 msgstr ""
+"El binning o tamaño de píxel cambió. Deberías utilizar perfiles separados "
+"para distintas escala de imagen."
 
 #: myframe.cpp:2861
 msgid "Global Settings"
@@ -6112,7 +6114,7 @@ msgstr "Configuración Global"
 #: myframe.cpp:2908
 #, c-format
 msgid "Enter a focal length in millimeters, between %.f and %.f"
-msgstr ""
+msgstr "Ingrese una longitud focal en milímetros, entre %.f y %.f"
 
 #: myframe.cpp:2959 myframe.cpp:3042
 msgid "System default"
@@ -8049,35 +8051,35 @@ msgstr "Invertir signos de los ángulos"
 
 #: rotator_indi.cpp:109
 msgid "INDI Rotator is ready\n"
-msgstr ""
+msgstr "Rodador INDI listo\n"
 
 #: rotator_indi.cpp:218
 msgid "INDI Rotator Selection"
-msgstr ""
+msgstr "Selección de Rotador INDI"
 
 #: rotator_indi.cpp:265
 #, c-format
 msgid "INDI Rotator found ABS_ROTATOR_ANGLE for %s %s\n"
-msgstr ""
+msgstr "Rotador INDI encontró ABS_ROTATOR_ANGLE para %s %s\n"
 
 #: rotator_indi.cpp:277
 #, c-format
 msgid "INDI Rotator found CONNECTION for %s %s\n"
-msgstr ""
+msgstr "Rotador INDI encontró CONNECTION para %s %s\n"
 
 #: rotator_indi.cpp:291
 #, c-format
 msgid "INDI Rotator received message: %s\n"
-msgstr ""
+msgstr "Mensaje recibido de rotador INDI: %s\n"
 
 #: rotator_indi.cpp:320
 msgid "INDI rotator was disconnected"
-msgstr ""
+msgstr "Rotador INDI fue desconectado"
 
 #: rotator_indi.cpp:331
 #, c-format
 msgid "INDI Rotator: New number: %s\n"
-msgstr ""
+msgstr "Rotador INDI: Nuevo número: %s\n"
 
 #: runinbg.cpp:118
 msgid "The operation was canceled"
@@ -8822,11 +8824,11 @@ msgstr "Columna de Promedio"
 
 #: star_profile.cpp:303
 msgid "Click image for raw view"
-msgstr ""
+msgstr "Click en imagen para vista raw"
 
 #: star_profile.cpp:308
 msgid "Click image for interpolated view"
-msgstr ""
+msgstr "Click en imagen para vista interpolada"
 
 #: star_profile.cpp:340
 msgid "Peak"
