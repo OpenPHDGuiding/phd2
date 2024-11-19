@@ -297,13 +297,18 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pFocalLength->SetValue(DefaultFocalLength);
     m_pFocalLength->SetDigits(0);
     m_FocalLength = (int) m_pFocalLength->GetValue();
-    AddCellPair(this, m_pUserProperties, 3, _("Guide scope focal length (mm)"), m_pFocalLength);
+    wxBoxSizer *vFLszr = new wxBoxSizer(wxVERTICAL);
+    wxStaticText *flLabel =
+        new wxStaticText(this, wxID_ANY, _("Guide scope focal length (mm)"), wxDefaultPosition, wxDefaultSize);
     m_pFocalLengthWarning = new wxStaticText(this, wxID_ANY, _("Focal length less than recommended minimum (100mm)"),
                                              wxDefaultPosition, wxDefaultSize);
+    vFLszr->Add(flLabel, wxALL, 2);
+    vFLszr->Add(m_pFocalLengthWarning, wxALL, 2); // Stack the label and the warning message vertically, close together
+    m_pUserProperties->Add(vFLszr, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 4);
+    m_pUserProperties->Add(m_pFocalLength, wxGBPosition(3, 2), wxDefaultSpan, wxALL, 4);
     font = m_pFocalLengthWarning->GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pFocalLengthWarning->SetFont(font);
-    m_pUserProperties->Add(m_pFocalLengthWarning, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 4);
 
     // pixel scale
 #include "icons/transparent24.png.h"
@@ -313,7 +318,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
 
     m_pixelScale = new wxStaticText(this, wxID_ANY, wxString::Format(_("Pixel scale: %8.2f\"/px"), 99.99));
     m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
-    m_pUserProperties->Add(m_pixelScale, wxGBPosition(5, 1), wxDefaultSpan, wxALL, 4);
+    m_pUserProperties->Add(m_pixelScale, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 4);
 
     UpdatePixelScale();
 
