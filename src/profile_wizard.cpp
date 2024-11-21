@@ -85,6 +85,7 @@ private:
     wxRadioButton *m_pBits8;
     wxRadioButton *m_pBits16;
     wxSpinCtrlDouble *m_pFocalLength;
+    wxStaticText *m_pFocalLengthWarning;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxCheckBox *m_pHPEncoders;
     wxButton *m_pPrevBtn;
@@ -164,6 +165,7 @@ static const int TextWrapPoint = 400;
 // Help text heights - "tall" is for greetings page, "normal" is for gear selection panels
 static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
+static const int DefaultFocalLength = 160;
 static wxString TitlePrefix;
 
 static wxStaticText *Label(wxWindow *parent, const wxString& txt)
@@ -246,7 +248,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
-    m_pUserProperties = new wxGridBagSizer(6, 5);
+    m_pUserProperties = new wxGridBagSizer(6, 6);
 
     // Pixel-size
     m_pPixelSize =
@@ -285,26 +287,38 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pUserProperties->Add(sz2, wxGBPosition(2, 1), wxDefaultSpan, 0, 0);
     // Focal length
     m_pFocalLength = pFrame->MakeSpinCtrlDouble(this, ID_FOCALLENGTH, wxEmptyString, wxDefaultPosition,
-                                                wxSize(StringWidth(this, _T("888888")), -1), wxSP_ARROW_KEYS, 0,
-                                                AdvancedDialog::MAX_FOCAL_LENGTH, 0.0, 50.0);
-    m_pFocalLength->SetValue(0);
-    m_pFocalLength->SetDigits(0);
+                                                wxSize(StringWidth(this, _T("888888")), -1), wxSP_ARROW_KEYS,
+                                                AdvancedDialog::MIN_FOCAL_LENGTH, AdvancedDialog::MAX_FOCAL_LENGTH, 0.0, 50.0);
+
     m_pFocalLength->SetToolTip(
         _("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
           "adaptive optics device (Focal length = aperture x f-ratio).  Typical finder scopes have a focal length of about "
-          "165mm."));
+          "165mm. Recommended minimum is 100mm"));
+    m_pFocalLength->SetValue(DefaultFocalLength);
+    m_pFocalLength->SetDigits(0);
     m_FocalLength = (int) m_pFocalLength->GetValue();
-    AddCellPair(this, m_pUserProperties, 3, _("Guide scope focal length (mm)"), m_pFocalLength);
+    wxBoxSizer *vFLszr = new wxBoxSizer(wxVERTICAL);
+    wxStaticText *flLabel =
+        new wxStaticText(this, wxID_ANY, _("Guide scope focal length (mm)"), wxDefaultPosition, wxDefaultSize);
+    m_pFocalLengthWarning = new wxStaticText(this, wxID_ANY, _("Focal length less than recommended minimum (100mm)"),
+                                             wxDefaultPosition, wxDefaultSize);
+    vFLszr->Add(flLabel, wxALL, 2);
+    vFLszr->Add(m_pFocalLengthWarning, wxALL, 2); // Stack the label and the warning message vertically, close together
+    m_pUserProperties->Add(vFLszr, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 4);
+    m_pUserProperties->Add(m_pFocalLength, wxGBPosition(3, 2), wxDefaultSpan, wxALL, 4);
+    font = m_pFocalLengthWarning->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    m_pFocalLengthWarning->SetFont(font);
 
     // pixel scale
 #include "icons/transparent24.png.h"
     wxBitmap transparent(wxBITMAP_PNG_FROM_DATA(transparent24));
     m_scaleIcon = new wxStaticBitmap(this, wxID_ANY, transparent);
-    m_pUserProperties->Add(m_scaleIcon, wxGBPosition(3, 0));
+    m_pUserProperties->Add(m_scaleIcon, wxGBPosition(5, 0));
 
     m_pixelScale = new wxStaticText(this, wxID_ANY, wxString::Format(_("Pixel scale: %8.2f\"/px"), 99.99));
     m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
-    m_pUserProperties->Add(m_pixelScale, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 5);
+    m_pUserProperties->Add(m_pixelScale, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 4);
 
     UpdatePixelScale();
 
@@ -700,6 +714,7 @@ static int RangeCheck(int thisval)
 // State machine manager.  Layout and content of dialog panel will be changed here based on state.
 void ProfileWizard::UpdateState(const int change)
 {
+    wxSpinDoubleEvent dummyEvt;
     ShowStatus(wxEmptyString);
     if (SemanticCheck(m_State, change))
     {
@@ -743,6 +758,7 @@ void ProfileWizard::UpdateState(const int change)
             SetSizerAndFit(m_pvSizer);
             m_pInstructions->SetLabel(_("Select your guide camera and specify the optical properties of your guiding setup"));
             m_pInstructions->Wrap(TextWrapPoint);
+            OnFocalLengthChange(dummyEvt); // Control visibility of focal length warning message
             break;
         case STATE_MOUNT:
             if (m_SelectedCamera == _("Simulator"))
@@ -1255,7 +1271,12 @@ void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
 {
     m_FocalLength = (int) m_pFocalLength->GetValue();
     m_pFocalLength->SetValue(m_FocalLength); // Rounding
+    if (m_FocalLength < 100)
+        m_pFocalLengthWarning->Show(true);
+    else
+        m_pFocalLengthWarning->Show(false);
     UpdatePixelScale();
+    SetSizerAndFit(m_pvSizer); // Show/hide of focal length warning alters layout of GridBagSizer
 }
 
 void ProfileWizard::OnFocalLengthText(wxCommandEvent& evt)
