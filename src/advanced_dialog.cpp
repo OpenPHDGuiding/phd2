@@ -41,7 +41,7 @@
 # include <wx/choicebk.h>
 #endif
 
-const double AdvancedDialog::MIN_FOCAL_LENGTH = 100.0;
+const double AdvancedDialog::MIN_FOCAL_LENGTH = 50.0;
 const double AdvancedDialog::MAX_FOCAL_LENGTH = 10000.0;
 
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
