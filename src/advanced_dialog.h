@@ -103,6 +103,7 @@ public:
 
     bool Validate() override;
     void ShowInvalid(wxWindow *ctrl, const wxString& message);
+    double PercentChange(double oldVal, double newVal);
     void FlagImageScaleChange()
     {
         m_imageScaleChanged = true;
