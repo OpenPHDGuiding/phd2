@@ -1031,9 +1031,8 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
             // We're repeating the find, so we're vulnerable to hot pixels and creation of unwanted duplicates
             if (tmp.WasFound() && tmp.SNR >= minSNR)
             {
-                bool duplicate =
-                    std::find_if(foundStars.begin(), foundStars.end(),
-                                 [&tmp](const GuideStar& other) { return CloseToReference(tmp, other); }) != foundStars.end();
+                bool duplicate = std::find_if(foundStars.begin(), foundStars.end(), [&tmp](const GuideStar& other)
+                                              { return CloseToReference(tmp, other); }) != foundStars.end();
 
                 if (!duplicate)
                 {
