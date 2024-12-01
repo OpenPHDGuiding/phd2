@@ -592,6 +592,20 @@ double AdvancedDialog::DetermineGuideSpeed()
     }
     return sidRate;
 }
+
+// Floating point equality comparisons can be a problem due to rounding and trivial inequalities.
+// PercentChange can be used to see if a change is worth reacting to
+double AdvancedDialog::PercentChange(double oldVal, double newVal)
+{
+    double chg;
+    if (fabs(oldVal) < 0.0001)
+    {
+        return 100. * newVal; // not meaningful, but avoids divide by zero
+    }
+    else
+        return 100. * fabs(1. - newVal / oldVal);
+}
+
 // Reacts to param changes in the AD that change the image scale.  Calibration step-size is recalculated, calibration is
 // cleared, MinMoves are set to defaults based on new image scale
 void AdvancedDialog::MakeImageScaleAdjustments()
