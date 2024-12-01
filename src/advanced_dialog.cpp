@@ -598,13 +598,12 @@ double AdvancedDialog::DetermineGuideSpeed()
 double AdvancedDialog::PercentChange(double oldVal, double newVal)
 {
     double chg;
-    if (oldVal > 0)
+    if (fabs(oldVal) < 0.0001)
     {
-        chg = fabs(1.0 - newVal / oldVal);
+        return 100. * newVal; // not meaningful, but avoids divide by zero
     }
     else
-        chg = fabs(newVal);
-    return 100.0 * chg;
+        return 100. * fabs(1. - newVal / oldVal);
 }
 
 // Reacts to param changes in the AD that change the image scale.  Calibration step-size is recalculated, calibration is
