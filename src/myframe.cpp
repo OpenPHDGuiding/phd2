@@ -3327,8 +3327,9 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
                                        m_varExpDelayLong->GetValue() * 1000);
         int oldFL = m_pFrame->GetFocalLength();
         int newFL = GetFocalLength(); // From UI control
-        if (oldFL != newFL) // Validator insures fl is generally reasonable and non-zero
-            m_pFrame->pAdvancedDialog->FlagImageScaleChange();
+        if (oldFL != newFL) // Validator insures fl is generally reasonable and non-zero; don't react to trivial changes
+            if (m_pFrame->pAdvancedDialog->PercentChange(oldFL, newFL) > 5.0)
+                m_pFrame->pAdvancedDialog->FlagImageScaleChange();
         m_pFrame->SetFocalLength(GetFocalLength());
 
         int idx = m_pLanguage->GetSelection();
