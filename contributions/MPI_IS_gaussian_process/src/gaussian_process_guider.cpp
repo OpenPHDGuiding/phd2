@@ -711,12 +711,11 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
             {
                 while (timestamps(i) >= last_cell_end + grid_interval)
                 {
-                    if (dithering_active_)
-                        if (j >= reg_timestamps.size())
-                        {
-                            GPDebug->Log("PPDbg: Index-over-run in regularize_dataset, j = %d", j);
-                            throw std::runtime_error("Index over-run in regularize_dataset");
-                        }
+                    if (j >= reg_timestamps.size())
+                    {
+                        GPDebug->Log("PPDbg: Index-over-run in regularize_dataset, j = %d", j);
+                        throw std::runtime_error("Index over-run in regularize_dataset");
+                    }
                     double inter_timestamp = last_cell_end + grid_interval;
 
                     double proportion = (inter_timestamp - last_timestamp) / (timestamps(i) - last_timestamp);
