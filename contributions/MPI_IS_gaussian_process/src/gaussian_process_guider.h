@@ -333,6 +333,7 @@ public:
     static void SetGPDebug(GPDebug *logger);
     virtual ~GPDebug();
     virtual void Log(const char *format, ...) = 0;
+    virtual void Write(const char *what) = 0;
 };
 
 extern class GPDebug *GPDebug;

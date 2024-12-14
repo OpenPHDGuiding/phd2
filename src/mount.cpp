@@ -699,6 +699,7 @@ static GuideAlgorithm *MakeGaussianProcessGuideAlgo(Mount *mount, GuideAxis axis
                 Debug.Write(wxString::FormatV(format + wxString("\n"), ap));
                 va_end(ap);
             }
+            void Write(const char *what) { Debug.Write(wxString(what) + _T("\n")); }
         };
         GPDebug::SetGPDebug(new PHD2DebugLogger());
         s_gp_debug_inited = true;
