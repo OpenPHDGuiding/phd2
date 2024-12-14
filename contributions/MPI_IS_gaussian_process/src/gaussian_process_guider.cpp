@@ -824,6 +824,7 @@ void GaussianProcessGuider::SetLearningRate(double learning_rate)
 class NullDebugLog : public GPDebug
 {
     void Log(const char *fmt, ...) { }
+    void Write(const char *what) { }
 };
 
 class GPDebug *GPDebug = new NullDebugLog();
