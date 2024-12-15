@@ -274,7 +274,19 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         {
             dithering_active_ = false;
         }
-        deduceResult(time_step); // just pretend we would do dark guiding...
+        try
+        {
+            deduceResult(time_step); // just pretend we would do dark guiding...
+        }
+        catch (const std::runtime_error& err)
+        {
+            reset();
+            std::ostringstream message;
+            message << "PPEC: Model reset after exception: " << err.what();
+            GPDebug->Write(message.str().c_str());
+
+            return parameters.control_gain_ * input;
+        }
 
         GPDebug->Log("PPEC rslt(dithering): input = %.2f, final = %.2f", input, parameters.control_gain_ * input);
 
@@ -670,6 +682,7 @@ void GaussianProcessGuider::UpdatePeriodLength(double period_length)
     SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
 }
 
+// NOTE: Callers must be prepared to handle a thrown exception
 Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error,
                                                           const Eigen::VectorXd& variances)
 {
@@ -689,6 +702,7 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
     int j = 0;
     for (size_t i = 0; i < N - 1; ++i)
     {
+
         if (timestamps(i) < last_cell_end + grid_interval)
         {
             gear_error_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_gear_error + gear_error(i));
@@ -699,6 +713,14 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
         {
             while (timestamps(i) >= last_cell_end + grid_interval)
             {
+                if (dithering_active_) // generalizing this will require recovery in any function that calls UpdateGP
+                {
+                    if (j >= reg_timestamps.size())
+                    {
+                        GPDebug->Log("PPDbg: Index-over-run in regularize_dataset, j = %d", j);
+                        throw std::runtime_error("Index over-run in regularize_dataset");
+                    }
+                }
                 double inter_timestamp = last_cell_end + grid_interval;
 
                 double proportion = (inter_timestamp - last_timestamp) / (timestamps(i) - last_timestamp);
