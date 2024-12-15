@@ -278,7 +278,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         {
             deduceResult(time_step); // just pretend we would do dark guiding...
         }
-        catch (const std::runtime_error err)
+        catch (const std::runtime_error& err)
         {
             reset();
             std::ostringstream message;
