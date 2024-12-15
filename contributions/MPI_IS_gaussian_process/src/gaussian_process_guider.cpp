@@ -680,6 +680,7 @@ void GaussianProcessGuider::UpdatePeriodLength(double period_length)
     SetGPHyperparameters(hypers); // the setter function is needed to convert parameters
 }
 
+// NOTE: Callers must be prepared to handle a thrown exception
 Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error,
                                                           const Eigen::VectorXd& variances)
 {
@@ -699,53 +700,47 @@ Eigen::MatrixXd GaussianProcessGuider::regularize_dataset(const Eigen::VectorXd&
     int j = 0;
     for (size_t i = 0; i < N - 1; ++i)
     {
-        try
+
+        if (timestamps(i) < last_cell_end + grid_interval)
         {
-            if (timestamps(i) < last_cell_end + grid_interval)
-            {
-                gear_error_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_gear_error + gear_error(i));
-                variance_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_variance + variances(i));
-                last_timestamp = timestamps(i);
-            }
-            else
-            {
-                while (timestamps(i) >= last_cell_end + grid_interval)
-                {
-                    if (dithering_active_) // generalizing this will require recovery in any function that calls UpdateGP
-                    {
-                        if (j >= reg_timestamps.size())
-                        {
-                            GPDebug->Log("PPDbg: Index-over-run in regularize_dataset, j = %d", j);
-                            throw std::runtime_error("Index over-run in regularize_dataset");
-                        }
-                    }
-                    double inter_timestamp = last_cell_end + grid_interval;
-
-                    double proportion = (inter_timestamp - last_timestamp) / (timestamps(i) - last_timestamp);
-                    double inter_gear_error = proportion * gear_error(i) + (1 - proportion) * last_gear_error;
-                    double inter_variance = proportion * variances(i) + (1 - proportion) * last_variance;
-
-                    gear_error_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_gear_error + inter_gear_error);
-                    variance_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_variance + inter_variance);
-
-                    reg_timestamps(j) = last_cell_end + 0.5 * grid_interval;
-                    reg_gear_error(j) = gear_error_sum / grid_interval;
-                    reg_variances(j) = variance_sum / grid_interval;
-
-                    last_timestamp = inter_timestamp;
-                    last_gear_error = inter_gear_error;
-                    last_variance = inter_variance;
-                    last_cell_end = inter_timestamp;
-
-                    gear_error_sum = 0.0;
-                    variance_sum = 0.0;
-                    ++j;
-                }
-            }
+            gear_error_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_gear_error + gear_error(i));
+            variance_sum += (timestamps(i) - last_timestamp) * 0.5 * (last_variance + variances(i));
+            last_timestamp = timestamps(i);
         }
-        catch (std::runtime_error err)
+        else
         {
-            throw err;
+            while (timestamps(i) >= last_cell_end + grid_interval)
+            {
+                if (dithering_active_) // generalizing this will require recovery in any function that calls UpdateGP
+                {
+                    if (j >= reg_timestamps.size())
+                    {
+                        GPDebug->Log("PPDbg: Index-over-run in regularize_dataset, j = %d", j);
+                        throw std::runtime_error("Index over-run in regularize_dataset");
+                    }
+                }
+                double inter_timestamp = last_cell_end + grid_interval;
+
+                double proportion = (inter_timestamp - last_timestamp) / (timestamps(i) - last_timestamp);
+                double inter_gear_error = proportion * gear_error(i) + (1 - proportion) * last_gear_error;
+                double inter_variance = proportion * variances(i) + (1 - proportion) * last_variance;
+
+                gear_error_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_gear_error + inter_gear_error);
+                variance_sum += (inter_timestamp - last_timestamp) * 0.5 * (last_variance + inter_variance);
+
+                reg_timestamps(j) = last_cell_end + 0.5 * grid_interval;
+                reg_gear_error(j) = gear_error_sum / grid_interval;
+                reg_variances(j) = variance_sum / grid_interval;
+
+                last_timestamp = inter_timestamp;
+                last_gear_error = inter_gear_error;
+                last_variance = inter_variance;
+                last_cell_end = inter_timestamp;
+
+                gear_error_sum = 0.0;
+                variance_sum = 0.0;
+                ++j;
+            }
         }
     }
     if (j > REGULAR_BUFFER_SIZE)
