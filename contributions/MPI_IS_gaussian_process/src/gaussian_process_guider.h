@@ -71,6 +71,8 @@ enum Hyperparameters
 class GaussianProcessGuider
 {
 public:
+    typedef std::chrono::steady_clock clock;
+
     struct data_point
     {
         double timestamp;
@@ -113,8 +115,8 @@ public:
     };
 
 private:
-    std::chrono::system_clock::time_point start_time_; // reference time
-    std::chrono::system_clock::time_point last_time_;
+    clock::time_point start_time_; // reference time
+    clock::time_point last_time_;
 
     double control_signal_;
     double prediction_;

@@ -122,7 +122,7 @@ private:
     bool block_updates_; // Don't update GP if guiding is disabled
     double guiding_ra_; // allow resuming guiding after guiding stopped if there is no change in RA
     PierSide guiding_pier_side_;
-    std::chrono::system_clock::time_point guiding_stopped_time_; // time guiding stopped
+    std::chrono::steady_clock::time_point guiding_stopped_time_; // time guiding stopped
 
 protected:
     double GetControlGain() const;
