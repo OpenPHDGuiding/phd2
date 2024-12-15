@@ -60,17 +60,17 @@ public:
     static const double DefaultSignalVarianceSE1Ker; // signal variance of the short range SE-kernel
 
     static const double DefaultPeriodLengthsPeriodEstimation; // minimal number of points for doing the period identification
-    static const int    DefaultNumPointsForApproximation; // number of points used in the GP approximation
+    static const int DefaultNumPointsForApproximation; // number of points used in the GP approximation
     static const double DefaultPredictionGain; // amount of GP prediction to blend in
 
-    static const bool   DefaultComputePeriod;
+    static const bool DefaultComputePeriod;
 
-    GaussianProcessGuider* GPG;
+    GaussianProcessGuider *GPG;
     GAHysteresis GAH;
     std::string filename;
     double improvement;
 
-    GuidePerformanceTest(): GPG(0), improvement(0.0)
+    GuidePerformanceTest() : GPG(0), improvement(0.0)
     {
         GaussianProcessGuider::guide_parameters parameters;
         parameters.control_gain_ = DefaultControlGain;
@@ -91,35 +91,32 @@ public:
         GPG = new GaussianProcessGuider(parameters);
     }
 
-    ~GuidePerformanceTest()
-    {
-        delete GPG;
-    }
+    ~GuidePerformanceTest() { delete GPG; }
 };
 
-const double GuidePerformanceTest::DefaultControlGain                   = 0.7; // control gain
-const double GuidePerformanceTest::DefaultPeriodLengthsInference        = 2.0; // period lengths until inference
-const double GuidePerformanceTest::DefaultMinMove                       = 0.2; // minimal move
+const double GuidePerformanceTest::DefaultControlGain = 0.7; // control gain
+const double GuidePerformanceTest::DefaultPeriodLengthsInference = 2.0; // period lengths until inference
+const double GuidePerformanceTest::DefaultMinMove = 0.2; // minimal move
 
-const double GuidePerformanceTest::DefaultLengthScaleSE0Ker             = 700.0; // length-scale of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker          = 20.0; // signal variance of the long-range SE-kernel
-const double GuidePerformanceTest::DefaultLengthScalePerKer             = 10.0; // length-scale of the periodic kernel
-const double GuidePerformanceTest::DefaultPeriodLengthPerKer            = 200.0; // P_p, period-length of the periodic kernel
-const double GuidePerformanceTest::DefaultSignalVariancePerKer          = 20.0; // signal variance of the periodic kernel
-const double GuidePerformanceTest::DefaultLengthScaleSE1Ker             = 25.0; // length-scale of the short-range SE-kernel
-const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker          = 10.0; // signal variance of the short range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScaleSE0Ker = 700.0; // length-scale of the long-range SE-kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE0Ker = 20.0; // signal variance of the long-range SE-kernel
+const double GuidePerformanceTest::DefaultLengthScalePerKer = 10.0; // length-scale of the periodic kernel
+const double GuidePerformanceTest::DefaultPeriodLengthPerKer = 200.0; // P_p, period-length of the periodic kernel
+const double GuidePerformanceTest::DefaultSignalVariancePerKer = 20.0; // signal variance of the periodic kernel
+const double GuidePerformanceTest::DefaultLengthScaleSE1Ker = 25.0; // length-scale of the short-range SE-kernel
+const double GuidePerformanceTest::DefaultSignalVarianceSE1Ker = 10.0; // signal variance of the short range SE-kernel
 
 const double GuidePerformanceTest::DefaultPeriodLengthsPeriodEstimation = 2.0; // period lengths until FFT
-const int GuidePerformanceTest::DefaultNumPointsForApproximation        = 100; // number of points used in the GP approximation
-const double GuidePerformanceTest::DefaultPredictionGain                = 0.5; // amount of GP prediction to blend in
+const int GuidePerformanceTest::DefaultNumPointsForApproximation = 100; // number of points used in the GP approximation
+const double GuidePerformanceTest::DefaultPredictionGain = 0.5; // amount of GP prediction to blend in
 
-const bool GuidePerformanceTest::DefaultComputePeriod                   = true;
+const bool GuidePerformanceTest::DefaultComputePeriod = true;
 
 TEST_F(GuidePerformanceTest, performance_dataset01)
 {
     filename = "performance_dataset01.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -127,7 +124,7 @@ TEST_F(GuidePerformanceTest, performance_dataset02)
 {
     filename = "performance_dataset02.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -135,7 +132,7 @@ TEST_F(GuidePerformanceTest, performance_dataset03)
 {
     filename = "performance_dataset03.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -143,7 +140,7 @@ TEST_F(GuidePerformanceTest, performance_dataset04)
 {
     filename = "performance_dataset04.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -151,7 +148,7 @@ TEST_F(GuidePerformanceTest, performance_dataset05)
 {
     filename = "performance_dataset05.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -159,7 +156,7 @@ TEST_F(GuidePerformanceTest, performance_dataset06)
 {
     filename = "performance_dataset06.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -167,7 +164,7 @@ TEST_F(GuidePerformanceTest, performance_dataset07)
 {
     filename = "performance_dataset07.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
@@ -175,11 +172,11 @@ TEST_F(GuidePerformanceTest, performance_dataset08)
 {
     filename = "performance_dataset08.txt";
     improvement = calculate_improvement(filename, GAH, GPG);
-    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100*improvement << "%" << std::endl;
+    std::cout << "Improvement of GPGuiding over Hysteresis: " << 100 * improvement << "%" << std::endl;
     EXPECT_GT(improvement, 0);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

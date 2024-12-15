@@ -52,167 +52,160 @@
 
 namespace covariance_functions
 {
-    /*!@brief Base class definition for covariance functions
-     */
-    class CovFunc
-    {
-    public:
-        CovFunc() {}
-        virtual ~CovFunc() {}
-
-        /*!
-         * Evaluates the covariance function, caches the quantities that are needed
-         * to calculate gradient and Hessian.
-         */
-        virtual Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2) = 0;
-
-        //! Method to set the hyper-parameters.
-        virtual void setParameters(const Eigen::VectorXd& params) = 0;
-        virtual void setExtraParameters(const Eigen::VectorXd& params) = 0;
-
-        //! Returns the hyper-parameters.
-        virtual const Eigen::VectorXd& getParameters() const = 0;
-        virtual const Eigen::VectorXd& getExtraParameters() const = 0;
-
-        //! Returns the number of hyper-parameters.
-        virtual int getParameterCount() const = 0;
-        virtual int getExtraParameterCount() const = 0;
-
-        //! Produces a clone to be able to copy the object.
-        virtual CovFunc* clone() const = 0;
-    };
+/*!@brief Base class definition for covariance functions
+ */
+class CovFunc
+{
+public:
+    CovFunc() { }
+    virtual ~CovFunc() { }
 
     /*!
-     * The function computes a combined covariance function. It is a periodic
-     * covariance function with an additional square exponential. This
-     * combination makes it possible to learn a signal that consists of both
-     * periodic and aperiodic parts.
-     *
-     * Square Exponential Component:
-     * @f[
-     * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
-     * \theta_\textsc{se} \cdot
-     * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
-     * @f]
-     *
-     * Periodic Component:
-     * @f[
-     * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
-     * \theta_\textsc{p} \cdot
-     * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
-     * (t-t')\right)}{\ell_\textsc{p}^2}\right)
-     * @f]
-     *
-     * Kernel Combination:
-     * @f[
-     * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
-     * \ell_\textsc{p},\lambda) =
-     * k_{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se})
-     * +
-     * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
-     * @f]
+     * Evaluates the covariance function, caches the quantities that are needed
+     * to calculate gradient and Hessian.
      */
-     class PeriodicSquareExponential : public CovFunc
-     {
-     private:
-         Eigen::VectorXd hyperParameters;
-         Eigen::VectorXd extraParameters;
+    virtual Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2) = 0;
 
-     public:
-         PeriodicSquareExponential();
-         explicit PeriodicSquareExponential(const Eigen::VectorXd& hyperParameters);
+    //! Method to set the hyper-parameters.
+    virtual void setParameters(const Eigen::VectorXd& params) = 0;
+    virtual void setExtraParameters(const Eigen::VectorXd& params) = 0;
 
-         /*!
-          * Evaluates the covariance function, caches the quantities that are needed
-          * to calculate gradient and Hessian.
-          */
-         Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
+    //! Returns the hyper-parameters.
+    virtual const Eigen::VectorXd& getParameters() const = 0;
+    virtual const Eigen::VectorXd& getExtraParameters() const = 0;
 
-         //! Method to set the hyper-parameters.
-         void setParameters(const Eigen::VectorXd& params);
-         void setExtraParameters(const Eigen::VectorXd& params);
+    //! Returns the number of hyper-parameters.
+    virtual int getParameterCount() const = 0;
+    virtual int getExtraParameterCount() const = 0;
 
-         //! Returns the hyper-parameters.
-         const Eigen::VectorXd& getParameters() const;
-         const Eigen::VectorXd& getExtraParameters() const;
+    //! Produces a clone to be able to copy the object.
+    virtual CovFunc *clone() const = 0;
+};
 
-         //! Returns the number of hyper-parameters.
-         int getParameterCount() const;
-         int getExtraParameterCount() const;
+/*!
+ * The function computes a combined covariance function. It is a periodic
+ * covariance function with an additional square exponential. This
+ * combination makes it possible to learn a signal that consists of both
+ * periodic and aperiodic parts.
+ *
+ * Square Exponential Component:
+ * @f[
+ * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
+ * \theta_\textsc{se} \cdot
+ * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
+ * @f]
+ *
+ * Periodic Component:
+ * @f[
+ * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
+ * \theta_\textsc{p} \cdot
+ * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
+ * (t-t')\right)}{\ell_\textsc{p}^2}\right)
+ * @f]
+ *
+ * Kernel Combination:
+ * @f[
+ * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
+ * \ell_\textsc{p},\lambda) =
+ * k_{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se})
+ * +
+ * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
+ * @f]
+ */
+class PeriodicSquareExponential : public CovFunc
+{
+private:
+    Eigen::VectorXd hyperParameters;
+    Eigen::VectorXd extraParameters;
 
-         /**
-          * Produces a clone to be able to copy the object.
-          */
-         virtual CovFunc* clone() const
-         {
-             return new PeriodicSquareExponential(*this);
-         }
-     };
+public:
+    PeriodicSquareExponential();
+    explicit PeriodicSquareExponential(const Eigen::VectorXd& hyperParameters);
 
+    /*!
+     * Evaluates the covariance function, caches the quantities that are needed
+     * to calculate gradient and Hessian.
+     */
+    Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
 
-     /*!
-      * The function computes a combined covariance function. It is a periodic
-      * covariance function with two additional square exponential components.
-      * This combination makes it possible to learn a signal that consists of
-      * periodic parts, long-range aperiodic parts and small-range deformations.
-      *
-      * Square Exponential Component:
-      * @f[
-      * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
-      * \theta_\textsc{se} \cdot
-      * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
-      * @f]
-      *
-      * Periodic Component:
-      * @f[
-      * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
-      * \theta_\textsc{p} \cdot
-      * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
-      * (t-t')\right)}{\ell_\textsc{p}^2}\right)
-      * @f]
-      *
-      * Kernel Combination:
-      * @f[
-      * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
-      * \ell_\textsc{p},\lambda) =
-      * k_{\textsc{se},1}(t,t';\theta_{\textsc{se},1},\ell_{\textsc{se},1})
-      * +
-      * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
-      * +
-      * k_{\textsc{se},2}(t,t';\theta_{\textsc{se},2},\ell_{\textsc{se},2})
-      * @f]
-      */
-    class PeriodicSquareExponential2 : public CovFunc
-    {
-    private:
-        Eigen::VectorXd hyperParameters;
-        Eigen::VectorXd extraParameters;
+    //! Method to set the hyper-parameters.
+    void setParameters(const Eigen::VectorXd& params);
+    void setExtraParameters(const Eigen::VectorXd& params);
 
-    public:
-        PeriodicSquareExponential2();
-        explicit PeriodicSquareExponential2(const Eigen::VectorXd& hyperParameters);
+    //! Returns the hyper-parameters.
+    const Eigen::VectorXd& getParameters() const;
+    const Eigen::VectorXd& getExtraParameters() const;
 
-        Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
+    //! Returns the number of hyper-parameters.
+    int getParameterCount() const;
+    int getExtraParameterCount() const;
 
-        //! Method to set the hyper-parameters.
-        void setParameters(const Eigen::VectorXd& params);
-        void setExtraParameters(const Eigen::VectorXd& params);
+    /**
+     * Produces a clone to be able to copy the object.
+     */
+    virtual CovFunc *clone() const { return new PeriodicSquareExponential(*this); }
+};
 
-        //! Returns the hyper-parameters.
-        const Eigen::VectorXd& getParameters() const;
-        const Eigen::VectorXd& getExtraParameters() const;
+/*!
+ * The function computes a combined covariance function. It is a periodic
+ * covariance function with two additional square exponential components.
+ * This combination makes it possible to learn a signal that consists of
+ * periodic parts, long-range aperiodic parts and small-range deformations.
+ *
+ * Square Exponential Component:
+ * @f[
+ * k _{\textsc{se}}(t,t';\theta_\textsc{se},\ell_\textsc{se}) =
+ * \theta_\textsc{se} \cdot
+ * \exp\left(-\frac{(t-t')^2}{2\ell_\textsc{se}^{2}}\right)
+ * @f]
+ *
+ * Periodic Component:
+ * @f[
+ * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda) =
+ * \theta_\textsc{p} \cdot
+ * \exp\left(-\frac{2\sin^2\left(\frac{\pi}{\lambda}
+ * (t-t')\right)}{\ell_\textsc{p}^2}\right)
+ * @f]
+ *
+ * Kernel Combination:
+ * @f[
+ * k _\textsc{c}(t,t';\theta_\textsc{se},\ell_\textsc{se},\theta_\textsc{p},
+ * \ell_\textsc{p},\lambda) =
+ * k_{\textsc{se},1}(t,t';\theta_{\textsc{se},1},\ell_{\textsc{se},1})
+ * +
+ * k_\textsc{p}(t,t';\theta_\textsc{p},\ell_\textsc{p},\lambda)
+ * +
+ * k_{\textsc{se},2}(t,t';\theta_{\textsc{se},2},\ell_{\textsc{se},2})
+ * @f]
+ */
+class PeriodicSquareExponential2 : public CovFunc
+{
+private:
+    Eigen::VectorXd hyperParameters;
+    Eigen::VectorXd extraParameters;
 
-        //! Returns the number of hyper-parameters.
-        int getParameterCount() const;
-        int getExtraParameterCount() const;
+public:
+    PeriodicSquareExponential2();
+    explicit PeriodicSquareExponential2(const Eigen::VectorXd& hyperParameters);
 
-        /**
-         * Produces a clone to be able to copy the object.
-         */
-        virtual CovFunc* clone() const
-        {
-            return new PeriodicSquareExponential2(*this);
-        }
-    };
-}  // namespace covariance_functions
-#endif  // ifndef COVARIANCE_FUNCTIONS_H
+    Eigen::MatrixXd evaluate(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2);
+
+    //! Method to set the hyper-parameters.
+    void setParameters(const Eigen::VectorXd& params);
+    void setExtraParameters(const Eigen::VectorXd& params);
+
+    //! Returns the hyper-parameters.
+    const Eigen::VectorXd& getParameters() const;
+    const Eigen::VectorXd& getExtraParameters() const;
+
+    //! Returns the number of hyper-parameters.
+    int getParameterCount() const;
+    int getExtraParameterCount() const;
+
+    /**
+     * Produces a clone to be able to copy the object.
+     */
+    virtual CovFunc *clone() const { return new PeriodicSquareExponential2(*this); }
+};
+} // namespace covariance_functions
+#endif // ifndef COVARIANCE_FUNCTIONS_H

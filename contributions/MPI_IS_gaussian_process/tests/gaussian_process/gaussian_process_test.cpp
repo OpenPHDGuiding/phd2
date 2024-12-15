@@ -47,12 +47,10 @@
 class GPTest : public ::testing::Test
 {
 public:
-    GPTest(): random_vector_(11), location_vector_(11), hyper_parameters_(4), extra_parameters_(1)
+    GPTest() : random_vector_(11), location_vector_(11), hyper_parameters_(4), extra_parameters_(1)
     {
-        random_vector_ << -0.1799, -1.4215, -0.2774,  2.6056, 0.6471, -0.4366,
-                       1.3820,  0.4340,  0.8970, -0.7286, -1.7046;
-        location_vector_ << 0, 0.1000, 0.2000, 0.3000, 0.4000, 0.5000, 0.6000,
-                         0.7000, 0.8000, 0.9000, 1.0000;
+        random_vector_ << -0.1799, -1.4215, -0.2774, 2.6056, 0.6471, -0.4366, 1.3820, 0.4340, 0.8970, -0.7286, -1.7046;
+        location_vector_ << 0, 0.1000, 0.2000, 0.3000, 0.4000, 0.5000, 0.6000, 0.7000, 0.8000, 0.9000, 1.0000;
         hyper_parameters_ << 1, 2, 1, 2;
         extra_parameters_ << 5;
 
@@ -87,8 +85,7 @@ TEST_F(GPTest, drawSamples_prior_mean_test)
 
     hyper_parameters_ << 1, 1, 1, 1; // use of smaller hypers needs less samples
 
-    covariance_function_ =
-        covariance_functions::PeriodicSquareExponential(hyper_parameters_);
+    covariance_function_ = covariance_functions::PeriodicSquareExponential(hyper_parameters_);
     gp_ = GP(covariance_function_);
 
     int N = 10000; // number of samples to draw
@@ -116,8 +113,7 @@ TEST_F(GPTest, drawSamples_prior_covariance_test)
 
     hyper_parameters_ << 1, 1, 1, 1; // use of smaller hypers needs less samples
 
-    covariance_function_ =
-        covariance_functions::PeriodicSquareExponential(hyper_parameters_);
+    covariance_function_ = covariance_functions::PeriodicSquareExponential(hyper_parameters_);
     gp_ = GP(covariance_function_);
 
     int N = 20000; // number of samples to draw
@@ -144,14 +140,13 @@ TEST_F(GPTest, drawSamples_prior_covariance_test)
     }
 }
 
-
 TEST_F(GPTest, setCovarianceFunction)
 {
     Eigen::VectorXd hyperparams(6);
     hyperparams << 0.1, 15, 25, 15, 5000, 700;
 
     GP instance_gp;
-    EXPECT_TRUE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.segment(1,4))));
+    EXPECT_TRUE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.segment(1, 4))));
 
     GP instance_gp2 = GP(covariance_functions::PeriodicSquareExponential(Eigen::VectorXd::Zero(4)));
     instance_gp2.setHyperParameters(hyperparams);
@@ -162,8 +157,6 @@ TEST_F(GPTest, setCovarianceFunction)
     }
 }
 
-
-
 TEST_F(GPTest, setCovarianceFunction_notworking_after_inference)
 {
     Eigen::VectorXd hyperparams(5);
@@ -173,9 +166,7 @@ TEST_F(GPTest, setCovarianceFunction_notworking_after_inference)
     EXPECT_TRUE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.tail(4))));
 
     int N = 250;
-    Eigen::VectorXd location =
-        400 * math_tools::generate_uniform_random_matrix_0_1(N, 1)
-        - 200 * Eigen::MatrixXd::Ones(N, 1);
+    Eigen::VectorXd location = 400 * math_tools::generate_uniform_random_matrix_0_1(N, 1) - 200 * Eigen::MatrixXd::Ones(N, 1);
 
     Eigen::VectorXd output_from_converged_hyperparams = instance_gp.drawSample(location);
 
@@ -193,8 +184,6 @@ TEST_F(GPTest, periodic_covariance_function_test)
     ASSERT_EQ(instance_gp.getHyperParameters().size(), 6);
     instance_gp.setHyperParameters(Eigen::VectorXd::Zero(6)); // should not assert
 }
-
-
 
 TEST_F(GPTest, infer_prediction_clear_test)
 {
@@ -226,12 +215,11 @@ TEST_F(GPTest, squareDistanceTest)
     Eigen::MatrixXd b(4, 5);
     Eigen::MatrixXd c(3, 4);
 
-    a <<  3, 5, 5, 4, 6, 6, 3, 2, 3, 1, 0, 3;
+    a << 3, 5, 5, 4, 6, 6, 3, 2, 3, 1, 0, 3;
 
-    b <<  1, 4, 5, 6, 7, 3, 4, 5, 6, 7, 0, 2, 4, 20, 2, 2, 3, -2, -2, 2;
+    b << 1, 4, 5, 6, 7, 3, 4, 5, 6, 7, 0, 2, 4, 20, 2, 2, 3, -2, -2, 2;
 
-    c <<  1, 2, 3, 4, 4, 5, 6, 7, 6, 7, 8, 9;
-
+    c << 1, 2, 3, 4, 4, 5, 6, 7, 6, 7, 8, 9;
 
     Eigen::MatrixXd sqdistc(4, 4);
     Eigen::MatrixXd sqdistab(3, 5);
@@ -242,15 +230,12 @@ TEST_F(GPTest, squareDistanceTest)
     sqdistab << 15, 6, 15, 311, 27, 33, 14, 9, 329, 9, 35, 6, 27, 315, 7;
 
     // Test argument order
-    EXPECT_EQ(math_tools::squareDistance(a, b), math_tools::squareDistance
-              (b, a).transpose());
+    EXPECT_EQ(math_tools::squareDistance(a, b), math_tools::squareDistance(b, a).transpose());
 
     // Test that two identical Matrices give the same result
     // (wether they are the same object or not)
-    EXPECT_EQ(math_tools::squareDistance(a, Eigen::MatrixXd(a)),
-              math_tools::squareDistance(a, a));
-    EXPECT_EQ(math_tools::squareDistance(a), math_tools::squareDistance(
-                  a, a));
+    EXPECT_EQ(math_tools::squareDistance(a, Eigen::MatrixXd(a)), math_tools::squareDistance(a, a));
+    EXPECT_EQ(math_tools::squareDistance(a), math_tools::squareDistance(a, a));
 
     // Test that the implementation gives the same result as the Matlab
     // implementation
@@ -279,13 +264,11 @@ TEST_F(GPTest, CovarianceTest2)
     Eigen::MatrixXd kxX_matlab(5, 3);
     Eigen::MatrixXd kXX_matlab(3, 3);
 
-    kxx_matlab << 8.0000, 3.3046, 2.0043, 1.0803, 0.6553,
-                  3.3046, 8.0000, 3.3046, 2.0043, 1.0803,
-                  2.0043, 3.3046, 8.0000, 3.3046, 2.0043,
-                  1.0803, 2.0043, 3.3046, 8.0000, 3.3046,
-                  0.6553, 1.0803, 2.0043, 3.3046, 8.0000;
+    kxx_matlab << 8.0000, 3.3046, 2.0043, 1.0803, 0.6553, 3.3046, 8.0000, 3.3046, 2.0043, 1.0803, 2.0043, 3.3046, 8.0000,
+        3.3046, 2.0043, 1.0803, 2.0043, 3.3046, 8.0000, 3.3046, 0.6553, 1.0803, 2.0043, 3.3046, 8.0000;
 
-    kxX_matlab << 8.0000, 2.0043, 0.6553, 3.3046, 3.3046, 1.0803, 2.0043, 8.0000, 2.0043, 1.0803, 3.3046, 3.3046, 0.6553, 2.0043, 8.0000;
+    kxX_matlab << 8.0000, 2.0043, 0.6553, 3.3046, 3.3046, 1.0803, 2.0043, 8.0000, 2.0043, 1.0803, 3.3046, 3.3046, 0.6553,
+        2.0043, 8.0000;
 
     kXX_matlab << 8.0000, 2.0043, 0.6553, 2.0043, 8.0000, 2.0043, 0.6553, 2.0043, 8.0000;
 
@@ -335,24 +318,15 @@ TEST_F(GPTest, CovarianceTest3)
     covFunc.setExtraParameters(periodLength);
 
     Eigen::MatrixXd kxx_matlab(5, 5);
-    kxx_matlab <<
-               3.00000, 1.06389, 0.97441, 1.07075, 0.27067,
-                        1.06389, 3.00000, 1.06389, 0.97441, 1.07075,
-                        0.97441, 1.06389, 3.00000, 1.06389, 0.97441,
-                        1.07075, 0.97441, 1.06389, 3.00000, 1.06389,
-                        0.27067, 1.07075, 0.97441, 1.06389, 3.00000;
+    kxx_matlab << 3.00000, 1.06389, 0.97441, 1.07075, 0.27067, 1.06389, 3.00000, 1.06389, 0.97441, 1.07075, 0.97441, 1.06389,
+        3.00000, 1.06389, 0.97441, 1.07075, 0.97441, 1.06389, 3.00000, 1.06389, 0.27067, 1.07075, 0.97441, 1.06389, 3.00000;
 
     Eigen::MatrixXd kxX_matlab(5, 3);
-    kxX_matlab <<
-               3.00000, 0.97441, 0.27067, 1.06389, 1.06389,
-                        1.07075, 0.97441, 3.00000, 0.97441, 1.07075,
-                        1.06389, 1.06389, 0.27067, 0.97441, 3.00000;
+    kxX_matlab << 3.00000, 0.97441, 0.27067, 1.06389, 1.06389, 1.07075, 0.97441, 3.00000, 0.97441, 1.07075, 1.06389, 1.06389,
+        0.27067, 0.97441, 3.00000;
 
     Eigen::MatrixXd kXX_matlab(3, 3);
-    kXX_matlab <<
-               3.00000, 0.97441, 0.27067,
-                        0.97441, 3.00000, 0.97441,
-                        0.27067, 0.97441, 3.00000;
+    kXX_matlab << 3.00000, 0.97441, 0.27067, 0.97441, 3.00000, 0.97441, 0.27067, 0.97441, 3.00000;
 
     Eigen::MatrixXd kxx = covFunc.evaluate(locations, locations);
     Eigen::MatrixXd kxX = covFunc.evaluate(locations, X);
@@ -383,7 +357,7 @@ TEST_F(GPTest, CovarianceTest3)
     }
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
