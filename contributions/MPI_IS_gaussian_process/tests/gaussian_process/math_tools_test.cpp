@@ -41,12 +41,10 @@
 TEST(MathToolsTest, BoxMullerTest)
 {
     Eigen::VectorXd vRand(10);
-    vRand << 0, 0.1111, 0.2222, 0.3333, 0.4444, 0.5556, 0.6667, 0.7778, 0.8889,
-          1.0000;
+    vRand << 0, 0.1111, 0.2222, 0.3333, 0.4444, 0.5556, 0.6667, 0.7778, 0.8889, 1.0000;
 
     Eigen::VectorXd matlab_result(10);
-    matlab_result <<  -6.3769,   -1.0481,    0.3012,    1.1355,    1.2735,
-                  -2.3210,   -1.8154,   -1.7081,   -0.9528,   -0.0000;
+    matlab_result << -6.3769, -1.0481, 0.3012, 1.1355, 1.2735, -2.3210, -1.8154, -1.7081, -0.9528, -0.0000;
 
     Eigen::VectorXd result = math_tools::box_muller(vRand);
 
@@ -168,7 +166,7 @@ TEST(MathToolsTest, SpectrumTest)
     Eigen::VectorXd expected_amplitudes(4), expected_frequencies(4);
 
     expected_amplitudes << 0, 0, 0, 16;
-    expected_frequencies << 0.1250,    0.2500,    0.3750,    0.5000;
+    expected_frequencies << 0.1250, 0.2500, 0.3750, 0.5000;
 
     std::pair<Eigen::VectorXd, Eigen::VectorXd> result = math_tools::compute_spectrum(y, 8);
     Eigen::VectorXd amplitudes = result.first;
@@ -208,9 +206,8 @@ TEST(MathToolsTest, StdTest)
     EXPECT_NEAR(math_tools::stdandard_deviation(data), matlab_result, 1e-3);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
