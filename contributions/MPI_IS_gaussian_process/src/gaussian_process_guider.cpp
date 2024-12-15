@@ -278,11 +278,13 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
         {
             deduceResult(time_step); // just pretend we would do dark guiding...
         }
-        catch (std::runtime_error err)
+        catch (const std::runtime_error err)
         {
             reset();
-            std::string outStr = "PPEC: Model reset after exception: " + std::string(err.what());
-            GPDebug->Log(outStr.c_str());
+            std::ostringstream message;
+            message << "PPEC: Model reset after exception: " << err.what();
+            GPDebug->Write(message.str().c_str());
+
             return parameters.control_gain_ * input;
         }
 
