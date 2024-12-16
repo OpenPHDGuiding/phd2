@@ -35,12 +35,12 @@
 #include "gaussian_process_guider.h"
 #include "guide_performance_tools.h"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     if (argc < 15)
         return -1;
 
-    GaussianProcessGuider* GPG;
+    GaussianProcessGuider *GPG;
 
     GaussianProcessGuider::guide_parameters parameters;
 

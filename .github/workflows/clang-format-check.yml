@@ -4,10 +4,15 @@ jobs:
   formatting-check:
     name: Formatting Check
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'src'
+          - 'contributions/MPI_IS_gaussian_process'
     steps:
     - uses: actions/checkout@v4
     - name: Run clang-format style check for C/C++ source files
       uses: jidicula/clang-format-action@v4.13.0
       with:
         clang-format-version: '18'
-        check-path: 'src'
+        check-path: ${{ matrix.path }}
