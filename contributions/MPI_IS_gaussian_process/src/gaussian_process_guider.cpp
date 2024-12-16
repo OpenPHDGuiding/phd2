@@ -61,10 +61,10 @@
 #define HYSTERESIS 0.1 // for the hybrid mode
 
 GaussianProcessGuider::GaussianProcessGuider(guide_parameters parameters)
-    : start_time_(std::chrono::system_clock::now()), last_time_(std::chrono::system_clock::now()), control_signal_(0),
-      prediction_(0), last_prediction_end_(0), dither_steps_(0), dithering_active_(false), dither_offset_(0.0),
-      circular_buffer_data_(CIRCULAR_BUFFER_SIZE), covariance_function_(), output_covariance_function_(),
-      gp_(covariance_function_), learning_rate_(DEFAULT_LEARNING_RATE), parameters(parameters)
+    : start_time_(clock::now()), last_time_(clock::now()), control_signal_(0), prediction_(0), last_prediction_end_(0),
+      dither_steps_(0), dithering_active_(false), dither_offset_(0.0), circular_buffer_data_(CIRCULAR_BUFFER_SIZE),
+      covariance_function_(), output_covariance_function_(), gp_(covariance_function_), learning_rate_(DEFAULT_LEARNING_RATE),
+      parameters(parameters)
 {
     circular_buffer_data_.push_front(data_point()); // add first point
     circular_buffer_data_[0].control = 0; // set first control to zero
@@ -86,7 +86,7 @@ GaussianProcessGuider::~GaussianProcessGuider() { }
 
 void GaussianProcessGuider::SetTimestamp()
 {
-    auto current_time = std::chrono::system_clock::now();
+    auto current_time = clock::now();
     double delta_measurement_time = std::chrono::duration<double>(current_time - last_time_).count();
     last_time_ = current_time;
     get_last_point().timestamp = std::chrono::duration<double>(current_time - start_time_).count() -
@@ -238,7 +238,7 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
     // in the first step of each sequence, use the current time stamp as last prediction end
     if (last_prediction_end_ < 0.0)
     {
-        last_prediction_end_ = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+        last_prediction_end_ = std::chrono::duration<double>(clock::now() - start_time_).count();
     }
 
     // prediction from the last endpoint to the prediction point
@@ -296,7 +296,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     // the starting time is set at the first call of result after startup or reset
     if (get_number_of_measurements() == 1)
     {
-        start_time_ = std::chrono::system_clock::now();
+        start_time_ = clock::now();
         last_time_ = start_time_; // this is OK, since last_time_ only provides a minor correction
     }
 
@@ -325,7 +325,7 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     {
         if (prediction_point < 0.0)
         {
-            prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+            prediction_point = std::chrono::duration<double>(clock::now() - start_time_).count();
         }
         // the point of highest precision shoud be between now and the next step
         UpdateGP(prediction_point + 0.5 * time_step);
@@ -380,7 +380,7 @@ double GaussianProcessGuider::deduceResult(double time_step, double prediction_p
     {
         if (prediction_point < 0.0)
         {
-            prediction_point = std::chrono::duration<double>(std::chrono::system_clock::now() - start_time_).count();
+            prediction_point = std::chrono::duration<double>(clock::now() - start_time_).count();
         }
         // the point of highest precision should be between now and the next step
         UpdateGP(prediction_point + 0.5 * time_step);
@@ -416,8 +416,8 @@ void GaussianProcessGuider::reset()
     circular_buffer_data_[0].control = 0; // set first control to zero
 
     last_prediction_end_ = -1.0; // the negative value signals we didn't predict yet
-    start_time_ = std::chrono::system_clock::now();
-    last_time_ = std::chrono::system_clock::now();
+    start_time_ = clock::now();
+    last_time_ = clock::now();
 
     dither_offset_ = 0.0;
     dither_steps_ = 0;
@@ -573,7 +573,7 @@ void GaussianProcessGuider::inject_data_point(double timestamp, double input, do
     last_prediction_end_ = timestamp;
     get_last_point().timestamp = timestamp; // overrides the usual HandleTimestamps();
 
-    start_time_ = std::chrono::system_clock::now() - std::chrono::seconds((int) timestamp);
+    start_time_ = clock::now() - std::chrono::seconds((int) timestamp);
 
     add_one_point(); // add new point here, since the control is for the next point in time
     HandleControls(control); // already store control signal

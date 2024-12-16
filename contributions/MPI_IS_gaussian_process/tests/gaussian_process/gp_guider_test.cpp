@@ -244,11 +244,11 @@ TEST_F(GPGTest, timer_test)
     GPG->result(1.0, 2.0, 3.0);
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
 
-    auto time_start = std::chrono::system_clock::now();
+    auto time_start = GaussianProcessGuider::clock::now();
     GPG->result(1.0, 2.0, 3.0);
     double first_time = GPG->get_second_last_point().timestamp;
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
-    auto time_end = std::chrono::system_clock::now();
+    auto time_end = GaussianProcessGuider::clock::now();
     GPG->result(1.0, 2.0, 3.0);
     double second_time = GPG->get_second_last_point().timestamp;
 
