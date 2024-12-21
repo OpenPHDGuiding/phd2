@@ -71,7 +71,6 @@ enum Hyperparameters
 class GaussianProcessGuider
 {
 public:
-
     struct data_point
     {
         double timestamp;
@@ -104,28 +103,16 @@ public:
         double SE1KSignalVariance_;
         double PKPeriodLength_;
 
-        guide_parameters() :
-            control_gain_(0.0),
-            min_move_(0.0),
-            prediction_gain_(0.0),
-            min_periods_for_inference_(0.0),
-            min_periods_for_period_estimation_(0.0),
-            points_for_approximation_(0),
-            compute_period_(false),
-            SE0KLengthScale_(0.0),
-            SE0KSignalVariance_(0.0),
-            PKLengthScale_(0.0),
-            PKSignalVariance_(0.0),
-            SE1KLengthScale_(0.0),
-            SE1KSignalVariance_(0.0),
-            PKPeriodLength_(0.0)
+        guide_parameters()
+            : control_gain_(0.0), min_move_(0.0), prediction_gain_(0.0), min_periods_for_inference_(0.0),
+              min_periods_for_period_estimation_(0.0), points_for_approximation_(0), compute_period_(false),
+              SE0KLengthScale_(0.0), SE0KSignalVariance_(0.0), PKLengthScale_(0.0), PKSignalVariance_(0.0),
+              SE1KLengthScale_(0.0), SE1KSignalVariance_(0.0), PKPeriodLength_(0.0)
         {
         }
-
     };
 
 private:
-
     std::chrono::system_clock::time_point start_time_; // reference time
     std::chrono::system_clock::time_point last_time_;
 
@@ -192,8 +179,6 @@ private:
      * exposure length in the future.
      */
     double PredictGearError(double prediction_location);
-
-
 
 public:
     double GetControlGain() const;
@@ -276,25 +261,13 @@ public:
      */
     void UpdatePeriodLength(double period_length);
 
-    data_point& get_last_point() const
-    {
-        return circular_buffer_data_[circular_buffer_data_.size() - 1];
-    }
+    data_point& get_last_point() const { return circular_buffer_data_[circular_buffer_data_.size() - 1]; }
 
-    data_point& get_second_last_point() const
-    {
-        return circular_buffer_data_[circular_buffer_data_.size() - 2];
-    }
+    data_point& get_second_last_point() const { return circular_buffer_data_[circular_buffer_data_.size() - 2]; }
 
-    size_t get_number_of_measurements() const
-    {
-        return circular_buffer_data_.size();
-    }
+    size_t get_number_of_measurements() const { return circular_buffer_data_.size(); }
 
-    void add_one_point()
-    {
-        circular_buffer_data_.push_front(data_point());
-    }
+    void add_one_point() { circular_buffer_data_.push_front(data_point()); }
 
     /**
      * This method is needed for automated testing. It can inject data points.
@@ -304,7 +277,8 @@ public:
     /**
      * Takes timestamps, measurements and SNRs and returns them regularized in a matrix.
      */
-    Eigen::MatrixXd regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error, const Eigen::VectorXd& variances);
+    Eigen::MatrixXd regularize_dataset(const Eigen::VectorXd& timestamps, const Eigen::VectorXd& gear_error,
+                                       const Eigen::VectorXd& variances);
 
     /**
      * Saves the GP data to a csv file for external analysis. Expensive!
@@ -338,4 +312,4 @@ public:
 
 extern class GPDebug *GPDebug;
 
-#endif  // GAUSSIAN_PROCESS_GUIDER
+#endif // GAUSSIAN_PROCESS_GUIDER
