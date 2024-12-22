@@ -1019,7 +1019,7 @@ void GuideAlgorithmGaussianProcess::GuidingStarted()
     bool need_reset = true;
     double ra_offset; // RA delta in SI seconds
 
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
 
     double prev_ra = guiding_ra_;
     guiding_ra_ = CurrentRA();
@@ -1092,7 +1092,7 @@ void GuideAlgorithmGaussianProcess::GuidingStopped()
     double period_length = GPG->GetGPHyperparameters()[PKPeriodLength];
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_period_per_kern", period_length);
 
-    guiding_stopped_time_ = std::chrono::system_clock::now();
+    guiding_stopped_time_ = std::chrono::steady_clock::now();
 }
 
 void GuideAlgorithmGaussianProcess::GuidingPaused() { }

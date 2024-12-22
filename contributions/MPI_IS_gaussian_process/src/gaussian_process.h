@@ -62,8 +62,8 @@
 class GP
 {
 private:
-    covariance_functions::CovFunc* covFunc_;
-    covariance_functions::CovFunc* covFuncProj_;
+    covariance_functions::CovFunc *covFunc_;
+    covariance_functions::CovFunc *covFuncProj_;
     Eigen::VectorXd data_loc_;
     Eigen::VectorXd data_out_;
     Eigen::VectorXd data_var_;
@@ -82,8 +82,7 @@ public:
 
     GP(); // allowing the standard constructor makes the use so much easier!
     GP(const covariance_functions::CovFunc& covFunc);
-    GP(const double noise_variance,
-       const covariance_functions::CovFunc& covFunc);
+    GP(const double noise_variance, const covariance_functions::CovFunc& covFunc);
     ~GP(); // Need to tidy up
 
     GP(const GP& that);
@@ -116,8 +115,7 @@ public:
     /*!
      * Returns a sample of the GP based on a given vector of random numbers.
      */
-    Eigen::VectorXd drawSample(const Eigen::VectorXd& locations,
-                               const Eigen::VectorXd& random_vector) const;
+    Eigen::VectorXd drawSample(const Eigen::VectorXd& locations, const Eigen::VectorXd& random_vector) const;
 
     /*!
      * Builds an inverts the Gram matrix for a given set of datapoints.
@@ -133,8 +131,7 @@ public:
      * Calls infer() everytime so that the Gram matrix is rebuild and the
      * Cholesky decomposition is computed.
      */
-    void infer(const Eigen::VectorXd& data_loc,
-               const Eigen::VectorXd& data_out,
+    void infer(const Eigen::VectorXd& data_loc, const Eigen::VectorXd& data_out,
                const Eigen::VectorXd& data_var = Eigen::VectorXd());
 
     /*!
@@ -144,9 +141,7 @@ public:
      * no prediction point is given, the last data point is used (extrapolation
      * mode).
      */
-    void inferSD(const Eigen::VectorXd& data_loc,
-                 const Eigen::VectorXd& data_out,
-                 const int n,
+    void inferSD(const Eigen::VectorXd& data_loc, const Eigen::VectorXd& data_out, const int n,
                  const Eigen::VectorXd& data_var = Eigen::VectorXd(),
                  const double prediction_point = std::numeric_limits<double>::quiet_NaN());
 
@@ -162,7 +157,7 @@ public:
      * This function just builds the prior and mixed covariance matrices and
      * calls the other predict afterwards.
      */
-    Eigen::VectorXd predict(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = nullptr) const;
+    Eigen::VectorXd predict(const Eigen::VectorXd& locations, Eigen::VectorXd *variances = nullptr) const;
 
     /*!
      * Predicts the mean and covariance for a vector of locations based on
@@ -171,7 +166,7 @@ public:
      * This function just builds the prior and mixed covariance matrices and
      * calls the other predict afterwards.
      */
-    Eigen::VectorXd predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd* variances = nullptr) const;
+    Eigen::VectorXd predictProjected(const Eigen::VectorXd& locations, Eigen::VectorXd *variances = nullptr) const;
 
     /*!
      * Does the real work for predict. Solves the Cholesky decomposition for the
@@ -179,7 +174,7 @@ public:
      * already.
      */
     Eigen::VectorXd predict(const Eigen::MatrixXd& prior_cov, const Eigen::MatrixXd& mixed_cov,
-                             const Eigen::MatrixXd& phi = Eigen::MatrixXd() , Eigen::VectorXd* variances = nullptr) const;
+                            const Eigen::MatrixXd& phi = Eigen::MatrixXd(), Eigen::VectorXd *variances = nullptr) const;
 
     /*!
      * Sets the hyperparameters to the given vector.
@@ -200,8 +195,6 @@ public:
      * Disables the use of a explicit linear basis function.
      */
     void disableExplicitTrend();
-
-
 };
 
-#endif  // ifndef GAUSSIAN_PROCESS_H
+#endif // ifndef GAUSSIAN_PROCESS_H
