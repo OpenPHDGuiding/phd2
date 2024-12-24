@@ -563,7 +563,7 @@ exposure time may be preferable to finding no guide star at all.
 &nbsp;The settings to
 control
 Auto-exposure are on the <a href="Advanced_settings.htm#Camera_Tab">Camera Tab</a>
-of the Advanced Settings dialog. &nbsp;<br><h3><a name="Multi-star_Guiding"></a>Multi-Star Guiding</h3>Most guiding configurations can benefit from guiding on multiple stars
+of the Advanced Settings dialog. &nbsp;<br><h3><a name="Multi-star_Guiding"></a>Multi-Star Guiding and Star-Selection</h3>Most guiding configurations can benefit from guiding on multiple stars
 rather than just one. &nbsp;This results in using a
 weighted average centroid position of multiple stars rather than just the
 centroid of a single star. &nbsp;Multi-star guiding is enabled using a
@@ -591,7 +591,56 @@ there is essentially no way for it to degrade guiding performance compared to si
 will depend on many factors including image scale, star and background
 sky brightness, star size, focus, tube currents, and camera noise. &nbsp;Because of the way the
 algorithm is implemented, your best option will be to try it and decide
-for yourself. &nbsp;<span style="font-weight: bold;">Note: if you don't use the auto-select function and instead choose a guide star manually, multi-star guiding will be inactive.</span>
+for yourself. &nbsp;<span style="font-weight: bold;">Note: if you don't use the auto-select function and instead choose a guide star manually, multi-star guiding will be inactive.<br><br></span>Since
+the multi-star selection and guiding feature was introduced, users have
+asked for a means to override guide star selection based on what they
+see on the display.&nbsp; These requests have not been acted upon
+because they would disrupt the underlying mathematics of the multi-star
+algorithm. More importantly, they would lead to inferior results for
+reasons described below.&nbsp; The algorithm applies the basic
+principle that the accuracy of centroid calculation - the fundamental
+calculation of where a star is located on the sensor - is proportional
+to that star's SNR.&nbsp; It has nothing to do with the shape of the
+star, its location on the sensor, its proximity to the sensor edge, or
+any other visual characteristics of the star candidate. The algorithm
+will always choose the set of stars with the highest SNR values subject
+to user-controlled parameters that define what a star should look like
+on a particular system.&nbsp; Two parameters, Min-HFD and Max-HFD,
+define a range of star "sizes" that control whether a bright area on
+the sensor can be accepted as a star candidate rather than being
+rejected as sensor noise, an internal reflection, or a close pair of
+stars.&nbsp; The third parameter, Saturation ADU, defines an upper
+limit to the peak brightness of a star candidate, usually defined as
+the maximum ADU value produced by the guide camera.&nbsp; The algorithm
+tries to avoid saturated stars and will accept one only if there are no
+other viable candidates.&nbsp; Setting these parameters correctly is
+the single most important thing for a user to do in order to get the
+best possible sets of guide stars.&nbsp; The "Min" and "Max" HFD values
+can be determined empirically by using the Star Profile tool or by
+examining the PHD2 guide logs to see the range of star sizes that are
+typical for the guiding system and its seeing conditions. Once set,
+they should rarely need to be changed unless something in the
+configuration or the atmospheric conditions has&nbsp;changed
+substantially.<br><br>Users
+are commonly fooled by what they see on the display and think they can
+do a better job of guide star selection.&nbsp; This is a mistaken
+impression.&nbsp; The single biggest reason is that many of the
+"attractive" guide stars on the display are saturated.&nbsp;
+Secondarily, they are often just sensor noise, e.g. hot or warm pixels,
+that look like stars once the image has been down-sampled and
+gamma-stretched for display.&nbsp; No dark library or bad-pixel map can
+completely eliminate these artifacts. In summary, simply squinting at
+the screen and clicking on bright spots will produce inferior results
+compared to the quantitative, systematic approach taken by the
+auto-select star-finding mechanism.&nbsp; Of course, skeptical users
+can
+still manually choose a guide star, but they won't then be able to use
+multi-star guiding. For people who question&nbsp;the auto-selection
+process, the debug log file contains a detailed
+list, for every auto-find, of the location and properties of
+every&nbsp;candidate object in the guide frame and how these were
+included
+or excluded to compile the final list of usable guide stars.<span style="font-weight: bold;"></span>
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
