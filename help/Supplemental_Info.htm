@@ -802,12 +802,21 @@ that profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span>
 session. Finally, you can import and export
 profiles for purposes of debugging, backup, or&nbsp;exchange
-between computers. &nbsp;When you export a profile to a new computer,
-remember that the dark library and bad-pixel maps will not be migrated
-automatically because they are stored in the file system - in the
+between computers. &nbsp;<br><br><span style="font-weight: bold;">Migrating PHD2 Settings to a Different Computer</span><br><br>On
+Windows, the profile information is kept in the Windows registry, so
+you can't simply do file transfers to move your settings from one
+computer to another. &nbsp;Instead, you should 'export' your profiles
+into files on the old computer, copy those files to the new&nbsp;one,
+then 'import' them on the new system. &nbsp;This will transfer all the
+settings associated with the profile except for the dark libraries and
+bad-pixel maps. The dark and bad-pix map data are stored in the file
+system because of their size. They are located in the
 'AppData\Local\PHD2' logical directory used by your operating system.
 &nbsp;You will need to transfer that directory and all of its files to
-the new computer manually.<br>
+the new computer manually without changing the directory location or
+file names. &nbsp;That said, the best practice is to simply rebuild
+them on the new system in order to have data that reflects the current
+behavior of the guide camera sensor.<br>
 <br>
 <h3><a name="Ask_for_coordinates_aux_mount"></a>Aux-Mount
 Connection using "Ask for coordinates"</h3>

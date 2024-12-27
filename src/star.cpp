@@ -953,8 +953,16 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
 
     if (pCamera->IsSaturationByADU())
     {
-        // known saturation level ... easy
-        sat_level = pCamera->GetSaturationADU() + image.Pedestal;
+        // known saturation level ... maybe easy
+        unsigned short satADU = pCamera->GetSaturationADU();
+        wxByte bpp = image.BitsPerPixel;
+        if (satADU == 0 || (bpp == 8 && satADU > 255) || (bpp > 8 && satADU < 4095))
+        {
+            satADU = ((1U << bpp) - 1);
+            pCamera->SetSaturationByADU(true, satADU);
+            Debug.Write(wxString::Format("SaturationADU auto-adjusted to %d\n", satADU));
+        }
+        sat_level = satADU + image.Pedestal;
     }
     else
     {
