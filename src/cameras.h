@@ -56,6 +56,7 @@
 #  define OGMA_CAMERA
 #  define OPENCV_CAMERA
 #  define ORION_DSCI
+#  define POA_CAMERA
 #  define QGUIDE
 #  define QHY_CAMERA
 #  define SBIG
