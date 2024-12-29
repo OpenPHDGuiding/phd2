@@ -827,7 +827,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
             m_pNextBtn->SetToolTip(_("Finish creating the equipment profile"));
-            m_pLaunchDarks->SetValue(m_useCamera || m_pLaunchDarks);
+            m_pLaunchDarks->SetValue(m_useCamera || m_launchDarks);
             m_pInstructions->SetLabel(
                 _("Enter a name for your profile and optionally launch the process to build a dark library"));
             m_pAutoRestore->Show(m_PositionAware || m_SelectedAuxMount != _("None"));
