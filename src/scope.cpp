@@ -658,8 +658,10 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
             {
                 if (CanPulseGuide())
                 {
-                    msg = _("PHD2 is not able to make sufficient corrections in Dec.  If you have just done a meridian flip, "
-                            "check to see if the 'Reverse Dec output option' on the Advanced Dialog guiding tab is wrong.  "
+                    msg = _("PHD2 is not able to make sufficient corrections in Dec.  If the side-of-pier has changed from "
+                            "where you last calibrated, "
+                            "check to see if the 'Reverse Dec output option' on the Advanced Dialog guiding tab is wrong. If "
+                            "so, fix it and recalibrate.  "
                             "Otherwise, "
                             "check for cable snags, try re-doing your calibration, and check for problems with the mount "
                             "mechanics.");
