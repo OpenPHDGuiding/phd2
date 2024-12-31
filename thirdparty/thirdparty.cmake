@@ -528,6 +528,8 @@ endif()
 #  version >= 3.0, a version of cmake >= 3.0 should be used on Windows
 #  on Linux/OSX it works properly this way).
 
+set(wxWidgets_PREFIX_DIRECTORY $ENV{WXWIN} CACHE PATH "wxWidgets directory")
+
 if(WIN32)
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw CACHE STRING "Set wxWidgets configuration")
@@ -644,7 +646,10 @@ else()
     ## Define LIBNOVA when building Indi from source.
     add_definitions("-DLIBNOVA")
   endif()
-  list(APPEND PHD_EXTERNAL_PROJECT_DEPENDENCIES indi)
+  # adding indi as a dependency allows a developer to build phd2 in
+  # the IDE without explicitly building anything else first, but this
+  # slows down incremental development
+  # list(APPEND PHD_EXTERNAL_PROJECT_DEPENDENCIES indi)
 endif()
 
 
