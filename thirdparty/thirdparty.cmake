@@ -890,6 +890,16 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
+  find_library( poaCamera
+                NAMES PlayerOneCamera
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/poalibs/mac)
+  if(NOT poaCamera)
+    message(FATAL_ERROR "Cannot find the poaCamera drivers")
+  endif()
+  add_definitions(-DHAVE_POA_CAMERA=1)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${poaCamera})
+  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${poaCamera})
+
   find_library( SVBCameraSDK
                 NAMES SVBCameraSDK
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)

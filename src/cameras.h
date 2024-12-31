@@ -107,6 +107,9 @@
 #  ifdef HAVE_ZWO_CAMERA
 #   define ZWO_ASI
 #  endif
+#  ifdef HAVE_POA_CAMERA
+#   define POA_CAMERA
+#  endif
 #  ifdef HAVE_SVB_CAMERA
 #   define SVB_CAMERA
 #  endif
