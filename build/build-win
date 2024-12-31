@@ -86,7 +86,7 @@ mkdir -p tmp
 cd tmp
 
 cat >run_cmake.bat <<EOF
-"$CMAKE_W" -Wno-dev -G "Visual Studio 17" -A Win32 ${vcpkg_args[@]} "-DwxWidgets_PREFIX_DIRECTORY=%WXWIN%" ..
+"$CMAKE_W" -Wno-dev -A Win32 "${vcpkg_args[@]}" ..
 EOF
 "$CMD" /c run_cmake.bat
 
