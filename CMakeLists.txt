@@ -43,6 +43,10 @@ if(APPLE)
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 endif()
 
+if(WINDOWS)
+ set(CMAKE_GENERATOR "Visual Studio 17" CACHE STRING INTERNAL "" FORCE)
+endif()
+
 enable_language(C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -56,7 +60,6 @@ endif()
 if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
-
 
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
