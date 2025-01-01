@@ -5,8 +5,10 @@
 *  Created by Robin Glover.
 *  Copyright (c) 2014 Robin Glover
 *  Copyright (c) 2018 Andy Galasso
-*  Copyright (c) 2024 Ethan Chappel
+*  Copyright (c) 2024 PHD2 Developers
 *  All rights reserved.
+* 
+*  Created by Ethan Chappel based on cam_zwo.h
 *
 *  This source code is distributed under the following "BSD" license
 *  Redistribution and use in source and binary forms, with or without
