@@ -39,7 +39,6 @@
 
 #include "cam_poa.h"
 #include "cameras/PlayerOneCamera.h"
-#include "cameras/ConvFuncs.h"
 
 #ifdef __WINDOWS__
 
@@ -104,11 +103,16 @@ private:
     bool StopExposure();
 
     wxSize BinnedFrameSize(unsigned int binning);
+
+    POAErrors GetConfig(int nCameraID, POAConfig confID, long *pValue, POABool *pIsAuto);
+    POAErrors GetConfig(int nCameraID, POAConfig confID, double *pValue, POABool *pIsAuto);
+    POAErrors GetConfig(int nCameraID, POAConfig confID, POABool *pIsEnable);
+    POAErrors SetConfig(int nCameraID, POAConfig confID, long nValue, POABool isAuto);
+    POAErrors SetConfig(int nCameraID, POAConfig confID, double fValue, POABool isAuto);
+    POAErrors SetConfig(int nCameraID, POAConfig confID, POABool isEnable);
 };
 
-CameraPOA::CameraPOA()
-    :
-    m_buffer(nullptr)
+CameraPOA::CameraPOA() : m_buffer(nullptr)
 {
     Name = _T("Player One Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
@@ -543,13 +547,13 @@ bool CameraPOA::Connect(const wxString& camId)
     const long UNIT_BALANCE = 50;
     if (canSetWB_B)
     {
-        POASetConfig(m_cameraId, POA_WB_B, UNIT_BALANCE, POA_FALSE);
+        SetConfig(m_cameraId, POA_WB_B, UNIT_BALANCE, POA_FALSE);
         Debug.Write(wxString::Format("Player One: set color balance WB_B = %d\n", UNIT_BALANCE));
     }
 
     if (canSetWB_R)
     {
-        POASetConfig(m_cameraId, POA_WB_R, UNIT_BALANCE, POA_FALSE);
+        SetConfig(m_cameraId, POA_WB_R, UNIT_BALANCE, POA_FALSE);
         Debug.Write(wxString::Format("Player One: set color balance WB_R = %d\n", UNIT_BALANCE));
     }
 
@@ -613,12 +617,12 @@ int CameraPOA::GetDefaultCameraGain()
 
 bool CameraPOA::SetCoolerOn(bool on)
 {
-    return (POASetConfig(m_cameraId, POA_COOLER, on ? (long)1 : (long)0, POA_FALSE) != POA_OK);
+    return (SetConfig(m_cameraId, POA_COOLER, on ? (long)1 : (long)0, POA_FALSE) != POA_OK);
 }
 
 bool CameraPOA::SetCoolerSetpoint(double temperature)
 {
-    return (POASetConfig(m_cameraId, POA_TARGET_TEMP, temperature, POA_FALSE) != POA_OK);
+    return (SetConfig(m_cameraId, POA_TARGET_TEMP, temperature, POA_FALSE) != POA_OK);
 }
 
 bool CameraPOA::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
@@ -627,28 +631,28 @@ bool CameraPOA::GetCoolerStatus(bool *on, double *setpoint, double *power, doubl
     long value;
     POABool isAuto;
 
-    if ((r = POAGetConfig(m_cameraId, POA_COOLER, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_COOLER, &value, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_COOLER\n", r));
         return true;
     }
     *on = value != 0;
 
-    if ((r = POAGetConfig(m_cameraId, POA_TARGET_TEMP, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_TARGET_TEMP, &value, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TARGET_TEMP\n", r));
         return true;
     }
     *setpoint = value;
 
-    if ((r = POAGetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TEMPERATURE\n", r));
         return true;
     }
     *temperature = value / 10.0;
 
-    if ((r = POAGetConfig(m_cameraId, POA_COOLER_POWER, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_COOLER_POWER, &value, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_COOLER_POWER\n", r));
         return true;
@@ -664,7 +668,7 @@ bool CameraPOA::GetSensorTemperature(double *temperature)
     long value;
     POABool isAuto;
 
-    if ((r = POAGetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TEMPERATURE\n", r));
         return true;
@@ -744,20 +748,20 @@ bool CameraPOA::Capture(int duration, usImage& img, int options, const wxRect& s
     long exposureUS = duration * 1000;
     POABool tmp;
     long cur_exp;
-    if (POAGetConfig(m_cameraId, POA_EXPOSURE, &cur_exp, &tmp) == POA_OK &&
+    if (GetConfig(m_cameraId, POA_EXPOSURE, &cur_exp, &tmp) == POA_OK &&
         cur_exp != exposureUS)
     {
         Debug.Write(wxString::Format("Player One: set CONTROL_EXPOSURE %d\n", exposureUS));
-        POASetConfig(m_cameraId, POA_EXPOSURE, exposureUS, POA_FALSE);
+        SetConfig(m_cameraId, POA_EXPOSURE, exposureUS, POA_FALSE);
     }
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     long cur_gain;
-    if (POAGetConfig(m_cameraId, POA_GAIN, &cur_gain, &tmp) == POA_OK &&
+    if (GetConfig(m_cameraId, POA_GAIN, &cur_gain, &tmp) == POA_OK &&
         new_gain != cur_gain)
     {
         Debug.Write(wxString::Format("Player One: set CONTROL_GAIN %d%% %d\n", GuideCameraGain, new_gain));
-        POASetConfig(m_cameraId, POA_GAIN, new_gain, POA_FALSE);
+        SetConfig(m_cameraId, POA_GAIN, new_gain, POA_FALSE);
     }
 
     bool size_change = frame.GetSize() != m_frame.GetSize();
@@ -977,19 +981,177 @@ inline static POAConfig GetPOADirection(int direction)
 bool CameraPOA::ST4PulseGuideScope(int direction, int duration)
 {
     POAConfig d = GetPOADirection(direction);
-    POASetConfig(m_cameraId, d, POA_TRUE);
+    SetConfig(m_cameraId, d, POA_TRUE);
     WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
-    POASetConfig(m_cameraId, d, POA_FALSE);
+    SetConfig(m_cameraId, d, POA_FALSE);
 
     return false;
 }
 
 void  CameraPOA::ClearGuidePort()
 {
-    POASetConfig(m_cameraId, POA_GUIDE_NORTH, POA_FALSE);
-    POASetConfig(m_cameraId, POA_GUIDE_SOUTH, POA_FALSE);
-    POASetConfig(m_cameraId, POA_GUIDE_EAST, POA_FALSE);
-    POASetConfig(m_cameraId, POA_GUIDE_WEST, POA_FALSE);
+    SetConfig(m_cameraId, POA_GUIDE_NORTH, POA_FALSE);
+    SetConfig(m_cameraId, POA_GUIDE_SOUTH, POA_FALSE);
+    SetConfig(m_cameraId, POA_GUIDE_EAST, POA_FALSE);
+    SetConfig(m_cameraId, POA_GUIDE_WEST, POA_FALSE);
+}
+
+
+// Functions from Player One ConvFuncs.h
+
+// Get the current value of POAConfig with POAValueType is VAL_INT, eg: POA_EXPOSURE, POA_GAIN
+POAErrors CameraPOA::GetConfig(int nCameraID, POAConfig confID, long *pValue, POABool *pIsAuto)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_INT)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    error = POAGetConfig(nCameraID, confID, &confValue, pIsAuto);
+
+    if (error == POA_OK)
+    {
+        *pValue = confValue.intValue;
+    }
+
+    return error;
+}
+
+// Get the current value of POAConfig with POAValueType is VAL_FLOAT, eg: POA_TEMPERATURE, POA_EGAIN
+POAErrors CameraPOA::GetConfig(int nCameraID, POAConfig confID, double *pValue, POABool *pIsAuto)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_FLOAT)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    error = POAGetConfig(nCameraID, confID, &confValue, pIsAuto);
+
+    if (error == POA_OK)
+    {
+        *pValue = confValue.floatValue;
+    }
+
+    return error;
+}
+
+// Get the current value of POAConfig with POAValueType is VAL_BOOL, eg: POA_COOLER, POA_PIXEL_BIN_SUM
+POAErrors CameraPOA::GetConfig(int nCameraID, POAConfig confID, POABool *pIsEnable)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_BOOL)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    POABool boolValue;
+    error = POAGetConfig(nCameraID, confID, &confValue, &boolValue);
+
+    if (error == POA_OK)
+    {
+        *pIsEnable = confValue.boolValue;
+    }
+
+    return error;
+}
+
+// Set the POAConfig value, the POAValueType of POAConfig is VAL_INT, eg: POA_TARGET_TEMP, POA_OFFSET
+POAErrors CameraPOA::SetConfig(int nCameraID, POAConfig confID, long nValue, POABool isAuto)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_INT)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    confValue.intValue = nValue;
+
+    return POASetConfig(nCameraID, confID, confValue, isAuto);
+}
+
+// Set the POAConfig value, the POAValueType of POAConfig is VAL_FLOAT, Note: currently, there is no POAConfig which
+// POAValueType is VAL_FLOAT needs to be set
+POAErrors CameraPOA::SetConfig(int nCameraID, POAConfig confID, double fValue, POABool isAuto)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_FLOAT)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    confValue.floatValue = fValue;
+
+    return POASetConfig(nCameraID, confID, confValue, isAuto);
+}
+
+// Set the POAConfig value, the POAValueType of POAConfig is VAL_BOOL, eg: POA_HARDWARE_BIN, POA_GUIDE_NORTH
+POAErrors CameraPOA::SetConfig(int nCameraID, POAConfig confID, POABool isEnable)
+{
+    POAValueType pConfValueType;
+    POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
+    if (error == POA_OK)
+    {
+        if (pConfValueType != VAL_BOOL)
+        {
+            return POA_ERROR_INVALID_CONFIG;
+        }
+    }
+    else
+    {
+        return error;
+    }
+
+    POAConfigValue confValue;
+    confValue.boolValue = isEnable;
+
+    return POASetConfig(nCameraID, confID, confValue, POA_FALSE);
 }
 
 GuideCamera *POACameraFactory::MakePOACamera()
