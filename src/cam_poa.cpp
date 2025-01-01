@@ -2,13 +2,9 @@
 *  cam_poa.cpp
 *  PHD Guiding
 *
-*  Created by Robin Glover.
-*  Copyright (c) 2014 Robin Glover.
-*  Copyright (c) 2017-2018 Andy Galasso
+*  Created by Ethan Chappel based on cam_zwo.cpp
 *  Copyright (c) 2024 PHD2 Developers
 *  All rights reserved.
-* 
-*  Created by Ethan Chappel based on cam_zwo.cpp
 *
 *  This source code is distributed under the following "BSD" license
 *  Redistribution and use in source and binary forms, with or without
@@ -18,7 +14,7 @@
 *    Redistributions in binary form must reproduce the above copyright notice,
 *     this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
+*    Neither the name of openphdguiding.org nor the names of its
 *     contributors may be used to endorse or promote products derived from
 *     this software without specific prior written permission.
 *
