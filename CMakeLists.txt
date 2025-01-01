@@ -200,6 +200,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_openssag.h
   ${phd_src_dir}/cam_OSPL130.cpp
   ${phd_src_dir}/cam_OSPL130.h
+  ${phd_src_dir}/cam_poa.cpp
+  ${phd_src_dir}/cam_poa.h
   ${phd_src_dir}/cam_qguide.cpp
   ${phd_src_dir}/cam_qguide.h
   ${phd_src_dir}/cam_qhy.cpp

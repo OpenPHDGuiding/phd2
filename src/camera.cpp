@@ -90,6 +90,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_zwo.h"
 #endif
 
+#if defined(POA_CAMERA)
+# include "cam_poa.h"
+#endif
+
 #if defined(TOUPTEK_CAMERA)
 # include "cam_touptek.h"
 #endif
@@ -315,6 +319,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined(ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
 #endif
+#if defined(POA_CAMERA)
+    CameraList.Add(_T("Player One Camera"));
+#endif
 #if defined(TOUPTEK_CAMERA)
     CameraList.Add(_T("ToupTek Camera"));
     CameraList.Add(_T("Omegon Pro Camera"));
@@ -460,6 +467,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined(ZWO_ASI)
         else if (choice == _T("ZWO ASI Camera"))
             pReturn = ZWOCameraFactory::MakeZWOCamera();
+#endif
+#if defined(POA_CAMERA)
+        else if (choice == _T("Player One Camera"))
+            pReturn = POACameraFactory::MakePOACamera();
 #endif
 #if defined(TOUPTEK_CAMERA)
         else if (choice == _T("ToupTek Camera") || choice == _T("Omegon Pro Camera"))

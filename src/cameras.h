@@ -56,6 +56,7 @@
 #  define OGMA_CAMERA
 #  define OPENCV_CAMERA
 #  define ORION_DSCI
+#  define POA_CAMERA
 #  define QGUIDE
 #  define QHY_CAMERA
 #  define SBIG
@@ -106,6 +107,9 @@
 #  ifdef HAVE_ZWO_CAMERA
 #   define ZWO_ASI
 #  endif
+#  ifdef HAVE_POA_CAMERA
+#   define POA_CAMERA
+#  endif
 #  ifdef HAVE_SVB_CAMERA
 #   define SVB_CAMERA
 #  endif
@@ -124,6 +128,9 @@
 #  define INDI_CAMERA
 #  ifdef HAVE_ZWO_CAMERA
 #   define ZWO_ASI
+#  endif
+#  ifdef HAVE_POA_CAMERA
+#   define POA_CAMERA
 #  endif
 #  ifdef HAVE_TOUPTEK_CAMERA
 #   define TOUPTEK_CAMERA
