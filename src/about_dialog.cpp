@@ -187,7 +187,7 @@ AboutDialog::AboutDialog()
                                                 "<td>Kirill M. Skorobogatov</td>"
                                                 "<td>Lars Berntzon</td>"
                                                 "<td>Dale Ghent</td>"
-                                                "<td></td>"
+                                                "<td>Ethan Chappel</td>"
                                                 "</tr>"
                                                 "</table><br>"
                                                 "<br>"
