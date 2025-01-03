@@ -424,12 +424,11 @@ bool POACamera::Connect(const wxString& camId)
 
     Debug.Write(wxString::Format("Player One: using mode BPP = %u\n", (unsigned int) m_bpp));
 
-    bool is_mini = wxString(info.cameraModelName).Lower().Find(_T("mini")) != wxNOT_FOUND;
     bool is_usb3 = info.isUSB3Speed == POA_TRUE;
 
-    Debug.Write(wxString::Format("Player One: usb3 = %d, is_mini = %d, name = [%s]\n", is_usb3, is_mini, info.cameraModelName));
+    Debug.Write(wxString::Format("Player One: usb3 = %d, name = [%s]\n", is_usb3, info.cameraModelName));
 
-    if (is_usb3 || is_mini)
+    if (is_usb3)
     {
         Debug.Write("Player One: selecting snap mode\n");
         m_mode = CM_SNAP;
