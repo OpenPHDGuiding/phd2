@@ -308,7 +308,7 @@ static int FindCamera(const wxString& camId, wxString *err)
 {
     int numCameras = POAGetCameraCount();
 
-    Debug.Write(wxString::Format("POA: find camera id: [%s], ncams = %d\n", camId, numCameras));
+    Debug.Write(wxString::Format("Player One: find camera id: [%s], ncams = %d\n", camId, numCameras));
 
     if (numCameras <= 0)
     {
