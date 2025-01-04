@@ -780,10 +780,50 @@ elseif(WIN32)
 
   target_include_directories(phd2 PRIVATE "C:/Program Files (x86)/Visual Leak Detector/include")
 
-  # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
-  #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
+  # copy DLL files into the output directory
 
-  copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
+  set(_copyfiles_dbg ${PHD_COPY_EXTERNAL_ALL} ${PHD_COPY_EXTERNAL_DBG})
+  set(_copyfiles_rel ${PHD_COPY_EXTERNAL_ALL} ${PHD_COPY_EXTERNAL_REL})
+  foreach(_file IN LISTS _copyfiles_dbg _copyfiles_rel)
+    if(NOT EXISTS ${_file})
+      message(FATAL_ERROR "Dependency ${_file} does not exist")
+    endif()
+  endforeach()
+  foreach(_config dbg rel)
+    set(_realpaths_${_config})
+    foreach(_file ${_copyfiles_${_config}})
+      get_filename_component(_realpath ${_file} REALPATH)
+      list(APPEND _realpaths_${_config} ${_realpath})
+    endforeach()
+    list(REMOVE_DUPLICATES _realpaths_${_config})
+  endforeach()
+  unset(_file)
+  unset(_config)
+
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+      $<$<CONFIG:Debug>:copy_if_different>
+      $<$<NOT:$<CONFIG:Debug>>:true>
+      ${_realpaths_dbg}
+      $<TARGET_FILE_DIR:phd2>/.
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "$<$<CONFIG:Debug>:Copy debug libs to output folder>"
+  )
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+      $<$<CONFIG:Release>:copy_if_different>
+      $<$<NOT:$<CONFIG:Release>>:true>
+      ${_realpaths_rel}
+      $<TARGET_FILE_DIR:phd2>/.
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "$<$<CONFIG:Release>:Copy release libs to output folder>"
+  )
+  unset(_realpaths_dbg)
+  unset(_realpaths_rel)
 
 ## #########################
 ## Unix
