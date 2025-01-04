@@ -1117,7 +1117,9 @@ if(UNIX AND NOT APPLE)
       include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
       add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${playerone})
-      list(APPEND PHD_INSTALL_LIBS ${playerone})
+      # install the .so and symlinks
+      file(GLOB playerone_so_files "${playerone}*")
+      list(APPEND PHD_INSTALL_LIBS ${playerone_so_files})
 
     endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 
