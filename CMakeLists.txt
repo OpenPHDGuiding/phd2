@@ -240,8 +240,7 @@ set(cam_SRC
 
 # windows specific cameras
 if(WIN32)
-  set(cam_SRC
-    ${cam_SRC}
+  list(APPEND cam_SRC
     ${phd_src_dir}/cam_LEParallelWebcam.cpp
     ${phd_src_dir}/cam_LEParallelWebcam.h
     ${phd_src_dir}/cam_LESerialWebcam.cpp
@@ -256,15 +255,12 @@ if(WIN32)
     ${PHD_PROJECT_ROOT_DIR}/cameras/ArtemisHSCAPI.cpp
   )
 elseif(UNIX AND (NOT APPLE))
-  set(cam_SRC
-      ${cam_SRC}
+  list(APPEND cam_SRC
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
      )
 elseif(APPLE)
-  set(cam_SRC
-      ${cam_SRC}
-  )
+  # nothing else to add for Mac
 endif()
 
 source_group(Cameras FILES ${cam_SRC})
@@ -341,9 +337,6 @@ set(guiding_SRC
 )
 source_group(Guiding FILES ${guiding_SRC})
 
-
-
-# it would ease if files are organised in an alphabetical order
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
   ${phd_src_dir}/about_dialog.h
@@ -455,8 +448,6 @@ set(phd2_SRC
   ${phd_src_dir}/rotator_indi.cpp
   ${phd_src_dir}/rotator_indi.h
 
-  ###
-
   ${phd_src_dir}/runinbg.cpp
   ${phd_src_dir}/runinbg.h
 
@@ -500,9 +491,7 @@ set(phd2_SRC
 )
 
 if (WIN32)
-  set(phd2_SRC
-      ${phd2_SRC}
-
+  list(APPEND phd2_SRC
       # windows-only sources
       ${phd_src_dir}/parallelports.h
       ${phd_src_dir}/parallelport.h
@@ -513,7 +502,7 @@ if (WIN32)
 
       ${phd_src_dir}/comdispatch.h
       ${phd_src_dir}/comdispatch.cpp
-     )
+  )
 endif()
 source_group(src FILES ${phd2_SRC})
 
@@ -529,15 +518,14 @@ foreach(current_locale IN LISTS all_locales)
     get_filename_component(message_file_ext ${current_file} EXT)
     if(("${message_file_ext}" STREQUAL ".mo") OR ("${message_file_ext}" STREQUAL ".zip"))
       # message(STATUS "Harhar ${message_file_ext} / ${current_file}")
-      set(phd2_SRC ${phd2_SRC} ${current_file})
+      list(APPEND phd2_SRC ${current_file})
     endif()
   endforeach()
 
 endforeach() # for all locales
 
-
-MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
-  IF(MSVC)
+macro(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
+  if(MSVC)
     GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
     SET(PrecompiledBinary "\$(IntDir)/${PrecompiledBasename}.pch")
     SET(Sources ${${SourcesVar}})
@@ -551,23 +539,22 @@ MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar
 
     # Add precompiled header to SourcesVar
     LIST(APPEND ${SourcesVar} ${PrecompiledSource})
-  ENDIF()
-ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
+  endif()
+endmacro(ADD_MSVC_PRECOMPILED_HEADER)
 
 ## #########################
 ## OSX
 if(APPLE)
 
   # bundle definitions
-  # please edit the copyrights
   set(MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
   set(MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
   set(MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2020 openphdguiding.org" )
+  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2025 openphdguiding.org" )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
   set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set(MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2020 openphdguiding.org" )
+  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2025 openphdguiding.org" )
 
   # main target
   add_executable(
@@ -760,7 +747,7 @@ elseif(WIN32)
   ADD_MSVC_PRECOMPILED_HEADER("phd.h" "src/precompiled_header.cpp" phd2_WIN_SRC)
 
   # resource file, some VC do not like the options provided by the precompiled headers
-  set(phd2_WIN_SRC ${phd2_WIN_SRC} ${PHD_PROJECT_ROOT_DIR}/phd.rc)
+  list(APPEND phd2_WIN_SRC ${PHD_PROJECT_ROOT_DIR}/phd.rc)
   source_group(src FILES precompiled_header.cpp)
 
   link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
@@ -768,7 +755,7 @@ elseif(WIN32)
     phd2
     WIN32
     ${phd2_WIN_SRC}
-    )
+  )
 
   set_target_properties(
     phd2
@@ -776,7 +763,7 @@ elseif(WIN32)
       OUTPUT_NAME phd2  # lower case on Win32
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
       LINK_FLAGS_DEBUG "/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib"
-    )
+  )
 
   target_include_directories(phd2 PRIVATE "C:/Program Files (x86)/Visual Leak Detector/include")
 
@@ -829,14 +816,13 @@ elseif(WIN32)
 ## Unix
 elseif(UNIX)
 
-  # should be linux there
   add_executable(
-   phd2
-   ${scopes_SRC}
-   ${cam_SRC}
-   ${guiding_SRC}
-   ${phd2_SRC}
-   )
+    phd2
+    ${scopes_SRC}
+    ${cam_SRC}
+    ${guiding_SRC}
+    ${phd2_SRC}
+  )
 
   find_package( OpenCV REQUIRED )
 
@@ -846,7 +832,7 @@ elseif(UNIX)
     phd2
     PROPERTIES
       OUTPUT_NAME phd2.bin
-    )
+  )
 
 else()
   message(FATAL_ERROR "Unsupported platform")
@@ -876,8 +862,6 @@ endforeach()
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
-
-
 
 ################################################################
 #
@@ -995,7 +979,6 @@ if(WIN32)
   endforeach() # for all locales
 endif()
 
-
 ## Linux bundling of documentation + translation
 if(UNIX AND NOT APPLE)
 
@@ -1037,7 +1020,6 @@ if(UNIX AND NOT APPLE)
     endforeach()
   endforeach()
 endif()
-
 
 ################################################################
 #
