@@ -68,7 +68,8 @@ endif()
 if(UNIX AND NOT APPLE)
   install(TARGETS phd2
           RUNTIME DESTINATION bin)
-  install(PROGRAMS phd2.sh
+  configure_file(phd2.sh.in phd2.sh @ONLY)
+  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/phd2.sh
           DESTINATION bin
           RENAME phd2)
   install(FILES ${PHD_INSTALL_LIBS}
