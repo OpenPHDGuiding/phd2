@@ -78,6 +78,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_qhy5.h"
 #endif
 
+#if defined(PLAYERONE_CAMERA)
+# include "cam_playerone.h"
+#endif
+
 #if defined(QHY_CAMERA)
 # include "cam_qhy.h"
 #endif
@@ -88,10 +92,6 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
 #if defined(ZWO_ASI)
 # include "cam_zwo.h"
-#endif
-
-#if defined(POA_CAMERA)
-# include "cam_poa.h"
 #endif
 
 #if defined(TOUPTEK_CAMERA)
@@ -306,6 +306,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined(MORAVIAN_CAMERA)
     CameraList.Add(_T("Moravian Camera"));
 #endif
+#if defined(PLAYERONE_CAMERA)
+    CameraList.Add(_T("Player One Camera"));
+#endif
 #if defined(CAM_QHY5)
     CameraList.Add(_T("QHY 5"));
 #endif
@@ -318,9 +321,6 @@ wxArrayString GuideCamera::GuideCameraList()
 #endif
 #if defined(ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
-#endif
-#if defined(POA_CAMERA)
-    CameraList.Add(_T("Player One Camera"));
 #endif
 #if defined(TOUPTEK_CAMERA)
     CameraList.Add(_T("ToupTek Camera"));
@@ -454,6 +454,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn->Name = _T("MagZero MZ-5");
         }
 #endif
+#if defined(PLAYERONE_CAMERA)
+        else if (choice == _T("Player One Camera"))
+            pReturn = PlayerOneCameraFactory::MakePlayerOneCamera();
+#endif
 #if defined(QHY_CAMERA)
         else if (choice == _T("QHY Camera"))
             pReturn = QHYCameraFactory::MakeQHYCamera();
@@ -467,10 +471,6 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 #if defined(ZWO_ASI)
         else if (choice == _T("ZWO ASI Camera"))
             pReturn = ZWOCameraFactory::MakeZWOCamera();
-#endif
-#if defined(POA_CAMERA)
-        else if (choice == _T("Player One Camera"))
-            pReturn = POACameraFactory::MakePOACamera();
 #endif
 #if defined(TOUPTEK_CAMERA)
         else if (choice == _T("ToupTek Camera") || choice == _T("Omegon Pro Camera"))

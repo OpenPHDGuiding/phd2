@@ -56,7 +56,7 @@
 #  define OGMA_CAMERA
 #  define OPENCV_CAMERA
 #  define ORION_DSCI
-#  define POA_CAMERA
+#  define PLAYERONE_CAMERA
 #  define QGUIDE
 #  define QHY_CAMERA
 #  define SBIG
@@ -91,6 +91,9 @@
 #  ifdef HAVE_OPENSSAG_CAMERA
 #   define OPENSSAG_CAMERA
 #  endif
+#  ifdef HAVE_PLAYERONE_CAMERA
+#   define PLAYERONE_CAMERA
+#  endif
 #  ifdef HAVE_QHY_CAMERA
 #   define QHY_CAMERA
 #  endif
@@ -107,9 +110,6 @@
 #  ifdef HAVE_ZWO_CAMERA
 #   define ZWO_ASI
 #  endif
-#  ifdef HAVE_POA_CAMERA
-#   define POA_CAMERA
-#  endif
 #  ifdef HAVE_SVB_CAMERA
 #   define SVB_CAMERA
 #  endif
@@ -122,15 +122,15 @@
 #  ifdef HAVE_OGMA_CAMERA
 #   define OGMA_CAMERA
 #  endif
+#  ifdef HAVE_PLAYERONE_CAMERA
+#   define PLAYERONE_CAMERA
+#  endif
 #  ifdef HAVE_QHY_CAMERA
 #   define QHY_CAMERA
 #  endif
 #  define INDI_CAMERA
 #  ifdef HAVE_ZWO_CAMERA
 #   define ZWO_ASI
-#  endif
-#  ifdef HAVE_POA_CAMERA
-#   define POA_CAMERA
 #  endif
 #  ifdef HAVE_TOUPTEK_CAMERA
 #   define TOUPTEK_CAMERA

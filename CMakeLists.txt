@@ -200,8 +200,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_openssag.h
   ${phd_src_dir}/cam_OSPL130.cpp
   ${phd_src_dir}/cam_OSPL130.h
-  ${phd_src_dir}/cam_poa.cpp
-  ${phd_src_dir}/cam_poa.h
+  ${phd_src_dir}/cam_playerone.cpp
+  ${phd_src_dir}/cam_playerone.h
   ${phd_src_dir}/cam_qguide.cpp
   ${phd_src_dir}/cam_qguide.h
   ${phd_src_dir}/cam_qhy.cpp
@@ -722,6 +722,20 @@ if(APPLE)
                    @executable_path/../Frameworks/libusb_openphd.dylib
                    $<TARGET_FILE_DIR:phd2>/../Frameworks/libSVBCameraSDK.dylib
       COMMENT "Updating dylib path for libSVBCameraSDK.dylib"
+    )
+  endif()
+
+  if(playerone)
+    set_source_files_properties(${playerone} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change libPlayerOneCamera.3.dylib
+                   @executable_path/../Frameworks/libPlayerOneCamera.dylib $<TARGET_FILE:phd2>
+      COMMAND install_name_tool -change @loader_path/libusb-1.0.0.dylib
+                   @executable_path/../Frameworks/libusb_openphd.dylib
+                   $<TARGET_FILE_DIR:phd2>/../Frameworks/libPlayerOneCamera.dylib
+      COMMENT "Updating dylib path for libPlayerOneCamera.dylib"
     )
   endif()
 
