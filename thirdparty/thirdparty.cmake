@@ -756,11 +756,6 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
 
-  # Player One cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/PlayerOneCamera.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/PlayerOneCamera.dll)
-
-
   # ToupTek cameras
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/toupcam.dll)
@@ -815,6 +810,11 @@ if(WIN32)
 #  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll)
   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
+
+  # Player One cameras
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.dll)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
 
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcr120.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcp140.dll)
@@ -895,16 +895,6 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
   set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
 
-  find_library( poaCamera
-                NAMES PlayerOneCamera
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/poalibs/mac)
-  if(NOT poaCamera)
-    message(FATAL_ERROR "Cannot find the poaCamera drivers")
-  endif()
-  add_definitions(-DHAVE_POA_CAMERA=1)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${poaCamera})
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${poaCamera})
-
   find_library( SVBCameraSDK
                 NAMES SVBCameraSDK
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
@@ -973,6 +963,17 @@ if(APPLE)
   add_definitions(-DHAVE_OPENSSAG_CAMERA=1)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
 
+  find_library( playerone
+                NAMES PlayerOneCamera
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/mac)
+  if(NOT playerone)
+    message(FATAL_ERROR "Cannot find the playerone SDK lib")
+  endif()
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+  list(APPEND PHD_LINK_EXTERNAL ${playerone})
+  add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
+  list(APPEND phd2_OSX_FRAMEWORKS ${playerone})
+
 endif()  # APPLE
 
 
@@ -996,47 +997,42 @@ if(UNIX AND NOT APPLE)
     if (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv6(.*)")
       set(zwoarch "armv6")
       set(qhyarch "arm32")
-      set(poaarch "arm32")
       set(toupcam_arch "armel")
       set(svbony_arch "armv6")
+      set(playerone_arch arm32)
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv7(.*)|arm64|aarch64|^armv8(.*)")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(zwoarch "armv8")
         set(qhyarch "arm64")
-        set(poaarch "arm64")
         set(toupcam_arch "arm64")
         set(svbony_arch "armv8")
+        set(playerone_arch arm64)
       else()
         set(zwoarch "armv7")
-        set(poaarch "arm32")
         set(qhyarch "arm32")
         set(toupcam_arch "armhf")
         set(svbony_arch "armv7")
+        set(playerone_arch arm32)
       endif()
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86|X86|amd64|AMD64|i.86")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(zwoarch "x64")
-        set(poaarch "x64")
         set(qhyarch "x86_64")
         set(toupcam_arch "x64")
         set(svbony_arch "x64")
+        set(playerone_arch x64)
       else()
         set(zwoarch "x86")
-        set(poaarch "x86")
         set(qhyarch "x86_32")  # no longer distributed by QHY
         set(toupcam_arch "x86")
         set(svbony_arch "x86")
+        set(playerone_arch x86)
       endif()
     else()
       message(FATAL_ERROR "unknown system architecture")
     endif()
 
     find_path(ZWO_INCLUDE_DIR ASICamera2.h
-      NO_DEFAULT_PATHS
-      PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
-    )
-
-    find_path(POA_INCLUDE_DIR PlayerOneCamera.h
       NO_DEFAULT_PATHS
       PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
     )
@@ -1055,18 +1051,6 @@ if(UNIX AND NOT APPLE)
       message(STATUS "Found ASICamera2 lib ${asiCamera2}")
       add_definitions(-DHAVE_ZWO_CAMERA=1)
       set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
-
-      find_library(poaCamera
-             NAMES PlayerOneCamera
-             NO_DEFAULT_PATHS
-             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/poalibs/linux/${poaarch})
-
-      if(NOT poaCamera)
-        message(FATAL_ERROR "Cannot find the poaCamera drivers")
-      endif()
-      message(STATUS "Found PlayerOneCamera lib ${poaCamera}")
-      add_definitions(-DHAVE_POA_CAMERA=1)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${poaCamera})
 
       find_library(toupcam
              NAMES toupcam
@@ -1120,6 +1104,23 @@ if(UNIX AND NOT APPLE)
         endif()
         set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
       endif()
+
+      find_library( playerone
+                    NAMES PlayerOneCamera
+                    NO_DEFAULT_PATHS
+                    PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/linux/${playerone_arch})
+
+      if(NOT playerone)
+        message(FATAL_ERROR "Cannot find the PlayerOneCamera SDK lib")
+      endif()
+      message(STATUS "Found PlayerOneCamera SDK lib ${playerone}")
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+      add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
+      list(APPEND PHD_LINK_EXTERNAL ${playerone})
+      # install the .so and symlinks
+      file(GLOB playerone_so_files "${playerone}*")
+      list(APPEND PHD_INSTALL_LIBS ${playerone_so_files})
+
     endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 
     find_program(LSB_RELEASE_EXEC lsb_release)
