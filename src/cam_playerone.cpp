@@ -308,7 +308,7 @@ static int FindCamera(const wxString& camId, wxString *err)
 {
     int numCameras = POAGetCameraCount();
 
-    Debug.Write(wxString::Format("POA: find camera id: [%s], ncams = %d\n", camId, numCameras));
+    Debug.Write(wxString::Format("Player One: find camera id: [%s], ncams = %d\n", camId, numCameras));
 
     if (numCameras <= 0)
     {
@@ -424,12 +424,11 @@ bool POACamera::Connect(const wxString& camId)
 
     Debug.Write(wxString::Format("Player One: using mode BPP = %u\n", (unsigned int) m_bpp));
 
-    bool is_mini = wxString(info.cameraModelName).Lower().Find(_T("mini")) != wxNOT_FOUND;
     bool is_usb3 = info.isUSB3Speed == POA_TRUE;
 
-    Debug.Write(wxString::Format("Player One: usb3 = %d, is_mini = %d, name = [%s]\n", is_usb3, is_mini, info.cameraModelName));
+    Debug.Write(wxString::Format("Player One: usb3 = %d, name = [%s]\n", is_usb3, info.cameraModelName));
 
-    if (is_usb3 || is_mini)
+    if (is_usb3)
     {
         Debug.Write("Player One: selecting snap mode\n");
         m_mode = CM_SNAP;
@@ -444,7 +443,8 @@ bool POACamera::Connect(const wxString& camId)
     Connected = true;
     Name = info.cameraModelName;
     m_isColor = info.isColorCamera != POA_FALSE;
-    Debug.Write(wxString::Format("Player One: isColorCam = %d\n", m_isColor));
+
+    Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", m_isColor));
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.bins); i++)
@@ -615,47 +615,49 @@ int POACamera::GetDefaultCameraGain()
 
 bool POACamera::SetCoolerOn(bool on)
 {
-    return SetConfig(m_cameraId, POA_COOLER, on ? (long) 1 : (long) 0, POA_FALSE) != POA_OK;
+    return SetConfig(m_cameraId, POA_COOLER, on ? POA_TRUE : POA_FALSE) != POA_OK;
 }
 
 bool POACamera::SetCoolerSetpoint(double temperature)
 {
-    return SetConfig(m_cameraId, POA_TARGET_TEMP, temperature, POA_FALSE) != POA_OK;
+    return SetConfig(m_cameraId, POA_TARGET_TEMP, (long) temperature, POA_FALSE) != POA_OK;
 }
 
 bool POACamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
     POAErrors r;
-    long value;
+    long longValue;
+    double doubleValue;
+    POABool boolValue;
     POABool isAuto;
 
-    if ((r = GetConfig(m_cameraId, POA_COOLER, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_COOLER, &boolValue)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_COOLER\n", r));
         return true;
     }
-    *on = value != 0;
+    *on = boolValue != POA_FALSE;
 
-    if ((r = GetConfig(m_cameraId, POA_TARGET_TEMP, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_TARGET_TEMP, &longValue, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TARGET_TEMP\n", r));
         return true;
     }
-    *setpoint = value;
+    *setpoint = longValue;
 
-    if ((r = GetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_TEMPERATURE, &doubleValue, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TEMPERATURE\n", r));
         return true;
     }
-    *temperature = value / 10.0;
+    *temperature = doubleValue;
 
-    if ((r = GetConfig(m_cameraId, POA_COOLER_POWER, &value, &isAuto)) != POA_OK)
+    if ((r = GetConfig(m_cameraId, POA_COOLER_POWER, &longValue, &isAuto)) != POA_OK)
     {
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_COOLER_POWER\n", r));
         return true;
     }
-    *power = value;
+    *power = longValue;
 
     return false;
 }
@@ -663,7 +665,7 @@ bool POACamera::GetCoolerStatus(bool *on, double *setpoint, double *power, doubl
 bool POACamera::GetSensorTemperature(double *temperature)
 {
     POAErrors r;
-    long value;
+    double value;
     POABool isAuto;
 
     if ((r = GetConfig(m_cameraId, POA_TEMPERATURE, &value, &isAuto)) != POA_OK)
@@ -671,7 +673,7 @@ bool POACamera::GetSensorTemperature(double *temperature)
         Debug.Write(wxString::Format("Player One: error (%d) getting POA_TEMPERATURE\n", r));
         return true;
     }
-    *temperature = value / 10.0;
+    *temperature = value;
 
     return false;
 }
