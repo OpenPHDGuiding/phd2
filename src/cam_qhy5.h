@@ -51,7 +51,6 @@ public:
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool ST4HasNonGuiMove() override { return true; }
     bool HasNonGuiCapture() override { return true; }
-    void ClearGuidePort();
     wxByte BitsPerPixel() override;
 };
 
