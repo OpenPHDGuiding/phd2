@@ -443,6 +443,7 @@ bool POACamera::Connect(const wxString& camId)
     Connected = true;
     Name = info.cameraModelName;
     m_isColor = info.isColorCamera != POA_FALSE;
+
     Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", m_isColor));
 
     int maxBin = 1;
