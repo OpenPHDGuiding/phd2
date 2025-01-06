@@ -40,7 +40,7 @@ wxDEFINE_EVENT(SELECT_CAMERA_EVENT, wxCommandEvent);
 wxBEGIN_EVENT_TABLE(CameraSelectorButton, wxBitmapButton)
 	EVT_BUTTON(GEAR_BUTTON_SELECT_CAMERA, CameraSelectorButton::OnButtonSelectCamera)
     EVT_MENU_RANGE(MENU_SELECT_CAMERA_BEGIN, MENU_SELECT_CAMERA_END, CameraSelectorButton::OnMenuSelectCamera)
-wxEND_EVENT_TABLE()
+wxEND_EVENT_TABLE();
 // clang-format on
 
 CameraSelectorButton::CameraSelectorButton(wxWindow *pParent, wxWindowID id)
