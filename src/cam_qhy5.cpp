@@ -173,12 +173,6 @@ bool CameraQHY5::ST4PulseGuideScope(int direction, int duration)
     return result < 0 ? true : false;
 }
 
-void CameraQHY5::ClearGuidePort()
-{
-    int16_t res = 0;
-    libusb_control_transfer(m_handle, 0xc2, 0x18, 0, 0, (unsigned char *) &res, sizeof(res), 5000);
-}
-
 void CameraQHY5::InitCapture() { }
 
 bool CameraQHY5::Disconnect()

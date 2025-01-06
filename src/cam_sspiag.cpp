@@ -333,11 +333,6 @@ bool CameraSSPIAG::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-void CameraSSPIAG::ClearGuidePort()
-{
-    Q5V_SendGuideCommand("QHY5V-0", 0, 0);
-}
-
 void CameraSSPIAG::InitCapture()
 {
     // Q5V_SetQHY5VGlobalGain(GuideCameraGain * 63 / 100);

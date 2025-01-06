@@ -75,17 +75,13 @@ wxByte CameraQGuider::BitsPerPixel()
 bool CameraQGuider::Connect(const wxString& camId)
 {
     // returns true on error
-    //  CameraReset();
+
     if (!openUSB(0))
         return CamConnectFailed(_("No camera"));
 
-    //  ClearGuidePort();
-    //  GuideCommand(0x0F,10);
-    //  buffer = new unsigned char[1311744];
     SETBUFFERMODE(0);
     Connected = true;
-    //  qglogfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
-    // qglogfile->AddLine(wxNow() + ": QGuide connected"); //qglogfile->Write();
+
     return false;
 }
 
@@ -120,11 +116,6 @@ bool CameraQGuider::ST4PulseGuideScope(int direction, int duration)
     WorkerThread::MilliSleep(duration + 10);
     // qglogfile->AddLine("Done"); //qglogfile->Write();
     return false;
-}
-
-void CameraQGuider::ClearGuidePort()
-{
-    //  SendGuideCommand(DevName,0,0);
 }
 
 void CameraQGuider::InitCapture()

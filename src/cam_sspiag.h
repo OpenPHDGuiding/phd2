@@ -48,7 +48,6 @@ public:
     void InitCapture() override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
-    void ClearGuidePort();
 
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }

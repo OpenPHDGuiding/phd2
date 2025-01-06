@@ -84,7 +84,6 @@ public:
     bool Disconnect() override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
-    void ClearGuidePort();
 
     void ShowPropertyDialog() override;
     bool HasNonGuiCapture() override { return true; }
@@ -987,14 +986,6 @@ bool Camera_ZWO::ST4PulseGuideScope(int direction, int duration)
     ASIPulseGuideOff(m_cameraId, d);
 
     return false;
-}
-
-void Camera_ZWO::ClearGuidePort()
-{
-    ASIPulseGuideOff(m_cameraId, ASI_GUIDE_NORTH);
-    ASIPulseGuideOff(m_cameraId, ASI_GUIDE_SOUTH);
-    ASIPulseGuideOff(m_cameraId, ASI_GUIDE_EAST);
-    ASIPulseGuideOff(m_cameraId, ASI_GUIDE_WEST);
 }
 
 GuideCamera *ZWOCameraFactory::MakeZWOCamera()

@@ -62,7 +62,6 @@ public:
     bool Disconnect() override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
-    void ClearGuidePort();
     wxByte BitsPerPixel() override;
 
     bool Color;
@@ -266,11 +265,6 @@ bool CameraAtik16::ST4PulseGuideScope(int direction, int duration)
     // if (duration > 50) wxMilliSleep(duration - 50);  // wait until it's mostly done
     // wxMilliSleep(duration + 10);
     return false;
-}
-
-void CameraAtik16::ClearGuidePort()
-{
-    ArtemisStopGuiding(Cam_Handle);
 }
 
 bool CameraAtik16::Disconnect()

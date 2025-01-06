@@ -83,7 +83,6 @@ public:
     bool Disconnect() override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
-    void ClearGuidePort();
 
     void ShowPropertyDialog() override;
     bool HasNonGuiCapture() override { return true; }
@@ -989,14 +988,6 @@ bool POACamera::ST4PulseGuideScope(int direction, int duration)
     SetConfig(m_cameraId, d, POA_FALSE);
 
     return false;
-}
-
-void POACamera::ClearGuidePort()
-{
-    SetConfig(m_cameraId, POA_GUIDE_NORTH, POA_FALSE);
-    SetConfig(m_cameraId, POA_GUIDE_SOUTH, POA_FALSE);
-    SetConfig(m_cameraId, POA_GUIDE_EAST, POA_FALSE);
-    SetConfig(m_cameraId, POA_GUIDE_WEST, POA_FALSE);
 }
 
 // Functions from Player One ConvFuncs.h

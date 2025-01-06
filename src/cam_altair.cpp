@@ -155,7 +155,6 @@ struct AltairCamera : public GuideCamera
     bool Disconnect() override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
-    void ClearGuidePort();
 
     void ShowPropertyDialog() override;
 
@@ -667,11 +666,6 @@ bool AltairCamera::ST4PulseGuideScope(int direction, int duration)
     m_sdk.ST4PlusGuide(m_handle, d, duration);
 
     return false;
-}
-
-void AltairCamera::ClearGuidePort()
-{
-    m_sdk.ST4PlusGuide(m_handle, 0, 0);
 }
 
 GuideCamera *AltairCameraFactory::MakeAltairCamera(AltairCamType type)
