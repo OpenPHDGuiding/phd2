@@ -35,6 +35,7 @@
 #include "phd.h"
 #include "profile_wizard.h"
 #include "calstep_dialog.h"
+#include "camera_selector_button.h"
 
 #include <memory>
 #include <wx/gbsizer.h>
@@ -78,6 +79,8 @@ private:
     wxStaticText *m_pInstructions;
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
+    CameraSelectorButton *m_pSelectCameraButton;
+    wxChoice *m_pCameras;
     wxSpinCtrlDouble *m_pPixelSize;
     wxStaticBitmap *m_scaleIcon;
     wxStaticText *m_pixelScale;
@@ -129,6 +132,7 @@ private:
     void WrapUp();
     void InitCameraProps(bool tryConnect);
     void InitMountProps(Scope *theScope);
+    void OnCommandSelectCamera(wxCommandEvent& event);
     DialogState m_State;
     bool m_useCamera;
     bool m_useMount;
@@ -149,6 +153,7 @@ wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
     EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
     EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
     EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
+    EVT_COMMAND_RANGE(MENU_SELECT_CAMERA_BEGIN, MENU_SELECT_CAMERA_END, SELECT_CAMERA_EVENT, ProfileWizard::OnCommandSelectCamera)
     EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
     EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
     EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
@@ -238,12 +243,16 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pStatusBar->SetFieldsCount(1);
 
     // Gear label and combo box
-    m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 15);
+    m_pGearGrid = new wxFlexGridSizer(1, 3, 5, 15);
     m_pGearLabel = new wxStaticText(this, wxID_ANY, "Temp:", wxDefaultPosition, wxDefaultSize);
     m_pGearChoice = new wxChoice(this, ID_COMBO, wxDefaultPosition, wxDefaultSize, GuideCamera::GuideCameraList(), 0,
                                  wxDefaultValidator, _("Gear"));
+    m_pSelectCameraButton = new CameraSelectorButton(this, GEAR_BUTTON_SELECT_CAMERA);
+    m_pSelectCameraButton->Enable(false);
+
     m_pGearGrid->Add(m_pGearLabel, 1, wxALL, 5);
     m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
+    m_pGearGrid->Add(m_pSelectCameraButton, 1, wxLEFT, 5);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
     m_pUserProperties = new wxGridBagSizer(6, 6);
@@ -722,6 +731,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pPrevBtn->Enable(false);
             m_pGearLabel->Show(false);
             m_pGearChoice->Show(false);
+            m_pSelectCameraButton->Show(false);
             m_pUserProperties->Show(false);
             m_pMountProperties->Show(false);
             m_pWrapUp->Show(false);
@@ -737,6 +747,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearChoice->Append(GuideCamera::GuideCameraList());
             if (m_SelectedCamera.length() > 0)
                 m_pGearChoice->SetStringSelection(m_SelectedCamera);
+            m_pSelectCameraButton->Show(true);
             m_pGearLabel->Show(true);
             m_pGearChoice->Show(true);
             m_pUserProperties->Show(true);
@@ -766,6 +777,7 @@ void ProfileWizard::UpdateState(const int change)
                 m_pGearChoice->Append(Scope::MountList());
                 if (m_SelectedMount.length() > 0)
                     m_pGearChoice->SetStringSelection(m_SelectedMount);
+                m_pSelectCameraButton->Show(false);
                 m_pUserProperties->Show(false);
                 m_pMountProperties->Show(true);
                 m_pInstructions->SetLabel(
@@ -875,7 +887,7 @@ struct AutoConnectCamera
 {
     GuideCamera *m_camera;
 
-    AutoConnectCamera(wxWindow *parent, const wxString& selection)
+    AutoConnectCamera(wxWindow *parent, const wxString& selection, const wxString& cameraId = GuideCamera::DEFAULT_CAMERA_ID)
     {
         m_camera = GuideCamera::Factory(selection);
         pFrame->ClearAlert();
@@ -883,7 +895,7 @@ struct AutoConnectCamera
         if (m_camera)
         {
             wxBusyCursor busy;
-            m_camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
+            m_camera->Connect(cameraId);
             pFrame->ClearAlert();
         }
 
@@ -914,9 +926,9 @@ struct AutoConnectCamera
     GuideCamera *operator->() const { return m_camera; }
 };
 
-static void SetBinningLevel(wxWindow *parent, const wxString& selection, int val)
+static void SetBinningLevel(wxWindow *parent, const wxString& selection, const wxString& cameraID, int val)
 {
-    AutoConnectCamera cam(parent, selection);
+    AutoConnectCamera cam(parent, selection, cameraID);
     if (cam && cam->MaxBinning > 1)
         cam->SetBinning(val);
 }
@@ -928,8 +940,9 @@ void ProfileWizard::WrapUp()
     m_autoRestore = m_pAutoRestore->GetValue();
 
     int binning = m_pBinningLevel->GetSelection() + 1;
+    wxString selectedCameraId = CameraSelectorButton::SelectedCameraId(m_SelectedCamera);
     if (m_useCamera)
-        SetBinningLevel(this, m_SelectedCamera, binning);
+        SetBinningLevel(this, m_SelectedCamera, selectedCameraId, binning);
 
     int calibrationDistance = CalstepDialog::GetCalibrationDistance(m_FocalLength, m_PixelSize, binning);
     int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning, calibrationDistance);
@@ -1150,7 +1163,8 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
     {
         // Pixel size
         double pxSz = 0.;
-        AutoConnectCamera cam(this, m_SelectedCamera);
+        wxString selectedCameraId = CameraSelectorButton::SelectedCameraId(m_SelectedCamera);
+        AutoConnectCamera cam(this, m_SelectedCamera, selectedCameraId);
         if (cam)
             pxSz = GetPixelSize(cam);
         m_pPixelSize->SetValue(pxSz); // Might be zero if driver doesn't report it
@@ -1165,6 +1179,10 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
             GuideCamera::GetBinningOpts(4, &opts);
         m_pBinningLevel->Set(opts);
         m_pBinningLevel->SetSelection(0);
+
+        m_pSelectCameraButton->SetCamera(m_SelectedCamera);
+        if (cam)
+            m_pSelectCameraButton->Enable(cam->CanSelectCamera()); 
     }
     else
     {
@@ -1176,6 +1194,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         m_pPixelSize->Enable(true);
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
+        m_pSelectCameraButton->Enable(false);
     }
 }
 
@@ -1416,4 +1435,9 @@ bool EquipmentProfileWizard::ShowModal(wxWindow *parent, bool showGreeting, bool
         return false;
     *darks_requested = wiz.m_launchDarks;
     return true;
+}
+
+void ProfileWizard::OnCommandSelectCamera(wxCommandEvent& event)
+{
+    InitCameraProps(true);
 }
