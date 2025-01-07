@@ -168,18 +168,25 @@ on expensive, high-precision mounts, and you are likely to know if you
 have them. &nbsp;Most users will leave this box unchecked.<br></div><br>In
 the last pane of the
 wizard dialog, you're given two options: 1) To automatically restore
-the PHD2 calibration whenever the profile is loaded and 2) to immediately
-build a dark library when the new profile is saved and the wizard completes. &nbsp;The first
-option is only presented if your profile uses an ASCOM or INDI mount connection.
+the PHD2 calibration whenever the profile is loaded and 2) to
+immediately
+build a dark library when the new profile is saved and the wizard
+completes. &nbsp;The first
+option is only presented if your profile uses an ASCOM or INDI mount
+connection.
 &nbsp;It is a convenience item especially for users with permanent
 setups. &nbsp;You can also use this option if you can insure that the
 guide camera orientation in its adapter tube remains the same from one
 night to the next. &nbsp;If you're in doubt or don't want to bother
 with how the guide camera is oriented, leave the box unchecked.&nbsp;
-You should always select the option to build a dark library unless you
+You should usually select the option to build a dark library unless you
 already have a
 compatible dark library that you're going to import from a different
-profile. &nbsp;If you are changing cameras and want to keep the dark
+profile. However, if you want to set properties of your guide camera
+such as bit-depth (8-bit vs. 16-bit), you must do that before building
+a dark library. A dark library can always be built or modified at a
+later time using the 'Darks' pull-down menu in the main window.&nbsp;If
+you are changing cameras and want to keep the dark
 libraries and bad-pixel maps associated with the old camera, you should
 create a separate profile for the new camera. &nbsp;When a camera
 selection is changed in an existing profile, the previously built dark
@@ -263,29 +270,55 @@ API Guider" module, which allows PHD2 to access the guide chip on the
 SBIG camera.<br><h4>ASCOM Camera Properties</h4>If
 you choose an ASCOM camera, you'll also be able to access the ASCOM
 setup dialog for that camera by clicking on the properties button
-immediately to the left of the 'Connect' button: <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_AscomProps.png"><br><br>Depending on the camera, this may provide access to properties that are not controlled by PHD2.<br><h4><a name="Camera_id_specification"></a>Multiple Cameras of the Same Type</h4>If
-your computer is connected to multiple cameras from the same
-manufacturer, you'll usually need to specify which camera should be
-used by PHD2. &nbsp;You can do that by clicking on the 'fork' button to
-the right of the camera drop-down list: <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_Camera2.png"><br><br>Clicking
-this button will show a list of the available cameras and you can
-choose the specific one you want. &nbsp;PHD2 will remember the choice and save
-it as part of your equipment profile, so you should only need to do
-this once. &nbsp;An alternative is to simply connect one of the
-cameras, the intended guide camera, at the time you build your
-equipment profile.<br><br>Some
-camera manufacturers don't do a good job of staying connected to the
-right camera and may switch from the guide camera to the imaging camera
-without any notification. &nbsp;If you see PHD2 alert messages warning
-you that the camera sensor geometry has changed and you need to
-re-build your dark library, the likely source of the problem is that
-PHD2 has been connected to the imaging camera. &nbsp;These problems are
-caused by the camera drivers, there's nothing PHD2 can do to prevent
-them. &nbsp;Of course, you need to be sure you are running the latest
-version of the camera driver and PHD2. &nbsp;If you can't successfully
-prevent this "camera switching", you can try using different drivers
-for the cameras - for example, ASCOM for the imaging application and
-the native driver for PHD2 (or vice versa).
+immediately to the left of the 'Connect' button: <br><br><img style="width: 506px; height: 161px;" alt="" src="GearDialog_AscomProps.png"><br><br>Depending on the camera, this may provide access to properties that are not controlled by PHD2.<br><h4><a name="Camera_id_specification"></a>Multiple Cameras from the Same Manufacturer</h4><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">If
+your computer is connected to multiple cameras from the same manufacturer (i.e.,
+an imaging camera and a separate guide camera), you'll usually need to specify
+which camera should be used by PHD2 and avoid getting it connected to the wrong
+camera. <span style="">&nbsp;</span><br><br></span><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">In
+order to reduce the likelihood of having this problem, follow these steps when
+creating a configuration profile:</span><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;"></span><span style="font-size: 11pt; line-height: 107%;"></span><br><ol><li>Make sure your camera drivers and ASCOM driver are up-to-date.</li><li>Before running the Profile Wizard, <span style="font-size: 11pt; line-height: 107%;">make sure that only the guide
+camera is physically connected to the PC. If your guide camera is connected
+through the imaging camera&#8217;s built-in USB port, you will need to connect the
+guide camera directly to the PC.</span></li><li><span style="font-size: 11pt; line-height: 107%;">If the drivers are installed correctly, you can connect to the camera
+in the first step of the Wizard. This will automatically determine your
+camera&#8217;s pixel size</span></li><li><span style="font-size: 11pt; line-height: 107%;">At the end of the configuration process, don't try to build a dark
+library immediately.</span></li><li><span style="font-size: 11pt; line-height: 107%;">After the Profile Wizard is finished you will be returned to
+the&nbsp;Gear Connection dialog. Click on the camera 'disconnect' button, then
+click on the 'branch' button (see below).&nbsp; Even though there will be only
+one camera listed, select it anyway.&nbsp; The entry should be the most
+accurate identifier needed to choose the camera when using multiple cameras</span></li></ol><img style="width: 506px; height: 315px;" alt="" src="ZWO_Branch_1.png"><br><br>&nbsp;&nbsp; &nbsp;6.&nbsp;<span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">Click
+on the 'properties' button to see if you have an option to choose the operating
+mode (8 or 16 bit).&nbsp; If so, choose your preferred mode. If you aren&#8217;t
+sure,&nbsp;16- bit is generally&nbsp; preferred. &nbsp;<br><br><img style="width: 492px; height: 285px;" alt="" src="ZWO_BPP.png"><br><br>&nbsp;&nbsp;&nbsp; 7. </span><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">Click
+Connect to connect the camera in the Gear Connection dialog then click on 'Ok'.<br style="">&nbsp;&nbsp;&nbsp; 8. </span><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">Now
+use the 'Darks' menu in the main window to create a dark library for the guide
+camera in your new configuration (or you can import one from another profile
+that uses the same camera.)<br><br><img style="width: 271px; height: 191px;" alt="" src="ZWO_Darks.png"><br><br></span><p><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;"></span><span style="font-size: 11pt; line-height: 107%;">Some
+camera manufacturers don't do a good job of staying connected to the right
+camera and may occasionally<span style="">&nbsp; </span>switch from
+the guide camera to the imaging camera without any notification.&nbsp; If you
+see PHD2 alert messages warning you that the camera sensor geometry has changed
+and you need to re-build your dark library,&nbsp;
+PHD2 has probably gotten connected to the imaging camera.&nbsp; Don't rebuild the dark
+library without first checking for this "switching" problem.&nbsp;
+These problems are caused by the camera drivers, there's nothing PHD2 can do to
+prevent them. One&nbsp;way to be sure you're still connected to the right
+camera is to open the 'Stats' window and take some exposures.&nbsp; Scan down
+the data table in the stats window and find the entry for 'Image size' - see if
+that's the correct size for the guide camera</span><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">.</span></p><p><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">If
+you continue to have problems with switching between cameras, you can take a
+different approach.&nbsp; Use the ASCOM driver for one of the cameras, and the
+'native' driver for the other one.&nbsp; Of course, you will have to be sure
+that the ASCOM driver is configured to connect to the appropriate camera.&nbsp;
+In all cases, you should be sure you're running the latest camera drivers and
+the latest release of PHD2 even if that means running the latest 'dev'
+release.&nbsp; Some camera manufacturers update their drivers and SDK software
+frequently, often without being concerned about backward compatibility.<span style="">&nbsp;&nbsp;</span></span></p><p>
+
+</p><p class="MsoNormal">If PHD2 ends up being connected to the wrong camera, you can
+re-assert your choice of camera by clicking on the &#8216;branch&#8217; button in the Gear
+Connection dialog:<o:p></o:p></p>
+<img style="width: 563px; height: 311px;" alt="" src="ZWO_Branch_2.png"><br><span style="font-size: 11pt; line-height: 107%; font-family: &quot;Calibri&quot;,sans-serif;">&nbsp;</span>
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>

@@ -36,14 +36,8 @@ if(NOT EXISTS ${thirdparties_deflate_directory})
   file(MAKE_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
-
-
 # custom cmake packages, should have lower priority than the ones bundled with cmake
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_SOURCE_DIR}/cmake_modules/ )
-
-
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/ )
 
 # these variables allow to specify to which the main project will link and
 # to potentially copy some resources to the output directory of the main project.
@@ -93,112 +87,6 @@ if(WIN32)
   include_directories(${VCPKG_INCLUDE})
 endif()
 
-#
-# copies the dependency files into the target output directory
-#
-macro(copy_dependency_with_config target_name dependency_list_all dependency_list_dbg dependency_list_release)
-
-
-  set(dependency_list_dbg_with_all ${${dependency_list_dbg}} ${${dependency_list_all}})
-  set(dependency_list_dbg_with_all_cleaned)
-  foreach(_element ${dependency_list_dbg_with_all})
-    if(NOT EXISTS ${_element})
-      message(FATAL_ERROR "Dependency ${_element} does not exist")
-    endif()
-    #message(STATUS "copyX ${_element}")
-    get_filename_component(_element1 ${_element} REALPATH)
-    set(dependency_list_dbg_with_all_cleaned ${dependency_list_dbg_with_all_cleaned} ${_element1})
-    unset(_element1)
-  endforeach()
-
-  list(REMOVE_DUPLICATES dependency_list_dbg_with_all_cleaned)
-  set(dependency_list_dbg_with_all ${dependency_list_dbg_with_all_cleaned})
-  unset(dependency_list_dbg_with_all_cleaned)
-  unset(_element)
-
-  foreach(_element ${dependency_list_dbg_with_all})
-    get_filename_component(_element_name ${_element} NAME)
-    add_custom_command(
-      TARGET ${target_name}
-      PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E
-        $<$<CONFIG:Debug>:echo>
-        $<$<CONFIG:Debug>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
-        $<$<NOT:$<CONFIG:Debug>>:echo_append>
-        $<$<NOT:$<CONFIG:Debug>>:".">
-      COMMAND ${CMAKE_COMMAND} -E
-        $<$<CONFIG:Debug>:copy_if_different>
-        $<$<CONFIG:Debug>:${_element}>
-        $<$<CONFIG:Debug>:$<TARGET_FILE_DIR:${target_name}>/.>
-        $<$<NOT:$<CONFIG:Debug>>:echo_append>
-        $<$<NOT:$<CONFIG:Debug>>:"">
-      COMMENT "Copy ${target_name} dependencies into the output folder")
-
-
-
-      #message(STATUS "copy ${_element_name}")
-    # add_custom_command(
-      # TARGET ${target_name}
-      # PRE_BUILD
-      # COMMAND ${CMAKE_COMMAND} -E echo Copy ${_element_name} into $<TARGET_FILE_DIR:${target_name}>/.
-
-      # COMMAND ${CMAKE_COMMAND} -E $<$<CONFIG:Debug>:copy_if_different>$<$<NOT:$<CONFIG:Debug>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
-      # COMMENT "Copy ${target_name} dependencies into the output folder")
-
-    unset(_element_name)
-  endforeach()
-  unset(dependency_list_dbg_with_all)
-  unset(_element)
-
-
-  set(dependency_list_release_with_all ${${dependency_list_release}} ${${dependency_list_all}})
-  set(dependency_list_release_with_all_cleaned)
-  foreach(_element ${dependency_list_release_with_all})
-    if(NOT EXISTS ${_element})
-      message(FATAL_ERROR "Dependency ${_element} does not exist")
-    endif()
-    get_filename_component(_element1 ${_element} REALPATH)
-    set(dependency_list_release_with_all_cleaned ${dependency_list_release_with_all_cleaned} ${_element1})
-    unset(_element1)
-  endforeach()
-  list(REMOVE_DUPLICATES dependency_list_release_with_all_cleaned)
-  set(dependency_list_release_with_all ${dependency_list_release_with_all_cleaned})
-  unset(dependency_list_release_with_all_cleaned)
-  unset(_element)
-
-  foreach(_element ${dependency_list_release_with_all})
-    get_filename_component(_element_name ${_element} NAME)
-    add_custom_command(
-      TARGET ${target_name}
-      PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E
-        $<$<CONFIG:Release>:echo> #$<$<NOT:$<CONFIG:Release>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
-        $<$<CONFIG:Release>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
-        $<$<NOT:$<CONFIG:Release>>:echo_append>
-        $<$<NOT:$<CONFIG:Release>>:".">
-      COMMAND ${CMAKE_COMMAND} -E
-        $<$<CONFIG:Release>:copy_if_different>
-        $<$<CONFIG:Release>:${_element}>
-        $<$<CONFIG:Release>:$<TARGET_FILE_DIR:${target_name}>/.>
-        $<$<NOT:$<CONFIG:Release>>:echo_append>
-        $<$<NOT:$<CONFIG:Release>>:"">
-      COMMENT "Copy ${target_name} dependencies into the output folder")
-    unset(_element_name)
-  endforeach()
-  unset(dependency_list_release_with_all)
-  unset(_element)
-
-  # we can also use this thing to install external stuff
-  #install( FILES ${dependency_name_debug}
-  #          DESTINATION bin
-  #          CONFIGURATIONS Debug)
-  #install( FILES ${dependency_name_non_debug}
-  #          DESTINATION bin
-  #          CONFIGURATIONS Release)
-
-
-endmacro(copy_dependency_with_config)
-
 if(APPLE)
   find_library(quicktimeFramework      QuickTime)
   find_library(iokitFramework          IOKit)
@@ -211,30 +99,30 @@ if(APPLE)
   find_library(coreFoundationFramework CoreFoundation)
 endif()
 
+#############################################
 #
 # external rules common to all platforms
 #
 #############################################
-
 
 ##############################################
 # cfitsio
 
 if(WIN32)
   include_directories(${VCPKG_INCLUDE}/cfitsio)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+  list(APPEND PHD_LINK_EXTERNAL_DEBUG
       ${VCPKG_DEBUG_LIB}/cfitsio.lib
       ${VCPKG_DEBUG_LIB}/zlibd.lib
   )
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+  list(APPEND PHD_LINK_EXTERNAL_RELEASE
       ${VCPKG_RELEASE_LIB}/cfitsio.lib
       ${VCPKG_RELEASE_LIB}/zlib.lib
   )
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+  list(APPEND PHD_COPY_EXTERNAL_DBG
       ${VCPKG_DEBUG_BIN}/cfitsio.dll
       ${VCPKG_DEBUG_BIN}/zlibd1.dll
   )
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+  list(APPEND PHD_COPY_EXTERNAL_REL
       ${VCPKG_RELEASE_BIN}/cfitsio.dll
       ${VCPKG_RELEASE_BIN}/zlib1.dll
   )
@@ -248,11 +136,9 @@ else()
     find_package(CFITSIO REQUIRED)
   endif()
   include_directories(${CFITSIO_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CFITSIO_LIBRARIES})
+  list(APPEND PHD_LINK_EXTERNAL ${CFITSIO_LIBRARIES})
   message(STATUS "Using system's CFITSIO.")
 endif()
-
-
 
 ##############################################
 # VidCapture
@@ -261,7 +147,7 @@ if(WIN32)
 
   set(libvidcap_root ${thirdparty_dir}/VidCapture)
 
-  # copied and adapted from the CMakeLists.txt of cftsio project. The
+  # copied and adapted from the CMakeLists.txt of cfitsio project. The
   # sources of the project are left untouched
 
   file(GLOB VIDCAP_H_FILES "${libvidcap_root}/Source/CVCommon/*.h" "${libvidcap_root}/Source/VidCapture/*.h")
@@ -280,7 +166,7 @@ if(WIN32)
   )
 
   foreach(_src_file IN LISTS VIDCAP_SRC_FILES)
-    set(VIDCAP_SRC_FILES_rooted "${VIDCAP_SRC_FILES_rooted}" ${libvidcap_root}/${_src_file})
+    list(APPEND VIDCAP_SRC_FILES_rooted ${libvidcap_root}/${_src_file})
   endforeach()
 
   add_library(VidCapture STATIC ${VIDCAP_H_FILES} ${VIDCAP_SRC_FILES_rooted})
@@ -298,12 +184,9 @@ if(WIN32)
   # indicating the link and include directives to the main project.
   # already done by the directive target_include_directories(vidcap PUBLIC
   # include_directories(${libvidcap_root})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} VidCapture)
+  list(APPEND PHD_LINK_EXTERNAL VidCapture)
 
 endif()
-
-
-
 
 #############################################
 # libusb: linux / apple
@@ -336,7 +219,7 @@ if(NOT WIN32)
 
   # platform dependent files
   if(APPLE)
-    set(libUSB_SRC ${libUSB_SRC}
+    list(APPEND libUSB_SRC
 
       # platform specific configuration file
       ${thirdparty_dir}/include/${LIBUSB}
@@ -355,7 +238,7 @@ if(NOT WIN32)
     # need to build a dynamic libusb since the ZWO SDK requires libusb
     set(LIBUSB_static FALSE)
   elseif(WIN32)
-    set(libUSB_SRC ${libUSB_SRC}
+    list(APPEND libUSB_SRC
 
       # platform specific configuration files
       ${libusb_root}/msvc/stdint.h
@@ -384,21 +267,17 @@ if(NOT WIN32)
     # It requires "sudo apt-get install libusb-1.0-0-dev"
     if(USE_SYSTEM_LIBUSB)
       pkg_check_modules(USB_pkg libusb-1.0)
-      if(0)
-        message(FATAL_ERROR "libUSB not detected")
-      else()
-        include_directories(${USB_pkg_INCLUDE_DIRS})
-        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
-        set(USB_build FALSE)
-        set(usb_openphd ${USB_pkg_LIBRARIES})
-        message(STATUS "Using system's libUSB.")
-      endif()
+      include_directories(${USB_pkg_INCLUDE_DIRS})
+      list(APPEND PHD_LINK_EXTERNAL ${USB_pkg_LIBRARIES})
+      set(USB_build FALSE)
+      set(usb_openphd ${USB_pkg_LIBRARIES})
+      message(STATUS "Using system's libUSB.")
     else(USE_SYSTEM_LIBUSB)
 
       # in case the library is not installed on the system (as I have on my machines)
       # try by building the library ourselves
 
-      set(libUSB_SRC ${libUSB_SRC}
+      list(APPEND libUSB_SRC
 
         # platform specific configuration file
         ${thirdparty_dir}/include/${LIBUSB}
@@ -449,7 +328,7 @@ if(NOT WIN32)
     else()
       target_compile_definitions(usb_openphd PRIVATE LIBUSB_DESCRIBE "")
     endif()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} usb_openphd)
+    list(APPEND PHD_LINK_EXTERNAL usb_openphd)
   endif()
 
 endif() # NOT WIN32
@@ -459,16 +338,16 @@ endif() # NOT WIN32
 #############################################
 
 if(WIN32)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+  list(APPEND PHD_LINK_EXTERNAL_DEBUG
       ${VCPKG_DEBUG_LIB}/libcurl-d.lib
   )
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+  list(APPEND PHD_LINK_EXTERNAL_RELEASE
       ${VCPKG_RELEASE_LIB}/libcurl.lib
   )
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+  list(APPEND PHD_COPY_EXTERNAL_DBG
       ${VCPKG_DEBUG_BIN}/libcurl-d.dll
   )
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+  list(APPEND PHD_COPY_EXTERNAL_REL
       ${VCPKG_RELEASE_BIN}/libcurl.dll
   )
 else()
@@ -487,7 +366,7 @@ else()
   endif()
   message(STATUS "using libcurl ${CURL_LIBRARIES}")
   include_directories(${CURL_INCLUDE_DIRS})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${CURL_LIBRARIES})
+  list(APPEND PHD_LINK_EXTERNAL ${CURL_LIBRARIES})
 endif()
 
 #############################################
@@ -501,9 +380,8 @@ else()
   message(STATUS "Using system's Eigen3.")
 endif()
 
-
 #############################################
-# Google test, easily built
+# Google test
 # https://github.com/google/googletest/tree/main/googletest#incorporating-into-an-existing-cmake-project
 
 if(USE_SYSTEM_GTEST)
@@ -519,7 +397,6 @@ else()
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 endif()
-
 
 #############################################
 # wxWidgets
@@ -545,7 +422,6 @@ if(WIN32)
   set(wxWidgets_USE_UNICODE OFF)
   find_package(wxWidgets REQUIRED COMPONENTS propgrid base core aui adv html net)
   include(${wxWidgets_USE_FILE})
-  #message(${wxWidgets_USE_FILE})
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
   if(NOT DEFINED wxWidgets_PREFIX_DIRECTORY)
@@ -582,16 +458,11 @@ else()
 
   find_package(wxWidgets REQUIRED COMPONENTS aui core base adv html net)
   if(NOT wxWidgets_FOUND)
-    message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
+    message(FATAL_ERROR "wxWidgets cannot be found. Please use wx-config prefix")
   endif()
-  #if(APPLE)
-  #  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} wx_osx_cocoau_aui-3.0)
-  #endif()
-  #message("wxLibraries ${wxWidgets_LIBRARIES}")
 endif()
 
-set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
-
+list(APPEND PHD_LINK_EXTERNAL ${wxWidgets_LIBRARIES})
 
 #############################################
 #
@@ -602,17 +473,17 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 if(USE_SYSTEM_LIBINDI)
   message(STATUS "Using system's libindi")
   find_package(INDI 2.0.0 REQUIRED)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES})
+  list(APPEND PHD_LINK_EXTERNAL ${INDI_CLIENT_LIBRARIES})
 
   find_package(ZLIB REQUIRED)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
+  list(APPEND PHD_LINK_EXTERNAL ${ZLIB_LIBRARIES})
 
   find_package(Nova REQUIRED)
   add_definitions("-DLIBNOVA")
   include_directories(${NOVA_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
+  list(APPEND PHD_LINK_EXTERNAL ${NOVA_LIBRARIES})
 else()
-  Include(ExternalProject)
+  include(ExternalProject)
   set(indi_INSTALL_DIR ${CMAKE_BINARY_DIR}/libindi)
   ExternalProject_Add(
     indi
@@ -632,16 +503,16 @@ else()
   )
   include_directories(${indi_INSTALL_DIR}/include)
   if (WIN32)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/indiclient.lib)
+    list(APPEND PHD_LINK_EXTERNAL ${indi_INSTALL_DIR}/lib/indiclient.lib)
   else()
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${indi_INSTALL_DIR}/lib/libindiclient.a)
+    list(APPEND PHD_LINK_EXTERNAL ${indi_INSTALL_DIR}/lib/libindiclient.a)
     if(APPLE)
       # MacOS must use a static libnova to avoid introducing a homebrew or macports dylib dependency
       find_library(LIBNOVA REQUIRED NAMES libnova.a PATHS /usr/local/lib)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${LIBNOVA})
+      list(APPEND PHD_LINK_EXTERNAL ${LIBNOVA})
     else()
       find_library(LIBNOVA REQUIRED NAMES nova)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${LIBNOVA} z)
+      list(APPEND PHD_LINK_EXTERNAL ${LIBNOVA} z)
     endif()
     ## Define LIBNOVA when building Indi from source.
     add_definitions("-DLIBNOVA")
@@ -651,7 +522,6 @@ else()
   # slows down incremental development
   # list(APPEND PHD_EXTERNAL_PROJECT_DEPENDENCIES indi)
 endif()
-
 
 #############################################
 #
@@ -681,21 +551,21 @@ if(WIN32)
   endif()
 
   include_directories(${VCPKG_INCLUDE}/opencv2)
-  set(PHD_LINK_EXTERNAL_DEBUG ${PHD_LINK_EXTERNAL_DEBUG}
+  list(APPEND PHD_LINK_EXTERNAL_DEBUG
       ${VCPKG_DEBUG_LIB}/opencv_imgproc4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_highgui4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_core4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_videoio4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_imgcodecs4d.lib
   )
-  set(PHD_LINK_EXTERNAL_RELEASE ${PHD_LINK_EXTERNAL_RELEASE}
+  list(APPEND PHD_LINK_EXTERNAL_RELEASE
       ${VCPKG_RELEASE_LIB}/opencv_imgproc4.lib
       ${VCPKG_RELEASE_LIB}/opencv_highgui4.lib
       ${VCPKG_RELEASE_LIB}/opencv_core4.lib
       ${VCPKG_RELEASE_LIB}/opencv_videoio4.lib
       ${VCPKG_RELEASE_LIB}/opencv_imgcodecs4.lib
   )
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG}
+  list(APPEND PHD_COPY_EXTERNAL_DBG
       ${VCPKG_DEBUG_BIN}/opencv_imgproc4d.dll
       ${VCPKG_DEBUG_BIN}/opencv_highgui4d.dll
       ${VCPKG_DEBUG_BIN}/opencv_core4d.dll
@@ -709,7 +579,7 @@ if(WIN32)
       ${VCPKG_DEBUG_BIN}/libwebpdecoder.dll
       ${VCPKG_DEBUG_BIN}/libsharpyuv.dll
   )
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL}
+  list(APPEND PHD_COPY_EXTERNAL_REL
       ${VCPKG_RELEASE_BIN}/opencv_imgproc4.dll
       ${VCPKG_RELEASE_BIN}/opencv_highgui4.dll
       ${VCPKG_RELEASE_BIN}/opencv_core4.dll
@@ -744,86 +614,100 @@ endif()
 # Various camera libraries
 if(WIN32)
   # Video for Windows, directshow and windows media
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
+  list(APPEND PHD_LINK_EXTERNAL
+    vfw32.lib
+    Strmiids.lib
+    Quartz.lib
+    winmm.lib
+  )
 
   # gpusb
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
 
   # ASI cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
 
   # ToupTek cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/toupcam.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/toupcam.dll)
 
   # QHY cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccd.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhyccd.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/tbb.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccd.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhyccd.dll)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/tbb.dll)
 
   # altair cameras
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/altaircam.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/AltairCam_legacy.dll)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/altaircam.dll)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/AltairCam_legacy.dll)
 
   # SBIGUDrv
   add_definitions(-DHAVE_SBIG_CAMERA=1)
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
-  #set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
+  #list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
 
   # DICAMSDK
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
 
   # SXUSB
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
 
   # astroDLL
-  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLGeneric.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLQHY5V.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll)
+  #list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLGeneric.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLQHY5V.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll
+  )
 
   # CMOSDLL
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
 
   # inpout32 ?
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
 
   # some other that are explicitly loaded at runtime
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGUSB_WIN.dll)
+  list(APPEND PHD_COPY_EXTERNAL_ALL
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGUSB_WIN.dll
+  )
 
   # SVB cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SVBCameraSDK.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SVBCameraSDK.dll)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SVBCameraSDK.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SVBCameraSDK.dll)
 
   # Moravian gX-driver cameras
-#  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.lib)
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.lib)
-#  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll)
+  list(APPEND PHD_LINK_EXTERNAL
+    # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.lib
+    ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.lib
+  )
+  list(APPEND PHD_COPY_EXTERNAL_ALL
+    # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.dll
+    ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll
+  )
   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
 
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcr120.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcp140.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcomp140.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcruntime140.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/concrt140.dll)
+  # Player One cameras
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.dll)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
 
-  # ASCOM
-  # disabled since not used in the SLN
-  #find_package(ASCOM_INTERFACE REQUIRED)
-  #include_directories(${ASCOM_INTERFACE_DIR})
+  list(APPEND PHD_COPY_EXTERNAL_ALL
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcr120.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcp140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcomp140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcruntime140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/concrt140.dll
+  )
 
 endif()
-
 
 #############################################
 # SBIG specific dependencies if installed part of system
@@ -850,7 +734,10 @@ if(SBIG_SYSTEM AND UNIX)
   find_library(SBIGUDRV_LIBRARIES NAMES sbigudrv)
   include_directories(${SBIG_INCLUDE_DIR})
 
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIG sbigudrv)
+  list(APPEND PHD_LINK_EXTERNAL
+    SBIG
+    sbigudrv
+  )
 
 endif()
 
@@ -860,10 +747,18 @@ endif()
 #
 #############################################
 if(APPLE)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
+  list(APPEND PHD_LINK_EXTERNAL
+    ${QuickTime}
+    ${IOKit}
+    ${Carbon}
+    ${Cocoa}
+    ${System}
+    ${Webkit}
+    ${AudioToolbox}
+    ${OpenGL}
+  )
 
   find_path(CARBON_INCLUDE_DIR Carbon.h)
-
 
   #############################################
   # Camera frameworks
@@ -877,8 +772,8 @@ if(APPLE)
   endif()
   include_directories(${sbigudFramework})
   add_definitions(-DHAVE_SBIG_CAMERA=1)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${sbigudFramework})
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${sbigudFramework})
+  list(APPEND PHD_LINK_EXTERNAL ${sbigudFramework})
+  list(APPEND phd2_OSX_FRAMEWORKS ${sbigudFramework})
 
   find_library( asiCamera2
                 NAMES ASICamera2
@@ -887,8 +782,8 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
   add_definitions(-DHAVE_ZWO_CAMERA=1)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${asiCamera2})
+  list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
+  list(APPEND phd2_OSX_FRAMEWORKS ${asiCamera2})
 
   find_library( SVBCameraSDK
                 NAMES SVBCameraSDK
@@ -899,8 +794,8 @@ if(APPLE)
 
   if(SVBCameraSDK)
     add_definitions(-DHAVE_SVB_CAMERA=1)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
-    set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${SVBCameraSDK})
+    list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
+    list(APPEND phd2_OSX_FRAMEWORKS ${SVBCameraSDK})
   endif()
 
   find_library( qhylib
@@ -910,8 +805,8 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
   add_definitions(-DHAVE_QHY_CAMERA=1)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${qhylib})
+  list(APPEND PHD_LINK_EXTERNAL ${qhylib})
+  list(APPEND phd2_OSX_FRAMEWORKS ${qhylib})
 
   find_library( toupcam
                 NAMES toupcam
@@ -919,9 +814,9 @@ if(APPLE)
   if(NOT toupcam)
     message(FATAL_ERROR "Cannot find the toupcam drivers")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
+  list(APPEND PHD_LINK_EXTERNAL ${toupcam})
   add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${toupcam})
+  list(APPEND phd2_OSX_FRAMEWORKS ${toupcam})
 
   find_library( ogmacam
                 NAMES ogmacam
@@ -929,18 +824,9 @@ if(APPLE)
   if(NOT ogmacam)
     message(FATAL_ERROR "Cannot find the ogmacam drivers")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ogmacam})
+  list(APPEND PHD_LINK_EXTERNAL ${ogmacam})
   add_definitions(-DHAVE_OGMA_CAMERA=1)
-  set(phd2_OSX_FRAMEWORKS ${phd2_OSX_FRAMEWORKS} ${ogmacam})
-
-  ### does not work on x64
-  #find_library( openssag
-  #              NAMES openssag
-  #              PATHS ${PHD_PROJECT_ROOT_DIR}/cameras )
-  #if(NOT openssag)
-  #  message(FATAL_ERROR "Cannot find the openssag drivers")
-  #endif()
-  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${openssag})
+  list(APPEND phd2_OSX_FRAMEWORKS ${ogmacam})
 
   set(LIBOPENSSAG openssag)
   set(libopenssag_dir ${thirdparty_dir}/${LIBOPENSSAG}/src)
@@ -951,19 +837,25 @@ if(APPLE)
     ${libopenssag_dir}/openssag_priv.h
     ${libopenssag_dir}/openssag.cpp
     ${libopenssag_dir}/openssag.h
-    )
+  )
   add_library(OpenSSAG ${libOPENSSAG_SRC})
   target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
+  list(APPEND PHD_LINK_EXTERNAL OpenSSAG)
   add_definitions(-DHAVE_OPENSSAG_CAMERA=1)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
 
+  find_library( playerone
+                NAMES PlayerOneCamera
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/mac)
+  if(NOT playerone)
+    message(FATAL_ERROR "Cannot find the playerone SDK lib")
+  endif()
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+  list(APPEND PHD_LINK_EXTERNAL ${playerone})
+  add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
+  list(APPEND phd2_OSX_FRAMEWORKS ${playerone})
+
 endif()  # APPLE
-
-
-
-
-
 
 #############################################
 #
@@ -983,17 +875,20 @@ if(UNIX AND NOT APPLE)
       set(qhyarch "arm32")
       set(toupcam_arch "armel")
       set(svbony_arch "armv6")
+      set(playerone_arch arm32)
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^armv7(.*)|arm64|aarch64|^armv8(.*)")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(zwoarch "armv8")
         set(qhyarch "arm64")
         set(toupcam_arch "arm64")
         set(svbony_arch "armv8")
+        set(playerone_arch arm64)
       else()
         set(zwoarch "armv7")
         set(qhyarch "arm32")
         set(toupcam_arch "armhf")
         set(svbony_arch "armv7")
+        set(playerone_arch arm32)
       endif()
     elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86|X86|amd64|AMD64|i.86")
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -1001,11 +896,13 @@ if(UNIX AND NOT APPLE)
         set(qhyarch "x86_64")
         set(toupcam_arch "x64")
         set(svbony_arch "x64")
+        set(playerone_arch x64)
       else()
         set(zwoarch "x86")
         set(qhyarch "x86_32")  # no longer distributed by QHY
         set(toupcam_arch "x86")
         set(svbony_arch "x86")
+        set(playerone_arch x86)
       endif()
     else()
       message(FATAL_ERROR "unknown system architecture")
@@ -1029,7 +926,7 @@ if(UNIX AND NOT APPLE)
       endif()
       message(STATUS "Found ASICamera2 lib ${asiCamera2}")
       add_definitions(-DHAVE_ZWO_CAMERA=1)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
+      list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
 
       find_library(toupcam
              NAMES toupcam
@@ -1041,8 +938,8 @@ if(UNIX AND NOT APPLE)
       endif()
       message(STATUS "Found toupcam lib ${toupcam}")
       add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${toupcam})
-      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${toupcam})
+      list(APPEND PHD_LINK_EXTERNAL ${toupcam})
+      list(APPEND PHD_INSTALL_LIBS ${toupcam})
 
       find_library(ogmacam
              NAMES ogmacam
@@ -1054,21 +951,20 @@ if(UNIX AND NOT APPLE)
       endif()
       message(STATUS "Found ogmacam lib ${ogmacam}")
       add_definitions(-DHAVE_OGMA_CAMERA=1)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ogmacam})
-      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${ogmacam})
+      list(APPEND PHD_LINK_EXTERNAL ${ogmacam})
+      list(APPEND PHD_INSTALL_LIBS ${ogmacam})
 
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK
             NO_DEFAULT_PATHS
             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/linux/${svbony_arch})
-
       if(NOT SVBCameraSDK)
         message(FATAL_ERROR "Cannot find the SVBCameraSDK drivers")
       endif()
       message(STATUS "Found SVBCameraSDK lib ${SVBCameraSDK}")
       add_definitions(-DHAVE_SVB_CAMERA=1)
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SVBCameraSDK})
-      set(PHD_INSTALL_LIBS ${PHD_INSTALL_LIBS} ${SVBCameraSDK})
+      list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
+      list(APPEND PHD_INSTALL_LIBS ${SVBCameraSDK})
 
       if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
         add_definitions(-DHAVE_QHY_CAMERA=1)
@@ -1081,8 +977,25 @@ if(UNIX AND NOT APPLE)
         if(NOT qhylib)
           message(FATAL_ERROR "Cannot find the qhy SDK libs")
         endif()
-        set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${qhylib})
+        list(APPEND PHD_LINK_EXTERNAL ${qhylib})
       endif()
+
+      find_library( playerone
+                    NAMES PlayerOneCamera
+                    NO_DEFAULT_PATHS
+                    PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/linux/${playerone_arch})
+
+      if(NOT playerone)
+        message(FATAL_ERROR "Cannot find the PlayerOneCamera SDK lib")
+      endif()
+      message(STATUS "Found PlayerOneCamera SDK lib ${playerone}")
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+      add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
+      list(APPEND PHD_LINK_EXTERNAL ${playerone})
+      # install the .so and symlinks
+      file(GLOB playerone_so_files "${playerone}*")
+      list(APPEND PHD_INSTALL_LIBS ${playerone_so_files})
+
     endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 
     find_program(LSB_RELEASE_EXEC lsb_release)
@@ -1113,18 +1026,18 @@ if(UNIX AND NOT APPLE)
       ${libopenssag_dir}/openssag_priv.h
       ${libopenssag_dir}/openssag.cpp
       ${libopenssag_dir}/openssag.h
-      )
+    )
     add_library(OpenSSAG ${libOPENSSAG_SRC})
     target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
     add_definitions(-DHAVE_OPENSSAG_CAMERA=1)
-    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
+    list(APPEND PHD_LINK_EXTERNAL OpenSSAG)
     set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
 
   endif()  # OPENSOURCE_ONLY
 
   # math library is needed, and should be one of the last things to link to here
   find_library(mathlib NAMES m)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
+  list(APPEND PHD_LINK_EXTERNAL ${mathlib})
 
 endif()
 
@@ -1138,9 +1051,9 @@ elseif(UNIX OR APPLE)
   add_definitions(-DHAVE_SXV_CAMERA=1)
   set(SXV_PLATFORM_SRC
       ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.h
-      ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.c)
+      ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.c
+  )
 endif()
-
 
 #############################################
 # KwiqGuider
@@ -1157,7 +1070,6 @@ if(APPLE)
     ${PHD_PROJECT_ROOT_DIR}/cameras/KWIQGuider/KWIQGuider_priv.h
   )
 endif()
-
 
 #############################################
 #

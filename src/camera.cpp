@@ -78,6 +78,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_qhy5.h"
 #endif
 
+#if defined(PLAYERONE_CAMERA)
+# include "cam_playerone.h"
+#endif
+
 #if defined(QHY_CAMERA)
 # include "cam_qhy.h"
 #endif
@@ -302,6 +306,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined(MORAVIAN_CAMERA)
     CameraList.Add(_T("Moravian Camera"));
 #endif
+#if defined(PLAYERONE_CAMERA)
+    CameraList.Add(_T("Player One Camera"));
+#endif
 #if defined(CAM_QHY5)
     CameraList.Add(_T("QHY 5"));
 #endif
@@ -446,6 +453,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn = new CameraQGuider();
             pReturn->Name = _T("MagZero MZ-5");
         }
+#endif
+#if defined(PLAYERONE_CAMERA)
+        else if (choice == _T("Player One Camera"))
+            pReturn = PlayerOneCameraFactory::MakePlayerOneCamera();
 #endif
 #if defined(QHY_CAMERA)
         else if (choice == _T("QHY Camera"))
