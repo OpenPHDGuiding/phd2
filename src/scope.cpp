@@ -2088,7 +2088,8 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
                                                      wxDefaultPosition, wxSize(width, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN,
                                                      MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
             AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec duration"), m_pMaxDecDuration,
-                           _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
+                           _("Longest length of pulse to send in declination\nDefault = 2500 ms. NOTE: this will be ignored if "
+                             "backlash compensation is enabled"));
 
             wxString dec_choices[] = {
                 Scope::DecGuideModeLocaleStr(DEC_NONE),
