@@ -207,6 +207,14 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib)
     pvSizer->Add(phSizer, wxSizerFlags().Border(wxALL, 5));
     pvSizer->Add(m_pProgress, wxSizerFlags().Border(wxLEFT, 60));
 
+    wxStaticText *bppWarning =
+        new wxStaticText(this, wxID_ANY, _("Be sure camera bit-depth is already set to desired value (8-bit or 16-bit)"),
+                         wxPoint(-1, -1), wxSize(-1, -1));
+    wxFont font = bppWarning->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    bppWarning->SetFont(font);
+    pvSizer->Add(bppWarning, wxSizerFlags().Center().Border(wxALL, 4));
+
     // Buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pResetBtn = new wxButton(this, wxID_ANY, _("Reset"));
