@@ -1152,4 +1152,4 @@ GuideCamera *PlayerOneCameraFactory::MakePlayerOneCamera()
     return new PlayerOneCamera();
 }
 
-#endif // CAMERA_PLAYERONE
+#endif // PLAYERONE_CAMERA
