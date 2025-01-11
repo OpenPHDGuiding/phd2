@@ -69,6 +69,12 @@ setup_worktree () {
 
     umask 022
     load_config
+    # remove the existing worktree
+    while IFS= read -r line; do
+        if [[ $line == "worktree $worktree" ]]; then
+            git worktree remove --force "$worktree"
+        fi
+    done < <(git worktree list --porcelain)
     git worktree add --force "$worktree" "$branch"
     trap cleanup_worktree EXIT
 
