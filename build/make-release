@@ -41,12 +41,21 @@ load_config () {
 }
 
 check_hosts_reachable () (
-    # make sure hosts are reachable
+    # make sure hosts are reachable and that the build hosts have github access
 
-    for h in $WWW_HOST $WIN_HOST $MAC64_HOST $MAC64S_HOST; do
+    for h in $WWW_HOST; do
         printf "checking $h ..."
-        ssh -q -oBatchMode=yes $h exit || {
+        ssh -q -oBatchMode=yes "$h" exit || {
             echo "Error: host $h is not ssh-accessible" >&2
+            exit 1
+        }
+        printf " ok\n"
+    done
+    for prefix in WIN MAC64 MAC64S; do
+        eval 'h=$'${prefix}_HOST 'dir=$'${prefix}_DIR
+        printf "checking $h ..."
+        ssh -q -oBatchMode=yes "$h" "cd '$dir' && git fetch -q origin" || {
+            echo "Error: host $h is not ssh-accessible or has no git access" >&2
             exit 1
         }
         printf " ok\n"
