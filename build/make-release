@@ -116,7 +116,7 @@ update_translations () (
 )
 
 bump_rev () (
-    cur_rev=$(./build/get_phd_version phd.h)
+    cur_rev=$(./build/get_phd_version src/phd.h)
     if [[ $cur_rev == $rev ]]; then
         echo "version update not neeed"
         return
@@ -124,18 +124,18 @@ bump_rev () (
     echo "update phd.h version to $rev"
     TMP=$(mktemp)
     trap "rm -f '$TMP'" EXIT
-    cp phd.h "$TMP"
+    cp src/phd.h "$TMP"
     ver=${rev/dev*}
     subver=${rev/$ver}
     awk -v q='"' -v VER=$ver -v SUBVER=$subver '
         /^#define PHDVERSION/ { print "#define PHDVERSION _T(" q VER q ")"; next }
         /^#define PHDSUBVER/  { print "#define PHDSUBVER _T(" q SUBVER q ")"; next }
                               { print }
-    ' "$TMP" > phd.h
+    ' "$TMP" > src/phd.h
     # normalize line endings
-    dos2unix phd.h
-    unix2dos phd.h
-    git add phd.h
+    dos2unix src/phd.h
+    unix2dos src/phd.h
+    git add src/phd.h
     # update the debian changelog
     if is_full_release; then
         changelog=ChangeLog-full
