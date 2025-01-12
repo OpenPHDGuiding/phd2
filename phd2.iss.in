@@ -50,6 +50,7 @@ Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\toupcam.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SVBCameraSDK.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\PlayerOneCamera.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\LIBCURL.DLL; DestDir: {app}; Flags: replacesameversion
 Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
