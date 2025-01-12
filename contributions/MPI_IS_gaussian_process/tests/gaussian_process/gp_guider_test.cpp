@@ -115,6 +115,7 @@ const bool GPGTest::DefaultComputePeriod = true;
 #include <sstream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
 #include "guide_performance_tools.h"
 
