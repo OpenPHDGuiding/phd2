@@ -1,3 +1,10 @@
+phd2 (2.6.13dev7) unstable; urgency=low
+
+  * Windows: add camera DLL missing from today's 2.6.13dev6 release.
+  * No other changes in this release. Please see the dev6 changes for what's new.
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 11 Jan 2025 22:23:56 -0500
+
 phd2 (2.6.13dev6) unstable; urgency=low
 
   * Improved display of magnified star in StarProfile
