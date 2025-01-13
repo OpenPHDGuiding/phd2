@@ -36,6 +36,8 @@
  */
 
 #include "phd.h"
+#include "planetary.h"
+
 #include <algorithm>
 
 Star::Star()
@@ -123,22 +125,123 @@ static double hfr(std::vector<R2M>& vec, double cx, double cy, double mass)
     return hfr;
 }
 
-bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode, double minHFD, double maxHFD,
-                unsigned short maxADU, StarFindLogType loggingControl)
+// Calculate metric for a solar system object
+double Star::CalcPlanetMetric(const usImage *pImg, int center_x, int center_y, int r, int annulusWidth)
+{
+    const double sigma_factor = 1.0;
+    int scopeOuter = r + annulusWidth * 3;
+    int scopeInner = r + annulusWidth;
+    int scopeOuter2 = scopeOuter * scopeOuter;
+    int scopeInner2 = scopeInner * scopeInner;
+    int start_x = wxMax(0, center_x - scopeOuter);
+    int end_x = wxMin(center_x + scopeOuter, pImg->Size.GetWidth() - 1);
+    int start_y = wxMax(0, center_y - scopeOuter);
+    int end_y = wxMin(center_y + scopeOuter, pImg->Size.GetHeight() - 1);
+
+    const unsigned short *imgdata = pImg->ImageData;
+    const int rowsize = pImg->Size.GetWidth();
+
+    // Calculate the statistics within the larger annulus
+    double snr = 0.0;
+    double mass = 0;
+    double sum = 0.0;
+    double sq_sum = 0.0;
+    int count = 0;
+    const unsigned short *row = imgdata + rowsize * start_y;
+    for (int y = start_y; y <= end_y; y++, row += rowsize)
+    {
+        for (int x = start_x; x <= end_x; x++)
+        {
+            int r2 = (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y);
+            if ((r2 < scopeOuter2) && (r2 > scopeInner2))
+            {
+                double pixel = (double) row[x];
+                sum += pixel;
+                sq_sum += pixel * pixel;
+                count++;
+            }
+        }
+    }
+
+    // Calculate mean, variance and standard deviation in the annulus
+    double mean = (count > 0) ? sum / count : 0.0;
+    double variance = (count > 0) ? (sq_sum / count) - (mean * mean) : 0.0;
+    double stdDev = sqrt(variance);
+    int signalThreshold = mean + stdDev * sigma_factor;
+
+    // Calculate signal and noise within the circle
+    unsigned short peak_val = 0;
+    double meanSignal = 0.0;
+    int signalCount = 0;
+    double meanNoise = 0.0;
+    int noiseCount = 0;
+    double noiseVariance = 0.0;
+    row = imgdata + rowsize * start_y;
+    for (int y = start_y; y <= end_y; y++, row += rowsize)
+    {
+        for (int x = start_x; x <= end_x; x++)
+        {
+            int r2 = (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y);
+            if (r2 < scopeInner2)
+            {
+                double pixel = (double) row[x];
+                if (pixel > peak_val)
+                    peak_val = pixel;
+                if (pixel > signalThreshold)
+                {
+                    meanSignal += pixel;
+                    signalCount++;
+                }
+            }
+            else if (r2 < scopeOuter2)
+            {
+                double pixel = (double) row[x];
+                if (pixel <= signalThreshold)
+                {
+                    meanNoise += pixel;
+                    noiseVariance += pixel * pixel;
+                    noiseCount++;
+                }
+            }
+        }
+    }
+
+    // Use sum of all pixels considered as signal as the mass metric
+    mass = meanSignal;
+    meanSignal = (signalCount > 0) ? meanSignal / signalCount : 0.0;
+
+    double noiseStdDev = 0.0;
+    if (noiseCount > 0)
+    {
+        meanNoise /= noiseCount;
+        noiseVariance = noiseVariance / noiseCount - meanNoise * meanNoise;
+        noiseStdDev = sqrt(noiseVariance);
+        snr = (noiseStdDev > 1) ? (meanSignal - meanNoise) / noiseStdDev : 0.0;
+    }
+
+    PeakVal = peak_val;
+    Mass = mass;
+    Debug.Write(wxString::Format(
+        "Star::CalcPlanetMetric: signalThreshold=%d, meanSignal=%.1f, meanNoise=%.1f (stddev=%.1f), SNR=%.1f\n",
+        signalThreshold, meanSignal, meanNoise, noiseStdDev, snr));
+    return snr;
+}
+
+bool Star::Find(const usImage *pImg, int searchRegion, double base_x, double base_y, FindMode mode, double minHFD,
+                double maxHFD, unsigned short maxADU, StarFindLogType loggingControl, bool autoFound)
 {
     FindResult Result = STAR_OK;
-    double newX = base_x;
-    double newY = base_y;
+    double newX = (int) base_x;
+    double newY = (int) base_y;
 
     try
     {
         if (loggingControl == FIND_LOGGING_VERBOSE)
-            Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d), %.1f, %0.1f, %hu) frame %u\n", searchRegion,
-                                         base_x, base_y, mode, pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width,
-                                         pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
+            Debug.Write(wxString::Format("Star::Find(%d, %.2f, %.2f, %d, (%d,%d,%d,%d), %.1f, %0.1f, %hu) frame %u\n",
+                                         searchRegion, base_x, base_y, mode, pImg->Subframe.x, pImg->Subframe.y,
+                                         pImg->Subframe.width, pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
 
         int minx, miny, maxx, maxy;
-
         if (pImg->Subframe.IsEmpty())
         {
             minx = miny = 0;
@@ -154,14 +257,18 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
 
         // search region bounds
-        int start_x = wxMax(base_x - searchRegion, minx);
-        int end_x = wxMin(base_x + searchRegion, maxx);
-        int start_y = wxMax(base_y - searchRegion, miny);
-        int end_y = wxMin(base_y + searchRegion, maxy);
-
-        if (end_x <= start_x || end_y <= start_y)
+        int start_x, end_x, start_y, end_y;
+        if (mode != FIND_PLANET)
         {
-            throw ERROR_INFO("coordinates are invalid");
+            start_x = wxMax(base_x - searchRegion, minx);
+            end_x = wxMin(base_x + searchRegion, maxx);
+            start_y = wxMax(base_y - searchRegion, miny);
+            end_y = wxMin(base_y + searchRegion, maxy);
+
+            if (end_x <= start_x || end_y <= start_y)
+            {
+                throw ERROR_INFO("coordinates are invalid");
+            }
         }
 
         const unsigned short *imgdata = pImg->ImageData;
@@ -190,11 +297,10 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
             PeakVal = peak_val;
         }
-        else
+        else if (mode == FIND_CENTROID)
         {
             // find the peak value within the search region using a smoothing function
             // also check for saturation
-
             for (int y = start_y + 1; y <= end_y - 1; y++)
             {
                 for (int x = start_x + 1; x <= end_x - 1; x++)
@@ -224,6 +330,23 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
             PeakVal = max3[0]; // raw peak val
             peak_val /= 16; // smoothed peak value
+        }
+        else // FIND_PLANET
+        {
+            SolarSystemObject *planet = pFrame->pGuider->m_SolarSystemObject;
+            if (!autoFound && !planet->FindSolarSystemObject(pImg))
+            {
+                Result = STAR_ERROR;
+                goto done;
+            }
+
+            // Use detected center of the Sun, Moon or planet for guiding
+            searchRegion = planet->m_searchRegion;
+            newX = planet->m_center_x;
+            newY = planet->m_center_y;
+            SNR = CalcPlanetMetric(pImg, newX, newY, searchRegion, 15);
+            HFD = planet->GetHFD();
+            goto done;
         }
 
         // measure noise in the annulus with inner radius A and outer radius B
@@ -363,7 +486,7 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         // January 8
         //     http://www.phys.vt.edu/~jhs/phys3154/snr20040108.pdf
         double const gain = .5; // electrons per ADU, nominal
-        SNR = n > 0 ? mass / sqrt(mass / gain + sigma2_bg * (double) n * (1.0 + 1.0 / (double) nbg)) : 0.0;
+        SNR = (n > 0 && nbg > 0) ? mass / sqrt(mass / gain + sigma2_bg * (double) n * (1.0 + 1.0 / (double) nbg)) : 0.0;
 
         double const LOW_SNR = 3.0;
 
@@ -462,7 +585,7 @@ done:
 
     bool wasFound = WasFound(Result);
 
-    if (!IsValid() || Result == STAR_ERROR)
+    if (Result == STAR_ERROR)
     {
         Mass = 0.0;
         SNR = 0.0;
@@ -722,6 +845,24 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
     {
         Debug.AddLine("AutoFind called on subframe, returning error");
         return false; // not found
+    }
+
+    if (pFrame->GetStarFindMode() == Star::FIND_PLANET)
+    {
+        SolarSystemObject *planet = pFrame->pGuider->m_SolarSystemObject;
+        if (planet->FindSolarSystemObject(&image, true))
+        {
+            referencePoint.X = planet->m_center_x;
+            referencePoint.Y = planet->m_center_y;
+            SetXY(referencePoint.X, referencePoint.Y);
+            Debug.Write(wxString::Format("Star::AutoFind found object at (%.1f, %.1f)\n", X, Y));
+            return true;
+        }
+        else
+        {
+            Debug.Write("AutoFind: no object found\n");
+            return false;
+        }
     }
 
     wxBusyCursor busy;

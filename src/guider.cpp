@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "planetary.h"
 #include "polardrift_tool.h"
 #include "staticpa_tool.h"
 #include "guiding_assistant.h"
@@ -203,6 +204,8 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize)
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30, (unsigned char) 30));
 
     s_deflectionLogger.Init();
+
+    m_SolarSystemObject = new SolarSystemObject();
 }
 
 Guider::~Guider()
@@ -211,6 +214,8 @@ Guider::~Guider()
     delete m_pCurrentImage;
 
     s_deflectionLogger.Uninit();
+
+    delete m_SolarSystemObject;
 }
 
 void Guider::LoadProfileSettings()
@@ -497,7 +502,10 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC)
 
                     if (newWidth > 0 && newHeight > 0)
                     {
-                        m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_BILINEAR);
+                        wxImageResizeQuality quality = (pFrame->GetStarFindMode() == Star::FIND_PLANET)
+                            ? wxIMAGE_QUALITY_NORMAL
+                            : wxIMAGE_QUALITY_BILINEAR;
+                        m_displayedImage->Rescale(newWidth, newHeight, quality);
                     }
                 }
             }
@@ -1351,13 +1359,17 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 static GuiderOffset ZERO_OFS;
                 pFrame->SchedulePrimaryMove(pMount, ZERO_OFS, MOVEOPTS_DEDUCED_MOVE);
 
-                wxColor prevColor = GetBackgroundColour();
-                SetBackgroundColour(wxColour(64, 0, 0));
-                ClearBackground();
-                if (pFrame->GetBeepForLostStar())
-                    wxBell();
-                wxMilliSleep(100);
-                SetBackgroundColour(prevColor);
+                // Don't blink and beep during solar/planetary guiding pause state
+                if (!m_SolarSystemObject->GetDetectionPausedState())
+                {
+                    wxColor prevColor = GetBackgroundColour();
+                    SetBackgroundColour(wxColour(64, 0, 0));
+                    ClearBackground();
+                    if (pFrame->GetBeepForLostStar())
+                        wxBell();
+                    wxMilliSleep(100);
+                    SetBackgroundColour(prevColor);
+                }
                 break;
             }
 

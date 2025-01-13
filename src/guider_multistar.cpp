@@ -1,17 +1,8 @@
 /*
  *  guider_multistar.cpp
  *  PHD Guiding
-
- *  Original guider_onestar Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
- *  All rights reserved.
  *
- *  guider_onestar completely refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
- *  All rights reserved.
- *
- *  guider_multistar extensions created by Bruce Waddington
- *  Copyright (c) 2020 Bruce Waddington
+ *  Copyright (c) 2006-2025 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -22,7 +13,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -41,6 +32,7 @@
  */
 
 #include "phd.h"
+#include "planetary.h"
 
 #include <wx/dir.h>
 #include <algorithm>
@@ -456,7 +448,7 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
         }
 
         // If mount is not calibrated, we need to chose a star a bit farther
-        // from the egde to allow for the motion of the star during
+        // from the edge to allow for the motion of the star during
         // calibration
         //
         int edgeAllowance = 0;
@@ -473,11 +465,18 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
         }
 
         m_massChecker->Reset();
-
-        if (!m_primaryStar.Find(image, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID, GetMinStarHFD(),
-                                GetMaxStarHFD(), pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE))
+        Star::FindMode findMode = (pFrame->GetStarFindMode() == Star::FIND_PLANET) ? Star::FIND_PLANET : Star::FIND_CENTROID;
+        if (!m_primaryStar.Find(image, m_searchRegion, newStar.X, newStar.Y, findMode, GetMinStarHFD(), GetMaxStarHFD(),
+                                pCamera->GetSaturationADU(), Star::FIND_LOGGING_VERBOSE, true))
         {
             throw ERROR_INFO("Unable to find");
+        }
+
+        // After finding planet metric we can fill the set using complete data
+        if (findMode == Star::FIND_PLANET)
+        {
+            m_guideStars.clear();
+            m_guideStars.push_back(m_primaryStar);
         }
 
         // DEBUG OUTPUT
@@ -947,10 +946,12 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
             errorInfo->starMass = 0.0;
             errorInfo->starSNR = 0.0;
             errorInfo->starHFD = 0.0;
-            errorInfo->status = StarStatusStr(newStar);
+            errorInfo->status =
+                (pFrame->GetStarFindMode() == Star::FIND_PLANET) ? m_SolarSystemObject->m_statusMsg : StarStatusStr(newStar);
             m_primaryStar.SetError(newStar.GetError());
 
-            s_distanceChecker.Activate();
+            if (pFrame->GetStarFindMode() != Star::FIND_PLANET)
+                s_distanceChecker.Activate();
             ImageLogger::LogImage(pImage, *errorInfo);
 
             throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
@@ -1046,6 +1047,14 @@ bool GuiderMultiStar::UpdateCurrentPosition(const usImage *pImage, GuiderOffset 
         pFrame->AdjustAutoExposure(m_primaryStar.SNR);
         pFrame->UpdateStatusBarStarInfo(m_primaryStar.SNR, m_primaryStar.GetError() == Star::STAR_SATURATED);
         errorInfo->status = StarStatus(m_primaryStar);
+
+        // Show sun/moon/planet position after successful detection
+        if ((GetState() != STATE_GUIDING) && (pFrame->GetStarFindMode() == Star::FIND_PLANET))
+        {
+            wxString statusMsg;
+            m_SolarSystemObject->GetDetectionStatus(statusMsg);
+            pFrame->StatusMsg(statusMsg);
+        }
     }
     catch (const wxString& Msg)
     {
@@ -1142,6 +1151,14 @@ void GuiderMultiStar::OnLClick(wxMouseEvent& mevent)
             double StarX = (double) mevent.m_x / scaleFactor;
             double StarY = (double) mevent.m_y / scaleFactor;
 
+            if (pFrame->GetStarFindMode() == Star::FIND_PLANET)
+            {
+                m_SolarSystemObject->m_clicked_x = wxMin(StarX, pImage->Size.GetWidth() - 1);
+                m_SolarSystemObject->m_clicked_y = wxMin(StarY, pImage->Size.GetHeight() - 1);
+                m_SolarSystemObject->m_userLClick = true;
+                m_SolarSystemObject->m_detectionCounter = 0;
+            }
+
             SetCurrentPosition(pImage, PHD_Point(StarX, StarY));
 
             if (!m_primaryStar.IsValid())
@@ -1158,13 +1175,18 @@ void GuiderMultiStar::OnLClick(wxMouseEvent& mevent)
                     m_guideStars.push_back(m_primaryStar);
                 }
                 Debug.Write("MultiStar: single-star usage forced by user star selection\n");
-                pFrame->StatusMsg(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_primaryStar.X, m_primaryStar.Y));
+                wxString targetType = (pFrame->GetStarFindMode() == Star::FIND_PLANET) ? _("object") : _("star");
+                pFrame->StatusMsg(
+                    wxString::Format(_("Selected %s at (%.1f, %.1f)"), targetType, m_primaryStar.X, m_primaryStar.Y));
                 pFrame->UpdateStatusBarStarInfo(m_primaryStar.SNR, m_primaryStar.GetError() == Star::STAR_SATURATED);
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();
                 pFrame->pProfile->UpdateData(pImage, m_primaryStar.X, m_primaryStar.Y);
             }
+
+            if (pFrame->GetStarFindMode() == Star::FIND_PLANET)
+                m_SolarSystemObject->m_showMinMaxDiameters = true;
 
             Refresh();
             Update();
@@ -1179,8 +1201,67 @@ void GuiderMultiStar::OnLClick(wxMouseEvent& mevent)
 inline static void DrawBox(wxDC& dc, const PHD_Point& star, int halfW, double scale)
 {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    halfW = (pFrame->GetStarFindMode() == Star::FIND_PLANET) ? 10 : halfW;
     double w = ROUND((halfW * 2 + 1) * scale);
-    dc.DrawRectangle(int((star.X - halfW) * scale), int((star.Y - halfW) * scale), w, w);
+    int xpos = int((star.X - halfW) * scale);
+    int ypos = int((star.Y - halfW) * scale);
+    if (pFrame->GetStarFindMode() == Star::FIND_PLANET)
+    {
+        // Clip drawing region to displayed image frame
+        wxImage *pImg = pFrame->pGuider->DisplayedImage();
+        if (pImg)
+            dc.SetClippingRegion(wxRect(0, 0, pImg->GetWidth(), pImg->GetHeight()));
+
+        Guider *pGuider = pFrame->pGuider;
+        if (pGuider->m_SolarSystemObject->m_detected)
+        {
+            int x = int(star.X * scale + 0.5);
+            int y = int(star.Y * scale + 0.5);
+            int r = int(pGuider->m_SolarSystemObject->m_radius * scale + 0.5);
+            dc.DrawCircle(x, y, r);
+            dc.SetPen(wxPen(dc.GetPen().GetColour(), 1, dc.GetPen().GetStyle()));
+            dc.DrawRectangle(xpos, ypos, w, w);
+        }
+
+        // Replaces visual bell for paused detection while guiding
+        if (pGuider->m_SolarSystemObject->GetDetectionPausedState())
+        {
+            static int dash = 0;
+            static wxDash dashPattern[4][4] = {
+                /* d  g  d  g */
+                { 4, 2, 4, 2 },
+                { 4, 3, 4, 3 },
+                { 4, 4, 4, 4 },
+                { 4, 3, 4, 3 },
+            };
+
+            // Create a pen with the custom dash pattern
+            dash = (dash + 1) % 4;
+            wxPen pen(wxColour(230, 30, 30), 4, wxPENSTYLE_USER_DASH);
+            pen.SetDashes(4, dashPattern[dash]);
+            dc.SetPen(pen);
+
+            int x = int(star.X * scale + 0.5);
+            int y = int(star.Y * scale + 0.5);
+            int r = int(pGuider->m_SolarSystemObject->m_radius * scale + 0.5);
+            dc.DrawCircle(x, y, r);
+        }
+
+        // Show active processing region (ROI)
+        if (pGuider->m_SolarSystemObject->m_roiActive && pFrame->CaptureActive)
+        {
+            dc.SetPen(wxPen(wxColour(200, 200, 200), 2, wxPENSTYLE_SHORT_DASH));
+            dc.DrawRectangle(
+                pGuider->m_SolarSystemObject->m_roiRect.x * scale, pGuider->m_SolarSystemObject->m_roiRect.y * scale,
+                pGuider->m_SolarSystemObject->m_roiRect.width * scale, pGuider->m_SolarSystemObject->m_roiRect.height * scale);
+        }
+
+        dc.DestroyClippingRegion();
+    }
+    else
+    {
+        dc.DrawRectangle(xpos, ypos, w, w);
+    }
 }
 
 // Define the repainting behaviour
@@ -1243,29 +1324,33 @@ void GuiderMultiStar::OnPaint(wxPaintEvent& event)
         GUIDER_STATE state = GetState();
         bool FoundStar = m_primaryStar.WasFound();
 
+        int thickness = pFrame->GetStarFindMode() == Star::FIND_PLANET ? 4 : 1;
         if (state == STATE_SELECTED)
         {
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(100, 255, 90), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(100, 255, 90), thickness, wxPENSTYLE_SOLID)); // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
+                dc.SetPen(wxPen(wxColour(230, 130, 30), thickness, wxPENSTYLE_DOT));
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
         {
             // in the calibration process
-            dc.SetPen(wxPen(wxColour(32, 196, 32), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
+            dc.SetPen(wxPen(wxColour(32, 196, 32), thickness, wxPENSTYLE_SOLID)); // Draw the box around the star
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
         {
             // locked and guiding
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(32, 196, 32), 1, wxPENSTYLE_SOLID)); // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(32, 196, 32), thickness, wxPENSTYLE_SOLID)); // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230, 130, 30), 1, wxPENSTYLE_DOT));
+                dc.SetPen(wxPen(wxColour(230, 130, 30), thickness, wxPENSTYLE_DOT));
             DrawBox(dc, m_primaryStar, m_searchRegion, m_scaleFactor);
         }
+
+        // Display visual elements to assist with tuning the solar and planetary detection parameters
+        m_SolarSystemObject->VisualHelper(dc, m_primaryStar, m_scaleFactor);
     }
     catch (const wxString& Msg)
     {

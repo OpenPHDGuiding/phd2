@@ -38,6 +38,8 @@
 
 #include "aui_controls.h"
 #include "comet_tool.h"
+#include "planetary.h"
+#include "planetary_tool.h"
 #include "config_indi.h"
 #include "guiding_assistant.h"
 #include "phdupdate.h"
@@ -97,6 +99,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_POLARDRIFTTOOL, MyFrame::OnPolarDriftTool)
     EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+    EVT_MENU(MENU_SOLAR_SYSTEM_TOOL, MyFrame::OnPlanetTool)
     EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
     EVT_MENU(MENU_HELP_ONLINE, MyFrame::OnHelpOnline)
@@ -149,6 +152,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_TOOL(BUTTON_AUTOSTAR, MyFrame::OnButtonAutoStar)
     EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
+    EVT_TOOL(BUTTON_SOLAR_SYSTEM_TOOL, MyFrame::OnPlanetTool)
     EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnButtonGuide)
     EVT_MENU(MENU_GUIDE,MyFrame::OnButtonGuide)
@@ -211,7 +215,8 @@ struct FileDropTarget : public wxFileDropTarget
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, wxEmptyString), m_showBookmarksAccel(0), m_bookmarkLockPosAccel(0), pStatsWin(nullptr)
+    : wxFrame(nullptr, wxID_ANY, wxEmptyString), pGuider(nullptr), pPlanetTool(nullptr), m_showBookmarksAccel(0),
+      m_bookmarkLockPosAccel(0), pStatsWin(nullptr)
 {
     m_mgr.SetManagedWindow(this);
 
@@ -335,6 +340,7 @@ MyFrame::MyFrame()
     pStarCrossDlg = nullptr;
     pNudgeLock = nullptr;
     pCometTool = nullptr;
+    pPlanetTool = nullptr;
     pGuidingAssistant = nullptr;
     pRefineDefMap = nullptr;
     pCalSanityCheckDlg = nullptr;
@@ -342,6 +348,8 @@ MyFrame::MyFrame()
     pCalibrationAssistant = nullptr;
     pierFlipToolWin = nullptr;
     m_starFindMode = Star::FIND_CENTROID;
+    m_StarFindMode_Saved = m_starFindMode;
+    m_StopReason = wxEmptyString;
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
 
@@ -442,6 +450,8 @@ MyFrame::~MyFrame()
         pStarCrossDlg->Destroy();
     if (pierFlipToolWin)
         pierFlipToolWin->Destroy();
+    if (pPlanetTool)
+        pPlanetTool->Destroy();
 
     m_mgr.UnInit();
 
@@ -496,6 +506,8 @@ void MyFrame::SetupMenuBar()
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
+    m_PlanetaryMenuItem = tools_menu->AppendCheckItem(MENU_SOLAR_SYSTEM_TOOL, _("&Planetary and Solar Guiding Tool\tCtrl-P"),
+                                                      _("Run the solar/lunar/planetary guiding tool"));
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_PIERFLIP_TOOL, _("Calibrate meridian flip"),
                        _("Automatically determine the correct meridian flip settings"));
@@ -626,7 +638,7 @@ int MyFrame::GetExposureDelay()
 void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 {
     unsigned int i;
-    int width = -1;
+    int width = GetTextWidth(pComboBox, _("Custom: 0.999 s"));
 
     for (i = 0; i < pComboBox->GetCount(); i++)
     {
@@ -665,18 +677,21 @@ bool MyFrame::SetCustomExposureDuration(int ms)
     return false;
 }
 
-void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp) const
+bool MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp) const
 {
+    bool bEerr = false;
     if (!pCamera || !pCamera->Connected)
     {
         *currExpMs = 0;
         *autoExp = false;
+        bEerr = true;
     }
     else
     {
         *currExpMs = m_exposureDuration;
         *autoExp = m_autoExp.enabled;
     }
+    return bEerr;
 }
 
 static int dur_index(int duration)
@@ -687,7 +702,7 @@ static int dur_index(int duration)
     return -1;
 }
 
-bool MyFrame::SetExposureDuration(int val)
+bool MyFrame::SetExposureDuration(int val, bool updateCustom)
 {
     if (val < 0)
     {
@@ -698,7 +713,15 @@ bool MyFrame::SetExposureDuration(int val)
     {
         int idx = dur_index(val);
         if (idx == -1)
-            return false;
+        {
+            if (updateCustom)
+            {
+                SetCustomExposureDuration(val);
+                idx = dur_index(val);
+            }
+            if (idx == -1)
+                return false;
+        }
         Dur_Choice->SetSelection(idx + 1); // skip Auto
     }
 
@@ -786,6 +809,16 @@ wxString MyFrame::ExposureDurationLabel(int duration)
 
     int digits = duration < 100 ? 2 : 1;
     return wxString::Format(_("%.*f s"), digits, (double) duration / 1000.);
+}
+
+void MyFrame::SaveStarFindMode()
+{
+    m_StarFindMode_Saved = m_starFindMode;
+}
+
+void MyFrame::RestoreStarFindMode()
+{
+    m_starFindMode = m_StarFindMode_Saved;
 }
 
 Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
@@ -963,6 +996,11 @@ void MyFrame::SetupToolBar()
 #include "icons/cam_setup_disabled.png.h"
     wxBitmap cam_setup_bmp_disabled(wxBITMAP_PNG_FROM_DATA(cam_setup_disabled));
 
+    // This mage sourced from https://www.pngegg.com/en/png-zffyt
+    // The image is used under its "Non-commercial use, DMCA" terms.
+#include "icons/eclipse.png.h"
+    wxBitmap eclipse_bmp(wxBITMAP_PNG_FROM_DATA(eclipse));
+
     int dur_values[] = {
         10,    20,   50,   100,  200,  500,  1000, 1500, 2000,  2500,  3000,
         3500,  4000, 4500, 5000, 6000, 7000, 8000, 9000, 10000, 15000,
@@ -981,7 +1019,7 @@ void MyFrame::SetupToolBar()
     Dur_Choice =
         new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize, durs, wxCB_READONLY);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
-    SetComboBoxWidth(Dur_Choice, 10);
+    SetComboBoxWidth(Dur_Choice, 35);
 
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1, -1), wxSize(160, -1));
     Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60)); // Slightly darker than toolbar background
@@ -1001,6 +1039,8 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddSeparator();
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced Settings"), brain_bmp, _("Advanced Settings"));
     MainToolbar->AddTool(BUTTON_CAM_PROPERTIES, cam_setup_bmp, cam_setup_bmp_disabled, false, 0, _("Camera settings"));
+    MainToolbar->AddTool(BUTTON_SOLAR_SYSTEM_TOOL, _("Planetary and Solar Guiding Tool"), eclipse_bmp,
+                         _("Planetary and Solar Guiding Tool"));
     MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_AUTOSTAR, false);
@@ -1080,9 +1120,22 @@ static bool cond_update_tool(wxAuiToolBar *tb, int toolId, wxMenuItem *mi, bool 
     return ret;
 }
 
+void MyFrame::UpdateCameraSettings()
+{
+    eventLock.Lock();
+    if (pPlanetTool)
+    {
+        wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
+        event.SetEventObject(this);
+        wxPostEvent(pPlanetTool, event);
+    }
+    eventLock.Unlock();
+}
+
 void MyFrame::UpdateButtonsStatus()
 {
     assert(wxThread::IsMain());
+    assert(pGuider);
 
     bool need_update = false;
 
@@ -1107,7 +1160,7 @@ void MyFrame::UpdateButtonsStatus()
         need_update = true;
     }
 
-    bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding(); // Not the same as 'bGuideable below
+    bool guiding_active = pGuider->IsCalibratingOrGuiding(); // Not the same as 'bGuideable below
 
     if (!guiding_active ^ m_autoSelectStarMenuItem->IsEnabled())
     {
@@ -1169,6 +1222,9 @@ void MyFrame::UpdateButtonsStatus()
 
     if (pierFlipToolWin)
         PierFlipTool::UpdateUIControls();
+
+    if (pGuider->m_SolarSystemObject->UpdateCaptureState(CaptureActive))
+        need_update = true;
 
     if (need_update)
     {
@@ -1282,6 +1338,7 @@ void MyFrame::DoAlert(const alert_params& params)
     // workaround, do not display any icon on Mac.
     showMessageFlags = wxICON_NONE;
 #endif
+    m_infoBar->Dismiss();
     m_infoBar->ShowMessage(wrappedText, showMessageFlags);
     m_statusbar->UpdateStates(); // might have disconnected a device
     EvtServer.NotifyAlert(params.msg, params.flags);
@@ -1716,6 +1773,8 @@ void MyFrame::ScheduleExposure()
 
     if (m_pPrimaryWorkerThread) // can be null when app is shutting down (unlikely but possible)
         m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
+    else
+        delete img;
 }
 
 void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
@@ -2703,6 +2762,8 @@ bool MyFrame::SetTimeLapse(int timeLapse)
     }
 
     pConfig->Profile.SetInt("/frame/timeLapse", m_timeLapse);
+
+    UpdateCameraSettings();
 
     return bError;
 }
