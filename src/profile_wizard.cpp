@@ -1182,7 +1182,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
 
         m_pSelectCameraButton->SetCamera(m_SelectedCamera);
         if (cam)
-            m_pSelectCameraButton->Enable(cam->CanSelectCamera()); 
+            m_pSelectCameraButton->Enable(cam->CanSelectCamera());
     }
     else
     {
