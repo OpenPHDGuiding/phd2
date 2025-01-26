@@ -633,7 +633,7 @@ msgstr "Rychlosti"
 
 #: calibration_assistant.cpp:907
 msgid "Sky location (Dec comp disabled)"
-msgstr "Pozice na Obloze ( Kompenzace Dec vypnutá)"
+msgstr "Pozice na Obloze (Kompenzace Dec vypnutá)"
 
 #: calibration_assistant.cpp:912
 msgid "Sky location"
@@ -1115,7 +1115,7 @@ msgstr "Přijmout kalibraci"
 
 #: calreview_dialog.cpp:765
 msgid "Accept the calibration as being valid and continue guiding"
-msgstr "Přijmout kalibraci jako platnou a pokračovat v"
+msgstr "Přijmout kalibraci jako platnou a pokračovat v navádění"
 
 #: calreview_dialog.cpp:767
 msgid "Discard calibration"
@@ -1126,8 +1126,8 @@ msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
 msgstr ""
-"Zastavte navádění a zrušte nejnovější kalibraci. Kalibrace bude provedena "
-"znovu při dalším spuštění"
+"Zastavte navádění a zrušte poslední kalibraci. Kalibrace bude provedena "
+"znovu při příštím spuštění"
 
 #: calreview_dialog.cpp:771
 msgid "Restore old calibration"
@@ -1159,7 +1159,7 @@ msgstr "Ohnisková vzdálenost, mm"
 
 #: calstep_dialog.cpp:117
 msgid "Guide scope focal length"
-msgstr "Ohnisková vzdálenost pointačního dalekohledu"
+msgstr "Ohnisková vzdálenost naváděcého dalekohledu"
 
 #: calstep_dialog.cpp:122
 msgid "Pixel size, microns"
@@ -1568,7 +1568,7 @@ msgstr "Port LE"
 
 #: camera.cpp:957
 msgid "Port number for long-exposure control"
-msgstr "Číslo portu pro  dlouhých časů"
+msgstr "Číslo portu pro dlouhé expozice"
 
 #: camera.cpp:962
 msgid "Cooler On"
@@ -1893,7 +1893,7 @@ msgstr "LXUSB nelze spustit"
 
 #: cam_LESerialWebcam.cpp:295
 msgid "Serial LE Webcam"
-msgstr "Webová kamera se Sériovým portem LE"
+msgstr "Webkamera s LE sériovým portem"
 
 #: cam_LESerialWebcam.cpp:315 stepguider_sxao.cpp:194
 msgid "No serial ports found"
@@ -1917,7 +1917,7 @@ msgstr "Výchozí hodnota"
 
 #: cam_LESerialWebcam.cpp:389
 msgid "Webcam settings"
-msgstr "Nastavení webové kamery"
+msgstr "Nastavení Webkamery"
 
 #: cam_MeadeDSI.cpp:117
 msgid "No DSI cameras found"
@@ -2047,7 +2047,7 @@ msgstr "SSAG Nahrávání USB Výrobek ID. Výchozí hodnota = 0x%04x"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
-msgstr "Nenalezeneo OSPL130RT.dll"
+msgstr "Nenalezeno OSPL130RT.dll"
 
 #: cam_OSPL130.cpp:58
 msgid "Cannot init camera"
@@ -2126,11 +2126,11 @@ msgstr "Snížení šumu zesilovače"
 
 #: cam_qhy.cpp:363
 msgid "Row noise reduction"
-msgstr "Redukce šumu v řádcích"
+msgstr "Redukce šumu řádků"
 
 #: cam_qhy.cpp:366
 msgid "High speed mode"
-msgstr "Rychlý režim"
+msgstr "Režim vysoké rychlosti"
 
 #: cam_qhy.cpp:369
 msgid "High gain mode"
@@ -2204,11 +2204,11 @@ msgstr "Nepodařilo se nastavit provoz USB kamery"
 
 #: cam_qhy.cpp:1047
 msgid "Failed to set camera amp noise reduction"
-msgstr "Nepodařilo se nastavit snížení šumu zesilovače kamery"
+msgstr "Nepodařilo se nastavit redukci šumu zesilovače kamery"
 
 #: cam_qhy.cpp:1056
 msgid "Failed to set camera row noise reduction"
-msgstr "Nepodařilo se nastavit snížení šumu v řádku kamery"
+msgstr "Nepodařilo se nastavit potlačení šumu řádku kamery"
 
 #: cam_qhy.cpp:1065
 msgid "Failed to set camera speed mode"
@@ -2274,7 +2274,7 @@ msgid ""
 "\n"
 "No = use main image CCD"
 msgstr ""
-"Sledovací CCD nalezeno, použít?\n"
+"Naváděcí CCD bylo nalezeno, použít ho?\n"
 "\n"
 "Ne = použít hlavní obraz CCD"
 
@@ -2439,7 +2439,7 @@ msgstr "Vlastnosti Kamery ToupTek"
 
 #: cam_vfw.cpp:98
 msgid "Select capture device"
-msgstr "Výběr snímacího za"
+msgstr "Výběr snímacího zařizení"
 
 #: cam_vfw.cpp:98 cam_wdm.cpp:215
 msgid "Camera choice"
@@ -2495,7 +2495,7 @@ msgstr "ZWO ASI Kamera nespuštěna."
 
 #: cam_zwo.cpp:424
 msgid "Failed to initizlize ZWO ASI Camera."
-msgstr "Nepodařilo se inicializovat kameru ZWO ASI."
+msgstr "Nepodařilo se inicializovat Kameru ZWO ASI."
 
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
@@ -2561,7 +2561,7 @@ msgstr "Osy"
 
 #: comet_tool.cpp:115
 msgid "Tracking rate axes"
-msgstr "Sledování osy rychlosti"
+msgstr "Osy rychlosti sledování"
 
 #: comet_tool.cpp:117 darks_dialog.cpp:224 guiding_assistant.cpp:552
 #: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:355 starcross_test.cpp:159
@@ -2570,7 +2570,7 @@ msgstr "Start"
 
 #: comet_tool.cpp:118
 msgid "Start training the tracking rate."
-msgstr "Zaháji trénink sledovací rychlostí."
+msgstr "Zaháji trénink sledovací rychlosti."
 
 #: comet_tool.cpp:119 darks_dialog.cpp:256 guiding_assistant.cpp:562
 #: polardrift_toolwin.cpp:358 starcross_test.cpp:161 staticpa_toolwin.cpp:643
@@ -2583,7 +2583,7 @@ msgstr "Zastaví trénink"
 
 #: comet_tool.cpp:153
 msgid "Rate Training"
-msgstr "Rychlost Tréninku"
+msgstr "Intenzita Tréninku"
 
 #: comet_tool.cpp:199
 msgid "Disable"
@@ -2738,7 +2738,7 @@ msgid ""
 "shortest camera exposure you will use for guiding."
 msgstr ""
 "Minimální čas expozice pro dark. Vyberte hodnotu odpovídající nejkratší "
-"expozici kamery, kterou použijete při navigaci."
+"expozici kamery, kterou použijete při navádění."
 
 #: darks_dialog.cpp:120
 msgid "Max Exposure Time"
@@ -2750,7 +2750,7 @@ msgid ""
 "camera exposure you will use for guiding."
 msgstr ""
 "Maximální čas expozice pro dark. Vyberte hodnotu odpovídající nejdelší "
-"expozici kamery, kterou použijete při navigaci."
+"expozici kamery, kterou použijete při navádění."
 
 #: darks_dialog.cpp:127
 msgid "Number of dark frames for each exposure time"
@@ -2865,7 +2865,7 @@ msgstr "Nastavte své parametry a klikněte na tlačítko 'Start' pro spuštěn�
 
 #: darks_dialog.cpp:262
 msgid "Cover guide scope"
-msgstr "Zakrýt pointační dalekohled"
+msgstr "Zakrýt naváděcí dalekohled"
 
 #: darks_dialog.cpp:292
 #, c-format
@@ -2907,7 +2907,7 @@ msgstr "Sestavené hlavní dark datové soubory"
 
 #: darks_dialog.cpp:387
 msgid "Uncover guide scope"
-msgstr "Odkrýt pointační dalekohled"
+msgstr "Odkrýt naváděcí dalekohled"
 
 #: darks_dialog.cpp:388
 #, c-format
@@ -3269,7 +3269,7 @@ msgstr "Správa Profilů"
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
-msgstr "Vytvořit nový Profil Za, smažte nebo přejmenujte stávající profil"
+msgstr "Vytvořit nový Profil Zařizení, smažte nebo přejmenujte stávající profil"
 
 #: gear_dialog.cpp:242
 msgid ""
@@ -3277,7 +3277,7 @@ msgid ""
 "Disconnect All to disconnect. You can also connect or disconnect individual "
 "equipment items by clicking the button next to the item."
 msgstr ""
-"Vyberte níže uvedená za a klikněte na možnost \"Vše Připojit\" nebo \"Vše "
+"Vyberte níže uvedená zařizení a klikněte na možnost \"Vše Připojit\" nebo \"Vše "
 "Odpojit\" pro připojení nebo odpojení. Můžete také připojit nebo odpojit "
 "jednotlivé položky vybavení kliknutím na tlačítko vedle dané položky."
 
@@ -3985,7 +3985,7 @@ msgstr "Varování!  Toto je určeno pro použití odborníky"
 
 #: guide_algorithm_gaussian_process.cpp:101
 msgid "Approximation Data Points"
-msgstr "Aproximační (přibližná hodnota) Datové Body"
+msgstr "Aproximace Datových Bodů"
 
 #: guide_algorithm_gaussian_process.cpp:102
 #, c-format
