@@ -33,10 +33,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD 3.6.13 dev5\n"
+"Project-Id-Version: PHD 3.6.13 dev7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-11 15:12-0500\n"
-"PO-Revision-Date: 2024-11-03 08:48+0100\n"
+"PO-Revision-Date: 2025-01-25 08:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: Stanislav Holub\n"
 "Language: cs_CS\n"
@@ -66,7 +66,7 @@ msgstr "Kamera"
 #: advanced_dialog.cpp:102 advanced_dialog.cpp:181 myframe.cpp:1692
 #: myframe.cpp:2246 scope_manual_pointing.cpp:70
 msgid "Guiding"
-msgstr "Pointování"
+msgstr "Navádění"
 
 #: advanced_dialog.cpp:104 advanced_dialog.cpp:186
 msgid "Algorithms"
@@ -110,10 +110,10 @@ msgid ""
 "Yellow means  4 <= SNR < 10\n"
 "Red means SNR < 4"
 msgstr ""
-"Poměr signálu k šumu (SNR) pointační hvězdy\n"
-"Zelená značí SNR >= 10\n"
-"Žlutá značí  4 <= SNR < 10\n"
-"Červená značí SNR < 4"
+"Poměr signálu k šumu (SNR) naváděcí hvězdy\n"
+"Zelená znamená SNR >= 10\n"
+"Žlutá znamená  4 <= SNR < 10\n"
+"Červená znamená SNR < 4"
 
 #: aui_controls.cpp:519 aui_controls.cpp:542 aui_controls.cpp:556
 #, c-format
@@ -130,7 +130,7 @@ msgstr "Kalibrace"
 
 #: aui_controls.cpp:629
 msgid "Calibrated, scope pointing information not available"
-msgstr "Kalibrováno, informace o poloze dalekohledu nejsou k dispozici"
+msgstr "Kalibrováno, informace o směru dalekohledu nejsou k dispozici"
 
 #: aui_controls.cpp:635
 msgid "Calibrated, declination compensation disabled"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: aui_controls.cpp:645
 msgid "Calibrated, scope pointing info in use"
-msgstr "Kalibrováno, údaje o poloze dalekohledu jsou v užívání"
+msgstr "Kalibrováno, údaje o směru dalekohledu jsou v užívání"
 
 #: aui_controls.cpp:705 config_indi.cpp:110 gear_dialog.cpp:292
 #: gear_dialog.cpp:295
@@ -168,7 +168,7 @@ msgstr ", "
 
 #: aui_controls.cpp:766
 msgid "BPM"
-msgstr "MChP"
+msgstr "MVP"
 
 #: aui_controls.cpp:766 aui_controls.cpp:840 aui_controls.cpp:852
 msgid "Dark"
@@ -176,16 +176,16 @@ msgstr "Dark"
 
 #: aui_controls.cpp:831
 msgid "All devices connected"
-msgstr "Všechna zařízení připojena"
+msgstr "Všechna za připojena"
 
 #: aui_controls.cpp:833
 msgid "No devices connected"
-msgstr "Žádné zařízení není připojeno"
+msgstr "Žádné za není připojeno"
 
 #: aui_controls.cpp:835
 #, c-format
 msgid "Devices not connected: %s"
-msgstr "Zařízení nejsou připojena: %s"
+msgstr "Za nejsou připojena: %s"
 
 #: aui_controls.cpp:841
 msgid "Dark library in use"
@@ -197,11 +197,11 @@ msgstr "Dark knihovna se nepoužívá"
 
 #: aui_controls.cpp:843
 msgid "Bad-pixel map in use"
-msgstr "Mapa chybných pixlů se používá"
+msgstr "Mapa vadných pixlů se používá"
 
 #: aui_controls.cpp:843
 msgid "Bad-pixel map not in use"
-msgstr "Mapa chybných pixlů se nepoužívá"
+msgstr "Mapa vadných pixlů se nepoužívá"
 
 #: aui_controls.cpp:852
 msgid "Cal"
@@ -324,7 +324,7 @@ msgstr "Kalibrační Asistent"
 
 #: calibration_assistant.cpp:179
 msgid "Current Pointing Location"
-msgstr "Aktuální Poloha Umístění"
+msgstr "Aktuální Poloha Zaměřování"
 
 #: calibration_assistant.cpp:180
 msgid "Calibration Location"
@@ -333,7 +333,7 @@ msgstr "Kalibrační Místo"
 #: calibration_assistant.cpp:189 calibration_assistant.cpp:212
 #: calibration_assistant.cpp:1079
 msgid "Pointing"
-msgstr "Pointování"
+msgstr "Nastavení směru"
 
 #: calibration_assistant.cpp:190 calibration_assistant.cpp:213
 #: calibration_assistant.cpp:1080 calreview_dialog.cpp:305
@@ -375,15 +375,15 @@ msgid ""
 "'Pointing' buttons (less than 15 degrees recommended)"
 msgstr ""
 "Offset cíle od centrálního poledníku ve stupních; na východ nebo na západ "
-"podle tlačítek \"Pointování\" (doporučuje se menší než 15°)"
+"podle přepínacích tlačítek 'Nastavení směru' (doporučuje se menší než 15°)"
 
 #: calibration_assistant.cpp:214 calibration_assistant.cpp:1081
 msgid "Scope on the east side of pier, pointing west"
-msgstr "Dalekohled na východní straně pilíře, míří na západ"
+msgstr "Dalekohled na východní straně pilíře, směřující na západ"
 
 #: calibration_assistant.cpp:217
 msgid "Scope on west side of pier, pointing east"
-msgstr "Dalekohled na západní straně pilíře, míří na východ"
+msgstr "Dalekohled na západní straně pilíře, směřující na východ"
 
 #: calibration_assistant.cpp:225
 msgid "Save custom values..."
@@ -407,7 +407,7 @@ msgid ""
 "'Calibration Location' fields"
 msgstr ""
 "Načte předem uloženou vlastní polohu a zobrazí její hodnoty v polích "
-"\"Kalibrační Místo\""
+"'Kalibrační Místo'"
 
 #: calibration_assistant.cpp:233
 msgid "Restore defaults"
@@ -417,7 +417,7 @@ msgstr "Obnoví výchozí hodnoty"
 msgid ""
 "Restore the 'Calibration Location' fields to show the recommended pointing "
 "location"
-msgstr "Obnoví pole \"Kalibrační Místo\" a zobrazí doporučenou polohu umístění"
+msgstr "Obnoví pole 'Kalibrační Místo' a zobrazí doporučenou polohu umístění"
 
 #: calibration_assistant.cpp:247 calibration_assistant.cpp:690
 #: drift_tool.cpp:207 drift_tool.cpp:560
@@ -477,10 +477,10 @@ msgid ""
 "least 0.5x sidereal. Then click the 'Recalc' button so PHD2 can compute a "
 "correct calibration step-size."
 msgstr ""
-"Rychlost vaší montáže je příliš malá pro účinnou kalibraci a řízení. Pomocí "
-"ovladače ručního pohybu nebo ovladače montáže zvyšte rychlost na minimálně "
-"0,5x hvězdné rychlosti. Poté klikněte na tlačítko \"Přepočítat\", aby PHD2 "
-"mohl vypočítat správnou velikost kalibračního kroku."
+"Rychlost vaší montáže je příliš malá pro účinnou kalibraci a navádění. "
+"Pomocí ovladače ručního pohybu nebo ovladače montáže zvyšte rychlost na "
+"minimálně 0,5x hvězdné rychlosti. Poté klikněte na tlačítko 'Přepočítat', "
+"aby PHD2 mohl vypočítat správnou velikost kalibračního kroku."
 
 #: calibration_assistant.cpp:334
 msgid ""
@@ -492,7 +492,7 @@ msgstr ""
 "Rychlost vaší montáže je nižší než minimální doporučená hodnota 0,5x hvězdné "
 "rychlosti. Pomocí ovladače ručního pohybu nebo ovladače montáže zvyšte "
 "rychlost alespoň na 0,5x hvězdné rychlosti. Poté klikněte na tlačítko "
-"\"Přepočítat\", aby PHD2 mohl vypočítat správnou velikost kalibračního kroku."
+"'Přepočítat', aby PHD2 mohl vypočítat správnou velikost kalibračního kroku."
 
 #: calibration_assistant.cpp:349
 msgid ""
@@ -500,7 +500,7 @@ msgid ""
 "results. Click the 'Recalc' button to restore them to the default values."
 msgstr ""
 "Vaše aktuální kalibrační parametry lze upravit pro přesnější výsledky. "
-"Kliknutím na tlačítko \"Přepočítat\" je obnovíte na výchozí hodnoty."
+"Kliknutím na tlačítko 'Přepočítat' je obnovíte na výchozí hodnoty."
 
 #: calibration_assistant.cpp:389
 msgid "Calibration failed or was cancelled"
@@ -525,8 +525,8 @@ msgid ""
 "Use the 'slew' button to move the scope to within 20 degrees of Dec = 0 or "
 "as close to that as your site will allow."
 msgstr ""
-"Pomocí tlačítka \"Přejezd\" najeďte dalekohledem do vzdálenosti maximálně "
-"20° od Dec = 0, nebo co nejblíže, jak to vaše místo umožňuje."
+"Pomocí tlačítka 'Přejezd' najeďte dalekohledem do vzdálenosti max. 20° od "
+"Dec = 0, nebo co nejblíže, jak to vaše místo umožňuje."
 
 #: calibration_assistant.cpp:541
 msgid ""
@@ -538,7 +538,7 @@ msgstr ""
 
 #: calibration_assistant.cpp:544
 msgid "Calibration is likely to fail this close to the pole."
-msgstr "Kalibrace v této poloze pravděpodobně selže."
+msgstr "Kalibrace v této směru pravděpodobně selže."
 
 #: calibration_assistant.cpp:548
 msgid ""
@@ -565,13 +565,13 @@ msgid ""
 "Adjust 'Calibration Location' values if needed for your site, then click "
 "'Slew'"
 msgstr ""
-"V případě potřeby upravte hodnoty \"Kalibrační Místo\", poté klikněte na "
-"tlačítko \"Přejezd\""
+"V případě potřeby upravte hodnoty 'Kalibrační Místo', poté klikněte na "
+"tlačítko 'Přejezd'"
 
 #: calibration_assistant.cpp:656
 #, c-format
 msgid "Manually move the telescope to a Dec location near %d"
-msgstr "Ručně přesuňte dalekohled na Dec poblíž %d"
+msgstr "Ručně přeložte dalekohled na Dec poblíž %d"
 
 #: calibration_assistant.cpp:690 drift_tool.cpp:560
 msgid "Slewing..."
@@ -596,8 +596,8 @@ msgid ""
 "Wait for tracking to stabilize, then click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
 msgstr ""
-"Počkejte, až se pohyb ustálí, poté klikněte na \"Kalibrovat\" pro spuštění "
-"kalibrace nebo \"Zrušit\" pro ukončení"
+"Počkejte, až se pohyb ustálí, poté klikněte na 'Kalibrovat' pro spuštění "
+"kalibrace nebo 'Zrušit' pro ukončení"
 
 #: calibration_assistant.cpp:788
 msgid "Initial slew to approximate position"
@@ -616,12 +616,12 @@ msgid ""
 "Wait for tracking to stabilize, then Click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
 msgstr ""
-"Počkejte, až se pohyb ustálí, poté Klikněte na \"Kalibrovat\" pro spuštění "
-"kalibrace nebo \"Zrušit\" pro ukončení"
+"Počkejte, až se pohyb ustálí, poté Klikněte na 'Kalibrovat' pro spuštění "
+"kalibrace nebo 'Zrušit' pro ukončení"
 
 #: calibration_assistant.cpp:881
 msgid "Steps"
-msgstr "Krok"
+msgstr "Kroky"
 
 #: calibration_assistant.cpp:889 calibration_assistant.cpp:1254
 msgid "Orthogonality"
@@ -633,7 +633,7 @@ msgstr "Rychlosti"
 
 #: calibration_assistant.cpp:907
 msgid "Sky location (Dec comp disabled)"
-msgstr "Pozice na Obloze ( Kompenzace Dec vypnutá)"
+msgstr "Pozice na Obloze (Kompenzace Dec vypnutá)"
 
 #: calibration_assistant.cpp:912
 msgid "Sky location"
@@ -648,14 +648,14 @@ msgstr ""
 msgid ""
 "Calibration result was good, guiding is active using the new calibration"
 msgstr ""
-"Výsledek kalibrace byl dobrý, řízení je aktivní s využitím nové kalibrace"
+"Výsledek kalibrace byl dobrý, navádění je aktivní s využitím nové kalibrace"
 
 #: calibration_assistant.cpp:928
 msgid ""
 "Calibration result was acceptable, guiding is active using the new "
 "calibration"
 msgstr ""
-"Výsledek kalibrace byl přijatelný, řízení je aktivní s využitím nové "
+"Výsledek kalibrace byl přijatelný, navádění je aktivní s využitím nové "
 "kalibrace"
 
 #: calibration_assistant.cpp:935
@@ -714,19 +714,19 @@ msgid ""
 "Target offset from central meridian, in degrees; east or west based on "
 "'Pointing' buttons"
 msgstr ""
-"Zadejte offset cíle od středního poledníku ve stupních; východní nebo "
-"západní směrem na základě tlačítek \"Pointování\""
+"Zadejte offset cíle od centrálního poledníku ve stupních; východním nebo "
+"západním směrem podle přepínacích tlačítek 'Nastavení směru'"
 
 #: calibration_assistant.cpp:1084
 msgid "Scope on the west side of pier, pointing east"
-msgstr "Dalekohled na západní straně pilíře, míří na východ"
+msgstr "Dalekohled na západní straně pilíře, směřující na východ"
 
 #: calibration_assistant.cpp:1097
 msgid ""
 "Check this if calibration can only be done on a particular side of the "
 "meridian because of nearby obstructions"
 msgstr ""
-"Zaškrtněte tuto možnost, pokud lze kalibraci provést pouze na určité straně "
+"Zaškrtněte tuto možnost, pokud lze kalibraci provést pouze na jedné straně "
 "poledníku kvůli překážkám v okolí"
 
 #: calibration_assistant.cpp:1099 calibration_assistant.cpp:1147
@@ -743,7 +743,7 @@ msgid ""
 "can specify it here."
 msgstr ""
 "Pokud vaše poloha vyžaduje specifickou pozici na obloze pro kalibraci, "
-"můžete ji zde upřesnit."
+"můžete ji zde zadat."
 
 #: calibration_assistant.cpp:1110 calibration_assistant.cpp:1295
 msgid "Ok"
@@ -767,8 +767,8 @@ msgid ""
 "Assistant, the information below can help you identify any remaining "
 "problems."
 msgstr ""
-"Předpokládejme, že jste dodrželi všechna doporučení Kalibračního Asistenta. "
-"Následující informace vám pomůže identifikovat případné zbývající problémy."
+"Předpokládejme, že jste dodrželi všechna doporučení Kalibračního asistenta. "
+"Následující informace vám pomohou identifikovat případné zbývající problémy."
 
 #: calibration_assistant.cpp:1226
 msgid "Too Few Steps"
@@ -781,10 +781,10 @@ msgid ""
 "without using the new-profile-wizard. Run the wizard to restore the correct "
 "calibration parameters."
 msgstr ""
-"Kalibrace byla dokončena s menším počtem kroků než je požadováno.  Toto je "
-"obvykle způsobeno změnami v binningu, ohniskové vzdálenosti nebo rychlosti "
-"montáže bez použití průvodce vytvořením nového profilu. Spusťte průvodce, "
-"abyste obnovili správné kalibrační parametry."
+"Kalibrace byla dokončena s menším počtem kroků, než je požadováno. To je "
+"obvykle způsobeno změnami v binning, ohniskové vzdálenosti nebo rychlosti "
+"montáže, aniž by byl použit průvodce pro vytvoření nového profilu. Spusťte "
+"průvodce, abyste obnovili správné kalibrační parametry."
 
 #: calibration_assistant.cpp:1240
 msgid "Unexpected Rates"
@@ -809,10 +809,10 @@ msgid ""
 "or polar alignment > 10 arc-min. If the orthogonality error is very large, "
 "the mount is probably not guiding correctly."
 msgstr ""
-"Montáž se odchyluje mimo cíl v jedné ose, zatímco PHD2 měří pohyb v druhé "
+"Montáž se odchyluje od cíle v jedné ose, zatímco PHD2 měří pohyb v druhé "
 "ose. To může být způsobeno výraznou periodickou chybou v RA nebo chybou "
 "polárního zarovnání větší než 10 arcmin. Pokud je chyba kolmosti velmi "
-"velká, pravděpodobně montáž nedokáže správně pointovat."
+"velká, montáž pravděpodobně nebude schopna správně navádět."
 
 #: calibration_assistant.cpp:1268
 msgid "Sky Location"
@@ -825,10 +825,10 @@ msgid ""
 "outside the range of -60 to +60, declination compensation will not work "
 "correctly."
 msgstr ""
-"Kalibrace nebyla provedena při Dec v rozmezí -20 až +20.  Mimo toto rozmezí "
-"se mohou chyby měření negativně projevit na přesnosti kalibrace. Pokud je "
-"deklinace mimo rozmezí -60 až +60, kompenzace deklinace nebude správně "
-"fungovat."
+"Kalibrace nebyla provedena při deklinaci v rozmezí -20° až +20°.  Mimo toto "
+"rozmezí se mohou chyby měření negativně projevit na přesnosti kalibrace. "
+"Pokud je deklinace mimo rozmezí -60° až +60°, kompenzace deklinace nebude "
+"správně fungovat."
 
 #: calibration_assistant.cpp:1282
 msgid "Not Enough Movement"
@@ -841,11 +841,10 @@ msgid ""
 "cable, try replacing it. Otherwise, use the Star-Cross and Manual Guide "
 "tools in PHD2 to help isolate the mechanical problem."
 msgstr ""
-"Pokud jste viděli upozornění, že se pointační hvězda dostatečně nepohnula, "
-"může to být způsobeno tím, že montáž nedostává nebo nezpracovává řídící "
-"příkazy. Pokud používáte kabel ST-4, zkuste ho nahradit. V opačném případě "
-"použijte nástroj Kříž Hvězd a Ruční Řízení v programu PHD2 k identifikaci "
-"mechanického problému."
+"Pokud jste viděli upozornění, že se naváděcí hvězda nepohnula dostatečně, "
+"může to znamenat, že montáž nedostává nebo nezpracovává řídicí příkazy. "
+"Pokud používáte kabel ST-4, zkuste ho vyměnit. Jinak použijte nástroje Test "
+"Hvězdného Kříže a Ruční  v PHD2 k identifikaci mechanického problému."
 
 #: calreview_dialog.cpp:47 statswindow.cpp:310 statswindow.cpp:330
 msgid "N/A"
@@ -970,11 +969,11 @@ msgstr "Binování: %d"
 
 #: calreview_dialog.cpp:347
 msgid "Side-of-pier:"
-msgstr "Poloha Dal. na pilíři:"
+msgstr "Strana pilíře:"
 
 #: calreview_dialog.cpp:356
 msgid "RA Guide speed:"
-msgstr "Rychlost Řízení RA:"
+msgstr "Rychlost Navádění RA:"
 
 #: calreview_dialog.cpp:359 calreview_dialog.cpp:367
 #, c-format
@@ -983,7 +982,7 @@ msgstr "%0.2fx"
 
 #: calreview_dialog.cpp:364
 msgid "Dec Guide speed:"
-msgstr "Rychlost Řízení Dec:"
+msgstr "Rychlost Navádění Dec:"
 
 #: calreview_dialog.cpp:392
 msgid "Rotator position:"
@@ -1010,8 +1009,8 @@ msgid ""
 msgstr ""
 "Kalibrace byla provedena s velmi malým počtem kroků, což může vést k "
 "nepřesným výsledkům. Zvažte snížení parametru kalibračního kroku, dokud "
-"nebudete vidět nejméně 8 kroků v každém směru.  Funkce 'Kalkulačka' v "
-"záložce 'Montáž' vám s tím může pomoci."
+"nebudete mít alespoň 8 kroků v každém směru.  Funkce 'Kalkulačka' v záložce "
+"'Montáž' vám s tím může pomoci."
 
 #: calreview_dialog.cpp:603
 #, c-format
@@ -1023,7 +1022,7 @@ msgid ""
 "Dec backlash, or a large periodic error in RA."
 msgstr ""
 "Výpočty RA a Deklinace, provedené během kalibrace, jsou pochybné. Obvykle by "
-"tyto úhly měly být téměř kolmé, s \"chybou kolmosti\" menší než 10°. V této "
+"tyto úhly měly být téměř kolmé, s 'chybou kolmosti' menší než 10°. V této "
 "kalibraci byla chyba %s stupňů, což často způsobuje špatné polárním "
 "zarovnání velké vůle na osách ve směru Deklinace nebo velkou periodickou "
 "chybu v RA."
@@ -1038,9 +1037,9 @@ msgid ""
 "settings and calibration results."
 msgstr ""
 "Poslední kalibrace dala výsledky, které se liší o %s%% od předchozí "
-"kalibrace.  Pokud je to způsobeno změnou konfigurace zařízení, můžete použít "
-"různé profily. Tímto způsobem budete moci přepínat mezi konfiguracemi a "
-"stále si zachovat dřívější nastavení a kalibrační výsledky."
+"kalibrace.  Pokud je to způsobeno změnou konfigurace za, můžete použít různé "
+"profily. Tímto způsobem budete moci přepínat mezi konfiguracemi a stále si "
+"zachovat dřívější nastavení a kalibrační výsledky."
 
 #: calreview_dialog.cpp:619
 #, c-format
@@ -1051,10 +1050,10 @@ msgid ""
 "means one of the axis calibrations is incorrect and may result in poor "
 "guiding."
 msgstr ""
-"Rychlost řízení v RA a Deklinaci se liší.  Pro vaši Deklinaci %0.0f stupňů "
-"by měla být rychlost v RA asi %0.0f%% rychlosti v Deklinaci. Ale vaše "
-"rychlost v RA je %0.0f%% rychlosti v Deklinaci.  To obvykle znamená, že "
-"kalibrace jedné z os je nesprávná a může vést k špatnému řízení."
+"Rychlost navádění v RA a Deklinaci se liší.  Pro vaši Deklinaci %0.0f stupňů "
+"by měla být rychlost v RA asi %0.0f%% rychlosti v Deklinaci. Vaše rychlost v "
+"RA je však %0.0f%% rychlosti v Deklinaci.  To obvykle znamená, že kalibrace "
+"jedné z os je nesprávná a může vést k špatnému navádění."
 
 #: calreview_dialog.cpp:663
 msgid "Explanation"
@@ -1116,7 +1115,7 @@ msgstr "Přijmout kalibraci"
 
 #: calreview_dialog.cpp:765
 msgid "Accept the calibration as being valid and continue guiding"
-msgstr "Přijmout kalibraci jako platnou a pokračovat v řízení"
+msgstr "Přijmout kalibraci jako platnou a pokračovat v navádění"
 
 #: calreview_dialog.cpp:767
 msgid "Discard calibration"
@@ -1127,8 +1126,8 @@ msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
 msgstr ""
-"Zastavte řízení a zrušte nejnovější kalibraci. Kalibrace bude provedena "
-"znovu při dalším spuštění řízení"
+"Zastavte navádění a zrušte poslední kalibraci. Kalibrace bude provedena "
+"znovu při příštím spuštění"
 
 #: calreview_dialog.cpp:771
 msgid "Restore old calibration"
@@ -1139,7 +1138,7 @@ msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
 msgstr ""
-"Zastavte řízení, odstraňte poslední kalibraci a načtěte předchozí (správnou) "
+"Zastavte , odstraňte poslední kalibraci a načtěte předchozí (správnou) "
 "kalibraci"
 
 #: calreview_dialog.cpp:813
@@ -1160,7 +1159,7 @@ msgstr "Ohnisková vzdálenost, mm"
 
 #: calstep_dialog.cpp:117
 msgid "Guide scope focal length"
-msgstr "Ohnisková vzdálenost pointačního dalekohledu"
+msgstr "Ohnisková vzdálenost naváděcého dalekohledu"
 
 #: calstep_dialog.cpp:122
 msgid "Pixel size, microns"
@@ -1168,7 +1167,7 @@ msgstr "Velikost pixlu, mikrony"
 
 #: calstep_dialog.cpp:122
 msgid "Guide camera pixel size"
-msgstr "Velikost pixlu pointační kamery"
+msgstr "Velikost pixlu řídící kamery"
 
 #: calstep_dialog.cpp:132 statswindow.cpp:112
 msgid "Camera binning"
@@ -1176,11 +1175,11 @@ msgstr "Binning Kamery"
 
 #: calstep_dialog.cpp:132
 msgid "Guide camera pixel binning"
-msgstr "Binning pixelu pointační kamery"
+msgstr "Binning pixelu naváděcí kamery"
 
 #: calstep_dialog.cpp:138
 msgid "Guide speed, n.nn x sidereal"
-msgstr "Rychlost řízení, n.nn x hvězdný"
+msgstr "Rychlost , n.nn x hvězdný"
 
 #: calstep_dialog.cpp:140
 #, no-c-format
@@ -1192,8 +1191,8 @@ msgid ""
 msgstr ""
 "Řídící rychlost, násobek hvězdné rychlosti; pokud je řídící rychlost vaší "
 "montáže 50 % hvězdné rychlosti, zadejte 0,5. POZNÁMKA: Změna této volby nemá "
-"vliv na rychlost řízení používanou montáží - tu je nutné změnit "
-"prostřednictvím uživatelského rozhraní ovladače nebo ručního ovladače."
+"vliv na rychlost  používanou montáží – tu je nutné změnit prostřednictvím "
+"uživatelského rozhraní ovladače nebo ručního ovladače."
 
 #: calstep_dialog.cpp:149
 msgid "Calibration steps"
@@ -1281,8 +1280,8 @@ msgid ""
 "Discard this many frames whan capturing starts. Useful for preventing "
 "initial under-exposed frames interfering with automatic star selection."
 msgstr ""
-"Tento počet snímků vyřaďte při zahájení snímání. Užitečné pro zabránění "
-"vlivu počátečních podexponovaných snímků na automatický výběr hvězd."
+"Vyřaďte tento počet snímků při zahájení snímání, aby se zabránilo vlivu "
+"počátečních podexponovaných snímků na automatický výběr hvězd."
 
 #: cam_altair.cpp:332
 msgid "No Altair cameras detected"
@@ -1324,8 +1323,8 @@ msgstr "Chybí požadovaná vlastnost ovladače kamery ASCOM %s"
 msgid ""
 "Could not create ASCOM camera object. See the debug log for more information."
 msgstr ""
-"Nepodařilo se vytvořit objekt kamery ASCOM. Další informace naleznete v "
-"protokolu ladění."
+"Nelze použít objekt kamery ASCOM. Další informace naleznete v protokolu o "
+"chybách."
 
 #: cam_ascom.cpp:570 rotator_ascom.cpp:176
 msgid "ASCOM driver problem: Connect"
@@ -1449,19 +1448,19 @@ msgstr "Neexistuje žádná kompatibilní knihovna dark snímků"
 
 #: camcal_import_dialog.cpp:90
 msgid "Bad-pixel Map"
-msgstr "Mapa Chybných pixlů"
+msgstr "Mapa Vadných pixlů"
 
 #: camcal_import_dialog.cpp:93
 msgid "Choose the profile with the bad-pixel map you want to use:"
-msgstr "Vyberte profil mapy chybných pixelů, který chcete použít:"
+msgstr "Vyberte profil mapy vadných pixelů, který chcete použít:"
 
 #: camcal_import_dialog.cpp:105
 msgid "Bad-pix Map Profiles"
-msgstr "Profil Mapy Chybných pixlů"
+msgstr "Profil Mapy Vadných pixlů"
 
 #: camcal_import_dialog.cpp:115
 msgid "There are no compatible bad-pixel maps available"
-msgstr "Neexistuje kompatibilní mapa chybných pixlů"
+msgstr "Neexistuje kompatibilní mapa vydných pixlů"
 
 #: camcal_import_dialog.cpp:123 gear_simulator.cpp:1967
 msgid "OK"
@@ -1469,7 +1468,7 @@ msgstr "OK"
 
 #: camcal_import_dialog.cpp:217
 msgid "Bad-pixel map could not be imported because of errors in file/copy"
-msgstr "Mapu chybných pixlů nelze importovat kvůli chybám v souboru"
+msgstr "Mapu vadných pixlů nelze importovat kvůli chybám v souboru"
 
 #: camcal_import_dialog.cpp:237
 msgid "Dark library could not be imported because of errors in file/copy"
@@ -1520,8 +1519,8 @@ msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
 msgstr ""
-"Velikost pixelů vodicí kamery v mikrometrech. Používá se s ohniskovou "
-"vzdáleností naváděcího dalekohledu k zobrazení chyby navádění v arcsec."
+"Velikost pixelů naváděcí kamery v mikrometrech. Používá se s ohniskovou "
+"vzdáleností pointačního dalekohledu k zobrazení chyby navádění v arcsec."
 
 #: camera.cpp:910
 msgid "Pixel size"
@@ -1569,7 +1568,7 @@ msgstr "Port LE"
 
 #: camera.cpp:957
 msgid "Port number for long-exposure control"
-msgstr "Číslo portu pro řízení dlouhých časů"
+msgstr "Číslo portu pro dlouhé expozice"
 
 #: camera.cpp:962
 msgid "Cooler On"
@@ -1613,7 +1612,8 @@ msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
 msgstr ""
-"Určit saturaci hvězd na základě profilu s plochým vrcholem bez ohledu na jas"
+"Identifikujte saturaci hvězd na základě profilu s plochým vrcholem, bez "
+"ohledu na jas"
 
 #: camera.cpp:995
 msgid ""
@@ -1893,7 +1893,7 @@ msgstr "LXUSB nelze spustit"
 
 #: cam_LESerialWebcam.cpp:295
 msgid "Serial LE Webcam"
-msgstr "Webová kamera se Sériovým portem LE"
+msgstr "Webkamera s LE sériovým portem"
 
 #: cam_LESerialWebcam.cpp:315 stepguider_sxao.cpp:194
 msgid "No serial ports found"
@@ -1917,7 +1917,7 @@ msgstr "Výchozí hodnota"
 
 #: cam_LESerialWebcam.cpp:389
 msgid "Webcam settings"
-msgstr "Nastavení webové kamery"
+msgstr "Nastavení Webkamery"
 
 #: cam_MeadeDSI.cpp:117
 msgid "No DSI cameras found"
@@ -2021,7 +2021,7 @@ msgstr "Knihovnu USB nelze spustit"
 
 #: cam_openssag.cpp:131
 msgid "Could not connect to StarShoot Autoguider"
-msgstr "Nelze se připojit k Auto řízení StarShoot"
+msgstr "Nelze se připojit k Auto  StarShoot"
 
 #: cam_openssag.cpp:224
 msgid "SSAG Camera Settings"
@@ -2047,7 +2047,7 @@ msgstr "SSAG Nahrávání USB Výrobek ID. Výchozí hodnota = 0x%04x"
 
 #: cam_OSPL130.cpp:54
 msgid "Cannot find OSPL130RT.dll"
-msgstr "Nenalezeneo OSPL130RT.dll"
+msgstr "Nenalezeno OSPL130RT.dll"
 
 #: cam_OSPL130.cpp:58
 msgid "Cannot init camera"
@@ -2059,7 +2059,7 @@ msgstr "Expozici nelze spustit"
 
 #: cam_playerone.cpp:149
 msgid "Player One Camera Properties"
-msgstr ""
+msgstr "Vlastnosti kamery Player One"
 
 #: cam_playerone.cpp:220 cam_zwo.cpp:219
 #, c-format
@@ -2068,24 +2068,24 @@ msgstr "Nelze načíst DLL %s"
 
 #: cam_playerone.cpp:314
 msgid "No Player One cameras detected."
-msgstr ""
+msgstr "Nebyly zjištěny žádné kamery Player One."
 
 #: cam_playerone.cpp:345
 #, c-format
 msgid "Player One camera #%d not found"
-msgstr ""
+msgstr "Kamera Player One #%d nalezena"
 
 #: cam_playerone.cpp:408 cam_playerone.cpp:481
 msgid "Failed to get camera properties for Player One Camera."
-msgstr ""
+msgstr "Vlastnosti kamery Player One nebyly získány."
 
 #: cam_playerone.cpp:414
 msgid "Failed to open Player One Camera."
-msgstr ""
+msgstr "Kamer Player One nespuštěna."
 
 #: cam_playerone.cpp:421
 msgid "Failed to initizlize Player One Camera."
-msgstr ""
+msgstr "Nepodařilo se inicializovat kameru Player One ."
 
 #: cam_playerone.cpp:873 cam_playerone.cpp:905 cam_playerone.cpp:913
 #: cam_svb.cpp:769 cam_sxv.cpp:920 cam_zwo.cpp:872 cam_zwo.cpp:903
@@ -2099,7 +2099,7 @@ msgstr "Žádná kamera"
 
 #: cam_qhy.cpp:339
 msgid "Camera Options"
-msgstr ""
+msgstr "Možnosti Kamery"
 
 #: cam_qhy.cpp:344
 msgid ""
@@ -2107,6 +2107,10 @@ msgid ""
 "percentage of the camera's maximum possible gain level in Advanced Settings "
 "> Camera > Camera gain. Knowing the gain assists in setting the offset value."
 msgstr ""
+"Skutečná úroveň zesílení, se kterou fotoaparát pracuje. Úroveň gainu se "
+"nastavuje jako procento maximální možné úrovně gainu kamery v nabídce "
+"Pokročilá nastavení > Kamera > Gain kamery. Znalost hodnoty gainu je "
+"užitečná při nastavování hodnoty offsetu."
 
 #: cam_qhy.cpp:351
 msgid "Offset"
@@ -2114,23 +2118,23 @@ msgstr ""
 
 #: cam_qhy.cpp:356
 msgid "USB Traffic"
-msgstr ""
+msgstr "Provoz USB"
 
 #: cam_qhy.cpp:360
 msgid "Amplifier noise reduction"
-msgstr ""
+msgstr "Snížení šumu zesilovače"
 
 #: cam_qhy.cpp:363
 msgid "Row noise reduction"
-msgstr ""
+msgstr "Redukce šumu řádků"
 
 #: cam_qhy.cpp:366
 msgid "High speed mode"
-msgstr ""
+msgstr "Režim vysoké rychlosti"
 
 #: cam_qhy.cpp:369
 msgid "High gain mode"
-msgstr ""
+msgstr "Režim vysokého gainu"
 
 #: cam_qhy.cpp:371
 msgid ""
@@ -2138,10 +2142,13 @@ msgid ""
 "gain mode. This usually means lower noise and a shallower pixel well than "
 "the equivalent gain value in low conversion gain mode"
 msgstr ""
+"Nastaví snímač QHY5III178 nebo QHY178 na provoz v režimu vysokého "
+"konverzního gainu. To obvykle znamená nižší šum a mělčí pixelovou jamku než "
+"ekvivalentní hodnota zisku v režimu nízkého konverzního gauni"
 
 #: cam_qhy.cpp:481
 msgid "Camera must be reconnected to set the new mode"
-msgstr ""
+msgstr "Pro nastavení nového režimu je nutné kameru znovu připojit"
 
 #: cam_qhy.cpp:585
 msgid "Failed to initialize QHY SDK"
@@ -2173,7 +2180,7 @@ msgstr "Informace o čipu kamery nezjištěny"
 
 #: cam_qhy.cpp:755
 msgid "Failed to set bit mode"
-msgstr ""
+msgstr "Bitový režim se nepodařilo nastavit"
 
 #: cam_qhy.cpp:823
 msgid "Failed to get camera bin info"
@@ -2189,31 +2196,31 @@ msgstr "Nepodařilo se nastavit gain kamery"
 
 #: cam_qhy.cpp:1029
 msgid "Failed to set camera offset"
-msgstr ""
+msgstr "Nepodařilo se nastavit offset kamery"
 
 #: cam_qhy.cpp:1038
 msgid "Failed to set camera USB traffic"
-msgstr ""
+msgstr "Nepodařilo se nastavit provoz USB kamery"
 
 #: cam_qhy.cpp:1047
 msgid "Failed to set camera amp noise reduction"
-msgstr ""
+msgstr "Nepodařilo se nastavit redukci šumu zesilovače kamery"
 
 #: cam_qhy.cpp:1056
 msgid "Failed to set camera row noise reduction"
-msgstr ""
+msgstr "Nepodařilo se nastavit potlačení šumu řádku kamery"
 
 #: cam_qhy.cpp:1065
 msgid "Failed to set camera speed mode"
-msgstr ""
+msgstr "Nepodařilo se nastavit režim rychlosti kamery"
 
 #: cam_qhy.cpp:1074
 msgid "Failed to set camera high gain mode"
-msgstr ""
+msgstr "Nepodařilo se nastavit režim vysokého gainu kamery"
 
 #: cam_qhy.cpp:1085
 msgid "Failed to set camera exposure length"
-msgstr ""
+msgstr "Nepodařilo se nastavit délku expozice kamery"
 
 #: cam_qhy.cpp:1092
 msgid "QHY exposure failed"
@@ -2267,7 +2274,7 @@ msgid ""
 "\n"
 "No = use main image CCD"
 msgstr ""
-"Sledovací CCD nalezeno, použít?\n"
+"Naváděcí CCD bylo nalezeno, použít ho?\n"
 "\n"
 "Ne = použít hlavní obraz CCD"
 
@@ -2293,7 +2300,7 @@ msgstr "Chyba při stahování dat"
 
 #: cam_sbig.cpp:670
 msgid "Cannot check SBIG relay status"
-msgstr "Nelze zkontrolovat stav zařízení SBIG"
+msgstr "Nelze zkontrolovat stav za SBIG"
 
 #: cam_sbig.cpp:679
 msgid "Timeout expired waiting for guide pulse to complete."
@@ -2432,7 +2439,7 @@ msgstr "Vlastnosti Kamery ToupTek"
 
 #: cam_vfw.cpp:98
 msgid "Select capture device"
-msgstr "Výběr snímacího zařízení"
+msgstr "Výběr snímacího zařizení"
 
 #: cam_vfw.cpp:98 cam_wdm.cpp:215
 msgid "Camera choice"
@@ -2488,7 +2495,7 @@ msgstr "ZWO ASI Kamera nespuštěna."
 
 #: cam_zwo.cpp:424
 msgid "Failed to initizlize ZWO ASI Camera."
-msgstr "Nepodařilo se inicializovat kameru ZWO ASI."
+msgstr "Nepodařilo se inicializovat Kameru ZWO ASI."
 
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
@@ -2554,7 +2561,7 @@ msgstr "Osy"
 
 #: comet_tool.cpp:115
 msgid "Tracking rate axes"
-msgstr "Sledování osy rychlosti"
+msgstr "Osy rychlosti sledování"
 
 #: comet_tool.cpp:117 darks_dialog.cpp:224 guiding_assistant.cpp:552
 #: polardrift_toolwin.cpp:203 polardrift_toolwin.cpp:355 starcross_test.cpp:159
@@ -2563,7 +2570,7 @@ msgstr "Start"
 
 #: comet_tool.cpp:118
 msgid "Start training the tracking rate."
-msgstr "Zaháji trénink sledovací rychlostí."
+msgstr "Zaháji trénink sledovací rychlosti."
 
 #: comet_tool.cpp:119 darks_dialog.cpp:256 guiding_assistant.cpp:562
 #: polardrift_toolwin.cpp:358 starcross_test.cpp:161 staticpa_toolwin.cpp:643
@@ -2576,7 +2583,7 @@ msgstr "Zastaví trénink"
 
 #: comet_tool.cpp:153
 msgid "Rate Training"
-msgstr "Rychlost Tréninku"
+msgstr "Intenzita Tréninku"
 
 #: comet_tool.cpp:199
 msgid "Disable"
@@ -2589,9 +2596,9 @@ msgid ""
 "Use the \"Adjust Lock Position\" controls to center the comet\n"
 "in the imaging camera and click Stop to complete training."
 msgstr ""
-"Uplynulý čas Tréninku %lus.\n"
-"Pomocí ovládacích prvků \"Upravit Pozici Uzamčení\" vycentrujte\n"
-"kometu v kameře a kliknutím na tlačítko Stop dokončete nácvik."
+"Trénink, uplynulý čas %lus.\n"
+"Pomocí ovládacích prvků \"Upravit Pozici Uzamčení\" vycentrujte kometu\n"
+"v zorném poli kameře a kliknutím na tlačítko Stop pro dokončete trénování."
 
 #: comet_tool.cpp:306
 msgid ""
@@ -2600,8 +2607,8 @@ msgid ""
 "Then, click Start to begin training."
 msgstr ""
 "Umístěte kometu do středu zorného pole. \n"
-"Vyberte hvězdu a spusťte Pointaci. \n"
-"Klikněte na tlačítko Start ke spuštění tréninku."
+"Vyberte naváděcí hvězdu a spusťte Navádění. \n"
+"Klikněte na tlačítko Start pro zahájení tréninku."
 
 #: comet_tool.cpp:328 graph.cpp:168 graph.cpp:195 graph.cpp:337
 #: guide_algorithm.cpp:50 scope.cpp:692 statswindow.cpp:73 target.cpp:343
@@ -2658,7 +2665,7 @@ msgid ""
 "Force the use of streaming and frame stacking for cameras that do not "
 "support setting an absolute exposure time."
 msgstr ""
-"Vynutit použití streamování a stohování snímků pro kamery, které nenabízejí "
+"Vynutit použití streamování a skládání snímků pro kamery, které nenabízejí "
 "nastavení absolutní expozice."
 
 #: config_indi.cpp:143
@@ -2707,7 +2714,7 @@ msgstr "Sekundární"
 
 #: confirm_dialog.cpp:41
 msgid "Don't ask again"
-msgstr "Již se neptat"
+msgstr "Neptat se znovu"
 
 #: confirm_dialog.cpp:82
 msgid "Confirm"
@@ -2719,7 +2726,7 @@ msgstr "Vytvoř Knihovnu Darků"
 
 #: darks_dialog.cpp:98
 msgid "Acquire Master Dark Frames for Bad Pixel Map Calculation"
-msgstr "Získejte Master Dark Snímek pro Výpočet Mapy Chybných Pixlů"
+msgstr "Získejte Hlavní Dark Snímek pro Výpočet Mapy Vadných Pixlů"
 
 #: darks_dialog.cpp:112
 msgid "Min Exposure Time"
@@ -2731,7 +2738,7 @@ msgid ""
 "shortest camera exposure you will use for guiding."
 msgstr ""
 "Minimální čas expozice pro dark. Vyberte hodnotu odpovídající nejkratší "
-"expozici kamery, kterou použijete při navigaci."
+"expozici kamery, kterou použijete při navádění."
 
 #: darks_dialog.cpp:120
 msgid "Max Exposure Time"
@@ -2743,7 +2750,7 @@ msgid ""
 "camera exposure you will use for guiding."
 msgstr ""
 "Maximální čas expozice pro dark. Vyberte hodnotu odpovídající nejdelší "
-"expozici kamery, kterou použijete při navigaci."
+"expozici kamery, kterou použijete při navádění."
 
 #: darks_dialog.cpp:127
 msgid "Number of dark frames for each exposure time"
@@ -2786,10 +2793,10 @@ msgid ""
 "alert messages about incompatible frame sizes or mismatches with the current "
 "camera."
 msgstr ""
-"Vytvořené dark snímky budou nyní použity k vytvoření zcela nové knihovny "
-"dark snímků - staré dark snímky budou zahozeny. TUTO možnost  MUSÍTE použít, "
-"pokud jste viděli upozornění na nekompatibilní velikost snímků nebo nesoulad "
-"s aktuální kamerou."
+"Vytvořené dark snímky budou nyní použity k sestavení zcela nové knihovny "
+"dark snímků - staré dark snímky budou zrušeny. TUTO možnost MUSÍTE použít, "
+"pokud jste obdrželi upozornění o nekompatibilní velikosti snímků nebo "
+"nesouladu s aktuální kamerou."
 
 #: darks_dialog.cpp:152
 #, c-format
@@ -2816,7 +2823,7 @@ msgstr "Nastavení Dark Snímků"
 
 #: darks_dialog.cpp:183
 msgid "Exposure time for building defect map"
-msgstr "Čas expozice pro mapu chybných pixlů"
+msgstr "Čas expozice pro mapu vadných pixlů"
 
 #: darks_dialog.cpp:184
 msgid "Exposure Time"
@@ -2824,7 +2831,7 @@ msgstr "Čas Expozice"
 
 #: darks_dialog.cpp:187
 msgid "Number of exposures for building defect map"
-msgstr "Počet expozic pro vytvoření mapy chybných pixlů"
+msgstr "Počet expozic pro vytvoření mapy vadných pixlů"
 
 #: darks_dialog.cpp:188
 msgid "Number of Exposures"
@@ -2845,6 +2852,8 @@ msgstr ""
 msgid ""
 "Be sure camera bit-depth is already set to desired value (8-bit or 16-bit)"
 msgstr ""
+"Ujistěte se, že bitová hloubka kamery je nastavena na požadovanou hodnotu (8 "
+"bitů nebo 16 bitů)."
 
 #: darks_dialog.cpp:222
 msgid "Reset all parameters to application defaults"
@@ -2852,11 +2861,11 @@ msgstr "Obnoví všechny parametry na výchozí hodnoty aplikace"
 
 #: darks_dialog.cpp:240
 msgid "Set your parameters, click 'Start' to begin"
-msgstr "Nastavte své parametry a klikněte na tlačítko \"Start\" pro spuštění"
+msgstr "Nastavte své parametry a klikněte na tlačítko 'Start' pro spuštění"
 
 #: darks_dialog.cpp:262
 msgid "Cover guide scope"
-msgstr "Zakrýt pointační dalekohled"
+msgstr "Zakrýt naváděcí dalekohled"
 
 #: darks_dialog.cpp:292
 #, c-format
@@ -2898,7 +2907,7 @@ msgstr "Sestavené hlavní dark datové soubory"
 
 #: darks_dialog.cpp:387
 msgid "Uncover guide scope"
-msgstr "Odkrýt pointační dalekohled"
+msgstr "Odkrýt naváděcí dalekohled"
 
 #: darks_dialog.cpp:388
 #, c-format
@@ -2994,11 +3003,11 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
-"Přejeďte k blízkosti Poledníku nebo Rovníku.\n"
+"Přejeďte k blízkosti Poledníku a Rovníku.\n"
 "Stiskněte Drift pro měření posunu a sledujte trendovou linku Dec.\n"
 "Stiskněte tlačítko Upravit a upravte azimut montáže.\n"
-"Opakujte Drift / Upravit, dokud není zarovnání dokončeno.\n"
-"Poté klikněte na Výška a upravte výšku."
+"Opakujte Drift/Upravit, dokud nebude zarovnání dokončeno.\n"
+"Poté klikněte na Výška a upravte Nadmořskou výšku."
 
 #: drift_tool.cpp:386
 msgid "Azimuth adjustment notes"
@@ -3020,11 +3029,11 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Click Azimuth to repeat Azimuth adjustment."
 msgstr ""
-"Přejeďte na místo v blízkosti rovníku na východní nebo západní obzor.\n"
-"Stiskněte Drift pro měření pohybu, sledujte trendovou linku Dec.\n"
-"Stiskněte tlačítko Upravit a nastavte výšku montáže.\n"
-"Opakujte Drift / Upravit dokud není zarovnání dokončeno.\n"
-"Kliknutím na položku Azimut opakujte nastavení Azimutu."
+"Přejeďte na místo v blízkosti rovníku na východní nebo západní obzoru.\n"
+"Stiskněte Drift pro měření posunu, sledujte trendovou linku Dec.\n"
+"Stiskněte tlačítko Upravit a nastavte azimut montáže.\n"
+"Opakujte Drift/Upravit dokud nebude zarovnání dokončeno.\n"
+"Kliknutím na Azimut opakujte nastavení azimutu."
 
 #: drift_tool.cpp:401
 msgid "< Azimuth"
@@ -3052,7 +3061,7 @@ msgstr "Čeká se na dokončení kalibrace..."
 
 #: drift_tool.cpp:466
 msgid "Start guiding..."
-msgstr "Zahájit řízení..."
+msgstr "Zahájit ..."
 
 #: drift_tool.cpp:478
 msgid "Drifting... click Adjust when done drifting"
@@ -3097,15 +3106,14 @@ msgid ""
 "\n"
 "Would you like to run the drift tool anyway?"
 msgstr ""
-"Nástroj metody drift je nejúčinnější pokud PHD2\n"
-"zná ohniskovou vzdálenost pointačního dalekohledu a velikost pixlu kamery.\n"
+"Nástroj pro Driftovou metodiku je nejúčinnější, když PHD2 zná ohniskovou\n"
+"vzdálenost pointačního dalekohledu a velikost pixelu kamery.\n"
 "\n"
 "Zadejte ohniskovou vzdálenost pointačního dalekohledu na záložce Globální v "
-"části Řízení.\n"
-"Velikost obrazových bodů kamery zadejte na kartě Kamera v části Specifické "
-"Vlastnosti Kamery.\n"
+"sekci Vedení.\n"
+"Velikost pixelu kamery zadejte na kartě Kamera v sekci Pokročilá Nastavení\n"
 "\n"
-"Přesto chcete spustit nástroj pro drift?"
+"Chcete přesto spustit nástroj pro drift?"
 
 #: eegg.cpp:65
 msgid "There is no calibration data available."
@@ -3125,8 +3133,8 @@ msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
 msgstr ""
-"%s kalibrace bude vymazána - kalibrace bude znovu provedena při spuštění "
-"řízení."
+"%s kalibrace bude vymazána - kalibrace bude znovu provedena, jakmile bude "
+"navádění spuštěno."
 
 #: eegg.cpp:141
 msgid "Clear Calibration"
@@ -3146,9 +3154,9 @@ msgid ""
 "are seeing run-away Dec guiding after a meridian flip, use Help and look in "
 "the index for 'Reverse Dec output'."
 msgstr ""
-"To není nutné, protože PHD2 má informaci o poloze dalekohledu z montáže.  "
-"Pokud vidíte při pointaci utíkat osu Dec po překlopení poledníku, použijte "
-"nápovědu a podívejte se do indexu 'Obrátit Hodnotu Dec'."
+"To není nutné, protože PHD2 má informaci o směru dalekohledu z montáže.  "
+"Pokud při navádění vidíte, že osa Dec uniká po překlopení poledníku, "
+"použijte nápovědu a vyhledejte v indexu 'Obrátit výstup Dec'."
 
 #: eegg.cpp:185
 msgid ""
@@ -3170,22 +3178,22 @@ msgid ""
 "\n"
 "Ok to disable guide output?"
 msgstr ""
-"Asistent Pointování vypne a nechá\n"
-"pointační hvězdu unášet.\n"
+"Asistent Navádění vypne a nechá\n"
+"naváděcí hvězdu unášet.\n"
 "\n"
-"Vypnout řízení?"
+"Vypnout ?"
 
 #: eegg.cpp:300
 msgid "Confirm Disable Guiding"
-msgstr "Potvrdit Vypnutí Řízení"
+msgstr "Potvrdit Vypnutí Navádění"
 
 #: gear_dialog.cpp:122
 msgid "Connect Equipment"
-msgstr "Připojit Zařízení"
+msgstr "Připojit Za"
 
 #: gear_dialog.cpp:210
 msgid "Equipment profile"
-msgstr "Profil zařízení"
+msgstr "Profil za"
 
 #: gear_dialog.cpp:212
 msgid ""
@@ -3193,9 +3201,9 @@ msgid ""
 "settings and equipment selections in an Equipment Profile. You can create "
 "multiple profiles and switch back and forth between them."
 msgstr ""
-"Vyberte profil zařízení, který chcete použít. PHD ukládá všechna nastavení a "
-"výběr vybavení do profilu zařízení. Můžete vytvořit více profilů a přepínat "
-"mezi nimi podle potřeby."
+"Vyberte profil za, který chcete použít. PHD ukládá všechna nastavení a výběr "
+"vybavení do profilu za. Můžete vytvořit více profilů a přepínat mezi nimi "
+"podle potřeby."
 
 #: gear_dialog.cpp:219
 msgid "New using Wizard..."
@@ -3261,8 +3269,7 @@ msgstr "Správa Profilů"
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
-msgstr ""
-"Vytvořit nový Profil Zařízení, smažte nebo přejmenujte stávající profil"
+msgstr "Vytvořit nový Profil Zařizení, smažte nebo přejmenujte stávající profil"
 
 #: gear_dialog.cpp:242
 msgid ""
@@ -3270,9 +3277,9 @@ msgid ""
 "Disconnect All to disconnect. You can also connect or disconnect individual "
 "equipment items by clicking the button next to the item."
 msgstr ""
-"Vyberte níže uvedená zařízení a klikněte na možnost \"Vše Připojit\" nebo "
-"\"Vše Odpojit\" pro připojení nebo odpojení. Můžete také připojit nebo "
-"odpojit jednotlivé položky vybavení kliknutím na tlačítko vedle dané položky."
+"Vyberte níže uvedená zařizení a klikněte na možnost \"Vše Připojit\" nebo \"Vše "
+"Odpojit\" pro připojení nebo odpojení. Můžete také připojit nebo odpojit "
+"jednotlivé položky vybavení kliknutím na tlačítko vedle dané položky."
 
 #: gear_dialog.cpp:265
 msgid ""
@@ -3293,7 +3300,7 @@ msgid ""
 "ASCOM connection is recommended."
 msgstr ""
 "Určete, jakým způsobem budou příkazy k montáži odesílány - pomocí ovladače "
-"ASCOM nebo INDI přes zařízení GPxxx. Doporučuje se připojení pomocí ASCOM."
+"ASCOM nebo INDI přes za GPxxx. Doporučuje se připojení pomocí ASCOM."
 
 #: gear_dialog.cpp:285
 msgid "Mount Setup"
@@ -3308,11 +3315,11 @@ msgid ""
 "side-of-pier.  If you have already selected an %s driver for your 'mount', "
 "the 'aux' mount parameter will not be used."
 msgstr ""
-"Pokud k řízení používáte rozhraní s portem (On-camera nebo GPXXX), můžete  "
-"také využít připojení \"aux\" k montáži kompatibilní s %s. Toto připojení "
-"slouží k automatickému nastavení kalibrace na základě deklinace a polohy "
-"dalekohledu na montáži.  Pokud jste již pro svoji \"montáž\" vybrali ovladač "
-"%s, parametr \"aux\" montáže se nepoužije."
+"Pokud k  používáte rozhraní s portem (On-camera nebo GPXXX), můžete  také "
+"využít připojení 'aux' k montáži kompatibilní s %s. Toto připojení slouží k "
+"automatickým úpravám kalibrace na základě deklinace a polohy dalekohledu na "
+"pilíři.  Pokud jste již pro svou 'montáž' vybrali ovladač %s, parametr 'aux' "
+"montáže nebude použita."
 
 #: gear_dialog.cpp:314
 msgid "Aux Mount Setup"
@@ -3332,7 +3339,7 @@ msgstr "Vše Připojit"
 
 #: gear_dialog.cpp:354
 msgid "Connect all equipment and close the equipment selection window"
-msgstr "Připojí veškerá zařízení a zavřete okno výběru zařízení"
+msgstr "Připojí veškerá za a zavřete okno výběru za"
 
 #: gear_dialog.cpp:357
 msgid "Disconnect All"
@@ -3340,7 +3347,7 @@ msgstr "Vše Odpojit"
 
 #: gear_dialog.cpp:358
 msgid "Disconnect all equipment"
-msgstr "Odpojí všechna zařízení"
+msgstr "Odpojí všechna za"
 
 #: gear_dialog.cpp:361 myframe.cpp:1260 polardrift_toolwin.cpp:208
 #: staticpa_toolwin.cpp:420
@@ -3402,7 +3409,7 @@ msgid ""
 "for this set-up.  Do you want to connect to this camera anyway?"
 msgstr ""
 "Změnou kamery v tomto profilu nebudete moci používat existující knihovnu pro "
-"dark snímky nebo mapu chybných pixelů. Měli byste zvážit vytvoření nového "
+"dark snímky nebo mapu vadných pixelů. Měli byste zvážit vytvoření nového "
 "profilu pro toto nastavení. Chcete se k této kameře přesto připojit?"
 
 #: gear_dialog.cpp:1145
@@ -3463,7 +3470,7 @@ msgstr "Skrýt"
 
 #: gear_dialog.cpp:1557
 msgid "More Equipment ..."
-msgstr "Další Zařízení ..."
+msgstr "Další Za ..."
 
 #: gear_dialog.cpp:1628
 msgid "Connecting to AO ..."
@@ -3503,7 +3510,7 @@ msgstr "Rotátor Odpojen"
 
 #: gear_dialog.cpp:2090
 msgid "New Equipment Profile"
-msgstr "Nový Profil Zařízení"
+msgstr "Nový Profil Za"
 
 #: gear_dialog.cpp:2098
 msgid "Name"
@@ -3511,7 +3518,7 @@ msgstr "Jméno"
 
 #: gear_dialog.cpp:2103
 msgid "Enter the name of the new equipment profile"
-msgstr "Zadejte název nového profilu zařízení"
+msgstr "Zadejte název nového profilu za"
 
 #: gear_dialog.cpp:2107
 msgid "PHD Defaults"
@@ -3527,8 +3534,8 @@ msgid ""
 "an existing Equipment Profile to copy its settings into your new profile."
 msgstr ""
 "Chcete-li vytvořit profil s výchozími nastaveními PHD, vyberte možnost "
-"Výchozí nastavení PHD nebo vyberte existující profil zařízení a zkopírujte "
-"jeho nastavení do nového profilu."
+"Výchozí nastavení PHD nebo vyberte existující profil za a zkopírujte jeho "
+"nastavení do nového profilu."
 
 #: gear_dialog.cpp:2140
 #, c-format
@@ -3552,7 +3559,7 @@ msgstr "Smazat profil %s?"
 
 #: gear_dialog.cpp:2173
 msgid "Delete Equipment Profile"
-msgstr "Smazat Profil Zařízení"
+msgstr "Smazat Profil Za"
 
 #: gear_dialog.cpp:2193
 #, c-format
@@ -3561,7 +3568,7 @@ msgstr "Přejmenovat %s"
 
 #: gear_dialog.cpp:2193
 msgid "Rename Equipment Profile"
-msgstr "Přejmenovat Profil Zařízení"
+msgstr "Přejmenovat Profil Za"
 
 #: gear_dialog.cpp:2210
 msgid "Could not rename profile"
@@ -3618,11 +3625,11 @@ msgstr "Nepodporovaný typ nebo chyba při čtení souboru FITS %d %d"
 
 #: gear_simulator.cpp:1844
 msgid "PE amplitude and period must be > 0"
-msgstr "Amplituda a doba PE musí být > 0"
+msgstr "Amplituda a perioda PE musí být > 0"
 
 #: gear_simulator.cpp:1850
 msgid "PE amplitude and period must be numbers > 0"
-msgstr "Amplituda PE a doba musí být číslo > 0"
+msgstr "Amplituda PE a perioda musí být čísla > 0"
 
 #: gear_simulator.cpp:1859
 msgid "Camera Simulator"
@@ -3671,11 +3678,11 @@ msgstr "Drift v Dec"
 
 #: gear_simulator.cpp:1887
 msgid "Guide rate, x sidereal"
-msgstr "Rychlost řízení ,x hvězdný"
+msgstr "Rychlost  ,x hvězdný"
 
 #: gear_simulator.cpp:1888
 msgid "Guide rate"
-msgstr "Rychlost řízení"
+msgstr "Rychlost"
 
 #: gear_simulator.cpp:1889
 msgid "Apply stiction"
@@ -3687,7 +3694,7 @@ msgstr "Simulujte tření dec os"
 
 #: gear_simulator.cpp:1895
 msgid "PE"
-msgstr "Periodická chyba (PE)"
+msgstr ""
 
 #: gear_simulator.cpp:1896
 msgid "Apply PE"
@@ -3933,11 +3940,11 @@ msgstr "Umožní zvolit měřítko osy Y, arcsec. na každou dělící osu Y"
 
 #: graph.cpp:1332
 msgid "GuideNorth"
-msgstr "Navigace Sever"
+msgstr "KorekceSever"
 
 #: graph.cpp:1333
 msgid "GuideEast"
-msgstr "Navigace Východ"
+msgstr "KorekceVýchod"
 
 #: graph.cpp:1465 testguide.cpp:112 testguide.cpp:144
 msgid "Dither"
@@ -3978,7 +3985,7 @@ msgstr "Varování!  Toto je určeno pro použití odborníky"
 
 #: guide_algorithm_gaussian_process.cpp:101
 msgid "Approximation Data Points"
-msgstr "Aproximační (přibližná hodnota) Datové Body"
+msgstr "Aproximace Datových Bodů"
 
 #: guide_algorithm_gaussian_process.cpp:102
 #, c-format
@@ -3986,8 +3993,8 @@ msgid ""
 "Number of data points used in the approximation. Both prediction accuracy as "
 "well as runtime rise with the number of datapoints. Default = %d"
 msgstr ""
-"Počet datových bodů použitých při aproximaci. S počtem datových bodů roste "
-"přesnost předpovědi i doba běhu. Výchozí hodnota = %d"
+"Počet datových bodů použitých při aproximaci. S rostoucím počtem datových "
+"bodů se zvyšuje přesnost předpovědi i doba běhu. Výchozí hodnota = %d"
 
 #: guide_algorithm_gaussian_process.cpp:110
 msgid "Minimum Worm Cycles (Prediction)"
@@ -3999,12 +4006,13 @@ msgid ""
 "Minimal number of worm cycles needed to use the prediction. If there are too "
 "little data points, the prediction might be poor. Default = %.2f"
 msgstr ""
-"Minimální počet cyklů šneků potřebných k použití předpovědi. Pokud je "
-"datových bodů příliš málo, může být předpověď špatná. Výchozí hodnota = %.2f"
+"Minimální počet cyklů šneka potřebných pro použití předpovědi. Pokud je k "
+"dispozici příliš málo datových bodů, může být předpověď nepřesná. Výchozí "
+"hodnota = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:121
 msgid "Minimum Worm Cycles (Period Estimation)"
-msgstr "Minimální Cykly Šneku (Odhad Období)"
+msgstr "Minimální Cykly Šneka (Odhad Periody)"
 
 #: guide_algorithm_gaussian_process.cpp:122
 #, c-format
@@ -4012,8 +4020,8 @@ msgid ""
 "Minimal number of worm cycles for estimating the period length. If there are "
 "too little data points, the estimation might not work. Default = %d"
 msgstr ""
-"Minimální počet cyklů sněku pro odhad délky periody. Pokud je datových bodů "
-"příliš málo, odhad nemusí fungovat. Výchozí hodnota = %d"
+"Minimální počet cyklů šneka pro odhad délky periody. Pokud je k dispozici "
+"příliš málo datových bodů, odhad nemusí fungovat. Výchozí hodnota = %d"
 
 #: guide_algorithm_gaussian_process.cpp:130
 msgid "Length Scale (Long Range)"
@@ -4027,8 +4035,8 @@ msgid ""
 "defines the corner frequency. Default = %.2f"
 msgstr ""
 "Délkové měřítko (v sekundách) velké neperiodické struktury. Jedná se v "
-"podstatě o frekvenční vlnu s vysokofrekvenčním přechodem pro periodickou "
-"chybu a měřítko délky definuje úhlovou frekvenci. Výchozí hodnota = %.2f"
+"podstatě o filtr s vysokým průchodem pro periodickou chybu, přičemž délkové "
+"měřítko definuje hranici frekvence. Výchozí hodnota = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:140
 msgid "Signal Variance (Long Range)"
@@ -4052,10 +4060,10 @@ msgid ""
 "If chosen too small, some non-periodic structure might be picked up as well. "
 "Default = %.2f"
 msgstr ""
-"Délkové měřítko (v sekundách) určuje \" kmitavost\" periodické struktury. "
-"Čím menší je délkové měřítko, tím více struktury lze poznat. Pokud by byla "
-"zvolena příliš malá, mohly by být zachyceny i některé neperiodické "
-"struktury. Výchozí hodnota = %.2f"
+"Délkové měřítko (v sekundách) určuje 'kmitavost' periodické struktury. Čím "
+"menší je délkové měřítko, tím více struktury se lze naučit. Pokud je zvoleno "
+"příliš malé, mohou být zachyceny i některé neperiodické struktury. Výchozí "
+"hodnota = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:158
 msgid "Signal Variance (Periodic)"
@@ -4099,8 +4107,8 @@ msgid ""
 "What percent of the predictive guide correction should be applied? Default = "
 "%.f%%, increase to rely more on the predictions"
 msgstr ""
-"Kolik procent korekce odhadu řízení by mělo být použito? Výchozí hodnota = "
-"%.f%%, zvýšením se více spoléháme na předpověď"
+"Kolik procent prediktivní korekce  by mělo být aplikováno? Výchozí hodnota = "
+"%.f%%, zvýšením se více spoléháte na předpovědi"
 
 #: guide_algorithm_gaussian_process.cpp:242
 msgid "PredWt"
@@ -4113,12 +4121,12 @@ msgid ""
 "What percent of the reactive guide correction should be applied? Default = "
 "%.f%%, adjust if responding too much or too slowly"
 msgstr ""
-"Kolik procent regulační korekce řízení by mělo být použito? Výchozí hodnota "
-"= %.f%%, upravte, pokud reaguje příliš silně nebo příliš slabě"
+"Kolik procent reaktivní korekce  by mělo být aplikováno? Výchozí hodnota = "
+"%.f%%, upravte, pokud reaguje příliš silně nebo příliš pomalu"
 
 #: guide_algorithm_gaussian_process.cpp:253
 msgid "ReactWt"
-msgstr "RegulVah"
+msgstr "ReakčníVáha"
 
 #: guide_algorithm_gaussian_process.cpp:261
 #: guide_algorithm_gaussian_process.cpp:342
@@ -4129,10 +4137,10 @@ msgid ""
 "size. Note this has no effect on the predictive guide correction. Default = "
 "%.2f"
 msgstr ""
-"O kolik (zlomkových) pixelů se musí hvězda posunout, aby se spustila "
-"regulační korekce? Pokud je kamera binovaná, jedná se o zlomek velikosti "
-"binovaného pixelu. Poznámka: Toto nemá žádný vliv na předpovědní korekci "
-"řízení. Výchozí hodnota = %.2f"
+"O kolik (zlomkových) pixelů se musí hvězda posunout, aby došlo k aktivaci "
+"reaktivní korekce ? Pokud je kamera binováná, jedná se o zlomek velikosti "
+"binovaného pixelu. Poznámka: Toto nemá žádný vliv na prediktivní korekci . "
+"Výchozí hodnota = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:267 guide_algorithm_hysteresis.cpp:332
 #: guide_algorithm_lowpass2.cpp:306 guide_algorithm_lowpass.cpp:285
@@ -4142,7 +4150,7 @@ msgstr "MinPoh"
 
 #: guide_algorithm_gaussian_process.cpp:317
 msgid "Predictive PEC Guide Algorithm"
-msgstr "Prediktivní PEC algoritmus řízení"
+msgstr "Prediktivní algoritmus PEC"
 
 #: guide_algorithm_gaussian_process.cpp:324
 msgid "Predictive Weight"
@@ -4181,7 +4189,7 @@ msgstr "Vypnuto"
 
 #: guide_algorithm_gaussian_process.cpp:356
 msgid "Period Length"
-msgstr "Doba Trvání"
+msgstr "Délka Periody"
 
 #: guide_algorithm_gaussian_process.cpp:357
 #, c-format
@@ -4189,7 +4197,7 @@ msgid ""
 "The period length (in seconds) of the strongest periodic error component.  "
 "Default = %.2f"
 msgstr ""
-"Délka periody (v sekundách) nejsilnější periodické části chyby.  Výchozí "
+"Délka periody (v sekundách) nejsilnější periodické složky chyby.  Výchozí "
 "hodnota = %.2f"
 
 #: guide_algorithm_gaussian_process.cpp:365
@@ -4203,8 +4211,8 @@ msgid ""
 "Enter a percentage greater than 0 to retain the PPEC model after guiding "
 "stops. Default = %.f%% of the period length."
 msgstr ""
-"Zadejte procento větší než 0, abyste zachovali model PPEC po zastavení "
-"řízení. Výchozí hodnota = %.f%% délky periody."
+"Zadejte procento větší než 0, pokud chcete zachovat model PPEC po zastavení "
+"navádění. Výchozí hodnota = %.f%% délky periody."
 
 #: guide_algorithm_gaussian_process.cpp:370
 msgid "Expert..."
@@ -4229,8 +4237,8 @@ msgid ""
 "How much history of previous guide pulses should be applied\n"
 "Default = %.f%%, increase to smooth out guiding commands"
 msgstr ""
-"Kolik historie předchozích regulačních impulzů by mělo být použito\n"
-"Výchozí hodnota = %.f%%, zvyšte pro vyhlazení řídících příkazů"
+"Jaká část historie předchozích regulačních impulzů by měla být použita\n"
+"Výchozí hodnota = %.f%%, zvyšte pro vyhlazení naváděcích příkazů"
 
 #: guide_algorithm_hysteresis.cpp:241 guide_algorithm_lowpass2.cpp:234
 #: guide_algorithm_resistswitch.cpp:308 Refine_DefMap.cpp:162
@@ -4243,8 +4251,8 @@ msgid ""
 "What percentage of the computed correction should be applied? Default = "
 "%.f%%, adjust if responding too much or too slowly"
 msgstr ""
-"Jaké procento vypočtené opravy by mělo být použito? Výchozí hodnota = %.f%%, "
-"upravte, pokud reaguje příliš silně nebo příliš slabě"
+"Jaké procento vypočtené korekce by mělo být použito? Výchozí hodnota = "
+"%.f%%, upravte, pokud reaguje příliš silně nebo příliš pomalu"
 
 #: guide_algorithm_hysteresis.cpp:252 guide_algorithm_hysteresis.cpp:327
 #: guide_algorithm_lowpass2.cpp:244 guide_algorithm_lowpass2.cpp:301
@@ -4257,7 +4265,7 @@ msgid ""
 "If camera is binned, this is a fraction of the binned pixel size. Default = "
 "%.2f"
 msgstr ""
-"O kolik (dílčích) pixelů se musí hvězda pohnout, aby se spustil regulační "
+"O kolik (zlomových) pixelů se musí hvězda posunout, aby se spustil regulační "
 "impuls? \n"
 "Pokud je kamera binovaná, jedná se o zlomek velikosti binovaného pixelu. "
 "Výchozí hodnota = %.2f"
@@ -4268,8 +4276,8 @@ msgid ""
 "What percentage of the computed correction should be applied?? Default = "
 "%.f%%, adjust if responding too much or too slowly"
 msgstr ""
-"Jaké procento vypočtené opravy by mělo být použito?? Výchozí hodnota = "
-"%.f%%, upravte, pokud reaguje příliš silně nebo příliš slabě"
+"Jaké procento vypočtené korekce by mělo být použito? Výchozí hodnota = "
+"%.f%%, upravte, pokud reaguje příliš silně nebo příliš pomalu"
 
 #: guide_algorithm_hysteresis.cpp:308
 msgid "Agr"
@@ -4277,11 +4285,11 @@ msgstr ""
 
 #: guide_algorithm_hysteresis.cpp:319
 msgid "Hys"
-msgstr "His"
+msgstr "Hys"
 
 #: guide_algorithm_identity.cpp:71
 msgid "Guide Algorithm"
-msgstr "Algoritmus Řízení"
+msgstr "Algoritmus Navádění"
 
 #: guide_algorithm_identity.cpp:74
 msgid "Nothing to Configure"
@@ -4289,7 +4297,7 @@ msgstr "Není co Konfigurovat"
 
 #: guide_algorithm_lowpass2.cpp:222
 msgid "Lowpass2 Guide Algorithm"
-msgstr "Algoritmus Řízení Lowpass2"
+msgstr "Algoritmus Navádění Lowpass2"
 
 #: guide_algorithm_lowpass2.cpp:235 guide_algorithm_lowpass2.cpp:291
 #: guide_algorithm_resistswitch.cpp:309 guide_algorithm_resistswitch.cpp:374
@@ -4297,7 +4305,7 @@ msgstr "Algoritmus Řízení Lowpass2"
 msgid ""
 "What percentage of the computed correction should be applied? Default = %.f%%"
 msgstr ""
-"Jaké procento vypočítané opravy by mělo být použito? Výchozí hodnota = %.f%%"
+"Jaké procento vypočítané korekce by mělo být použito? Výchozí hodnota = %.f%%"
 
 #: guide_algorithm_lowpass2.cpp:294
 msgid "Agg"
@@ -4305,7 +4313,7 @@ msgstr "Agr"
 
 #: guide_algorithm_lowpass.cpp:202
 msgid "Lowpass Guide Algorithm"
-msgstr "Algoritmus Řízení Lowpass"
+msgstr "Algoritmus Navádění Lowpass"
 
 #: guide_algorithm_lowpass.cpp:213
 msgid "Slope Weight"
@@ -4318,11 +4326,11 @@ msgstr "Váha parametru sklonu v auto-dec Lowpass. Výchozí hodnota =%.1f"
 
 #: guide_algorithm_lowpass.cpp:273
 msgid "Sl W"
-msgstr "E"
+msgstr "VáhaVyhlaz"
 
 #: guide_algorithm_resistswitch.cpp:298
 msgid "ResistSwitch Guide Algorithm"
-msgstr "Algoritmus Řízení ResistSwitch"
+msgstr "Algoritmus Navádění ResistSwitch"
 
 #: guide_algorithm_resistswitch.cpp:322
 msgid "Fast switch for large deflections"
@@ -4335,14 +4343,14 @@ msgid ""
 "immediately if it sees a very large deflection. Enable this option if your "
 "mount has a substantial amount of backlash and PHD2 sometimes overcorrects."
 msgstr ""
-"Algoritmus Resist Switch čeká několik snímků, než změní směr. Při rychlé "
-"změně PHD2 okamžitě změní směr, pokud je odchylka dostatečně velká. Povolte "
-"tuto možnost, pokud má montáž značné množství zpětných reakcí a PHD2 někdy "
-"přehání."
+"Algoritmus Resist Switch obvykle čeká několik snímků, než změní směr. Při "
+"povolení rychlé změny PHD2 okamžitě změní směr, pokud zaznamená velmi velkou "
+"odchylku. Povolte tuto možnost, pokud má vaše montáž výraznou zpětnou vůli a "
+"PHD2 někdy přehání korekce."
 
 #: guide_algorithm_zfilter.cpp:268
 msgid "ZFilter Guide Algorithm"
-msgstr "Algoritmus Řízení ZFilter"
+msgstr "Algoritmus Navádění ZFilter"
 
 #: guide_algorithm_zfilter.cpp:278
 msgid "Exposure Factor"
@@ -4354,8 +4362,8 @@ msgid ""
 "Multiplied by exposure time gives the equivalent exposure time after "
 "filtering. Default = %.1f"
 msgstr ""
-"Po vynásobení dobou expozice získáte ekvivalentní dobu expozice po "
-"vyfiltrování. Výchozí hodnota = %.1f"
+"Po vynásobení doby expozice získáte ekvivalentní dobu expozice po filtrování "
+"Výchozí hodnota = %.1f"
 
 #: guide_algorithm_zfilter.cpp:336
 #, c-format
@@ -4363,8 +4371,8 @@ msgid ""
 "Multiplied by exposure time gives the equivalent expsoure time after "
 "filtering. Default = %.1f"
 msgstr ""
-"Po vynásobení dobou expozice získáte ekvivalentní dobu expozice po "
-"vyfiltrování. Výchozí hodnota = %.1f"
+"Po vynásobení doby expozice získáte ekvivalentní dobu expozice po filtrování "
+"Výchozí hodnota = %.1f"
 
 #: guide_algorithm_zfilter.cpp:341
 msgid "XFac"
@@ -4384,7 +4392,7 @@ msgstr "PAUZA"
 
 #: guider.cpp:723
 msgid "Guide output DISABLED"
-msgstr "Výstup z řízení VYPNUT"
+msgstr "Výstup z  VYPNUT"
 
 #: guider.cpp:1165
 msgid "Calibration manually stopped"
@@ -4398,7 +4406,7 @@ msgstr "Chcete tuto kalibraci automaticky obnovit při každém použití profil
 
 #: guider.cpp:1293
 msgid "Stopped Guiding"
-msgstr "Řízení Zastaveno"
+msgstr "Navádění Zastaveno"
 
 #: guider.cpp:1305
 msgid ""
@@ -4428,7 +4436,7 @@ msgstr "Statická rotace PA selhala"
 
 #: guider.cpp:1417
 msgid "Polar Drift PA drift failed"
-msgstr "Polární pohyb Drift PA selhala"
+msgstr "Selhání Driftu polární osy PA"
 
 #: guider.cpp:1427
 msgid "AO calibration failed"
@@ -4440,11 +4448,11 @@ msgstr "kalibrace selhala"
 
 #: guider.cpp:1694
 msgid "Guider Settings"
-msgstr "Nastavení Pointace"
+msgstr "Nastavení Navádění"
 
 #: guider.cpp:1703
 msgid "Guide star tracking"
-msgstr "Sledování pointační hvězdy"
+msgstr "Sledování naváděcí hvězdy"
 
 #: guider.cpp:1704 log_uploader.cpp:702
 msgid "Calibration"
@@ -4472,9 +4480,9 @@ msgid ""
 "the star to the center position. Un-check to use the old, slower method of "
 "recentering after calibration or dither."
 msgstr ""
-"Urychlujte kalibraci a dithering pomocí delších řídicích impulsů pro návrat "
+"Urychlete kalibraci a dithering použitím delších řídicích impulsů pro návrat "
 "hvězdy do středové polohy. Zrušením zaškrtnutí se použije stará, pomalejší "
-"metoda opětovného nastavení hvězdy po kalibraci nebo diterování."
+"metoda opětovného nastavení hvězdy po kalibraci nebo ditheringu."
 
 #: guider.cpp:1880
 msgid "Are you sure you want to delete all Bookmarks?"
@@ -4555,8 +4563,8 @@ msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr ""
-"Kolik pixelů (nahoru/dolů/doleva/doprava) se má prohledat, aby se našla "
-"hvězda? Výchozí hodnota = 15"
+"Kolik pixelů (nahoru/dolů/doleva/doprava) se má prohledat, aby se hvězda "
+"našla? Výchozí hodnota = 15"
 
 #: guider_multistar.cpp:1391
 msgid "Star Mass Detection"
@@ -4569,8 +4577,8 @@ msgid ""
 "'tolerance'."
 msgstr ""
 "Zaškrtnutím povolíte detekci změny velikosti hvězdy. Pokud je tato funkce "
-"povolena, PHD vynechá snímky, pokud se velikost pointační hvězdy změní o "
-"hodnotu větší než nastavená tolerance."
+"povolena, PHD vynechá snímky, pokud se velikost naváděcí hvězdy změní o "
+"hodnotu větší než nastavená 'tolerance'."
 
 #: guider_multistar.cpp:1407
 msgid "Tolerance"
@@ -4583,10 +4591,10 @@ msgid ""
 "(less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
 "If star mass change detection is not enabled then this setting is ignored."
 msgstr ""
-"Pokud je zapnuta detekce změny velikosti hvězd, jedná se o toleranci změn "
-"velikosti hvězd mezi jednotlivými snímky v procentech. Větší hodnoty jsou "
-"tolerantnější (méně citlivé) ke změně velikosti hvězd. Platný rozsah je "
-"10-100, s výchozí hodnotou 50. Pokud není detekce změny velikosti hvězdy "
+"Pokud je zapnuta detekce změny velikosti hvězdy, jedná se o toleranci změn "
+"velikosti hvězdy mezi jednotlivými snímky v procentech. Větší hodnoty jsou "
+"tolerantnější (méně citlivé) na změny velikosti hvězdy. Platný rozsah je 10–"
+"100, s výchozí hodnotou 50. Pokud není detekce změny velikosti hvězdy "
 "zapnutá, toto nastavení je ignorováno."
 
 #: guider_multistar.cpp:1414
@@ -4605,11 +4613,11 @@ msgid ""
 "threshold a bit higher. When the HFD falls below this level, the hot pixel "
 "will be ignored."
 msgstr ""
-"Minimální HFD (velikost) hvězdy, která se použije pro identifikaci pointační "
-"hvězdy. Toto nastavení lze použít k zabránění pointace PHD2 na horký pixel. "
-"Pomocí nástroje Profil Hvězdy změřte HFD horkého pixelu a nastavte minimální "
-"prahovou hodnotu HFD o něco vyšší. Pokud HFD klesne pod tuto hodnotu, bude "
-"horký pixel ignorován."
+"Minimální HFD (velikost) hvězdy, která bude použita pro identifikaci "
+"naváděcí hvězdy. Toto nastavení lze použít k zabránění tomu, aby PHD2 "
+"navádělo na horký pixel. Pomocí nástroje Profil hvězdy změřte HFD horkého "
+"pixelu a nastavte minimální prahovou hodnotu HFD o něco vyšší. Pokud HFD "
+"klesne pod tuto hodnotu, horký pixel bude ignorován."
 
 #: guider_multistar.cpp:1431
 msgid "Maximum star HFD (pixels)"
@@ -4622,9 +4630,10 @@ msgid ""
 "noise, adjacent faint stars, internal reflections, or comet heads as guide "
 "stars."
 msgstr ""
-"Maximální HFD hvězdy, která bude použita pro identifikaci pointační hvězdy. "
-"Toto nastavení lze použít k tomu, aby PHD2 nevybral jako průvodce velký "
-"shluk šumu senzoru, sousední slabé hvězdy, vnitřní odrazy nebo hlavy komet."
+"Maximální HFD hvězdy, která bude použita pro identifikaci naváděcí hvězdy. "
+"Toto nastavení lze použít k tomu, aby PHD2 nevybral jako naváděcí hvězdu "
+"velký shluk šumu senzoru, sousední slabé hvězdy, vnitřní odrazy nebo hlavy "
+"komet."
 
 #: guider_multistar.cpp:1436 myframe.cpp:904 myframe.cpp:975 scope.cpp:265
 msgid "Auto"
@@ -4641,8 +4650,8 @@ msgid ""
 "guide stars."
 msgstr ""
 "Faktor snížení vzorkování pro snímky kamery s automatickým výběrem hvězd. "
-"Pokud automatický výběr hvězd nedokáže rozpoznat deformované pointační "
-"hvězdy, zvolte hodnotu větší než 1."
+"Zvolte hodnotu větší než 1, pokud automatický výběr hvězd nedokáže rozpoznat "
+"deformované naváděcí hvězdy."
 
 #: guider_multistar.cpp:1444
 msgid "Beep on lost star"
@@ -4650,7 +4659,7 @@ msgstr "Pípnout při ztrátě hvězdy"
 
 #: guider_multistar.cpp:1445
 msgid "Issue an audible alarm any time the guide star is lost"
-msgstr "Zvukový alarm při ztrátě pointační hvězdy"
+msgstr "Zvukový alarm při ztrátě naváděcí hvězdy"
 
 #: guider_multistar.cpp:1447
 msgid "Use multiple stars"
@@ -4658,7 +4667,7 @@ msgstr "Použít více hvězd"
 
 #: guider_multistar.cpp:1448
 msgid "Use multiple guide stars if they are available"
-msgstr "Použije více pointačních hvězd, pokud jsou k dispozici"
+msgstr "Použije více naváděcích hvězd, pokud jsou k dispozici"
 
 #: guider_multistar.cpp:1458
 msgid "Minimum star SNR for AutoFind"
@@ -4673,12 +4682,12 @@ msgid ""
 "this constraint cannot be met, a saturated or near-saturated star may be "
 "selected."
 msgstr ""
-"Minimální SNR (Signál-Šum Poměr) hvězdy, která se použije pro automatický "
-"výběr pointačních hvězd. Toto nastavení lze použít k tomu, aby PHD2 nevybral "
-"vodicí hvězdu, o které víte, že bude příliš slabá pro trvalé pointování. "
-"Nastavení se vztahuje jak na primární vodicí hvězdu, tak na sekundární "
-"vedoucí hvězdy při vícehvězdném pointování. Pokud toto omezení nelze splnit, "
-"může být vybrána nasycená nebo téměř nasycená hvězda."
+"Minimální SNR (poměr signál/šum) hvězdy, která se použije pro automatický "
+"výběr naváděcí hvězdy. Toto nastavení lze použít k tomu, aby PHD2 nevybral "
+"naváděcí hvězdu, o které víte, že bude příliš slabá pro trvalé navádění. "
+"Toto nastavení se vztahuje jak na primární naváděcí hvězdu, tak na "
+"sekundární kandidáty při vícehvězdném navádění. Pokud toto omezení nelze "
+"splnit, může být vybrána nasycená nebo téměř nasycená hvězda."
 
 #: guiding_assistant.cpp:100
 msgid "Extended Sampling"
@@ -4708,7 +4717,7 @@ msgstr "Zbývající sekundy: "
 
 #: guiding_assistant.cpp:347
 msgid "Guiding Assistant"
-msgstr "Asistent Pointování"
+msgstr "Asistent Navádění"
 
 #: guiding_assistant.cpp:366
 msgid " -999.99 px/min (-999.99 arc-sec/min )"
@@ -4772,11 +4781,11 @@ msgstr "Rektascenze, Vrchol-Vrchol"
 
 #: guiding_assistant.cpp:462
 msgid "Right ascension Drift Rate"
-msgstr "Rychlost Posunu v Rektascenzi"
+msgstr "Rychlost Driftu v Rektascenzi"
 
 #: guiding_assistant.cpp:466
 msgid "Right ascension Max Drift Rate"
-msgstr "Max Rychlost Posunu v Rektascenzi"
+msgstr "Max Rychlost Driftu v Rektascenzi"
 
 #: guiding_assistant.cpp:470
 msgid "Drift-limiting exposure"
@@ -4784,7 +4793,7 @@ msgstr "Expozice omezující pohyb"
 
 #: guiding_assistant.cpp:474
 msgid "Declination Drift Rate"
-msgstr "Rychlost Posunu v Deklinaci"
+msgstr "Rychlost Driftu v Deklinaci"
 
 #: guiding_assistant.cpp:478
 msgid "Declination Backlash"
@@ -4817,14 +4826,14 @@ msgid ""
 "the north direction.  If the guide star is lost, increase the size of the "
 "search region to at least 20 px"
 msgstr ""
-"PHD2 posune vodicí hvězdu o značnou vzdálenost na sever a poté na jih, aby "
+"PHD2 posune naváděcí hvězdu o značnou vzdálenost na sever, poté na jih, aby "
 "změřil vůli. Ujistěte se, že vybraná hvězda má dostatek prostoru pro pohyb "
-"směrem na sever.  Pokud se pointační hvězda ztratí, zvětšete velikost "
-"oblasti hledání alespoň na 20 px"
+"na sever. Pokud naváděcí hvězda zmizí, zvětšete velikost oblasti hledání na "
+"alespoň 20 px"
 
 #: guiding_assistant.cpp:553
 msgid "Start measuring (disables guiding)"
-msgstr "Zahájí měření (vypne se řízení)"
+msgstr "Zahájí měření (vypne se )"
 
 #: guiding_assistant.cpp:557
 msgid "Review previous"
@@ -4832,11 +4841,11 @@ msgstr "Zkontrolovat předchozí"
 
 #: guiding_assistant.cpp:558
 msgid "Review previous Guiding Assistant results"
-msgstr "Zkontrolujte předchozí výsledky Asistenta Pointování"
+msgstr "Zkontrolujte předchozí výsledky Asistenta Navádění"
 
 #: guiding_assistant.cpp:563
 msgid "Stop measuring and re-enable guiding"
-msgstr "Měření se zastaví a řízení se znovu zapne"
+msgstr "Měření se zastaví a  se znovu zapne"
 
 #: guiding_assistant.cpp:631
 msgid ""
@@ -4851,16 +4860,16 @@ msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
 msgstr ""
-"Míra celkové jasnosti hvězdy. Zvažte použití funkce \"Automatický výběr "
-"hvězdy\" (Alt-S) pro výběr hvězdy."
+"Míra celkové jasnosti hvězdy. Zvažte použití funkce 'Automatický výběr "
+"hvězdy' (Alt-S) pro výběr hvězdy."
 
 #: guiding_assistant.cpp:639
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
-"Míra typických vysokofrekvenčních pohybů hvězd v rektascenzi (RA); řízení "
-"obvykle nemůže korigovat tak drobné fluktuace."
+"Míra typických vysokofrekvenčních pohybů hvězd v rektascenzi (RA); navádění "
+"obvykle nemůže korigovat takové drobné fluktuace."
 
 #: guiding_assistant.cpp:643
 msgid ""
@@ -4926,15 +4935,15 @@ msgstr ""
 msgid "Choose a non-saturated star with a good SNR (>= 10) and begin guiding"
 msgstr ""
 "Vyberte nenasycenou hvězdu s dostatečně vysokým poměrem signálu a šumu (SNR "
-">= 10) a zahajte pointování"
+">= 10) a zahajte navádění"
 
 #: guiding_assistant.cpp:713
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time so the star will move around."
 msgstr ""
-"Klikněte na tlačítko \"Start\" pro zahájení měření.  Během této doby je "
-"zakázáno řízení, takže se hvězda bude pohybovat."
+"Klikněte na tlačítko Start pro zahájení měření.  Během této doby je navádění "
+"zakázáno, takže se hvězda bude pohybovat."
 
 #: guiding_assistant.cpp:718
 msgid ""
@@ -4942,9 +4951,9 @@ msgid ""
 "after 2 minutes (longer if you're measuring RA tracking accuracy of the "
 "mount)."
 msgstr ""
-"Řídící výstup je deaktivován a probíhá měření pohybu hvězdy.  Po 2 minutách "
-"klikněte na tlačítko \"Zastavit\" (pokud měříte přesnost osy RA, nechte "
-"delší dobu)."
+"Naváděcí výstup je deaktivován a probíhá měření pohybu hvězdy. Po 2 minutách "
+"klikněte na tlačítko Zastavit (pokud měříte přesnost osy RA, nechte měření "
+"déle)."
 
 #: guiding_assistant.cpp:722
 msgid ""
@@ -4952,9 +4961,9 @@ msgid ""
 "changes.  Click Start to repeat the measurements, or close the window to "
 "continue guiding."
 msgstr ""
-"Řízení bylo obnoveno. Podívejte se na doporučení a proveďte požadované "
-"změny.  Kliknutím na tlačítko \"Start\" můžete měření zopakovat nebo zavřete "
-"okno a pokračujte v řízení."
+"Navádění bylo obnoveno. Podívejte se na doporučení a proveďte požadované "
+"změny. Kliknutím na tlačítko Start můžete měření zopakovat, nebo zavřete "
+"okno a pokračujte v ."
 
 #: guiding_assistant.cpp:735 guiding_assistant.cpp:739
 msgid "Measuring backlash: "
@@ -4991,7 +5000,7 @@ msgstr "s"
 #: guiding_assistant.cpp:1377
 #, c-format
 msgid "Use exposure times in the range of %.1fs to %.1fs"
-msgstr ""
+msgstr "Použijte expoziční časy v rozmezí %.1fs až %.1fs"
 
 #: guiding_assistant.cpp:1379
 #, c-format
@@ -4999,10 +5008,12 @@ msgid ""
 "Use exposure times from %.1fs to %0.1fs and variable delay feature to "
 "control guide cadence"
 msgstr ""
+"Použití expozičních časů od %.1fs do %0.1fs a funkce proměnného zpoždění "
+"pro  cyklu navádění"
 
 #: guiding_assistant.cpp:1387
 msgid "Try binning your guide camera"
-msgstr "Zkuste řízení s binningem kamery"
+msgstr "Zkuste  s binningem kamery"
 
 #: guiding_assistant.cpp:1395
 msgid "Consider re-doing your calibration "
@@ -5037,7 +5048,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:1447
 msgid "Consider trying to improve focus on the guide camera"
-msgstr "Zvažte zlepšit zaostření na pointační kameře"
+msgstr "Zvažte zlepšit zaostření na naváděcí kameře"
 
 #: guiding_assistant.cpp:1458
 #, c-format
@@ -5073,7 +5084,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:1520
 msgid "Try using Lowpass2 for Dec guiding"
-msgstr "Zkuste použít Lowpass2 pro řízení Dec"
+msgstr "Zkuste použít Lowpass2 pro  Dec"
 
 #: guiding_assistant.cpp:1636
 msgid "Measuring..."
@@ -5089,7 +5100,7 @@ msgstr "Měření zpětné vůle... "
 
 #: guiding_assistant.cpp:1805
 msgid "Guiding stopped"
-msgstr "Řízení zastaveno"
+msgstr "Navádění zastaveno"
 
 #: guiding_assistant.cpp:1849 guiding_assistant.cpp:1934 statswindow.cpp:285
 #: statswindow.cpp:288
@@ -5117,7 +5128,7 @@ msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
 "replaced."
 msgstr ""
-"Mapa chybných pixlů neodpovídá kameře v tomto profilu - je třeba je vyměnit."
+"Mapa vadných pixlů neodpovídá kameře v tomto profilu - je třeba je vyměnit."
 
 #: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:187 nudge_lock.cpp:194
 msgid "Set"
@@ -5139,12 +5150,12 @@ msgstr ""
 #: log_uploader.cpp:161
 #, c-format
 msgid "%dhr"
-msgstr ""
+msgstr "%dh"
 
 #: log_uploader.cpp:166
 #, c-format
 msgid "%dhr%dmin"
-msgstr ""
+msgstr "%dh%dmin"
 
 #: log_uploader.cpp:169
 #, c-format
@@ -5199,11 +5210,11 @@ msgstr "Noc z"
 
 #: log_uploader.cpp:701
 msgid "Guided"
-msgstr "Pointace"
+msgstr "Vedení"
 
 #: log_uploader.cpp:703
 msgid "Guide Asst."
-msgstr "Asis. Pointace"
+msgstr "Asis. Navádění"
 
 #: log_uploader.cpp:721 log_uploader.cpp:1357
 msgid "Recent uploads"
@@ -5220,14 +5231,14 @@ msgstr "Další >"
 
 #: log_uploader.cpp:735
 msgid "Show logs with no guiding"
-msgstr "Zobrazit protokoly bez pointace"
+msgstr "Zobrazit protokoly bez navádění"
 
 #: log_uploader.cpp:736
 msgid ""
 "Show all available logs, including logs from nights when there was no guiding"
 msgstr ""
-"Zobrazí všechny dostupné protokoly, včetně protokolů z nocí, kdy nebyla "
-"spuštěna žádná pointace"
+"Zobrazí všechny dostupné protokoly, včetně protokolů z nocí, kdy nebylo "
+"spuštěno žádná navádění"
 
 #: log_uploader.cpp:892 log_uploader.cpp:1224
 msgid "Upload"
@@ -5262,7 +5273,7 @@ msgstr "Následující soubory protokolu budou nahrané:"
 
 #: log_uploader.cpp:1203
 msgid "Guide and Debug logs"
-msgstr "Řídící a Ladící protokol"
+msgstr "Protokoly Navádění a Ladění"
 
 #: log_uploader.cpp:1205
 msgid "Debug log"
@@ -5270,7 +5281,7 @@ msgstr "Ladící protokol"
 
 #: log_uploader.cpp:1207
 msgid "Guide log"
-msgstr "Řídící protokol"
+msgstr "Protokoly autoguidingu"
 
 #: log_uploader.cpp:1294
 msgid "The log files have been uploaded and can be accessed at this link:"
@@ -5425,20 +5436,18 @@ msgid ""
 "Clear the current mount calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
-"Smaže aktuální kalibrační data montáže - kalibrace se znovu provede při "
-"spuštění řízení"
+"Smaže aktuální kalibrační data montáže - kalibrace se provede znovu při "
+"spuštění navádění"
 
 #: mount.cpp:561
 msgid "Enable mount guide output"
-msgstr "Povolit výstup řízení montáže"
+msgstr "Povolit výstup  montáže"
 
 #: mount.cpp:563
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
-msgstr ""
-"Zrušením této volby se přestanou odesílat příkazy řízení (řízení bude "
-"vypnuto)"
+msgstr "Zrušením této volby se přestanou odesílat příkazy  ( bude vypnuto)"
 
 #: mount.cpp:946
 #, c-format
@@ -5458,9 +5467,8 @@ msgid ""
 "Mount guide speeds are different from those used in last calibration.  Do a "
 "new calibration or reset mount guide speed settings to previous values. "
 msgstr ""
-"Rychlost řízení se liší od rychlostí použitých při poslední kalibraci. "
-"Proveďte novou kalibraci nebo obnovte nastavení rychlosti na předchozí "
-"hodnoty. "
+"Rychlost  se liší od rychlostí použitých při poslední kalibraci. Proveďte "
+"novou kalibraci nebo obnovte nastavení rychlosti na předchozí hodnoty. "
 
 #: mount.cpp:1294
 msgid ""
@@ -5468,9 +5476,9 @@ msgid ""
 "automatically correct for meridian flips. You should do a fresh calibration "
 "to correct this problem."
 msgstr ""
-"Současná kalibrace neobsahuje informace o poloze dalekohledu na pilíři, a "
-"proto PHD2 nemůže automaticky korigovat překlopení poledníku. Pro vyřešení "
-"tohoto problému proveďte novou kalibraci."
+"Současná kalibrace neobsahuje informace o straně pilíře, a proto PHD2 nemůže "
+"automaticky korigovat překlopení poledníku. Pro vyřešení tohoto problému "
+"proveďte novou kalibraci."
 
 #: mount.cpp:1306
 msgid ""
@@ -5478,7 +5486,7 @@ msgid ""
 "to restore correct guiding."
 msgstr ""
 "Velikost pixelů neodpovídá velikosti pixelů udávané kamerou. Překalibrovat "
-"pro obnovení správného řízení."
+"pro obnovení správného ."
 
 #: mount.cpp:1351
 msgid "Rotator position has changed, recalibration is needed."
@@ -5494,7 +5502,7 @@ msgstr "Historie"
 
 #: myframe.cpp:316 myframe.cpp:384
 msgid "Guide Stats"
-msgstr "Statistika Řízení"
+msgstr "Statistika Navádění"
 
 #: myframe.cpp:322 myframe.cpp:386
 msgid "Star Profile"
@@ -5522,11 +5530,11 @@ msgstr "Ukončí tento program"
 
 #: myframe.cpp:470
 msgid "&Connect Equipment\tCtrl-C"
-msgstr "&Připojit Zařízení\tCtrl-C"
+msgstr "&Připojit Za\tCtrl-C"
 
 #: myframe.cpp:470
 msgid "Connect or disconnect equipment"
-msgstr "Připojí nebo odpojí všechna zařízení"
+msgstr "Připojí nebo odpojí všechna za"
 
 #: myframe.cpp:471
 msgid "&Loop Exposures\tCtrl-L"
@@ -5538,11 +5546,11 @@ msgstr "Spustí cyklování expozice"
 
 #: myframe.cpp:473
 msgid "&Guide\tCtrl-G"
-msgstr "&Pointace\tCtrl-G"
+msgstr "&Vedení\tCtrl-G"
 
 #: myframe.cpp:473
 msgid "Begin guiding"
-msgstr "Zahájí pointaci"
+msgstr "Zahájí navádění"
 
 #: myframe.cpp:475
 msgid "&Stop\tCtrl-S"
@@ -5550,7 +5558,7 @@ msgstr "&Zastavit\tCtrl-S"
 
 #: myframe.cpp:475 myframe.cpp:997
 msgid "Stop looping and guiding"
-msgstr "Zastaví cyklus a pointaci"
+msgstr "Zastaví cyklus a navádění"
 
 #: myframe.cpp:477
 msgid "&Advanced Settings\tCtrl-A"
@@ -5650,11 +5658,11 @@ msgstr "Spustí nástroj pro Sledovat Kometu"
 
 #: myframe.cpp:499 myframe_events.cpp:1109 starcross_test.cpp:75
 msgid "Star-Cross Test"
-msgstr "Test Přes Kříž Hvězd"
+msgstr "Test Hvězdného Kříže"
 
 #: myframe.cpp:499
 msgid "Run a star-cross test for mount diagnostics"
-msgstr "Spustí test přes kříž hvězd pro diagnostiku montáže"
+msgstr "Spustí test hvězdného kříže pro diagnostiku montáže"
 
 #: myframe.cpp:500
 msgid "Calibrate meridian flip"
@@ -5666,11 +5674,11 @@ msgstr "Automaticky nastaví správné překlopení poledníku"
 
 #: myframe.cpp:502
 msgid "&Guiding Assistant"
-msgstr "Asistent &Pointování"
+msgstr "Asistent &Navádění"
 
 #: myframe.cpp:502
 msgid "Run the Guiding Assistant"
-msgstr "Spustí Asistenta Pointování"
+msgstr "Spustí Asistenta Navádění"
 
 #: myframe.cpp:503
 msgid "&Drift Align"
@@ -5711,7 +5719,7 @@ msgstr "Trvalá Pozice Zámku"
 
 #: myframe.cpp:512
 msgid "Keep the same lock position when guiding starts"
-msgstr "Zachová stejnou pozici zámku při zahájení řízení"
+msgstr "Při zahájení navádění udržujte stejnou polohu zámku"
 
 #: myframe.cpp:515
 msgid "Display Toolbar"
@@ -5735,7 +5743,7 @@ msgstr "&Statistika"
 
 #: myframe.cpp:517
 msgid "Enable / disable guide stats"
-msgstr "Zapne / vypne statistiku řízení"
+msgstr "Zapne / vypne statistiku"
 
 #: myframe.cpp:518
 msgid "Display &AO Graph"
@@ -5747,7 +5755,7 @@ msgstr "Zapne / vypne graf AO"
 
 #: myframe.cpp:519
 msgid "Display &Target"
-msgstr "&Rozptyl Pointace"
+msgstr "&Rozptyl"
 
 #: myframe.cpp:519
 msgid "Enable / disable target"
@@ -5827,12 +5835,12 @@ msgstr "Vytvoří knihovnu dark snímků pro daný profil"
 
 #: myframe.cpp:536
 msgid "Bad-pixel &Map..."
-msgstr "Mapy &Chybných pixelů..."
+msgstr "Mapy &Vadných pixelů..."
 
 #: myframe.cpp:537
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr ""
-"Umožní upravit parametry a umožní vytvořit nebo upravit mapu chybných pixlů"
+"Umožní upravit parametry a umožní vytvořit nebo upravit mapu vadných pixlů"
 
 #: myframe.cpp:538
 msgid "Import From Profile..."
@@ -5854,11 +5862,11 @@ msgstr "Umožní použít knihovnu dark snímků pro tento profil"
 
 #: myframe.cpp:544
 msgid "Use &Bad-pixel Map"
-msgstr "Použít Mapu &Chybných pixlů"
+msgstr "Použít Mapu &Vadných pixlů"
 
 #: myframe.cpp:544
 msgid "Use the bad-pixel map for this profile"
-msgstr "Umožní pro tento profil použít mapu chybných pixlů"
+msgstr "Umožní pro tento profil použít mapu vadných pixlů"
 
 #: myframe.cpp:549
 msgid "&Save settings"
@@ -5966,7 +5974,7 @@ msgstr "&Soubor"
 
 #: myframe.cpp:576
 msgid "&Guide"
-msgstr "&Pointace"
+msgstr "&Vedení"
 
 #: myframe.cpp:585
 msgid "&Tools"
@@ -6020,8 +6028,8 @@ msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
 msgstr ""
-"Připojí zařízení. Podržením klávesy Shift se znovu připojí stejné zařízení, "
-"které bylo připojeno naposledy."
+"Připojí za. Podržením klávesy Shift se znovu připojí stejné za, které bylo "
+"připojeno naposledy."
 
 #: myframe.cpp:992
 msgid "Begin looping exposures for frame and focus"
@@ -6033,7 +6041,7 @@ msgstr "Automatický výběr hvězdy. Podržení klávesy Shift výběr hvězdy 
 
 #: myframe.cpp:996
 msgid "Begin guiding (PHD). Shift-click to force calibration."
-msgstr "Zahájí pointaci s (PHD). Podržením klávesy Shift se vynutí kalibrace."
+msgstr "Zahájí navádění s (PHD). Podržením klávesy Shift se vynutí kalibrace."
 
 #: myframe.cpp:999
 msgid "Exposure duration"
@@ -6057,8 +6065,8 @@ msgid ""
 "Don't show\n"
 " again"
 msgstr ""
-"Nezobrazovat\n"
-" znovu"
+"Neptat se \n"
+"znovu"
 
 #: myframe.cpp:1694 myframe.cpp:1961
 msgid "Looping"
@@ -6066,11 +6074,11 @@ msgstr "Cyklování"
 
 #: myframe.cpp:1814
 msgid "Capturing single exposure"
-msgstr "Pořízení jedné expozice"
+msgstr "Po jedné expozice"
 
 #: myframe.cpp:1884
 msgid "Waiting for devices..."
-msgstr "Čeká se na zařízení..."
+msgstr "Čeká se na za..."
 
 #: myframe.cpp:1930
 msgid "Resumed"
@@ -6081,8 +6089,8 @@ msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
 msgstr ""
-"Řízení není možné během obnovování mapy chybných pixelů. Prosím, zavřete "
-"toto okno a opravte mapu chybných pixelů."
+"Navádění není možné během obnovování mapy vadných pixelů. Prosím, zavřete "
+"toto okno a opravte mapu vadných pixelů."
 
 #: myframe.cpp:2091
 #, c-format
@@ -6136,15 +6144,15 @@ msgid ""
 "connected to the camera you want to use for guiding."
 msgstr ""
 "Dark knihovna neodpovídá kameře v tomto profilu. Zkontrolujte, zda je "
-"správně připojena kamera, kterou chcete použít pro řízení."
+"správně připojena kamera, kterou chcete použít pro ."
 
 #: myframe.cpp:2597
 msgid ""
 "Dark library and bad-pixel maps don't match the current camera. Check that "
 "you are connected to the camera you want to use for guiding."
 msgstr ""
-"Knihovna dark snímků a mapa chybných pixlů neodpovídají aktuální kameře. "
-"Zkontrolujte, připojení ke kameře, kterou chcete použít pro řízení."
+"Knihovna dark snímků a mapa vydných pixlů neodpovídají aktuální kameře. "
+"Zkontrolujte, připojení ke kameře, kterou chcete použít pro ."
 
 #: myframe.cpp:2629
 msgid "You must connect a camera before loading dark frames"
@@ -6202,13 +6210,15 @@ msgstr ""
 
 #: myframe.cpp:3012
 msgid "Reset \"Don't Show Again\" messages"
-msgstr "Obnovit Zprávy \"Nezobrazovat znovu\""
+msgstr "Obnovit zprávy 'Nezobrazovat znovu'"
 
 #: myframe.cpp:3014
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
-msgstr "Obnoví všechny zprávy, které byly skryty. \"Nezobrazovat znovu\"."
+msgstr ""
+"Obnoví všechny zprávy, které byly skryty po zaškrtnutí. \"Nezobrazovat "
+"znovu\"."
 
 #: myframe.cpp:3016
 msgid "2x2 mean"
@@ -6238,7 +6248,7 @@ msgid ""
 msgstr ""
 "Jak dlouho by měl PHD čekat mezi řídicími snímky? Výchozí hodnota = 0 ms, "
 "užitečné při použití velmi krátkých expozic (např. při použití astrokamery). "
-"Pokud nepotřebujete velmi časté korekce řízení, tato hodnota je vhodná"
+"Pokud nepotřebujete velmi časté korekce , tato hodnota je vhodná"
 
 #: myframe.cpp:3038
 msgid "Focal length (mm)"
@@ -6250,7 +6260,7 @@ msgid ""
 "guiding error in arc-sec."
 msgstr ""
 "Ohnisková vzdálenost pointačního dalekohledu se používá spolu s velikostí "
-"pixelu kamery k výpočtu chyby řízení v arcsec."
+"pixelu kamery k zobrazení chyby  v arcsec."
 
 #: myframe.cpp:3044
 msgid "Language"
@@ -6289,8 +6299,8 @@ msgstr "Umístění Souborů Protokolu"
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
-"Složka pro protokoly řízení a ladící protokoly; pro obnovení výchozího "
-"umístění zadávejte prázdný řetězec"
+"Složka pro protokoly  a ladící protokoly; pro obnovení výchozího umístění "
+"zadávejte prázdný řetězec"
 
 #: myframe.cpp:3066
 msgid "Browse..."
@@ -6302,11 +6312,11 @@ msgstr "Povolit protokolování diagnostických snímků"
 
 #: myframe.cpp:3080
 msgid "Save guider images based on options below"
-msgstr "Uložte snímek řízení podle níže uvedených možností"
+msgstr "Uložte snímek  podle níže uvedených možností"
 
 #: myframe.cpp:3083
 msgid "Save Guider Images"
-msgstr "Uloží Snímek Pointace"
+msgstr "Uložit Vodící Snímeky"
 
 #: myframe.cpp:3086
 msgid "For all lost-star frames"
@@ -6314,7 +6324,7 @@ msgstr "Pro všechny snímky se ztracenou hvězdou"
 
 #: myframe.cpp:3087
 msgid "Save guider image whenever a lost-star event occurs"
-msgstr "Uložit obraz řízení vždy, když nastane událost ztráty hvězdy"
+msgstr "Uložit obraz  vždy, když nastane událost ztráty hvězdy"
 
 #: myframe.cpp:3089
 msgid "For all Auto-select Star frames"
@@ -6325,9 +6335,8 @@ msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
 msgstr ""
-"Uložit obrázek řízení při automatickém výběru hvězdy. Poznámka: Obrázek se "
-"vždy uloží, když selže automatický výběr hvězdy, bez ohledu na toto "
-"nastavení."
+"Uložit obrázek  při automatickém výběru hvězdy. Poznámka: Obrázek se vždy "
+"uloží, když selže automatický výběr hvězdy, bez ohledu na toto nastavení."
 
 #: myframe.cpp:3094
 msgid "When relative error exceeds"
@@ -6339,8 +6348,8 @@ msgid ""
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
 "and the current frame's error is 1.5 pixels, the relative error is 3"
 msgstr ""
-"Uloží snímek řízení, pokud chyba aktuálního snímku překročí průměrnou chybu "
-"o tento faktor. Například, pokud je průměrná chyba (RMS) 0,5 pixelu a chyba "
+"Uloží snímek , pokud chyba aktuálního snímku překročí průměrnou chybu o "
+"tento faktor. Například, pokud je průměrná chyba (RMS) 0,5 pixelu a chyba "
 "aktuálního snímku je 1,5 pixelu, relativní chyba je 3"
 
 #: myframe.cpp:3102
@@ -6360,8 +6369,8 @@ msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
 msgstr ""
-"Uloží snímek řízení, pokud vzdálenost mezi pointační hvězdou a pozicí zámku "
-"přesáhne daný počet pixelů"
+"Uloží snímky z , pokud vzdálenost mezi naváděcí hvězdou a pozicí zámku "
+"přesáhne zadaný počet pixelů"
 
 #: myframe.cpp:3113
 msgid "Absolute error threshold in pixels"
@@ -6374,7 +6383,7 @@ msgstr "Dokud nebude tohoto počtu dosaženo"
 #: myframe.cpp:3119
 msgid ""
 "Save each guider image until the specified number of images have been saved"
-msgstr "Uloží každý snímek řízení, dokud nejsou uloženy zadané množství snímků"
+msgstr "Uloží každý snímek , dokud nejsou uloženy zadané množství snímků"
 
 #: myframe.cpp:3122
 msgid "Number of images to save"
@@ -6431,8 +6440,8 @@ msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
 msgstr ""
-"Pro tento profil zařízení se automaticky obnoví data z poslední úspěšné "
-"kalibrace po připojení."
+"Pro tento profil za se automaticky obnoví data z poslední úspěšné kalibrace "
+"po připojení."
 
 #: myframe.cpp:3187 scope.cpp:2064
 msgid "Min"
@@ -6472,7 +6481,7 @@ msgid ""
 "for normal guiding"
 msgstr ""
 "Pro kalibraci, cyklování, dithering a GA použijte \"krátké\" zpoždění, pro "
-"běžné řízení použijte \"dlouhé\" zpoždění"
+"běžné  použijte \"dlouhé\" zpoždění"
 
 #: myframe.cpp:3209
 msgid "Short delay (sec)"
@@ -6488,7 +6497,7 @@ msgstr "Dlouhé (s)"
 
 #: myframe.cpp:3212
 msgid "Long delay for normal guiding"
-msgstr "Dlouhé zpoždění při řízení"
+msgstr "Dlouhé zpoždění při"
 
 #: myframe.cpp:3214
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
@@ -6548,29 +6557,26 @@ msgid ""
 " panel. Use the 'View' menu to watch your guiding performance. If you have\n"
 " problems, read the 'Best Practices' document and the help files! "
 msgstr ""
-"Vítejte v PHD2 (Push Here Dummy, Gen2) Řízení!\n"
+"Vítejte v PHD2 (Push Here Dummy, Gen2) Navádění!\n"
 "\n"
-"Základní operace jsou celkem jednoduché (dále jen \"PHD\"):\n"
+"Základní operace jsou celkem jednoduché (dále jen 'PHD'):\n"
 "\n"
-"  1) Stiskněte zelené tlačítko \"USB\", vyberte kameru a připojte ji, "
-"klikněte na \"Připojit vše\".\n"
+"  1) Stiskněte zelené tlačítko 'USB', vyberte kameru a připojte ji, klikněte "
+"na 'Připojit vše'.\n"
 "  2) Z rozevíracího seznamu vyberte délku trvání expozice. Pro začátek "
 "zkuste 2 sekundy.\n"
 "  3) Stiskněte tlačítko 'Cyklus' a případně upravte zaostření.\n"
 "  4) Klikněte na hvězdu blíže ke středu nebo použijte Alt-S pro automatický "
 "výběr hvězdy.\n"
-"  5) Stiskněte ikonu Pointování (zelený terčík).\n"
+"  5) Stiskněte ikonu Navádění (zelený terčík).\n"
 "\n"
 "PHD2 začne kalibrovat a navádět.  To je vše!\n"
 "\n"
-"Chcete-li zastavit řízení, jednoduše stiskněte tlačítka \"Cyklus\" nebo "
-"\"Stop\".\n"
-"Pokud potřebujete upravit možnosti, klikněte na tlačítko \"Mozek\" pro "
+"Chcete-li zastavit , jednoduše stiskněte tlačítka 'Cyklus' nebo 'Stop'.\n"
+"Pokud potřebujete upravit možnosti, klikněte na tlačítko 'Mozek' pro "
 "zobrazení \n"
-"\"Pokročilých Nastavení\". Pomocí nabídky \"Zobrazení\" můžete sledovat "
-"svoji \n"
-"pointaci. Pokud máte problémy, přečtěte si dokumentaci \"Osvědčené "
-"postupy\"\n"
+"'Pokročilých Nastavení'. Pomocí nabídky 'Zobrazení' můžete sledovat svoje \n"
+"navádění. Pokud máte problémy, přečtěte si dokumentaci 'Osvědčené postupy'\n"
 " a soubory nápovědy! "
 
 #: myframe_events.cpp:190 staticpa_toolwin.cpp:306 staticpa_toolwin.cpp:625
@@ -6587,7 +6593,7 @@ msgstr "Spektrografické Překrytí Štěrbiny"
 
 #: myframe_events.cpp:255
 msgid "Position (Center)"
-msgstr "Poloha (Střed)"
+msgstr "Pozice (Střed)"
 
 #: myframe_events.cpp:256
 msgid "Size"
@@ -6637,8 +6643,9 @@ msgid ""
 "frames, which are a different size from ordinary guide frames for this "
 "camera."
 msgstr ""
-"Pro upřesnění mapy chybných pixelů nyní PHD2 zobrazuje surové datové snímky "
-"kamery, které mají odlišnou velikost než běžné řídící snímky pro tuto kameru."
+"Pro upřesnění mapy vadných pixelů nyní PHD2 zobrazuje surové datové snímky "
+"kamery, které mají odlišnou velikost než běžné naváděcí snímky pro tuto "
+"kameru."
 
 #: myframe_events.cpp:582
 #, c-format
@@ -6670,23 +6677,23 @@ msgstr "Knihovna tmavých snímků odpojena"
 
 #: myframe_events.cpp:699
 msgid "You must connect a camera before loading a bad-pixel map"
-msgstr "Před načtením mapy chybných pixlů se připojte ke kameře"
+msgstr "Před načtením mapy vadných pixlů se připojte ke kameře"
 
 #: myframe_events.cpp:714
 msgid "Defect map loaded"
-msgstr "Mapy chybných pixlů načtena"
+msgstr "Mapy vadných pixlů načtena"
 
 #: myframe_events.cpp:718
 msgid "Defect map not loaded"
-msgstr "Mapa chybných pixlů nenačtena"
+msgstr "Mapa vadných pixlů nenačtena"
 
 #: myframe_events.cpp:730
 msgid "Bad-pixel map unloaded"
-msgstr "Mapa chybných pixlů odpojena"
+msgstr "Mapa vadných pixlů odpojena"
 
 #: myframe_events.cpp:878
 msgid "Guider"
-msgstr "Řízení"
+msgstr "Vedení"
 
 #: myframe_events.cpp:965
 msgid ""
@@ -6694,9 +6701,9 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
-"Nejlepších výsledků dosáhnete použitím knihovny dark nebo mapy chybných "
+"Nejlepších výsledků dosáhnete použitím knihovny dark nebo mapy vadných "
 "pixelů. To pomůže zabránit PHD2 v uzamčení na přepálené pixely. Pomocí "
-"možnosti \"Dark\" v nabídce můžete vytvořit Knihovnu Dark nebo Mapu Chybných "
+"možnosti Dark v nabídce můžete vytvořit Knihovnu Dark nebo Mapu Vadných "
 "pixelů."
 
 #: myframe_events.cpp:982
@@ -6704,8 +6711,8 @@ msgid ""
 "Scope isn't pointing in recommended sky area for calibration - run the "
 "Calibration Assistant to improve results."
 msgstr ""
-"Dalekohled není namířen do doporučené oblasti oblohy pro kalibraci. "
-"Doporučujeme spustit Kalibračního Asistenta, abyste dosáhli lepších výsledků."
+"Dalekohled není namířen do doporučené oblasti oblohy pro kalibraci. Spusťte "
+"kalibračního asistenta, abyste dosáhli lepších výsledků."
 
 #: myframe_events.cpp:984 myframe_events.cpp:991
 msgid "Calibrate here"
@@ -6773,10 +6780,10 @@ msgid ""
 "new configuration.\n"
 "Would you like to use the Setup Wizard now?"
 msgstr ""
-"Vypadá to, že se jedná o první připojení kamery a montáže. Průvodce vám může "
-"pomoci\n"
-"nastavit základní řídící parametry pro novou konfiguraci. \n"
-"Chcete nyní spustit Průvodce?"
+"Vypadá to, že se jedná o první připojení ke kameře a montáži. Průvodce "
+"nastavením vám může pomoci\n"
+"a také stanoví základní naváděcí parametry pro novou konfiguraci.\n"
+"Chcete nyní použít Průvodce?"
 
 #: myframe_events.cpp:1210 profile_wizard.cpp:1382
 msgid "Yes"
@@ -6880,7 +6887,7 @@ msgstr "Vlastní Adresa Portu:"
 
 #: phdconfig.cpp:45
 msgid "My Equipment"
-msgstr "Moje Zařízení"
+msgstr "Moje Za"
 
 #: phd.cpp:281
 msgid "Win32s on Windows 3.1"
@@ -7062,14 +7069,14 @@ msgid ""
 "\n"
 "Click Next to begin"
 msgstr ""
-"Tento nástroj automaticky určí správnou hodnotu pro nastavení \"Obrátit "
-"hodnotu DEC po překlopení poledníku\".\n"
+"Tento nástroj automaticky určí správnou hodnotu pro nastavení 'Obrátit "
+"výstup DEC po překlopení poledníku'.\n"
 "\n"
 "Postup vyžaduje dvě kalibrace - jednu s dalekohledem na východní straně a "
-"druhou na západní straně pilíře. V případě potřeby vám budou poskytnuta "
+"druhou na západní straně pilíře. V případě potřeby vám budou poskytnuty "
 "další pokyny pro přemístění dalekohledu.\n"
 "\n"
-"Začněte kliknutím na tlačítko \"Další\""
+"Začněte kliknutím na tlačítko Další"
 
 #: pierflip_tool.cpp:243
 msgid "Next"
@@ -7085,7 +7092,7 @@ msgstr ""
 "Nasměrujte dalekohled ve směru poledníku a nebeského rovníku, přibližně v "
 "blízkosti hodnoty Hodinového Úhlu = 0 a Deklinace = 0.\n"
 "\n"
-"Až budete připraveni, klikněte na tlačítko \"Kalibrovat\"."
+"Až budete připraveni, klikněte na tlačítko Kalibrovat."
 
 #: pierflip_tool.cpp:259
 msgid "Wait for the first calibration to complete."
@@ -7094,7 +7101,7 @@ msgstr "Počkejte na dokončení první kalibrace."
 #: pierflip_tool.cpp:261 pierflip_tool.cpp:275
 #, c-format
 msgid "Calibrating on the %s side of pier"
-msgstr "Kalibrace, strana pilíře %s"
+msgstr "Kalibrace na straně pilíře %s"
 
 #: pierflip_tool.cpp:264
 #, c-format
@@ -7102,9 +7109,9 @@ msgid ""
 "Slew the telescope to force a meridian flip - the scope should move to the "
 "%s side of the pier, still pointing near Dec = 0."
 msgstr ""
-"Přeložte dalekohled, abyste vyvolali překlopení poledníku - dalekohled by se "
-"měl přesunout na stranu pilíře směrem %s, stále by měl mířit poblíž hodnoty "
-"Deklinace = 0."
+"Přeložte dalekohled, abyste vyvolali překlopení poledníku – dalekohled by se "
+"měl přesunout na stranu pilíře směrem %s, přičemž stále bude mířit poblíž "
+"Dec = 0."
 
 #: pierflip_tool.cpp:273
 msgid "Wait for the second calibration to complete."
@@ -7120,7 +7127,7 @@ msgid ""
 "The correct setting for 'Reverse Dec output after meridian flip' for this "
 "mount is: %s"
 msgstr ""
-"Správné nastavení pro výstup 'Obrátit hodnotu Dec po překlopení poledníku' "
+"Správné nastavení pro výstup 'Obrátit výstup Dec po překlopení poledníku' "
 "pro tuto montáž je: %s"
 
 #: pierflip_tool.cpp:283
@@ -7155,8 +7162,7 @@ msgstr "Kalibrační úhel deklinace se liší o velké množství."
 msgid ""
 "The meridian flip calibration tool requires an equipment profile without an "
 "AO"
-msgstr ""
-"Kalibrační nástroj překlopení poledníku vyžaduje profil zařízení bez AO"
+msgstr "Kalibrační nástroj překlopení poledníku vyžaduje profil za bez AO"
 
 #: pierflip_tool.cpp:499
 msgid ""
@@ -7164,7 +7170,7 @@ msgid ""
 "Equipment button to select your mount."
 msgstr ""
 "Kalibrační nástroj poledníku vyžaduje připojenou montáž. Kliknutím na "
-"tlačítko \"Připojit zařízení\" vyberte montáž."
+"tlačítko Připojit za vyberte montáž."
 
 #: pierflip_tool.cpp:506
 msgid ""
@@ -7173,8 +7179,8 @@ msgid ""
 "Auto and try again."
 msgstr ""
 "Nástroj pro kalibraci překlopení poledníku nelze spustit, pokud je režim "
-"řízení v deklinaci deaktivován. Pokud je vaše montáž schopna řídit v režimu "
-"Deklinace, nastavte režim řízení Dec na Auto a akci opakujte."
+"navádění v deklinaci deaktivován. Pokud je vaše montáž schopna řídit v "
+"režimu Deklinace, nastavte režim  Dec na Auto a akci opakujte."
 
 #: polardrift_toolwin.cpp:66
 msgid ""
@@ -7190,7 +7196,7 @@ msgstr ""
 "informace o ohniskové vzdálenosti pointačního dalekohledu a \n"
 "velikosti pixelu kamery.\n"
 "\n"
-"Zadejte prosím ohniskovou vzdálenost řídícího dalekohledu\n"
+"Zadejte prosím ohniskovou vzdálenost pointačního dalekohledu\n"
 "na kartě Globální v menu Nastavení. Zadejte také velikost\n"
 "pixelu kamery na kartě Kamera v menu Nastavení.\n"
 "\n"
@@ -7198,7 +7204,7 @@ msgstr ""
 
 #: polardrift_toolwin.cpp:82 staticpa_toolwin.cpp:126
 msgid "Please wait till Calibration is done and stop guiding"
-msgstr "Počkejte, až dojde ke Kalibraci a řízení se zastaví"
+msgstr "Počkejte, až dojde ke Kalibraci a  se zastaví"
 
 #: polardrift_toolwin.cpp:111
 msgid "Polar Drift Alignment"
@@ -7217,7 +7223,7 @@ msgid ""
 msgstr ""
 "Přejeďte blízko Nebeského pólu.\n"
 "Ujistěte se, že je sledování zapnuté.\n"
-"Vyberte pointační hvězdu na hlavním displeji.\n"
+"Vyberte naváděcí hvězdu na hlavním displeji.\n"
 "Klikněte na Start.\n"
 "Počkejte, až se displej ustálí.\n"
 "Klikněte na Zastavit.\n"
@@ -7246,7 +7252,7 @@ msgstr "Obraz se zrcadlí např. od OAG"
 
 #: polardrift_toolwin.cpp:220 staticpa_toolwin.cpp:432
 msgid "Adjustment notes"
-msgstr "Poznámky k seřízení"
+msgstr "Poznámky k se"
 
 #: polardrift_toolwin.cpp:279
 msgid "Polar Drift alignment stopped"
@@ -7259,7 +7265,7 @@ msgstr "Chyba PA (arcmin): %.1f Úhel (°): %.1f"
 
 #: polardrift_toolwin.cpp:297 staticpa_toolwin.cpp:536
 msgid "Please wait till Calibration is done and/or stop guiding"
-msgstr "Počkejte, až se dokončí Kalibrace a / nebo ukončí řízení"
+msgstr "Počkejte, až se dokončí Kalibrace a / nebo ukončí"
 
 #: polardrift_toolwin.cpp:302 staticpa_toolwin.cpp:541
 msgid "Please select a star"
@@ -7299,7 +7305,7 @@ msgstr "Více informací"
 
 #: profile_wizard.cpp:244
 msgid "Gear"
-msgstr "Zařízení"
+msgstr "Za"
 
 #: profile_wizard.cpp:258
 msgid ""
@@ -7314,7 +7320,7 @@ msgstr ""
 #: profile_wizard.cpp:260
 #, c-format
 msgid "Guide camera un-binned pixel size (%s)"
-msgstr "Velikost nebinovaných pixelů pointační kamery (%s)"
+msgstr "Velikost nebinovaných pixelů naváděcí kamery (%s)"
 
 #: profile_wizard.cpp:267
 msgid ""
@@ -7339,6 +7345,11 @@ msgid ""
 "aperture x f-ratio).  Typical finder scopes have a focal length of about "
 "165mm. Recommended minimum is 100mm"
 msgstr ""
+"Jedná se o ohniskovou vzdálenost pointačního dalekohledu, případně "
+"zobrazovacího dalekohledu, pokud používáte mimoosový naváděcí systém nebo za "
+"s adaptivní optikou (ohnisková vzdálenost = apertura × poměr f).  Typické "
+"naváděcí dalekohledy mají ohniskovou vzdálenost přibližně 165 mm, přičemž "
+"doporučené minimum je 100 mm"
 
 #: profile_wizard.cpp:291
 msgid "Guide scope focal length (mm)"
@@ -7346,7 +7357,7 @@ msgstr "Ohnisková vzdálenost pointačního dalekohledu (mm)"
 
 #: profile_wizard.cpp:292
 msgid "Focal length less than recommended minimum (100mm)"
-msgstr ""
+msgstr "Ohnisková vzdálenost je menší než doporučená minimální (100 mm)"
 
 #: profile_wizard.cpp:308 profile_wizard.cpp:1274
 #, c-format
@@ -7376,7 +7387,7 @@ msgstr "Řídící rychlost montáže (n.n x hvězdný)"
 
 #: profile_wizard.cpp:330
 msgid "Mount has high-precision encoders on both axes"
-msgstr ""
+msgstr "Montáž je vybavena vysoce přesnými snímači na obou osách"
 
 #: profile_wizard.cpp:331
 msgid ""
@@ -7409,8 +7420,8 @@ msgid ""
 msgstr ""
 "Při zaškrtnutí této možnosti se při načtení profilu automaticky znovu "
 "použije poslední provedená kalibrace. Aby tato funkce fungovala, je "
-"nezbytné, aby orientace pointační kamery a všechny ostatní optické "
-"vlastnosti řídícího systému zůstaly mezi relacemi zachovány."
+"nezbytné, aby orientace naváděcí kamery a všechny ostatní optické vlastnosti "
+"řídícího systému zůstaly mezi relacemi zachovány."
 
 #: profile_wizard.cpp:351
 msgid "Profile Name"
@@ -7436,14 +7447,13 @@ msgid ""
 "please review the 'Basic Use' section of the 'Help' guide after the wizard "
 "dialog has finished."
 msgstr ""
-"Tyto kroky vám pomohou identifikovat zařízení, které chcete použít pro "
-"řízení a přiřadit jej ke svému profilu. Tento profil bude k dispozici při "
-"každém spuštění programu PHD2. Nejméně budete muset vybrat pointační kameru "
-"a rozhraní montáže, které PHD2 použije. Také budete muset zadat informace o "
-"optickém zařízení, které bude použito. PHD2 tyto hodnoty využije pro "
-"vytvoření startovací sady pro bodování a kalibraci. Pokud jste nový "
-"uživatel, po dokončení průvodce si přečtěte v nápovědě \"Instrukce pro "
-"netrpělivé\"."
+"Tyto kroky vám pomohou identifikovat za, které chcete použít pro navádění, a "
+"přiřadit jej ke svému profilu. Tento profil bude k dispozici při každém "
+"spuštění programu PHD2.  Nejméně budete muset vybrat naváděcí kameru a "
+"rozhraní montáže, které PHD2 použije. Také budete muset zadat informace o "
+"optickém za, které bude použito. PHD2 tyto hodnoty využije pro vytvoření "
+"startovací sady pro bodování a kalibraci. Pokud jste nový uživatel, po "
+"dokončení průvodce si přečtěte v nápovědě 'Instrukce pro netrpělivé'."
 
 #: profile_wizard.cpp:417
 msgid ""
@@ -7456,14 +7466,14 @@ msgid ""
 "automatically.  You can also choose a binning-level if your camera supports "
 "binning."
 msgstr ""
-"Vyberte ze seznamu svou kameru. Jsou zde uvedeny všechny kamery, které PHD2 "
-"podporuje, a také všechny nainstalované kamery ASCOM. Pokud se vaše kamera "
-"nenachází v seznamu, znamená to, že PHD2 ji nepodporuje nebo není "
-"nainstalován ovladač kamery. PHD2 potřebuje znát velikost pixelů kamery a "
-"ohniskovou vzdálenost pointačního dalekohledu, aby mohl vypočítat řídící "
-"parametry. Po výběru kamery máte možnost se k ní okamžitě připojit, aby se "
-"automaticky upravila hodnota pixelů. Pokud vaše kamera podporuje binning, "
-"můžete také vybrat úroveň binningu."
+"Vyberte svou kameru ze seznamu. Zobrazeny jsou všechny kamery podporované "
+"PHD2 a všechny nainstalované kamery ASCOM. Pokud se vaše kamera nenachází v "
+"seznamu, znamená to, že není podporována PHD2 nebo není nainstalován její "
+"ovladač. PHD2 potřebuje znát velikost pixelu kamery a ohniskovou vzdálenost "
+"pointačního dalekohledu, aby mohl vypočítat správné parametry pro navádění. "
+"Po výběru kamery budete mít možnost se k ní připojit a automaticky získat "
+"velikost pixelu. Pokud vaše kamera podporuje binning, můžete také vybrat "
+"úroveň binningu."
 
 #: profile_wizard.cpp:427
 #, c-format
@@ -7484,8 +7494,7 @@ msgstr ""
 "podporován firmwarem montáže. Pokud znáte rychlost montáže, můžete ji zadat, "
 "což umožní PHD2 efektivnější kalibraci.  Pokud neznáte rychlost montáže, "
 "můžete jednoduše použít výchozí hodnotu %0.1fx.  Při výběru montáže obvykle "
-"existuje možnost okamžitého připojení, kdy PHD2 dokáže načíst rychlost "
-"řízení."
+"existuje možnost okamžitého připojení, kdy PHD2 dokáže načíst rychlost ."
 
 #: profile_wizard.cpp:440 profile_wizard.cpp:752
 msgid "Simulator"
@@ -7498,10 +7507,10 @@ msgid ""
 "and declination. You can enable these features by choosing an 'Aux Mount' "
 "connection that does provide pointing information."
 msgstr ""
-"Rozhraní \"simulátor\" s kamerou/montáží nezajišťuje informace o poloze, což "
-"znamená, že PHD2 nebude schopný automaticky upravit řídící deklinaci "
-"dalekohledu a sklon. Tyto funkce můžete povolit pomocí volby připojení \"Aux "
-"Montáž\", které poskytují informace pro pointaci."
+"Rozhraní 'simulátor' s kamerou/montáží nezajišťuje informace o směru, takže "
+"PHD2 nebude schopno automaticky upravit  podle stran pilíře a deklinace. "
+"Tyto funkce můžete povolit výběrem připojení 'Aux Montáž', které poskytuje "
+"informace o směru."
 
 #: profile_wizard.cpp:451
 msgid ""
@@ -7512,11 +7521,11 @@ msgid ""
 "Mount interface will be used only for that purpose and not for sending guide "
 "commands."
 msgstr ""
-"Vybrané rozhraní montáže neposkytuje informace o poloze, což znamená, že "
-"PHD2 nemůže automaticky upravit polohu deklinace montáže (pozici "
-"dalekohledu). Tuto funkci můžete aktivovat pomocí volby \"AUX Montáže\". "
-"Rozhraní AUX bude použito pouze k získání polohy montáže, nebudou odeslány "
-"žádné řídící příkazy."
+"Vybrané rozhraní montáže neposkytuje informace o směru, což znamená, že PHD2 "
+"nebude schopno automaticky upravit  podle stran pilíře a deklinace. Tuto "
+"funkci můžete aktivovat výběrem připojení 'Aux Montáž', které poskytuje "
+"informace o směru. Rozhraní Aux bude použito pouze k těmto účelům a nebude "
+"odesílat žádné řídicí příkazy."
 
 #: profile_wizard.cpp:459
 msgid ""
@@ -7525,9 +7534,10 @@ msgid ""
 "mount interface you chose earlier will be used for larger ('bump') "
 "corrections. Calibration of both interfaces will be handled automatically."
 msgstr ""
-"Pokud používáte adaptivní optiku (AO), můžete ji zde vybrat. AO se používá "
-"pro rychlé a jemné úpravy, zatímco rozhraní montáže slouží pouze pro větší "
-"úpravy. Oba tyto prvky jsou kalibrovány automaticky."
+"Pokud máte za s adaptivní optikou (AO), můžete jej vybrat zde. Za AO bude "
+"použito pro rychlé a malé korekce navádění, zatímco rozhraní montáže, které "
+"jste vybrali dříve, bude použito pro větší ('bump') korekce. Kalibrace obou "
+"rozhraní bude provedena automaticky."
 
 #: profile_wizard.cpp:465
 msgid ""
@@ -7536,10 +7546,10 @@ msgid ""
 "rotator is moved. Otherwise, any change in rotator position will require a "
 "re-calibration in PHD2"
 msgstr ""
-"Pokud máte rotátor, který je kompatibilní s ASCOM nebo INDI, můžete jej zde "
-"vybrat. Tím umožníte PHD2 automaticky upravovat kalibraci při pohybu "
-"rotátorem. V opačném případě budete muset provést opětovnou kalibraci v "
-"programu PHD2 pokaždé, když změníte polohu rotátoru"
+"Pokud máte rotátor kompatibilní s ASCOM nebo INDI, můžete jej zde vybrat. "
+"Tím umožníte PHD2 automaticky upravit kalibraci při pohybu rotátoru. V "
+"opačném případě bude nutné provést opětovnou kalibraci v programu PHD2 při "
+"každé změně polohy rotátoru"
 
 #: profile_wizard.cpp:471
 msgid ""
@@ -7550,12 +7560,12 @@ msgid ""
 "you are new to PHD2 or encounter problems, please use the 'Help' function "
 "for assistance."
 msgstr ""
-"Váš profil je kompletní a připravený k uložení.  Pojmenujte jej a případně "
-"pro něj vytvořte knihovnu dark snímků. Tento postup se doporučuje, abyste "
-"dosáhli nejlepších výsledků. Pokud je vaše nastavení stabilní od jedné noci "
-"k druhé, můžete zvolit automatické opětovné použití poslední kalibrace při "
-"načtení tohoto profilu. Pokud jste v programu PHD2 noví nebo se setkáte s "
-"problémy, použijte pro pomoc funkci „Nápověda“."
+"Váš profil je kompletní a připravený k uložení. Pojmenujte jej a případně "
+"vytvořte knihovnu dark snímků. Tento krok se doporučuje pro dosažení "
+"nejlepších výsledků. Pokud je vaše nastavení stabilní od jedné noci k druhé, "
+"můžete zvolit automatické opětovné použití poslední kalibrace při načítání "
+"tohoto profilu. Pokud jste noví v programu PHD2 nebo narazíte na problémy, "
+"použijte funkci 'Nápověda' pro pomoc."
 
 #: profile_wizard.cpp:520
 msgid "Configuration Suggestion"
@@ -7571,21 +7581,22 @@ msgid ""
 "your mount.\n"
 "Please review the Help guide on 'Equipment Connections' for more details."
 msgstr ""
-"Tato konfigurace neposkytuje PHD2 žádné informace o poloze a umístění "
-"dalekohledu.  To znamená, že budete muset provést novou kalibraci \n"
-"vždy, když je pohyb dalekohledu nesprávný, a některé funkce PHD2 budou "
-"vypnuty. Měli byste zvolit připojení montáže rozhraní \n"
+"Tato konfigurace neposkytuje PHD2 žádné informace o poloze dalekohledu.  To "
+"znamená, že budete muset provést novou kalibraci \n"
+"vždy, když dojde k pohybu dalekohledu, a některé funkce PHD2 budou vypnuty.  "
+"Měli byste zvolit připojení montáže pomocí rozhraní \n"
 "ASCOM nebo INDI pro 'montáž' nebo 'aux-montáž', pokud nejsou k dispozici "
-"ovladače pro vaši montáž. Podrobnější informace naleznete v nápovědě \n"
-"v sekci Připojit Zařízení."
+"ovladače pro vaši montáž. Podrobnější naleznete v nápovědě \n"
+"v sekci 'Připojení za'."
 
 #: profile_wizard.cpp:536
 msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
 msgstr ""
-"Ujistěte se, že nastavení EQMOD ASCOM je nakonfigurováno pro PHD2 podle "
-"tohoto dokumentu:\n"
+"Ujistěte se, že nastavení EQMOD ASCOM je správně nakonfigurováno pro PHD2 "
+"podle tohoto dokumentu:\n"
+"\n"
 
 #: profile_wizard.cpp:538
 msgid "Open EQMOD document..."
@@ -7601,7 +7612,7 @@ msgstr "Pokračovat"
 
 #: profile_wizard.cpp:549
 msgid "Don't Ask"
-msgstr "Již se Neptat"
+msgstr "Neptat se znovu"
 
 #: profile_wizard.cpp:625
 msgid ""
@@ -7609,11 +7620,11 @@ msgid ""
 "camera pixel size"
 msgstr ""
 "Zadejte typ kamery, ohniskovou vzdálenost pointačního dalekohledu, bitovou "
-"hloubku kamery a velikost pixelu pointační kamery"
+"hloubku kamery a velikost pixelu naváděcí kamery"
 
 #: profile_wizard.cpp:651
 msgid "Please select a mount type to handle guider commands"
-msgstr "Vyberte typ montáže pro příkazy řízení"
+msgstr "Vyberte typ montáže pro příkazy"
 
 #: profile_wizard.cpp:682
 msgid "Please specify a name for the profile."
@@ -7626,21 +7637,21 @@ msgstr "Profil s tímto názvem již existuje. Zvolte prosím jiné jméno."
 
 #: profile_wizard.cpp:728
 msgid "Welcome to the PHD2 'first light' wizard"
-msgstr "Vítejte u průvodce \"prvním světlem\" PHD2"
+msgstr "Vítejte u průvodce 'prvním světlem' PHD2"
 
 #: profile_wizard.cpp:733
 msgid "Choose a Guide Camera"
-msgstr "Vybrat Pointační Kameru"
+msgstr "Vybrat Řídící Kameru"
 
 #: profile_wizard.cpp:735
 msgid "Guide Camera:"
-msgstr "Pointační Kamera:"
+msgstr "Řídící Kamera:"
 
 #: profile_wizard.cpp:747
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
-msgstr "Vyberte pointační kameru a zadejte optické vlastnosti řídící sestavy"
+msgstr "Vyberte naváděcí kameru a zadejte optické vlastnosti řídící sestavy"
 
 #: profile_wizard.cpp:756
 msgid "On-camera"
@@ -7674,11 +7685,11 @@ msgid ""
 "may want to choose an 'Aux Mount' connection"
 msgstr ""
 "Protože vaše primární připojení k montáži nehlásí polohu, můžete zvolit "
-"připojení \"Aux Montáž\""
+"připojení 'Aux Montáž'"
 
 #: profile_wizard.cpp:793
 msgid "Choose an Adaptive Optics Device (optional)"
-msgstr "Výběr zařízení adaptivní optiky (volitelné)"
+msgstr "Výběr za adaptivní optiky (volitelné)"
 
 #: profile_wizard.cpp:794
 msgid "AO:"
@@ -7686,7 +7697,7 @@ msgstr ""
 
 #: profile_wizard.cpp:798
 msgid "Specify your adaptive optics device if desired"
-msgstr "V případě potřeby zadejte zařízení adaptivní optiky"
+msgstr "V případě potřeby zadejte za adaptivní optiky"
 
 #: profile_wizard.cpp:809
 msgid "Choose a Rotator Device (optional)"
@@ -7698,7 +7709,7 @@ msgstr "Rotátor:"
 
 #: profile_wizard.cpp:814
 msgid "Specify your rotator device if desired"
-msgstr "V případě potřeby zadejte své rotátorové zařízení"
+msgstr "V případě potřeby zadejte své rotátorové za"
 
 #: profile_wizard.cpp:825
 msgid "Finish Creating Your New Profile"
@@ -7710,7 +7721,7 @@ msgstr "Dokončit"
 
 #: profile_wizard.cpp:829
 msgid "Finish creating the equipment profile"
-msgstr "Dokončení vytváření profilu zařízení"
+msgstr "Dokončení vytváření profilu za"
 
 #: profile_wizard.cpp:832
 msgid ""
@@ -7726,9 +7737,9 @@ msgid ""
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
-"PHD2 se nemohl připojit ke kameře, takže byste to možná měli vyřešit "
-"později. Mezitím můžete ručně zadat velikost pixelů spolu s ohniskovou "
-"vzdáleností a úrovní binningu."
+"PHD2 se nemohl připojit ke kameře, takže to možná budete chtít vyřešit "
+"později. Mezitím můžete ručně zadat velikost pixelu spolu s ohniskovou "
+"vzdáleností a úrovněmi binningu."
 
 #: profile_wizard.cpp:1084
 msgid "Ask"
@@ -7737,14 +7748,14 @@ msgstr "Požádat"
 #: profile_wizard.cpp:1114
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
-msgstr "Řídící rychlost od %0.1f do %0.1fx"
+msgstr "Nastavení rychlosti  bylo upraveno z %0.1f na %0.1fx"
 
 #: profile_wizard.cpp:1141
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
 msgstr ""
-"Tento ovladač kamery neuvádí velikost pixlů, takže je nutné hodnotu zadat "
+"Tento ovladač kamery neuvádí velikost pixelů, takže bude nutné hodnotu zadat "
 "ručně"
 
 #: profile_wizard.cpp:1192
@@ -7760,9 +7771,9 @@ msgid ""
 "value of %0.1fx"
 msgstr ""
 "PHD2 se nemohl připojit k montáži, takže to pravděpodobně budete chtít "
-"vyřešit později. Pokud mezitím znáte nastavení rychlosti řízení montáže, "
-"můžete jej zadat ručně. V opačném případě ji můžete ponechat na výchozí "
-"hodnotě %0.1fx"
+"vyřešit později. Mezitím, pokud znáte nastavení rychlosti  montáže, můžete "
+"jej zadat ručně. V opačném případě ho můžete ponechat na výchozí hodnotě "
+"%0.1fx"
 
 #: profile_wizard.cpp:1211
 #, c-format
@@ -7780,7 +7791,7 @@ msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
-"Identifikace pointačních hvězd funguje nejlépe, když je měřítko pixelů vyšší "
+"Identifikace naváděcích hvězd funguje nejlépe, když je měřítko pixelů vyšší "
 "než 0,5\"/px. Chcete-li zvýšit měřítko pixelů, vyberte úroveň binningu 2."
 
 #: profile_wizard.cpp:1295
@@ -7798,10 +7809,10 @@ msgid ""
 "connected or its driver doesn't report the pixel-size, you can enter the "
 "value yourself using information in the camera manual or online. "
 msgstr ""
-"Je kamera již připojena k počítači?  Pokud ano, PHD2 může automaticky "
-"zjistit velikost pixelů kamery.  Pokud kamera není připojena nebo její "
-"ovladač nehlásí velikost pixelu, můžete hodnotu zadat ručně pomocí informací "
-"z manuálu kamery nebo online nápovědy. "
+"Je kamera již připojena k počítači?  Pokud ano, PHD2 obvykle automaticky "
+"zjistí velikost pixelu kamery.  Pokud kamera není připojena nebo její "
+"ovladač nehlásí velikost pixelu, můžete tuto hodnotu zadat ručně podle "
+"informací v manuálu kamery nebo online. "
 
 #: profile_wizard.cpp:1352
 msgid "Camera Already Connected?"
@@ -7815,9 +7826,9 @@ msgid ""
 "enter the guide-speed manually.  If you don't know what it is, just leave "
 "the setting at the default value of %0.1fx."
 msgstr ""
-"Je již montáž připojena a nastavena pro komunikaci s PHD2? Pokud ano, PHD2 "
-"může automaticky určit řídící rychlost montáže. Pokud ne, můžete řídící "
-"rychlost zadat ručně. Pokud nevíte, jaká je, ponechte nastavení na výchozí "
+"Je montáž již připojena a nastavena pro komunikaci s PHD2?  Pokud ano, PHD2 "
+"může automaticky určit řídící rychlost montáže.  Pokud ne, můžete řídící "
+"rychlost zadat ručně. Pokud nevíte, jaká je, nechte nastavení na výchozí "
 "hodnotě %0.1fx."
 
 #: profile_wizard.cpp:1360
@@ -7833,11 +7844,11 @@ msgid ""
 "the default value of %0.1fx.  If the guide speed on the previous page "
 "doesn't match what is read from the mount, the mount value will be used."
 msgstr ""
-"Je již aux montáž připojena a nastavena pro komunikaci s PHD2?  Pokud ano, "
+"Je aux-montáž již připojena a nastavena pro komunikaci s PHD2? Pokud ano, "
 "PHD2 může automaticky určit řídící rychlost montáže. Pokud ne, můžete ji "
-"zadat ručně.  Pokud nevíte, jaká je, ponechte nastavení na výchozí hodnotě "
-"%0.1fx.  Pokud se rychlost řízení na předchozí stránce neshoduje s tím, co "
-"je přečteno z montáže, bude použita hodnota z montáže."
+"zadat ručně. Pokud nevíte, jaká je, ponechte nastavení na výchozí hodnotě "
+"%0.1fx. Pokud se rychlost  na předchozí stránce neshoduje s hodnotou "
+"přečtenou z montáže, bude použita hodnota z montáže."
 
 #: profile_wizard.cpp:1370
 msgid "Aux-mount Already Connected?"
@@ -7845,11 +7856,11 @@ msgstr "Aux-montáž Již Připojena?"
 
 #: Refine_DefMap.cpp:68
 msgid "Refine Bad-pixel Map"
-msgstr "Opravit Mapu Chybných pixlů"
+msgstr "Opravit Mapu Vadných pixlů"
 
 #: Refine_DefMap.cpp:77
 msgid "Rebuild Master Dark Frame"
-msgstr "Znovu Vytvořit Master Dark Snímky"
+msgstr "Znovu Vytvořit Hlavní Dark Snímek"
 
 #: Refine_DefMap.cpp:78
 msgid ""
@@ -7857,11 +7868,11 @@ msgid ""
 "pixel map"
 msgstr ""
 "Kliknutím znovu získáte hlavní dark snímky potřebné k výpočtu počáteční mapy "
-"chybných pixelů"
+"vadných pixelů"
 
 #: Refine_DefMap.cpp:83
 msgid "Show Master Dark Details"
-msgstr "Zobrazit Detaily o Master Dark"
+msgstr "Zobrazit Detaily o Hlavní Darku"
 
 #: Refine_DefMap.cpp:84
 msgid ""
@@ -7869,11 +7880,11 @@ msgid ""
 "bad-pixel map"
 msgstr ""
 "Klikněte zde pro podrobnou statistiku použitého hlavního dark snímku a "
-"vypočtenou mapu chybných pixlů"
+"vypočtenou mapu vadných pixlů"
 
 #: Refine_DefMap.cpp:88
 msgid "Show defect pixels"
-msgstr "Zobrazit chybné pixely"
+msgstr "Zobrazit vadné pixely"
 
 #: Refine_DefMap.cpp:89
 msgid "Check to show hot/cold pixels in the main image window."
@@ -7946,8 +7957,8 @@ msgid ""
 "pixel map"
 msgstr ""
 "Přesuňte posuvník tak, aby se zvýšil nebo snížil počet pixelů, které se "
-"považují za horké pixly, a poté klikněte na tlačítko \"generovat\" pro "
-"vytvoření a načtení nové mapy chybných pixelů"
+"považují za horké pixly, a poté klikněte na tlačítko 'generovat' pro "
+"vytvoření a načtení nové mapy vadných pixelů"
 
 #: Refine_DefMap.cpp:172
 msgid ""
@@ -7956,8 +7967,8 @@ msgid ""
 "pixel map"
 msgstr ""
 "Přesuňte posuvník tak, aby se zvýšil nebo snížil počet pixelů, které se "
-"považují za mrtvé pixly, a poté klikněte na tlačítko \"generovat\" pro "
-"vytvoření a načtení nové mapy chybných pixelů"
+"považují za mrtvé pixly, a poté klikněte na tlačítko 'generovat' pro "
+"vytvoření a načtení nové mapy vadných pixelů"
 
 #: Refine_DefMap.cpp:175
 msgid "Cold pixels"
@@ -7977,7 +7988,7 @@ msgid ""
 "map; this will discard any manually added bad pixels"
 msgstr ""
 "Použijte aktuální nastavení agresivity k vytvoření a načtení nové mapy s "
-"chybnými pixely; tím se odstraní všechny ručně přidané chybné pixely"
+"vadnými pixely; tím se odstraní všechny ručně přidané vydné pixely"
 
 #: Refine_DefMap.cpp:190
 msgid "Add Bad Pixel"
@@ -7988,14 +7999,14 @@ msgid ""
 "Click on a bad pixel in the image display; then click on this button to add "
 "it to the in-use bad-pixel map"
 msgstr ""
-"Klikněte na chybný pixel na obrázku, poté klikněte na toto tlačítko a "
-"přidejte ho do mapy chybných pixelů"
+"Klikněte na vadné pixel na obrázku, poté klikněte na toto tlačítko a "
+"přidejte ho do mapy vydných pixelů"
 
 #: Refine_DefMap.cpp:207
 msgid "Adjust sliders to increase/decrease pixels marked as bad"
 msgstr ""
 "Úpravou posuvníků zvyšte nebo snižte počet pixelů, které jsou označeny jako "
-"chybné"
+"vadné"
 
 #: Refine_DefMap.cpp:264
 msgid "Please wait while image statistics are being computed..."
@@ -8007,19 +8018,19 @@ msgstr "Statistika dokončena ..."
 
 #: Refine_DefMap.cpp:340
 msgid "Building new bad-pixel map"
-msgstr "Vytvořit novou mapu chybných pixlů"
+msgstr "Vytvořit novou mapu vadných pixlů"
 
 #: Refine_DefMap.cpp:342
 msgid "Saving new bad-pixel map file"
-msgstr "Uloží novou mapu chybných pixlů"
+msgstr "Uloží novou mapu vadných pixlů"
 
 #: Refine_DefMap.cpp:344
 msgid "Loading new bad-pixel map"
-msgstr "Nahrát novou mapy chybných pixlů"
+msgstr "Nahrát novou mapy vadných pixlů"
 
 #: Refine_DefMap.cpp:346
 msgid "New bad-pixel map now being used"
-msgstr "Nová mapa chybných pixlů se používá"
+msgstr "Nová mapa vadných pixlů se používá"
 
 #: Refine_DefMap.cpp:370
 msgid "Master dark frames NOT rebuilt"
@@ -8027,12 +8038,12 @@ msgstr "Hlavní dark snímek NEBYL na začátku vytvořen"
 
 #: Refine_DefMap.cpp:454
 msgid "You must first load a bad-pixel map"
-msgstr "Nejprve je třeba načíst mapu chybných pixlů"
+msgstr "Nejprve je třeba načíst mapu vadných pixlů"
 
 #: Refine_DefMap.cpp:459
 #, c-format
 msgid "Bad pixel marked at %d,%d"
-msgstr "Chybný pixel byl označen na pozici %d,%d"
+msgstr "Vadný pixel byl označen na pozici %d,%d"
 
 #: Refine_DefMap.cpp:465
 msgid "Pixel position not added - no star-like object recognized there"
@@ -8117,11 +8128,12 @@ msgstr ""
 msgid ""
 "PulseGuide command to mount has failed - guiding is likely to be ineffective."
 msgstr ""
-"Příkaz PulseGuide pro montáži selhal - řízení je pravděpodobně neúčinná."
+"Příkaz PulseGuide pro montáž selhal – autoguiding pravděpodobně nebude "
+"efektivní."
 
 #: scope_ascom.cpp:704
 msgid "Guiding stopped: the scope started slewing."
-msgstr "Řízení se zastavilo: montáž se pohnula."
+msgstr "Navádění se zastavilo: montáž se pohnula."
 
 #: scope_ascom.cpp:751
 msgid ""
@@ -8146,7 +8158,7 @@ msgid ""
 "or mount vendor for support."
 msgstr ""
 "Ovladač ASCOM montáže hlásí neplatné řídicí rychlosti. Některé funkce "
-"pointace včetně PPEC budou zhoršeny. Obraťte se na poskytovatele ovladače "
+"navádění včetně PPEC, budou zhoršeny. Obraťte se na poskytovatele ovladače "
 "INDI nebo na dodavatele montáže a požádejte o podporu."
 
 #: scope.cpp:271
@@ -8190,6 +8202,12 @@ msgid ""
 "and recalibrate.  Otherwise, check for cable snags, try re-doing your "
 "calibration, and check for problems with the mount mechanics."
 msgstr ""
+"PHD2 není schopen provádět dostatečné korekce v ose Dec.  Pokud se poloha "
+"dalekohledu změnila oproti místu poslední kalibrace, zkontrolujte, zda není "
+"nesprávně nastavena volba „Obrátit výstup Dec“ na kartě Pokročilá nastavení "
+"- Navádění. Pokud ano, upravte nastavení a proveďte novou kalibraci.  V "
+"opačném případě zkontrolujte, zda nedošlo k zaseknutí kabelu, znovu proveďte "
+"kalibraci a ověřte, zda nejsou problémy s mechanikou montáže."
 
 #: scope.cpp:671
 msgid ""
@@ -8216,8 +8234,9 @@ msgid ""
 "star locked. Try restoring %s to its default value to allow PHD2 to make "
 "larger corrections."
 msgstr ""
-"Váš %s brání PHD v provádění odpovídající korekce pro udržení pevné "
-"pointační hvězdy. Zvyšte %s, aby PHD2 mohlo provést potřebné opravy."
+"Váš %s brání PHD ve vykonání odpovídajících korekcí pro udržení pevné pozice "
+"naváděcí hvězdy. Zkuste obnovit %s na výchozí hodnotu, aby PHD2 mohlo "
+"provést větší korekce."
 
 #: scope.cpp:696
 #, c-format
@@ -8227,7 +8246,7 @@ msgid ""
 "the source of these problems."
 msgstr ""
 "Ani při použití maximálních kroků nedokáže PHD2 správně korigovat velké "
-"pohyby pointační hvězdy v %s. Řízení bude nepřesné, dokud se nepodaří "
+"pohyby naváděcí hvězdy v %s. Navádění bude ovlivněno, dokud se nepodaří "
 "odstranit zdroj těchto problémů."
 
 #: scope.cpp:950
@@ -8243,8 +8262,8 @@ msgid ""
 "Advisory: Calibration completed but RA/Dec axis angles are questionable and "
 "guiding may be impaired"
 msgstr ""
-"Upozornění: Kalibrace je dokončena, ale úhly os RA/Dec jsou sporné a řízení "
-"může být nepřesné"
+"Upozornění: Kalibrace je dokončena, ale úhly os RA/Dec jsou nesprávné a "
+"navádění může být nepřesné"
 
 #: scope.cpp:956
 msgid ""
@@ -8286,7 +8305,7 @@ msgid ""
 "be impaired. Check the guide cable and use the Manual Guide tool to confirm "
 "basic operation of the mount."
 msgstr ""
-"Upozornění: Byl změřen malý nebo žádný pohyb na východ, takže řízení bude "
+"Upozornění: Byl změřen malý nebo žádný pohyb na východ, takže navádění bude "
 "pravděpodobně nepřesné. Zkontrolujte kabely a pomocí nástroje Ruční Řízení "
 "ověřte základní funkci montáže."
 
@@ -8327,9 +8346,8 @@ msgid ""
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
 "Upozornění: Kalibrace proběhla úspěšně, ale byl naměřen malý nebo žádný "
-"pohyb na jih, takže řízení bude pravděpodobně nepřesné.\n"
-"To je obvykle způsobeno vadným řídícím kabelem nebo velmi velkou vůlí v ose "
-"Dec.\n"
+"pohyb na jih, takže navádění bude pravděpodobně nepřesné.\n"
+"To je obvykle způsobeno vadným kabelem nebo velmi velkou vůlí v ose Dec.\n"
 "Zkontrolujte kabel a přečtěte si online nápovědu, kde najdete informace o "
 "tom, jak tyto typy problémů identifikovat (Ruční Řízení, Zpětná Vůle "
 "Deklinace)."
@@ -8344,7 +8362,7 @@ msgid ""
 "Guide, Declination backlash)."
 msgstr ""
 "Upozornění: Kalibrace proběhla úspěšně, ale byl naměřen malý nebo žádný "
-"pohyb na jih, takže řízení bude pravděpodobně nepřesné.\n"
+"pohyb na jih, takže navádění bude pravděpodobně nepřesné.\n"
 "To je obvykle způsobeno velmi velkou vůlí v ose Dec nebo jinými problémy s "
 "mechanikou montáže.\n"
 "Přečtěte si online nápovědu, jak tyto typy problémů identifikovat (Ruční "
@@ -8360,7 +8378,7 @@ msgid ""
 "backlash)."
 msgstr ""
 "Upozornění: Kalibrace proběhla úspěšně, ale byl naměřen malý pohyb na jih, "
-"takže řízení může být nepřesná.\n"
+"takže navádění může být nepřesné.\n"
 "To je obvykle způsobeno velkou vůlí v ose Dec nebo jinými problémy s "
 "mechanikou montáže.\n"
 "Přečtěte si online nápovědu, kde se dozvíte, jak tento typ problému řešit "
@@ -8405,7 +8423,7 @@ msgstr ""
 
 #: scope.cpp:2005
 msgid "Reverse Dec output after meridian flip"
-msgstr "Obrátit hodnotu Dec po překlopení poledníku"
+msgstr "Obrátit výstup Dec po překlopení poledníku"
 
 #: scope.cpp:2007
 msgid ""
@@ -8417,11 +8435,11 @@ msgstr ""
 
 #: scope.cpp:2015
 msgid "Stop guiding when mount slews"
-msgstr "Zastavit řízení při přejezdu montáže"
+msgstr "Zastavit navádění při přejezdu montáže"
 
 #: scope.cpp:2017
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
-msgstr "Pokud je zaškrtnuto, PHD zastaví řízení, pokud montáž přejíždí"
+msgstr "Pokud je zaškrtnuto, PHD zastaví navádění, pokud montáž přejíždí"
 
 #: scope.cpp:2022
 msgid "Assume Dec orthogonal to RA"
@@ -8475,8 +8493,7 @@ msgstr "Použít kompenzaci Dec"
 
 #: scope.cpp:2078
 msgid "Automatically adjust RA guide rate based on scope declination"
-msgstr ""
-"Automatické nastavení rychlosti řízení RA na základě deklinace dalekohledu"
+msgstr "Automatické nastavení rychlosti  RA na základě deklinace dalekohledu"
 
 #: scope.cpp:2084
 msgid "Max RA duration"
@@ -8500,10 +8517,13 @@ msgid ""
 "Default = 2500 ms. NOTE: this will be ignored if backlash compensation is "
 "enabled"
 msgstr ""
+"Maximální délka impulsu pro odeslání v deklinaci:\n"
+"Výchozí hodnota = 2500 ms. Poznámka: Tento údaj bude ignorován, pokud je "
+"aktivována kompenzace vůle"
 
 #: scope.cpp:2104
 msgid "Dec guide mode"
-msgstr "Režim řízení Dec"
+msgstr "Režim  Dec"
 
 #: scope.cpp:2105 scope.cpp:2317
 msgid "Directions in which Dec guide commands will be issued"
@@ -8683,12 +8703,12 @@ msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
 "sidereal rate, enter 0.5"
 msgstr ""
-"Rychlost řízení je násobek rychlosti hvězdného času. Zadejte hodnotu 0.5 pro "
-"50% rychlosti hvězdného času"
+"Rychlost  je násobek rychlosti hvězdného času. Pro 50% rychlosti hvězdného "
+"času zadejte hodnotu 0,5"
 
 #: starcross_test.cpp:113
 msgid "Guide speed, n.n x sidereal"
-msgstr "Hvězdná rychlost řízení, n.n x"
+msgstr "Hvězdná rychlost , n.n x"
 
 #: starcross_test.cpp:118
 msgid "Test Summary"
@@ -8703,16 +8723,16 @@ msgid ""
 "Total guide duration, \n"
 "EACH direction (s)"
 msgstr ""
-"Celková délka trvání řízení, \n"
+"Celková délka trvání , \n"
 "KAŽDÝ směr (s)"
 
 #: starcross_test.cpp:125
 msgid "Total duration of test (s)"
-msgstr "Celková délka trvání testu (s)"
+msgstr "Celková doba testu (s)"
 
 #: starcross_test.cpp:126
 msgid "Total test duration (s)"
-msgstr "Celková délka trvání testu (s)"
+msgstr "Celková doba testu (s)“"
 
 #: starcross_test.cpp:128 starcross_test.cpp:449
 msgid "Show Details"
@@ -8740,8 +8760,7 @@ msgstr "Velikost pulsu (ms)"
 
 #: starcross_test.cpp:153
 msgid "Verify or adjust your parameters, click 'Start' to begin"
-msgstr ""
-"Ověřte nebo upravte své parametry a spusťte kliknutím na tlačítko \"Start\""
+msgstr "Ověřte nebo upravte své parametry a klikněte na 'Start' pro zahájení"
 
 #: starcross_test.cpp:248
 #, c-format
@@ -8785,20 +8804,19 @@ msgstr ", krok %d z %d"
 #, c-format
 msgid "Start a %d exposure on your main camera, then click 'Ok'"
 msgstr ""
-"Spusťte expozici s délkou %d sekund na hlavním snímači a poté klikněte na "
-"tlačítko \"OK\""
+"Spusťte expozici na hlavní kameře o délce %d sekund a poté klikněte na 'OK'"
 
 #: starcross_test.cpp:324
 msgid ""
 "Wait for the main camera exposure to complete, then save that image for "
 "review"
 msgstr ""
-"Počkejte, až se dokončí expozice hlavního snímače, a uložte tento snímek pro "
-"kontrolu"
+"Počkejte, až se dokončí expozice na hlavní kameře, a poté uložte tento "
+"snímek pro kontrolu"
 
 #: starcross_test.cpp:345
 msgid "Star-cross moved failed, test cancelled"
-msgstr "Test přes kříž hvězd selhal, test byl zrušen"
+msgstr "Pohyb hvězdného kříže selhal, test byl zrušen"
 
 #: starcross_test.cpp:354
 msgid "Mount connection lost, test cancelled"
@@ -8822,15 +8840,15 @@ msgstr "Profil"
 
 #: star_profile.cpp:208
 msgid "Mid row"
-msgstr "Střední"
+msgstr "Střed. řádek"
 
 #: star_profile.cpp:212
 msgid "Avg row"
-msgstr "Prům."
+msgstr "Prům. řádek"
 
 #: star_profile.cpp:216
 msgid "Avg col"
-msgstr "Prům."
+msgstr "Prům. sloupec"
 
 #: star_profile.cpp:317
 msgid "Click image for raw view"
@@ -8868,15 +8886,13 @@ msgid ""
 "\n"
 "Would you like to run the tool anyway?"
 msgstr ""
-"Nástroj Statického zarovnání je nejefektivnější, když PHD2 disponuje "
-"informacemi\n"
-"o ohniskové vzdálenosti pointačního dalekohledu a velikosti pixelů kamery.\n"
+"Nástroj statického zarovnání je nejefektivnější, když PHD2 zná ohniskovou\n"
+"vzdálenost vašeho pointačního dalekohledu a velikost pixelů kamery.\n"
 "\n"
-"Zadejte prosím ohniskovou vzdálenost na kartě \"Globální\" v sekci "
-"\"Mozek\".\n"
-"Zadejte také velikost pixelu kamery na kartě \"Kamera\" v sekci \"Mozek\".\n"
+"Zadejte ohniskovou vzdálenost pointačního dalekohledu na kartě Globální v\n"
+"sekci Mozek. Zadejte velikost pixelu kamery na kartě Kamera v sekci Mozek.\n"
 "\n"
-"Chcete pokračovat s použitím tohoto nástroje?"
+"Chcete přesto tento nástroj spustit?"
 
 #: staticpa_toolwin.cpp:147
 msgid "Static PA rotation failed - star lost"
@@ -8894,12 +8910,12 @@ msgid ""
 "<br/>Wait for the adjustments to display.<br/>Adjust your mount's altitude "
 "and azimuth as displayed.<br/>Red=Altitude; Blue=Azimuth<br/>"
 msgstr ""
-"Přejeďte do blízkosti nebeského pólu.<br/> Vyberte referenční hvězdu ze "
-"seznamu.<br/> K identifikaci Referenční hvězdy použijte Hvězdnou Mapu. <br/> "
-"Vyberte ji jako pointační hvězdu na hlavním displeji.<br/> Kliknutím na "
-"tlačítko Otočit zahájíte zarovnávání.<br/> Počkejte na zobrazení úprav. <br/"
-"> Nastavte výšku a azimut montáže podle zobrazení. <br/> Červená=Výška; "
-"Modrá=Azimut <br/>"
+"Přejděte blíže k nebeskému pólu.<br/> Vyberte referenční hvězdu ze seznamu."
+"<br/> K identifikaci Referenční hvězdy použijte Hvězdnou Mapu. <br/> Vyberte "
+"ji jako naváděcí hvězdu na hlavním displeji.<br/> Kliknutím na tlačítko "
+"Otočit zahájíte zarovnávání.<br/> Počkejte na zobrazení úprav. <br/> "
+"Nastavte výšku a azimut montáže podle zobrazených hodnot.<br/> "
+"Červená=Výška; Modrá=Azimut <br/>"
 
 #: staticpa_toolwin.cpp:261
 msgid ""
@@ -8911,15 +8927,14 @@ msgid ""
 "for the adjustments to display.<br/>Adjust your mount's altitude and azimuth "
 "to place three reference stars on their orbits\n"
 msgstr ""
-"Přejeďte do blízkosti nebeského pólu.<br/> Vyberte referenční hvězdu ze "
-"seznamu.<br/> K identifikaci Referenční hvězdy použijte Hvězdnou Mapu. <br/> "
-"Vyberte ji jako pointační hvězdu na hlavním displeji <br/> Klikněte na "
-"Získat první pozici.<br/> Přejeďte nejméně na 0h20m západně v RA.<br/> "
-"Zkontrolujte, zda je stále vybrána Referenční hvězda.<br/> Klikněte na "
-"Získat druhou pozici.<br/> Opakujte pro třetí pozici .<br/> Počkejte na "
-"zobrazení úprav. <br/> Upravte výšku a azimut montáže tak, aby se tři "
-"referenční hvězdy nacházely na svých oběžných drahách\n"
-"\n"
+"Přejděte blíže k nebeskému pólu. <br/> Vyberte referenční hvězdu ze seznamu."
+"<br/> K identifikaci Referenční hvězdy použijte Hvězdnou Mapu. <br/> Vyberte "
+"ji jako naváděcí hvězdu na hlavním displeji <br/> Klikněte na Získat první "
+"pozici.<br/> Přejeďte nejméně na 0h20m západně v RA.<br/> Ujistěte se, že je "
+"stále vybraná referenční hvězda.<br/> Klikněte na Získat druhou pozici.<br/> "
+"Opakujte pro třetí pozici .<br/> Počkejte na zobrazení úprav. <br/> Upravte "
+"výšku a azimut montáže tak, aby tři referenční hvězdy ležely na svých "
+"oběžných drahách\n"
 
 #: staticpa_toolwin.cpp:333
 msgid "Reference Star"
@@ -9175,8 +9190,8 @@ msgid ""
 "You probably need to increase the AO Bump Step setting."
 msgstr ""
 "Aby se adaptivní optika (AO) vrátila do své středové polohy,\n"
-"bylo nutné provést \"zásah\" montáže. Bohužel, zásah se nepodařilo\n"
-"dokončit v dostatečně krátkém čase. Pravděpodobně je třeba zvýšit \n"
+"bylo nutné provést \"bump\" montáže. Bump se však nepodařilo\n"
+"dokončit v přiměřeném čase. Pravděpodobně bude třeba zvýšit \n"
 "nastavení kroku AO."
 
 #: stepguider.cpp:1399
@@ -9201,8 +9216,8 @@ msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 msgstr ""
-"Kolik kroků by mělo být provedeno v každém cyklu kalibrace? Výchozí hodnota "
-"je %d. Zvyšte ji pro krátké ohniskové vzdálenosti a snižte pro delší "
+"Kolik kroků by mělo být provedeno v každém kalibračním cyklu? Výchozí "
+"hodnota je %d. Zvyšte ji pro krátké ohniskové vzdálenosti a snižte pro delší "
 "ohniskové vzdálenosti"
 
 #: stepguider.cpp:1467
@@ -9216,7 +9231,7 @@ msgid ""
 "increase for worse seeing and small imaging scales"
 msgstr ""
 "Kolik vzorků by mělo být zprůměrováno během kalibrace? Výchozí hodnota je "
-"%d. Zvyšte ji pro horší seeing a malé měřítko"
+"%d. Zvyšte ji pro horší seeing a malé zobrazovací měřítko"
 
 #: stepguider.cpp:1477
 msgid "Samples to average"
@@ -9231,7 +9246,7 @@ msgstr "Jaké procento AO lze použít před pohybem montáže. Výchozí hodnot
 
 #: stepguider.cpp:1485
 msgid "Bump percentage"
-msgstr "Procent pohybu"
+msgstr "Procent Bump"
 
 #: stepguider.cpp:1488
 #, c-format
@@ -9244,15 +9259,15 @@ msgstr ""
 
 #: stepguider.cpp:1494
 msgid "Bump steps"
-msgstr "Kroky pohybu"
+msgstr "Kroky Bump"
 
 #: stepguider.cpp:1496
 msgid "Bump on dither"
-msgstr "Pohyb při ditheru"
+msgstr "Bump při ditheru"
 
 #: stepguider.cpp:1497
 msgid "Bump the mount to return the AO to center at each dither"
-msgstr "Posunout montáž na střed AO při každé ditheraci"
+msgstr "Bump montáž na střed AO při každé ditheraci"
 
 #: stepguider.cpp:1499
 msgid "Clear AO calibration"
@@ -9263,8 +9278,8 @@ msgid ""
 "Clear the current AO calibration data - calibration will be re-done when "
 "guiding is started"
 msgstr ""
-"Smazat aktuální kalibrační data AO - kalibrace bude provedena znovu při "
-"spuštění řízení"
+"Smazat aktuální kalibrační data AO – kalibrace bude provedena znovu při "
+"spuštění navádění"
 
 #: stepguider.cpp:1503
 msgid "Enable AO corrections"
@@ -9275,8 +9290,8 @@ msgid ""
 "Keep this checked for AO guiding. Un-check to disable AO corrections and use "
 "only mount guiding"
 msgstr ""
-"Udržujte tuto kontrolu pro řízení AO. Zrušením tohoto zaškrtnutí vypnete "
-"korekce AO a budete používat pouze řídící montáž"
+"Udržujte tuto kontrolu pro  AO. Zrušením tohoto zaškrtnutí vypnete korekce "
+"AO a budete používat pouze řídící montáž"
 
 #: stepguider_sbigao_indi.cpp:181
 #, c-format
@@ -9297,7 +9312,7 @@ msgid ""
 "downloads,\n"
 "contains the v101 firmware."
 msgstr ""
-"Toto zařízení AO má firmware ve verzi %03u, což naznačuje, že je potřeba jej "
+"Toto za AO má firmware ve verzi %03u, což naznačuje, že je potřeba jej "
 "aktualizovat. \n"
 "Doporučuje se nahrát firmware ve verzi 101 nebo starší. \n"
 "Pro tento účel je k dispozici nástroj SXV-AO Utility ve verzi 104 nebo "
@@ -9354,8 +9369,7 @@ msgid ""
 "downloads,\n"
 "contains the firmware."
 msgstr ""
-"Toto zařízení AO má firmware verze %03u, což znamená, že je třeba jej "
-"flashnout.\n"
+"Toto za AO má firmware verze %03u, což znamená, že je třeba jej flashnout.\n"
 "Nástroj SXV-AO Utility v104 nebo novější, který je k dispozici na adrese "
 "http://www.sxccd.com/drivers-downloads,\n"
 "obsahuje firmware."
@@ -9398,15 +9412,15 @@ msgstr "Délka Trvání Řídícího Pulsu (ms):"
 
 #: testguide.cpp:99
 msgid "Manual guide pulse duration (milliseconds)"
-msgstr "Délka trvání ručního pulzu řízení (v milisekundách)"
+msgstr "Délka trvání ručního pulzu  (v milisekundách)"
 
 #: testguide.cpp:108
 msgid ""
 "Reset the manual guide pulse duration to the default value. The default "
 "value is the calibration step size."
 msgstr ""
-"Obnoví délku trvání ručního řízení impulzu na výchozí hodnotu. Výchozí "
-"hodnotou je velikost kroku kalibrace."
+"Obnoví délku trvání ručního  impulzu na výchozí hodnotu. Výchozí hodnotou je "
+"velikost kroku kalibrace."
 
 #: testguide.cpp:115
 msgid "MOVE1 (+/- 0.5)"
@@ -9433,8 +9447,8 @@ msgid ""
 "Select the dither amount type. Imaging applications have the option of "
 "sending each of these dither amounts to PHD."
 msgstr ""
-"Umožňuje výběr typu ditherace. Zobrazovací aplikace mají možnost odeslat PHD "
-"každou z těchto hodnot ditherace."
+"Vyberte typ hodnoty ditherace. Aplikace pro snímání mají možnost odeslat "
+"každou z těchto hodnot ditherace do PHD."
 
 #: testguide.cpp:134
 msgid ""
@@ -9442,10 +9456,10 @@ msgid ""
 "value to get the actual dither amount. Changing the value here affects both "
 "manual dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"Faktor měřítka pro ditheraci. Množství ditherace je vynásobeno tímto "
-"faktorem, aby se získala skutečná hodnota ditherace. Změna hodnoty zde "
-"ovlivňuje jak manuální ditheraci, tak ditheraci v obrazových aplikací "
-"připojených k programu PHD."
+"Faktor měřítka pro ditheraci. Hodnota ditherace je vynásobena tímto "
+"faktorem, aby se získala skutečná hodnota ditherace. Změna této hodnoty "
+"ovlivňuje jak manuální ditheraci, tak ditheraci z obrazových aplikací "
+"připojených k PHD."
 
 #: testguide.cpp:138
 msgid "RA Only"
@@ -9464,8 +9478,8 @@ msgid ""
 "Move the guider lock position a random amount on each axis, up to the "
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
-"Náhodně posune pozici řízení na každé ose až po maximální hodnotu určenou "
-"typem ditherace a faktorem měřítka ditherování."
+"Náhodně posune pozici  na každé ose až do maximální hodnoty určené typem "
+"ditherace a faktorem měřítka ditherování."
 
 #: usImage.cpp:435
 msgid "File does not exist - cannot load "
@@ -9509,13 +9523,6 @@ msgstr "Připojování ke Kameře ..."
 msgid "Connecting to Rotator..."
 msgstr "Připojování k Rotátoru ..."
 
-#~ msgid "Failed to set camera exposure"
-#~ msgstr "Expozice kamery nastavena"
-
-#, c-format
-#~ msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"
-#~ msgstr "Snažte se udržovat expozici v rozmezí %.1fs až %.1fs"
-
 #~ msgid "Choose this if your guide camera driver downloads 8-bit data"
 #~ msgstr ""
 #~ "Zvolte tuto možnost, pokud ovladač pointační kamery ukládá 8bitová data"
@@ -9529,34 +9536,6 @@ msgstr "Připojování k Rotátoru ..."
 
 #~ msgid "Bit depth (bits/pixel)"
 #~ msgstr "Bitová hloubka (bity/pixel)"
-
-#~ msgid ""
-#~ "This is the focal length of the guide scope - or the imaging scope if you "
-#~ "are using an off-axis-guider or adaptive optics device (Focal length = "
-#~ "aperture x f-ratio).  Typical finder scopes have a focal length of about "
-#~ "165mm."
-#~ msgstr ""
-#~ "To je ohnisková vzdálenost pointačního dalekohledu - nebo zobrazovacího "
-#~ "dalekohledu, pokud používáte řízení mimo osu nebo adaptivní optické "
-#~ "zařízení (ohnisková vzdálenost = clona x f poměr).  Typické dalekohledy "
-#~ "mají ohniskovou vzdálenost kolem 165 mm."
-
-#~ msgid "Mount has high-precision encoders"
-#~ msgstr "Montáž má vysoce přesné snímače"
-
-#~ msgid ""
-#~ "PHD2 is not able to make sufficient corrections in Dec.  If you have just "
-#~ "done a meridian flip, check to see if the 'Reverse Dec output option' on "
-#~ "the Advanced Dialog guiding tab is wrong.  Otherwise, check for cable "
-#~ "snags, try re-doing your calibration, and check for problems with the "
-#~ "mount mechanics."
-#~ msgstr ""
-#~ "PHD2 není schopen provést dostatečné opravy v Dec.  Pokud jste právě "
-#~ "provedli překlopení poledníku, zkontrolujte, zda je volba \"Obrátit "
-#~ "Hodnotu Dec\" na kartě Pokročilá Nastavení - Řízení, není špatně "
-#~ "nastavena.  V opačném případě zkontrolujte správné uchycení kabelů, "
-#~ "zkuste znovu provést kalibraci a zkontrolujte problémy s mechanikou "
-#~ "montáže."
 
 #, c-format
 #~ msgid "Cannot connect to camera %s: %s"
