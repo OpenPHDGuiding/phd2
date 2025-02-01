@@ -26,7 +26,7 @@ trap "rm -rf '$TMP'" 2 3 15
 files=$(grep '<param name="Local" value=' $help/PHD2GuideHelp.hhc \
           | grep 'htm">' | cut -d\" -f4 | awk '!x[$0]++ {print "'$help\/'" $0}')
 
-phdversion=$("$build"/get_phd_version "$top"/phd.h)
+phdversion=$("$build"/get_phd_version "$top"/src/phd.h)
 date=$(LC_ALL=C date '+%B %d, %Y')
 
 # create pdf

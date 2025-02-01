@@ -719,7 +719,7 @@ if(APPLE)
       POST_BUILD
       COMMAND install_name_tool -change libPlayerOneCamera.3.dylib
                    @executable_path/../Frameworks/libPlayerOneCamera.dylib $<TARGET_FILE:phd2>
-      COMMAND install_name_tool -change @loader_path/libusb-1.0.0.dylib
+      COMMAND install_name_tool -change @rpath/libusb-1.0.0.dylib
                    @executable_path/../Frameworks/libusb_openphd.dylib
                    $<TARGET_FILE_DIR:phd2>/../Frameworks/libPlayerOneCamera.dylib
       COMMENT "Updating dylib path for libPlayerOneCamera.dylib"

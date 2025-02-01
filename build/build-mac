@@ -109,6 +109,9 @@ done < <(
 )
 make "${translation_targets[@]}"
 cores=$(sysctl -n hw.logicalcpu)
+# indi must be explicitly built first as we removed the indi build
+# dependency from phd2 as it was slowing down incremental development
+make -j$cores indi
 make -j$cores
 
 check_library_dependencies

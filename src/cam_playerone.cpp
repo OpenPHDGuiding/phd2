@@ -55,7 +55,7 @@ enum CaptureMode
     CM_VIDEO,
 };
 
-class POACamera : public GuideCamera
+class PlayerOneCamera : public GuideCamera
 {
     wxRect m_maxSize;
     wxRect m_frame;
@@ -73,8 +73,8 @@ class POACamera : public GuideCamera
     double m_devicePixelSize;
 
 public:
-    POACamera();
-    ~POACamera();
+    PlayerOneCamera();
+    ~PlayerOneCamera();
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
@@ -109,7 +109,7 @@ private:
     POAErrors SetConfig(int nCameraID, POAConfig confID, POABool isEnable);
 };
 
-POACamera::POACamera() : m_buffer(nullptr)
+PlayerOneCamera::PlayerOneCamera() : m_buffer(nullptr)
 {
     Name = _T("Player One Camera");
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
@@ -123,17 +123,17 @@ POACamera::POACamera() : m_buffer(nullptr)
     m_bpp = value == 8 ? 8 : 16;
 }
 
-POACamera::~POACamera()
+PlayerOneCamera::~PlayerOneCamera()
 {
     ::free(m_buffer);
 }
 
-wxByte POACamera::BitsPerPixel()
+wxByte PlayerOneCamera::BitsPerPixel()
 {
     return m_bpp;
 }
 
-inline wxSize POACamera::BinnedFrameSize(unsigned int binning)
+inline wxSize PlayerOneCamera::BinnedFrameSize(unsigned int binning)
 {
     // Player One cameras require width % 4 == 0 and height % 2 == 0
     return wxSize((m_maxSize.x / binning) & ~(4U - 1), (m_maxSize.y / binning) & ~(2U - 1));
@@ -174,7 +174,7 @@ POACameraDlg::POACameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("
     Centre(wxBOTH);
 }
 
-void POACamera::ShowPropertyDialog()
+void PlayerOneCamera::ShowPropertyDialog()
 {
     POACameraDlg dlg;
     int value = pConfig->Profile.GetInt("/camera/POA/bpp", m_bpp);
@@ -275,7 +275,7 @@ static bool TryLoadDll(wxString *err)
     return true;
 }
 
-bool POACamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
+bool PlayerOneCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     wxString err;
     if (!TryLoadDll(&err))
@@ -386,7 +386,7 @@ static int FindCamera(const wxString& camId, wxString *err)
     return -1;
 }
 
-bool POACamera::Connect(const wxString& camId)
+bool PlayerOneCamera::Connect(const wxString& camId)
 {
     wxString err;
     if (!TryLoadDll(&err))
@@ -568,7 +568,7 @@ bool POACamera::Connect(const wxString& camId)
     return false;
 }
 
-void POACamera::StopCapture()
+void PlayerOneCamera::StopCapture()
 {
     if (m_capturing)
     {
@@ -578,14 +578,14 @@ void POACamera::StopCapture()
     }
 }
 
-bool POACamera::StopExposure()
+bool PlayerOneCamera::StopExposure()
 {
     Debug.Write("Player One: stopexposure\n");
     POAStopExposure(m_cameraId);
     return true;
 }
 
-bool POACamera::Disconnect()
+bool PlayerOneCamera::Disconnect()
 {
     StopCapture();
     POACloseCamera(m_cameraId);
@@ -598,7 +598,7 @@ bool POACamera::Disconnect()
     return false;
 }
 
-bool POACamera::GetDevicePixelSize(double *devPixelSize)
+bool PlayerOneCamera::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
         return true;
@@ -607,22 +607,22 @@ bool POACamera::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
-int POACamera::GetDefaultCameraGain()
+int PlayerOneCamera::GetDefaultCameraGain()
 {
     return m_defaultGainPct;
 }
 
-bool POACamera::SetCoolerOn(bool on)
+bool PlayerOneCamera::SetCoolerOn(bool on)
 {
     return SetConfig(m_cameraId, POA_COOLER, on ? POA_TRUE : POA_FALSE) != POA_OK;
 }
 
-bool POACamera::SetCoolerSetpoint(double temperature)
+bool PlayerOneCamera::SetCoolerSetpoint(double temperature)
 {
     return SetConfig(m_cameraId, POA_TARGET_TEMP, (long) temperature, POA_FALSE) != POA_OK;
 }
 
-bool POACamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
+bool PlayerOneCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
     POAErrors r;
     long longValue;
@@ -661,7 +661,7 @@ bool POACamera::GetCoolerStatus(bool *on, double *setpoint, double *power, doubl
     return false;
 }
 
-bool POACamera::GetSensorTemperature(double *temperature)
+bool PlayerOneCamera::GetSensorTemperature(double *temperature)
 {
     POAErrors r;
     double value;
@@ -706,7 +706,7 @@ static void flush_buffered_image(int cameraId, void *buf, size_t size)
     }
 }
 
-bool POACamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool binning_change = false;
     if (Binning != m_prevBinning)
@@ -980,7 +980,7 @@ inline static POAConfig GetPOADirection(int direction)
     }
 }
 
-bool POACamera::ST4PulseGuideScope(int direction, int duration)
+bool PlayerOneCamera::ST4PulseGuideScope(int direction, int duration)
 {
     POAConfig d = GetPOADirection(direction);
     SetConfig(m_cameraId, d, POA_TRUE);
@@ -993,7 +993,7 @@ bool POACamera::ST4PulseGuideScope(int direction, int duration)
 // Functions from Player One ConvFuncs.h
 
 // Get the current value of POAConfig with POAValueType is VAL_INT, eg: POA_EXPOSURE, POA_GAIN
-POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, long *pValue, POABool *pIsAuto)
+POAErrors PlayerOneCamera::GetConfig(int nCameraID, POAConfig confID, long *pValue, POABool *pIsAuto)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1021,7 +1021,7 @@ POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, long *pValue, PO
 }
 
 // Get the current value of POAConfig with POAValueType is VAL_FLOAT, eg: POA_TEMPERATURE, POA_EGAIN
-POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, double *pValue, POABool *pIsAuto)
+POAErrors PlayerOneCamera::GetConfig(int nCameraID, POAConfig confID, double *pValue, POABool *pIsAuto)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1049,7 +1049,7 @@ POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, double *pValue, 
 }
 
 // Get the current value of POAConfig with POAValueType is VAL_BOOL, eg: POA_COOLER, POA_PIXEL_BIN_SUM
-POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, POABool *pIsEnable)
+POAErrors PlayerOneCamera::GetConfig(int nCameraID, POAConfig confID, POABool *pIsEnable)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1078,7 +1078,7 @@ POAErrors POACamera::GetConfig(int nCameraID, POAConfig confID, POABool *pIsEnab
 }
 
 // Set the POAConfig value, the POAValueType of POAConfig is VAL_INT, eg: POA_TARGET_TEMP, POA_OFFSET
-POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, long nValue, POABool isAuto)
+POAErrors PlayerOneCamera::SetConfig(int nCameraID, POAConfig confID, long nValue, POABool isAuto)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1102,7 +1102,7 @@ POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, long nValue, POA
 
 // Set the POAConfig value, the POAValueType of POAConfig is VAL_FLOAT, Note: currently, there is no POAConfig which
 // POAValueType is VAL_FLOAT needs to be set
-POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, double fValue, POABool isAuto)
+POAErrors PlayerOneCamera::SetConfig(int nCameraID, POAConfig confID, double fValue, POABool isAuto)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1125,7 +1125,7 @@ POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, double fValue, P
 }
 
 // Set the POAConfig value, the POAValueType of POAConfig is VAL_BOOL, eg: POA_HARDWARE_BIN, POA_GUIDE_NORTH
-POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, POABool isEnable)
+POAErrors PlayerOneCamera::SetConfig(int nCameraID, POAConfig confID, POABool isEnable)
 {
     POAValueType pConfValueType;
     POAErrors error = POAGetConfigValueType(confID, &pConfValueType);
@@ -1149,7 +1149,7 @@ POAErrors POACamera::SetConfig(int nCameraID, POAConfig confID, POABool isEnable
 
 GuideCamera *PlayerOneCameraFactory::MakePlayerOneCamera()
 {
-    return new POACamera();
+    return new PlayerOneCamera();
 }
 
-#endif // CAMERA_PLAYERONE
+#endif // PLAYERONE_CAMERA
