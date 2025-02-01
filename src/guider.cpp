@@ -161,7 +161,7 @@ static const wxStringCharType *StateStr(GUIDER_STATE st)
 }
 
 Guider::Guider(wxWindow *parent, int xSize, int ySize)
-    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(xSize, ySize), wxFULL_REPAINT_ON_RESIZE)
 {
     m_state = STATE_UNINITIALIZED;
     Debug.Write(wxString::Format("guider state => %s\n", StateStr(m_state)));
