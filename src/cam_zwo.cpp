@@ -37,7 +37,7 @@
 #ifdef ZWO_ASI
 
 # include "cam_zwo.h"
-# include "cameras/ASICamera2.h"
+# include "ASICamera2.h"
 
 # ifdef __WINDOWS__
 
