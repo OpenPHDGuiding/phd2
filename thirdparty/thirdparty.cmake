@@ -625,9 +625,10 @@ if(WIN32)
   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
 
-  # ASI cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
+  # ZWO ASI cameras
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/win/x86/ASICamera2.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/win/x86/ASICamera2.dll)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
 
   # ToupTek cameras
   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/win/x86/toupcam.lib)
@@ -780,6 +781,7 @@ if(APPLE)
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
   add_definitions(-DHAVE_ZWO_CAMERA=1)
   list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
   list(APPEND phd2_OSX_FRAMEWORKS ${asiCamera2})
@@ -919,12 +921,13 @@ if(UNIX AND NOT APPLE)
       find_library(asiCamera2
              NAMES ASICamera2
              NO_DEFAULT_PATHS
-             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${zwoarch})
+             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/linux/${zwoarch})
 
       if(NOT asiCamera2)
         message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
       endif()
       message(STATUS "Found ASICamera2 lib ${asiCamera2}")
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
       add_definitions(-DHAVE_ZWO_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
 
