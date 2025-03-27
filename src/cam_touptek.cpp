@@ -37,7 +37,7 @@
 #if defined(TOUPTEK_CAMERA)
 
 # include "cam_touptek.h"
-# include "cameras/toupcam.h"
+# include "toupcam.h"
 # include "image_math.h"
 
 // Touptek API uses these Windows definitions even on non-Windows platforms
