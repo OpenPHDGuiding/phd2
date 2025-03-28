@@ -88,7 +88,9 @@ struct IL
         {
             // first time through or debug log changed
             debugLogDir = dir;
-            subdir = dir + PATHSEPSTR + wxGetApp().GetLogFileTime().Format("PHD2_CameraFrames_%Y-%m-%d-%H%M%S");
+            // Keep log files separated for multiple PHD2 instances
+            wxString qualifier = wxGetApp().GetInstanceNumber() > 1 ? std::to_string(wxGetApp().GetInstanceNumber()) + "_" : "";
+            subdir = dir + PATHSEPSTR + qualifier + wxGetApp().GetLogFileTime().Format("PHD2_CameraFrames_%Y-%m-%d-%H%M%S");
             if (!wxFileName::Mkdir(subdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
             {
                 Debug.Write(wxString::Format("Error: Could not create frame logging directory %s\n", subdir));
