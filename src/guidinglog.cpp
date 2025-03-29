@@ -265,7 +265,10 @@ void GuidingLog::EnableLogging()
         const wxDateTime& logFileTime = wxGetApp().GetLogFileTime();
         if (!m_file.IsOpened())
         {
-            m_fileName = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_GuideLog_%Y-%m-%d_%H%M%S.txt"));
+            // Keep log files separated for multiple PHD2 instances
+            wxString qualifier = wxGetApp().GetInstanceNumber() > 1 ? std::to_string(wxGetApp().GetInstanceNumber()) + "_" : "";
+            m_fileName =
+                GetLogDir() + PATHSEPSTR + _("PHD2_GuideLog_") + qualifier + logFileTime.Format(_T("%Y-%m-%d_%H%M%S.txt"));
 
             if (!m_file.Open(m_fileName, "a+"))
             {
