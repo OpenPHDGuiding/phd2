@@ -78,6 +78,8 @@ private:
     wxStaticText *m_pInstructions;
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
+    wxStaticText *m_pDeviceLabel;
+    wxStaticText *m_pDeviceId;
     wxSpinCtrlDouble *m_pPixelSize;
     wxStaticBitmap *m_scaleIcon;
     wxStaticText *m_pixelScale;
@@ -101,6 +103,8 @@ private:
     wxHyperlinkCtrl *m_EqLink;
 
     wxString m_SelectedCamera;
+    wxString m_camDeviceId;
+    wxArrayString m_cameraIds;
     wxString m_SelectedMount;
     bool m_PositionAware;
     wxString m_SelectedAuxMount;
@@ -119,6 +123,7 @@ private:
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthText(wxCommandEvent& evt);
     void OnBinningChange(wxCommandEvent& evt);
+    void OnMenuSelectCamera(wxCommandEvent& event);
     void UpdatePixelScale();
     void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
     void OnContextHelp(wxCommandEvent& evt);
@@ -129,6 +134,7 @@ private:
     void WrapUp();
     void InitCameraProps(bool tryConnect);
     void InitMountProps(Scope *theScope);
+
     DialogState m_State;
     bool m_useCamera;
     bool m_useMount;
@@ -137,7 +143,9 @@ private:
 
 public:
     bool m_launchDarks;
-
+    wxString ChooseCamDeviceId(GuideCamera *pCam);
+    wxString GetCamDeviceId() { return m_camDeviceId; }
+    int NumCamerasFound() { return m_cameraIds.Count(); }
     ProfileWizard(wxWindow *parent, bool showGreeting);
     ~ProfileWizard(void);
 
@@ -149,6 +157,7 @@ wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
     EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
     EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
     EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
+    EVT_MENU_RANGE(MENU_SELECT_CAMERA_BEGIN, MENU_SELECT_CAMERA_END, ProfileWizard::OnMenuSelectCamera)
     EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
     EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
     EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
@@ -192,7 +201,8 @@ static void AddCellPair(wxWindow *parent, wxGridBagSizer *gbs, int row, const wx
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     : wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-      m_useCamera(false), m_useMount(false), m_useAuxMount(false), m_autoRestore(false), m_launchDarks(true)
+      m_useCamera(false), m_useMount(false), m_useAuxMount(false), m_autoRestore(false), m_launchDarks(true),
+      m_camDeviceId(GuideCamera::DEFAULT_CAMERA_ID)
 {
     TitlePrefix = _("New Profile Wizard - ");
 
@@ -238,16 +248,19 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pStatusBar->SetFieldsCount(1);
 
     // Gear label and combo box
-    m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 15);
+    m_pGearGrid = new wxFlexGridSizer(2, 2, 5, 15);
     m_pGearLabel = new wxStaticText(this, wxID_ANY, "Temp:", wxDefaultPosition, wxDefaultSize);
-    m_pGearChoice = new wxChoice(this, ID_COMBO, wxDefaultPosition, wxDefaultSize, GuideCamera::GuideCameraList(), 0,
+    m_pGearChoice = new wxChoice(this, ID_COMBO, wxDefaultPosition, wxSize(265, -1), GuideCamera::GuideCameraList(), 0,
                                  wxDefaultValidator, _("Gear"));
-    m_pGearGrid->Add(m_pGearLabel, 1, wxALL, 5);
-    m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
-    m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
+    m_pGearGrid->Add(m_pGearLabel, 1, wxALIGN_LEFT);
+    m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 20);
+    m_pDeviceLabel = new wxStaticText(this, wxID_ANY, _("Device Id:"), wxDefaultPosition, wxDefaultSize);
+    m_pDeviceId = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
+    m_pGearGrid->Add(m_pDeviceLabel, 1, wxALIGN_LEFT);
+    m_pGearGrid->Add(m_pDeviceId, 1, wxLEFT, 20);
+    m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Border(wxLEFT, 65));
 
     m_pUserProperties = new wxGridBagSizer(6, 6);
-
     // Pixel-size
     m_pPixelSize =
         pFrame->MakeSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
@@ -293,8 +306,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
                                              wxDefaultPosition, wxDefaultSize);
     vFLszr->Add(flLabel, wxALL, 2);
     vFLszr->Add(m_pFocalLengthWarning, wxALL, 2); // Stack the label and the warning message vertically, close together
-    m_pUserProperties->Add(vFLszr, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 4);
-    m_pUserProperties->Add(m_pFocalLength, wxGBPosition(3, 2), wxDefaultSpan, wxALL, 4);
+    m_pUserProperties->Add(vFLszr, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 1);
+    m_pUserProperties->Add(m_pFocalLength, wxGBPosition(3, 2), wxDefaultSpan, wxALL, 1);
     font = m_pFocalLengthWarning->GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pFocalLengthWarning->SetFont(font);
@@ -722,6 +735,8 @@ void ProfileWizard::UpdateState(const int change)
             m_pPrevBtn->Enable(false);
             m_pGearLabel->Show(false);
             m_pGearChoice->Show(false);
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             m_pUserProperties->Show(false);
             m_pMountProperties->Show(false);
             m_pWrapUp->Show(false);
@@ -739,6 +754,8 @@ void ProfileWizard::UpdateState(const int change)
                 m_pGearChoice->SetStringSelection(m_SelectedCamera);
             m_pGearLabel->Show(true);
             m_pGearChoice->Show(true);
+            m_pDeviceLabel->Show(NumCamerasFound() > 0);
+            m_pDeviceId->Show(NumCamerasFound() > 0);
             m_pUserProperties->Show(true);
             m_pMountProperties->Show(false);
             m_pWrapUp->Show(false);
@@ -771,6 +788,8 @@ void ProfileWizard::UpdateState(const int change)
                 m_pInstructions->SetLabel(
                     _("Select your mount connection - this will determine how guide signals are transmitted"));
             }
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             break;
         case STATE_AUXMOUNT:
             m_pMountProperties->Show(false);
@@ -788,6 +807,8 @@ void ProfileWizard::UpdateState(const int change)
                 m_pInstructions->SetLabel(_("Since your primary mount connection does not report pointing position, you may "
                                             "want to choose an 'Aux Mount' connection"));
             }
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             break;
         case STATE_AO:
             SetTitle(TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
@@ -804,6 +825,8 @@ void ProfileWizard::UpdateState(const int change)
                 m_pNextBtn->SetToolTip(_("Move forward to next screen"));
                 m_pWrapUp->Show(false);
             }
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             break;
         case STATE_ROTATOR:
             SetTitle(TitlePrefix + _("Choose a Rotator Device (optional)"));
@@ -820,6 +843,8 @@ void ProfileWizard::UpdateState(const int change)
                 m_pNextBtn->SetToolTip(_("Move forward to next screen"));
                 m_pWrapUp->Show(false);
             }
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             break;
         case STATE_WRAPUP:
             SetTitle(TitlePrefix + _("Finish Creating Your New Profile"));
@@ -875,21 +900,31 @@ struct AutoConnectCamera
 {
     GuideCamera *m_camera;
 
-    AutoConnectCamera(wxWindow *parent, const wxString& selection)
+    AutoConnectCamera(ProfileWizard *parent, const wxString& selection, bool forceSelection)
     {
+        wxString camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
         m_camera = GuideCamera::Factory(selection);
         pFrame->ClearAlert();
 
         if (m_camera)
         {
+            if (forceSelection)
+                camDeviceId = parent->ChooseCamDeviceId(m_camera);
+            else
+                camDeviceId = parent->GetCamDeviceId();
             wxBusyCursor busy;
-            m_camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
+            m_camera->Connect(camDeviceId);
             pFrame->ClearAlert();
         }
 
-        if (!m_camera || !m_camera->Connected)
+        if (m_camera && !m_camera->Connected)
         {
-            wxMessageBox(_("PHD2 could not connect to the camera so you may want to deal with that later. "
+            wxString preamble = (m_camera->CanSelectCamera() && parent->NumCamerasFound() == 0)
+                ? _("No cameras of that type were found")
+                : _("PHD2 cound not connect to the camera");
+
+            wxMessageBox(preamble +
+                         _(" so you may want to deal with that later. "
                            "In the meantime, you can just enter the pixel-size manually along with the "
                            "focal length and binning levels."));
 
@@ -914,11 +949,18 @@ struct AutoConnectCamera
     GuideCamera *operator->() const { return m_camera; }
 };
 
-static void SetBinningLevel(wxWindow *parent, const wxString& selection, int val)
+static void SetBinningLevel(ProfileWizard *parent, const wxString& selection, int val)
 {
-    AutoConnectCamera cam(parent, selection);
+    AutoConnectCamera cam(parent, selection, false);
     if (cam && cam->MaxBinning > 1)
         cam->SetBinning(val);
+}
+
+static wxString CameraSelectionKey(const wxString& camName)
+{
+    std::hash<std::string> hash_fn;
+    std::string name(camName.c_str());
+    return wxString::Format("/cam_hash/%lx/whichCamera", (unsigned long) hash_fn(name));
 }
 
 // Wrapup logic - build the new profile, maybe launch the darks dialog
@@ -972,6 +1014,12 @@ void ProfileWizard::WrapUp()
     if (ImageScale < 2.0)
         pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", false);
     pConfig->Profile.SetInt("/camera/SaturationADU", 0); // Default will be updated with first auto-find to reflect bpp
+    if (m_camDeviceId != GuideCamera::DEFAULT_CAMERA_ID)
+    {
+        wxString key = CameraSelectionKey(m_camDeviceId);
+        const wxString& id = m_camDeviceId;
+        pConfig->Profile.SetString(key, id);
+    }
 
     GuideLog.EnableLogging(true); // Especially for newbies
 
@@ -993,6 +1041,53 @@ public:
     void OnNoButton(wxCommandEvent& evt);
     void OnCancelButton(wxCommandEvent& evt);
 };
+
+wxString ProfileWizard::ChooseCamDeviceId(GuideCamera *pCam)
+{
+
+    wxString rslt = GuideCamera::DEFAULT_CAMERA_ID;
+    if (!pCam || !pCam->CanSelectCamera())
+        return rslt;
+
+    wxArrayString names;
+    m_cameraIds.clear(); // otherwise camera selection only works randomly as EnumCameras tends to append to the camera Ids
+    bool error = pCam->EnumCameras(names, m_cameraIds);
+    if (error || names.size() == 0)
+    {
+        m_cameraIds.clear();
+        m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
+    }
+    else if (names.size() == 1)
+    {
+        m_camDeviceId = m_cameraIds[0];
+    }
+    else
+    {
+        wxMenu *menu = new wxMenu();
+        int id = MENU_SELECT_CAMERA_BEGIN;
+        for (unsigned int idx = 0; idx < names.size(); idx++)
+        {
+            wxMenuItem *item = menu->AppendRadioItem(id, names.Item(idx));
+            if (++id > MENU_SELECT_CAMERA_END)
+            {
+                Debug.AddLine("Truncating camera list!");
+                break;
+            }
+        }
+
+        PopupMenu(menu, m_pGearChoice->GetPosition().x, m_pGearChoice->GetPosition().y + m_pGearChoice->GetSize().GetHeight());
+        // m_camDeviceId set by event handler for popup menu
+        delete menu;
+    }
+    if (m_camDeviceId != GuideCamera::DEFAULT_CAMERA_ID)
+    {
+        m_pDeviceLabel->Show(true);
+        m_pDeviceId->Show(true);
+        m_pDeviceId->SetLabelText(m_camDeviceId);
+        SetSizerAndFit(m_pvSizer);
+    }
+    return m_camDeviceId;
+}
 
 // Event handlers below
 void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
@@ -1024,7 +1119,12 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
             }
         }
         if (m_SelectedCamera != prevSelection)
+        {
+            m_cameraIds.Clear();
+            m_pDeviceLabel->Show(false);
+            m_pDeviceId->Show(false);
             InitCameraProps(m_useCamera && !camNone);
+        }
         break;
     }
 
@@ -1133,6 +1233,17 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     }
 }
 
+void ProfileWizard::OnMenuSelectCamera(wxCommandEvent& event)
+{
+    unsigned int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
+    if (idx < m_cameraIds.size())
+    {
+        m_camDeviceId = m_cameraIds[idx];
+    }
+    else
+        m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
+}
+
 static double GetPixelSize(GuideCamera *cam)
 {
     double rslt;
@@ -1150,7 +1261,7 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
     {
         // Pixel size
         double pxSz = 0.;
-        AutoConnectCamera cam(this, m_SelectedCamera);
+        AutoConnectCamera cam(this, m_SelectedCamera, true);
         if (cam)
             pxSz = GetPixelSize(cam);
         m_pPixelSize->SetValue(pxSz); // Might be zero if driver doesn't report it
