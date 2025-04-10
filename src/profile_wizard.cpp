@@ -145,6 +145,7 @@ public:
     bool m_launchDarks;
     wxString ChooseCamDeviceId(GuideCamera *pCam);
     wxString GetCamDeviceId() { return m_camDeviceId; }
+    void ResetCamDeviceId();
     int NumCamerasFound() { return m_cameraIds.Count(); }
     ProfileWizard(wxWindow *parent, bool showGreeting);
     ~ProfileWizard(void);
@@ -930,6 +931,7 @@ struct AutoConnectCamera
 
             delete m_camera;
             m_camera = nullptr;
+            parent->ResetCamDeviceId();
         }
 
         parent->SetFocus(); // In case driver messages might have caused us to lose it
@@ -1041,6 +1043,15 @@ public:
     void OnNoButton(wxCommandEvent& evt);
     void OnCancelButton(wxCommandEvent& evt);
 };
+
+void ProfileWizard::ResetCamDeviceId()
+{
+    m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
+    m_pDeviceId->Show(false);
+    m_pDeviceLabel->Show(false);
+    m_cameraIds.Clear();
+    SetSizerAndFit(m_pvSizer);
+}
 
 wxString ProfileWizard::ChooseCamDeviceId(GuideCamera *pCam)
 {
