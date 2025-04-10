@@ -105,6 +105,7 @@ private:
     wxString m_SelectedCamera;
     wxString m_camDeviceId;
     wxArrayString m_cameraIds;
+    wxArrayString m_cameraNames;
     wxString m_SelectedMount;
     bool m_PositionAware;
     wxString m_SelectedAuxMount;
@@ -1018,7 +1019,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/camera/SaturationADU", 0); // Default will be updated with first auto-find to reflect bpp
     if (m_camDeviceId != GuideCamera::DEFAULT_CAMERA_ID)
     {
-        wxString key = CameraSelectionKey(m_camDeviceId);
+        wxString key = CameraSelectionKey(m_SelectedCamera);
         const wxString& id = m_camDeviceId;
         pConfig->Profile.SetString(key, id);
     }
@@ -1050,6 +1051,7 @@ void ProfileWizard::ResetCamDeviceId()
     m_pDeviceId->Show(false);
     m_pDeviceLabel->Show(false);
     m_cameraIds.Clear();
+    m_cameraNames.Clear();
     SetSizerAndFit(m_pvSizer);
 }
 
@@ -1060,25 +1062,26 @@ wxString ProfileWizard::ChooseCamDeviceId(GuideCamera *pCam)
     if (!pCam || !pCam->CanSelectCamera())
         return rslt;
 
-    wxArrayString names;
     m_cameraIds.clear(); // otherwise camera selection only works randomly as EnumCameras tends to append to the camera Ids
-    bool error = pCam->EnumCameras(names, m_cameraIds);
-    if (error || names.size() == 0)
+    bool error = pCam->EnumCameras(m_cameraNames, m_cameraIds);
+    if (error || m_cameraNames.size() == 0)
     {
         m_cameraIds.clear();
+        m_cameraNames.clear();
         m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
     }
-    else if (names.size() == 1)
+    else if (m_cameraNames.size() == 1)
     {
         m_camDeviceId = m_cameraIds[0];
+        m_pDeviceId->SetLabelText(m_cameraNames[0]);
     }
     else
     {
         wxMenu *menu = new wxMenu();
         int id = MENU_SELECT_CAMERA_BEGIN;
-        for (unsigned int idx = 0; idx < names.size(); idx++)
+        for (unsigned int idx = 0; idx < m_cameraNames.size(); idx++)
         {
-            wxMenuItem *item = menu->AppendRadioItem(id, names.Item(idx));
+            wxMenuItem *item = menu->AppendRadioItem(id, m_cameraNames.Item(idx));
             if (++id > MENU_SELECT_CAMERA_END)
             {
                 Debug.AddLine("Truncating camera list!");
@@ -1094,7 +1097,6 @@ wxString ProfileWizard::ChooseCamDeviceId(GuideCamera *pCam)
     {
         m_pDeviceLabel->Show(true);
         m_pDeviceId->Show(true);
-        m_pDeviceId->SetLabelText(m_camDeviceId);
         SetSizerAndFit(m_pvSizer);
     }
     return m_camDeviceId;
@@ -1132,6 +1134,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         if (m_SelectedCamera != prevSelection)
         {
             m_cameraIds.Clear();
+            m_cameraNames.Clear();
             m_pDeviceLabel->Show(false);
             m_pDeviceId->Show(false);
             InitCameraProps(m_useCamera && !camNone);
@@ -1247,9 +1250,11 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 void ProfileWizard::OnMenuSelectCamera(wxCommandEvent& event)
 {
     unsigned int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
+
     if (idx < m_cameraIds.size())
     {
         m_camDeviceId = m_cameraIds[idx];
+        m_pDeviceId->SetLabelText(m_cameraNames[idx]);
     }
     else
         m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
