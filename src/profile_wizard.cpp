@@ -1131,14 +1131,11 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
                 return;
             }
         }
-        if (m_SelectedCamera != prevSelection)
-        {
-            m_cameraIds.Clear();
-            m_cameraNames.Clear();
-            m_pDeviceLabel->Show(false);
-            m_pDeviceId->Show(false);
-            InitCameraProps(m_useCamera && !camNone);
-        }
+        // This allows user to change his mind about the specific camera id by simply re-selecting the same camera type
+        // combo box
+        ResetCamDeviceId();
+        InitCameraProps(m_useCamera && !camNone);
+
         break;
     }
 

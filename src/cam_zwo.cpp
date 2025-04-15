@@ -300,9 +300,6 @@ bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
             else
                 names.Add(info.Name);
             ids.Add(wxString::Format("%d,%s", info.CameraID, info.Name));
-            // Get this out of here!!
-            // names.Add("Fake_ZWO");
-            // ids.Add("1,Fake ZWO");
         }
     }
 
