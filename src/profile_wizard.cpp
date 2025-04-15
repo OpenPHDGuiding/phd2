@@ -1090,7 +1090,7 @@ wxString ProfileWizard::ChooseCamDeviceId(GuideCamera *pCam)
         }
 
         PopupMenu(menu, m_pGearChoice->GetPosition().x, m_pGearChoice->GetPosition().y + m_pGearChoice->GetSize().GetHeight());
-        // m_camDeviceId set by event handler for popup menu
+        // m_camDeviceId and device id label are set by event handler for popup menu
         delete menu;
     }
     if (m_camDeviceId != GuideCamera::DEFAULT_CAMERA_ID)
@@ -1254,7 +1254,10 @@ void ProfileWizard::OnMenuSelectCamera(wxCommandEvent& event)
         m_pDeviceId->SetLabelText(m_cameraNames[idx]);
     }
     else
+    {
         m_camDeviceId = GuideCamera::DEFAULT_CAMERA_ID;
+        m_pDeviceId->SetLabelText("");
+    }
 }
 
 static double GetPixelSize(GuideCamera *cam)
