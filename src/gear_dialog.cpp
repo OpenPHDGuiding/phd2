@@ -987,7 +987,7 @@ static void AutoLoadDarks()
     }
 }
 
-static wxString CameraSelectionKey(const wxString& camName)
+wxString GearDialog::CameraSelectionKey(const wxString& camName)
 {
     std::hash<std::string> hash_fn;
     std::string name(camName.c_str());
@@ -996,7 +996,7 @@ static wxString CameraSelectionKey(const wxString& camName)
 
 static wxString SelectedCameraId(const wxString& camName)
 {
-    wxString key = CameraSelectionKey(camName);
+    wxString key = GearDialog::CameraSelectionKey(camName);
     return pConfig->Profile.GetString(key, GuideCamera::DEFAULT_CAMERA_ID);
 }
 

@@ -921,14 +921,17 @@ struct AutoConnectCamera
 
         if (m_camera && !m_camera->Connected)
         {
-            wxString preamble = (m_camera->CanSelectCamera() && parent->NumCamerasFound() == 0)
-                ? _("No cameras of that type were found")
-                : _("PHD2 cound not connect to the camera");
+            wxString msg;
+            if (m_camera->CanSelectCamera() && parent->NumCamerasFound() == 0)
+                msg = _("No cameras of that type were found, so you may want to deal with that later. "
+                        "In the meantime, you can just enter the pixel-size manually along with the "
+                        "focal length and binning levels.");
+            else
+                msg = _("PHD2 could not connect to the camera, so you may want to deal with that later. "
+                        "In the meantime, you can just enter the pixel-size manually along with the "
+                        "focal length and binning levels.");
 
-            wxMessageBox(preamble +
-                         _(" so you may want to deal with that later. "
-                           "In the meantime, you can just enter the pixel-size manually along with the "
-                           "focal length and binning levels."));
+            wxMessageBox(msg);
 
             delete m_camera;
             m_camera = nullptr;
@@ -957,13 +960,6 @@ static void SetBinningLevel(ProfileWizard *parent, const wxString& selection, in
     AutoConnectCamera cam(parent, selection, false);
     if (cam && cam->MaxBinning > 1)
         cam->SetBinning(val);
-}
-
-static wxString CameraSelectionKey(const wxString& camName)
-{
-    std::hash<std::string> hash_fn;
-    std::string name(camName.c_str());
-    return wxString::Format("/cam_hash/%lx/whichCamera", (unsigned long) hash_fn(name));
 }
 
 // Wrapup logic - build the new profile, maybe launch the darks dialog
@@ -1019,9 +1015,8 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/camera/SaturationADU", 0); // Default will be updated with first auto-find to reflect bpp
     if (m_camDeviceId != GuideCamera::DEFAULT_CAMERA_ID)
     {
-        wxString key = CameraSelectionKey(m_SelectedCamera);
-        const wxString& id = m_camDeviceId;
-        pConfig->Profile.SetString(key, id);
+        wxString key = GearDialog::CameraSelectionKey(m_SelectedCamera);
+        pConfig->Profile.SetString(key, m_camDeviceId);
     }
 
     GuideLog.EnableLogging(true); // Especially for newbies

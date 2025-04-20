@@ -110,6 +110,7 @@ public:
     bool ReconnectCamera();
     Scope *AuxScope() const;
     wxString SelectedCameraId() const;
+    static wxString CameraSelectionKey(const wxString& camName);
 
 private:
     void LoadGearChoices();
