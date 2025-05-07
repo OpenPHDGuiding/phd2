@@ -225,11 +225,13 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
         if (GetState() >=
             STATE_SELECTED) // If we have a single star, need to force an auto-find to be sure we have the right secondary stars
         {
+            bool guiding_active = IsCalibratingOrGuiding();
             StopGuiding();
             InvalidateCurrentPosition(true);
             if (!AutoSelect(wxRect(0, 0, 0, 0)))
             {
-                StartGuiding();
+                if (guiding_active)
+                    StartGuiding();
                 autoFindForced = true;
             }
         }
