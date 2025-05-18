@@ -15,6 +15,15 @@ MAC=
 WIN=
 while [ $# -gt 0 ]; do
     case $1 in
+        *ASI_Camera_SDK.zip)
+            # combined
+            TMP=$(mktemp -d)
+            trap 'rm -rf "$TMP"' EXIT
+            unzip -d "$TMP" "$1"
+            shift
+            "$0" "$TMP/ASI_Camera_SDK/ASI_linux_mac_SDK"* "$TMP/ASI_Camera_SDK/ASI_Windows_SDK"*
+            exit
+            ;;
         *ASI_linux_mac_SDK_*.tar.bz2) MAC=$1; shift ;;
         *ASI_Windows_SDK_*.zip) WIN=$1; shift ;;
         *) usage ;;
@@ -39,12 +48,14 @@ TMP=$TOP/tmp/zwosdk
 mkdir -p "$TMP"/win "$TMP"/mac
 trap 'rm -rf "$TMP"' INT TERM QUIT EXIT
 
+DEST=$TOP/cameras/zwolibs
+
 # windows
 if [ -n "$WIN" ]; then
     unzip -q -d "$TMP"/win "$WIN"
-    cp "$TMP/win/ASI SDK/include/ASICamera2.h" "$TOP"/cameras/
-    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.lib" "$TOP"/cameras/
-    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.dll" "$TOP"/WinLibs/
+    cp "$TMP/win/ASI SDK/include/ASICamera2.h" "$DEST"/include/
+    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.lib" "$DEST"/win/x86/
+    cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.dll" "$DEST"/win/x86/
 fi
 
 # osx and linux
@@ -58,11 +69,11 @@ if [ -n "$MAC" ]; then
     fi
     # linux: use static libs
     for d in armv6 armv7 armv8 x64 x86; do
-        cp "$TMP"/mac/"$root"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/$d/
+        cp "$TMP"/mac/"$root"/lib/$d/libASICamera2.a "$TOP"/cameras/zwolibs/linux/"$d"/
     done
     # mac: use dynamic libs
     for d in mac; do
         # follow symbolic link
-        cp "$TMP"/mac/"$root"/lib/$d/libASICamera2.dylib "$TOP"/cameras/zwolibs/$d/
+        cp "$TMP"/mac/"$root"/lib/"$d"/libASICamera2.dylib "$TOP"/cameras/zwolibs/"$d"/
     done
 fi
