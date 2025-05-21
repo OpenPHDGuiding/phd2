@@ -1380,11 +1380,17 @@ static void capture_single_frame(JObj& response, const json_value *params)
         response << jrpc_error(1, "cannot capture single frame when capture is currently active");
         return;
     }
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "cannot capture single frame when camera is not connected");
+    }
 
-    Params p("exposure", "subframe", params);
-    const json_value *j = p.param("exposure");
-    int exposure;
-    if (j)
+    Params p("exposure", "binning", "gain", "subframe", "path", "save", params);
+
+    const json_value *j;
+
+    int exposure = pFrame->RequestedExposureDuration();
+    if ((j = p.param("exposure")) != nullptr)
     {
         if (j->type != JSON_INT || j->int_value < 1 || j->int_value > 10 * 60000)
         {
@@ -1393,13 +1399,31 @@ static void capture_single_frame(JObj& response, const json_value *params)
         }
         exposure = j->int_value;
     }
-    else
+
+    wxByte binning = pCamera->Binning;
+    if ((j = p.param("binning")) != nullptr)
     {
-        exposure = pFrame->RequestedExposureDuration();
+        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxBinning)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS,
+                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxBinning));
+            return;
+        }
+        binning = j->int_value;
+    }
+
+    int gain = pCamera->GetCameraGain();
+    if ((j = p.param("gain")) != nullptr)
+    {
+        if (j->type != JSON_INT || j->int_value < 0 || j->int_value > 100)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid gain value: must be between 0 and 100");
+            return;
+        }
+        gain = j->int_value;
     }
 
     wxRect subframe;
-
     if ((j = p.param("subframe")) != nullptr)
         if (!parse_rect(&subframe, j))
         {
@@ -1407,7 +1431,45 @@ static void capture_single_frame(JObj& response, const json_value *params)
             return;
         }
 
-    bool err = pFrame->StartSingleExposure(exposure, subframe);
+    wxString path;
+    if ((j = p.param("path")) != nullptr)
+    {
+        if (j->type != JSON_STRING)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid path param: string expected");
+            return;
+        }
+        wxFileName fn(j->string_value);
+        if (!fn.IsAbsolute())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param must be an absolute path");
+            return;
+        }
+        if (fn.Exists())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "destination file already exists");
+            return;
+        }
+        path = j->string_value;
+    }
+
+    bool save = !path.empty();
+    if ((j = p.param("save")) != nullptr)
+    {
+        if (!bool_param(j, &save))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "save param must be a boolean");
+            return;
+        }
+    }
+
+    if (!save && !path.empty())
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param not allowed when save = false");
+        return;
+    }
+
+    bool err = pFrame->StartSingleExposure(exposure, binning, gain, subframe, save, path);
     if (err)
     {
         response << jrpc_error(2, "failed to start exposure");
@@ -2811,6 +2873,25 @@ void EventServer::NotifyLooping(unsigned int exposure, const Star *star, const F
 void EventServer::NotifyLoopingStopped()
 {
     SIMPLE_NOTIFY("LoopingExposuresStopped");
+}
+
+void EventServer::NotifySingleFrameComplete(bool succeeded, const wxString& errorMsg, const SingleExposure& info)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("SingleFrameComplete");
+    ev << NV("Success", succeeded);
+
+    if (!succeeded)
+        ev << NV("Error", errorMsg);
+
+    if (info.save)
+    {
+        ev << NV("Path", info.path);
+    }
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifyStarSelected(const PHD_Point& pt)
