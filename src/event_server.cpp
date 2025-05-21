@@ -710,6 +710,17 @@ struct Params
         const char *n[] = { n1, n2, n3, n4 };
         Init(n, 4, params);
     }
+    Params(const char *n1, const char *n2, const char *n3, const char *n4, const char *n5, const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3, n4, n5 };
+        Init(n, 5, params);
+    }
+    Params(const char *n1, const char *n2, const char *n3, const char *n4, const char *n5, const char *n6,
+           const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3, n4, n5, n6 };
+        Init(n, 6, params);
+    }
     const json_value *param(const std::string& name) const
     {
         auto it = dict.find(name);
