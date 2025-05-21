@@ -112,9 +112,19 @@ struct DitherSpiral
 struct SingleExposure
 {
     bool enabled;
-    int duration;
+    int duration; // exposure duration, millis
     wxRect subframe;
+    bool save;
+    wxString path;
+    wxByte prev_binning;
+    int prev_gain;
+
+    SingleExposure();
+    bool Activate(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path);
+    void Complete(bool succeeded, const wxString& errorMsg = wxEmptyString);
 };
+
+inline SingleExposure::SingleExposure() : enabled(false), duration(0) { }
 
 class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
@@ -411,7 +421,7 @@ public:
 
     void StartCapturing();
     bool StopCapturing();
-    bool StartSingleExposure(int duration, const wxRect& subframe);
+    bool StartSingleExposure(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path);
 
     bool AutoSelectStar(const wxRect& roi = wxRect());
 

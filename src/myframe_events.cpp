@@ -400,7 +400,7 @@ void MyFrame::OnButtonLoop(wxCommandEvent& WXUNUSED(event))
 void MyFrame::FinishStop(void)
 {
     assert(!CaptureActive);
-    m_singleExposure.enabled = false;
+    m_singleExposure.Complete(true);
     EvtServer.NotifyLoopingStopped();
     // when looping resumes, start with at least one full frame. This enables applications
     // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
@@ -409,6 +409,74 @@ void MyFrame::FinishStop(void)
     UpdateButtonsStatus();
     StatusMsg(_("Stopped."));
     PhdController::AbortController("Stopped capturing");
+}
+
+bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path)
+{
+    // initiate a single exposure with the requested parameters. Returns true on success.
+    // Parameters:
+    //   duration - the exposure duration in milliseconds
+    //   binning - the camera binning
+    //   gain - the camera gain value (phd2 gain units 0..100)
+    //   subframe - the requested ROI; an empty wxRect means to use the full frame
+    //   save - whether to automatically save the image when the exposure completes
+    //   path - path to save the completed image, or empty string to allow phd2 to choose
+    bool error;
+
+    this->duration = duration;
+
+    prev_binning = pCamera->Binning;
+    error = pCamera->SetBinning(binning);
+    if (error)
+        return false;
+
+    prev_gain = pCamera->GuideCameraGain;
+    error = pCamera->SetCameraGain(gain);
+    if (error)
+        return false;
+
+    this->subframe = subframe;
+    if (!this->subframe.IsEmpty())
+        subframe.Intersect(wxRect(pCamera->FullSize));
+
+    this->save = save;
+    this->path = path;
+
+    enabled = true;
+    return true;
+}
+
+void SingleExposure::Complete(bool succeeded, const wxString& errorMsgArg)
+{
+    wxString errorMsg(errorMsgArg);
+    if (succeeded && save)
+    {
+        bool created = false;
+        if (path.empty())
+        {
+            path = wxFileName::CreateTempFileName(MyFrame::GetDefaultFileDir() + PATHSEPSTR + "save_image_");
+            created = true;
+        }
+
+        bool err = pFrame->pGuider->SaveCurrentImage(path);
+        if (err)
+        {
+            if (created)
+                ::wxRemove(path);
+            succeeded = false;
+            errorMsg = wxString::Format("error saving image file [%s] -- see debug log for more info", path);
+        }
+    }
+
+    Debug.Write(wxString::Format("SingleExposure::Complete ok=%d path=[%s]\n", succeeded, path));
+
+    EvtServer.NotifySingleFrameComplete(succeeded, errorMsg, *this);
+
+    if (pCamera->Binning != prev_binning)
+        pCamera->SetBinning(prev_binning);
+    if (pCamera->GuideCameraGain != prev_gain)
+        pCamera->SetCameraGain(prev_gain);
+    enabled = false;
 }
 
 static wxString RawModeWarningKey(void)
@@ -472,7 +540,7 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
                 pGuider->StopGuiding();
                 pGuider->UpdateImageDisplay();
             }
-            m_singleExposure.enabled = false;
+            m_singleExposure.Complete(false, "camera error -- see debug log");
             EvtServer.NotifyLoopingStopped();
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;

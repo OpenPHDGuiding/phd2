@@ -62,6 +62,7 @@ public:
     void NotifyCalibrationDataFlipped(const Mount *mount);
     void NotifyLooping(unsigned int exposure, const Star *star, const FrameDroppedInfo *info);
     void NotifyLoopingStopped();
+    void NotifySingleFrameComplete(bool succeeded, const wxString& errorMsg, const SingleExposure& info);
     void NotifyStarSelected(const PHD_Point& pos);
     void NotifyStarLost(const FrameDroppedInfo& info);
     void NotifyGuidingStarted();
