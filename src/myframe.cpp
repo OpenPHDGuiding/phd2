@@ -2736,8 +2736,8 @@ bool MyFrame::SetFocalLength(int focalLength)
 
 void MyFrame::SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS)
 {
-    Debug.Write(wxString::Format("Variable delay: %s, Short = %d ms, Long = %d ms\n",
-                                 (varDelayEnabled ? "Enabled" : "Disabled"), ShortDelayMS, LongDelayMS));
+    Debug.Write(wxString::Format("Variable delay: %s, Short = %d ms, Long = %d ms\n", varDelayEnabled ? "Enabled" : "Disabled",
+                                 ShortDelayMS, LongDelayMS));
 
     m_varDelayConfig.enabled = varDelayEnabled;
     m_varDelayConfig.shortDelay = ShortDelayMS;
