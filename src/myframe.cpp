@@ -365,9 +365,6 @@ MyFrame::MyFrame()
     CaptureActive = false;
     m_exposurePending = false;
 
-    m_singleExposure.enabled = false;
-    m_singleExposure.duration = 0;
-
     m_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -1801,9 +1798,11 @@ void MyFrame::ScheduleManualMove(Mount *mount, const GUIDE_DIRECTION direction, 
     ScheduleAxisMove(mount, direction, duration, MOVEOPT_MANUAL);
 }
 
-bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
+bool MyFrame::StartSingleExposure(int duration, wxByte binning, int gain, const wxRect& subframe, bool save,
+                                  const wxString& path)
 {
-    Debug.Write(wxString::Format("StartSingleExposure duration=%d\n", duration));
+    Debug.Write(wxString::Format("StartSingleExposure duration=%d binning=%d gain=%d save=%d path=[%s]\n", duration, binning,
+                                 gain, save, path));
 
     if (!pCamera || !pCamera->Connected)
     {
@@ -1813,11 +1812,11 @@ bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
 
     StatusMsgNoTimeout(_("Capturing single exposure"));
 
-    m_singleExposure.enabled = true;
-    m_singleExposure.duration = duration;
-    m_singleExposure.subframe = subframe;
-    if (!m_singleExposure.subframe.IsEmpty())
-        m_singleExposure.subframe.Intersect(wxRect(pCamera->FullSize));
+    if (!m_singleExposure.Activate(duration, binning, gain, subframe, save, path))
+    {
+        Debug.Write("StartSingleExposure: invalid exposure parameters\n");
+        return true;
+    }
 
     StartCapturing();
 
