@@ -405,6 +405,13 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
         PHD_fits_close_file(fptr);
 
+        if (status)
+        {
+            char buf[128]; // fits_get_errstatus requires a 30 character buffer
+            fits_get_errstatus(status, buf);
+            Debug.Write(wxString::Format("CFITSIO error (%d) saving image: %s\n", status, buf));
+        }
+
         bError = status ? true : false;
     }
     catch (const wxString& Msg)
