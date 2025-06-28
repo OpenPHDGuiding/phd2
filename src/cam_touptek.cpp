@@ -870,16 +870,17 @@ bool CameraToupTek::GetCoolerStatus(bool *on, double *setpoint, double *power, d
         err = true;
 
     if (m_cam.GetOption(TOUPCAM_OPTION_TECTARGET, &targ))
-        *setpoint = targ / 10.0;
+        *setpoint = static_cast<double>(targ / 10.0);
     else
         err = true;
 
     if (m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE, &vcur) && m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
         vmax > 0)
-    {
-        *power = vcur * 100.0 / vmax;
-    }
+        *power = static_cast<double>(vcur * 100.0 / vmax);
     else
+        err = true;
+
+    if (GetSensorTemperature(temperature))
         err = true;
 
     return err;
@@ -896,7 +897,7 @@ bool CameraToupTek::GetSensorTemperature(double *temperature)
         return true;
     }
 
-    *temperature = val / 10.0;
+    *temperature = static_cast<double>(val / 10.0);
     return false;
 }
 
