@@ -876,7 +876,9 @@ bool CameraToupTek::GetCoolerStatus(bool *on, double *setpoint, double *power, d
 
     if (m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE, &vcur) && m_cam.GetOption(TOUPCAM_OPTION_TEC_VOLTAGE_MAX, &vmax) &&
         vmax > 0)
+    {
         *power = vcur * 100.0 / vmax;
+    }
     else
         err = true;
 
