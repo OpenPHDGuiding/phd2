@@ -881,6 +881,9 @@ bool CameraOgma::GetCoolerStatus(bool *on, double *setpoint, double *power, doub
     else
         err = true;
 
+    if (GetSensorTemperature(temperature))
+        err = true;
+
     return err;
 }
 
