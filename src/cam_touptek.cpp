@@ -142,7 +142,7 @@ struct ToupCam
             sz->x = width;
             sz->y = height;
 
-            if (m_bpp == 16 && false)
+            if (m_bpp == 16)
             {
                 // There are 12-bit Touptek cameras (like the GPM462M) that return values in the range [0-4094] when in 16-bit mode. 
                 // We scale the 12-bit input range [0-4094] to the 16-bit output range [0-65535].  
