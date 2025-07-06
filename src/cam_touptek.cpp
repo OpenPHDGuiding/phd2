@@ -52,6 +52,7 @@ struct ToupCam
     void *m_buffer;
     void *m_tmpbuf;
     wxByte m_bpp; // bits per pixel: 8 or 16
+    wxByte m_bppRaw; // returned by Toupcam_get_RawFormat
     bool m_isColor;
     bool m_hasGuideOutput;
     double m_devicePixelSize;
@@ -140,6 +141,41 @@ struct ToupCam
         {
             sz->x = width;
             sz->y = height;
+
+            if (m_bpp == 16 && false)
+            {
+                // There are 12-bit Touptek cameras (like the GPM462M) that return values in the range [0-4094] when in 16-bit mode. 
+                // We scale the 12-bit input range [0-4094] to the 16-bit output range [0-65535].  
+                // To handle other unknown Touptek cameras that may correctly return values in [0-4095] we clamp their top
+                // saturated value 4095 to 65535. 
+                unsigned int scale = (m_bppRaw == 12 ? 4094u :
+
+                // There possibly are 14-bit Touptek cameras that return values in the range [0-16382] when in 16-bit mode.
+                // We scale the 14-bit input range [0-16382] to the output range [0-65535].
+                // To handle other unknown Touptek cameras that may correctly return values in [0-16383] we clamp their top
+                // saturated value 16383 to 65535.                 
+                                      m_bppRaw == 14 ? 16382u :
+
+                // There are 12-bit or 14-bit Touptek cameras (like the GPM678M) whose ADU values are upscaled by the driver to
+                // the range [0-65520] (for 12-bit) or [0-65528] (for 14-bit) when in 16-bit mode.
+                // We rescale the smaller [0-65520] range to the 16-bit output range [0-65535].
+                // To handle the 14-bit cameras and other unknown Touptek cameras that may correctly return values in [0-65535]
+                // we clamp their top 15 nearly saturated values [65521-65535] to 65535.                                  
+                                      m_bppRaw == 16 ? 65520u :
+
+                // In the very unlikely event of other bit-depths, we perform no scaling.
+                                      65535u);
+
+                for (unsigned int i = 0; i < width * height; ++i)
+                {
+                    unsigned int val = static_cast<unsigned short*>(buf)[i] * 65535u / scale;
+
+                    // Branchless clamp to 65535 if val > 65535u
+                    unsigned int mask = -(val > 65535u);  // 0xFFFFFFFF if true, else 0
+                    static_cast<unsigned short*>(buf)[i] = (val & ~mask) | (65535u & mask);
+                }
+            }
+            
             return true;
         }
         Debug.Write(wxString::Format("TOUPTEK: PullImage failed with status 0x%x\n", hr));
@@ -483,11 +519,15 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     unsigned int fourcc, bpp;
     if (SUCCEEDED(hr = Toupcam_get_RawFormat(m_cam.m_h, &fourcc, &bpp)))
     {
+        m_cam.m_bppRaw = bpp;
         Debug.Write(wxString::Format("TOUPTEK: raw format = %c%c%c%c bit depth = %u\n", fourcc & 0xff, (fourcc >> 8) & 0xff,
                                      (fourcc >> 16) & 0xff, fourcc >> 24, bpp));
     }
     else
+    {
+        m_cam.m_bppRaw = -1;
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_RawFormat failed with status 0x%x\n", hr));
+    }
 
     return false;
 }
