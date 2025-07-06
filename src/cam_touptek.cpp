@@ -922,6 +922,9 @@ bool CameraToupTek::GetCoolerStatus(bool *on, double *setpoint, double *power, d
     else
         err = true;
 
+    if (GetSensorTemperature(temperature))
+        err = true;
+
     return err;
 }
 
