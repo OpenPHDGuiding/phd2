@@ -953,11 +953,13 @@ bool GuideStar::AutoFind(const usImage& image, int extraEdgeAllowance, int searc
 
     if (pCamera->IsSaturationByADU())
     {
-        // known saturation level ... maybe easy
+        // known saturation level, either specified by user or we make an informed guess to complete the wizard profile creation process
         unsigned short satADU = pCamera->GetSaturationADU();
-        wxByte bpp = image.BitsPerPixel;
-        if (satADU == 0 || (bpp == 8 && satADU > 255) || (bpp > 8 && satADU < 4095))
+        if (satADU == 0)
         {
+            wxByte bpp = image.BitsPerPixel;
+            // For some cameras that don't scale the data to full 16-bit range, this will produce a result that's too high.
+            // The user will need to fix it but in the meantime he should be able to find some stars to work with
             satADU = ((1U << bpp) - 1);
             pCamera->SetSaturationByADU(true, satADU);
             Debug.Write(wxString::Format("SaturationADU auto-adjusted to %d\n", satADU));
