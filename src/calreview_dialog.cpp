@@ -623,7 +623,8 @@ void CalSanityDialog::BuildMessage(wxStaticText *pText, CalibrationIssueType ety
             m_newParams.xRate / m_newParams.yRate * 100.0);
         break;
     default:
-        msg = wxString::Format("Just testing");
+        msg = _("Details for this calibration result are no longer available. "
+                "The calibration has probably been replaced.");
         break;
     }
     pText->SetLabel(msg);
