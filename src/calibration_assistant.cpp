@@ -324,7 +324,8 @@ void CalibrationAssistant::PerformSanityChecks(void)
     else
         minSpd = raSpd;
     sidRate = RateX(minSpd);
-    if (sidRate < 0.5)
+    // Ignore rounding errors that aren't meaningful (SB driver)
+    if (sidRate < 0.5 && pFrame->pAdvancedDialog->PercentChange(sidRate, 0.5) > 5.0)
     {
         if (sidRate <= 0.2)
             msg = _("Your mount guide speed is too slow for effective calibration and guiding."
@@ -975,7 +976,7 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
         ShowStatus(_("Slew the scope closer to Dec = 0"));
         return;
     }
-    if (!m_justSlewed && pPointingSource->CanSlew())
+    if (!m_justSlewed && pPointingSource->CanSlew() && !pPointingSource->HasHPEncoders())
     {
         if (pFrame->CaptureActive)
             pFrame->StopCapturing();
