@@ -437,11 +437,11 @@ static void WarnRawImageMode(void)
  * by the background thread.
  *
  * It:
- * - causes the image to be redrawn by calling pGuider->UpateImageDisplay()
+ * - causes the image to be redrawn by calling pGuider->UpdateImageDisplay()
  * - calls the routine to update the guider state (which may do nothing)
  * - calls any other appropriate state update routine depending upon the current state
  * - updates button state based on appropriate state variables
- * - schedules another exposure if CaptureActive is stil true
+ * - schedules another exposure if CaptureActive is still true
  *
  */
 void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
