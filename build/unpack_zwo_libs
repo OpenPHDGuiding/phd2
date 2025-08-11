@@ -56,6 +56,8 @@ if [ -n "$WIN" ]; then
     cp "$TMP/win/ASI SDK/include/ASICamera2.h" "$DEST"/include/
     cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.lib" "$DEST"/win/x86/
     cp "$TMP/win/ASI SDK/lib/x86/ASICamera2.dll" "$DEST"/win/x86/
+    cp "$TMP/win/ASI SDK/lib/x64/ASICamera2.lib" "$DEST"/win/x64/
+    cp "$TMP/win/ASI SDK/lib/x64/ASICamera2.dll" "$DEST"/win/x64/
 fi
 
 # osx and linux
