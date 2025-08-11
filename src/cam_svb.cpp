@@ -35,7 +35,7 @@
 #ifdef SVB_CAMERA
 
 # include "cam_svb.h"
-# include "cameras/SVBCameraSDK.h"
+# include "SVBCameraSDK.h"
 
 # ifdef __WINDOWS__
 #  include <Shlwapi.h>
