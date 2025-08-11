@@ -1016,7 +1016,7 @@ static wxString SlowBumpWarningEnabledKey()
     return wxString::Format("/Confirm/%d/SlowBumpWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressSlowBumpWarning(long)
+static void SuppressSlowBumpWarning(intptr_t)
 {
     pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
 }

@@ -79,7 +79,7 @@ struct VarDelayCfg
     int longDelay;
 };
 
-typedef void alert_fn(long);
+typedef void alert_fn(intptr_t);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -444,9 +444,9 @@ public:
     double GetCameraPixelScale() const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, long arg,
+    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, intptr_t arg,
                bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
-    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg,
+    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, intptr_t arg,
                            bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
     void ClearAlert();
     void StatusMsg(const wxString& text);
@@ -499,7 +499,7 @@ private:
 
     alert_fn *m_alertDontShowFn;
     alert_fn *m_alertSpecialFn;
-    long m_alertFnArg;
+    intptr_t m_alertFnArg;
 
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 

@@ -597,7 +597,7 @@ int Scope::CalibrationMoveSize()
     return m_calibrationDuration;
 }
 
-static wxString LimitReachedWarningKey(long axis)
+static wxString LimitReachedWarningKey(intptr_t axis)
 {
     // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
     // to be per-profile
@@ -605,7 +605,7 @@ static wxString LimitReachedWarningKey(long axis)
                             axis == GUIDE_RA ? "RA" : "Dec");
 }
 
-static void SuppressLimitReachedWarning(long axis)
+static void SuppressLimitReachedWarning(intptr_t axis)
 {
     pConfig->Global.SetBoolean(LimitReachedWarningKey(axis), false);
 }
@@ -846,7 +846,7 @@ void Scope::SetCalibrationWarning(CalibrationIssueType etype, bool val)
 }
 
 // Generic hook for "details" button in calibration sanity check alert
-static void ShowCalibrationIssues(long scopeptr)
+static void ShowCalibrationIssues(intptr_t scopeptr)
 {
     Scope *pscope = reinterpret_cast<Scope *>(scopeptr);
     pscope->HandleSanityCheckDialog();
@@ -968,7 +968,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
                                        true)) // User hasn't disabled this type of alert
         {
             // Generate alert with 'Help' button that will lead to trouble-shooting section
-            pFrame->Alert(alertMsg, 0, _("Details..."), ShowCalibrationIssues, (long) this, true);
+            pFrame->Alert(alertMsg, 0, _("Details..."), ShowCalibrationIssues, (intptr_t) this, true);
         }
         else
         {
