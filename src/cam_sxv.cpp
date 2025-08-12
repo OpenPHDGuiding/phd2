@@ -43,7 +43,7 @@
 # include <wx/choicdlg.h>
 
 # if defined(__WINDOWS__)
-#  include "cameras/SXUSB.h"
+#  include "SXUSB.h"
 typedef struct t_sxccd_params sxccd_params_t;
 typedef HANDLE sxccd_handle_t;
 #  define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME

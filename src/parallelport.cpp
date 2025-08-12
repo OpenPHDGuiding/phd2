@@ -35,6 +35,8 @@
 
 #include "phd.h"
 
+#if defined(LE_PARALLEL_CAMERA)
+
 ParallelPort::ParallelPort(void) { }
 
 ParallelPort::~ParallelPort(void) { }
@@ -76,9 +78,11 @@ bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
 
 ParallelPort *ParallelPort::ParallelPortFactory(void)
 {
-#if defined(_WINDOWS_)
+# if defined(_WINDOWS_)
     return new ParallelPortWin32();
-#else
+# else
     return 0;
-#endif
+# endif
 }
+
+#endif // LE_PARALLEL_CAMERA

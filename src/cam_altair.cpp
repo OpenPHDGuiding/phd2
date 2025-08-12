@@ -48,7 +48,7 @@ struct SDKLib
 
 #  define SDK(f) decltype(Altaircam_##f) *f;
 #  define SDK_OPT(f) SDK(f)
-#  include "cameras/altaircam_sdk.h"
+#  include "altaircam_sdk.h"
 #  undef SDK
 #  undef SDK_OPT
 
@@ -88,7 +88,7 @@ struct SDKLib
       {                                                                                                                        \
           _GPA(f);                                                                                                             \
       } while (false);
-#  include "cameras/altaircam_sdk.h"
+#  include "altaircam_sdk.h"
 #  undef SDK
 #  undef SDK_OPT
 #  undef _GPA

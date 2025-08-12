@@ -40,7 +40,7 @@
 
 # include "cam_LELXUSBWebcam.h"
 # include "cam_wdm_base.h"
-# include "cameras/ShoestringLXUSB_DLL.h"
+# include "ShoestringLXUSB_DLL.h"
 
 class CameraLELxUsbWebcam : public CameraLEWebcam
 {

@@ -35,7 +35,9 @@
 
 #include "phd.h"
 
-#ifdef __WINDOWS__
+#if defined(LE_PARALLEL_CAMERA)
+
+# ifdef __WINDOWS__
 
 /* ----Prototypes of Inp and Out32--- */
 short _stdcall Inp32(short PortAddress);
@@ -194,4 +196,6 @@ bool ParallelPortWin32::WriteByte(UINT8 data)
     return bError;
 }
 
-#endif // __WINDOWS__
+# endif // __WINDOWS__
+
+#endif // LE_PARALLEL_CAMERA

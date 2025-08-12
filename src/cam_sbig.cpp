@@ -48,7 +48,7 @@
 # elif defined(__LINUX__)
 #  include <sbigudrv.h>
 # else
-#  include "cameras/Sbigudrv.h"
+#  include "Sbigudrv.h"
 # endif
 
 class CameraSBIG : public GuideCamera

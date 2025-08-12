@@ -1,0 +1,108 @@
+; PHD2 x64 installer script
+
+#define APP_NAME "PHD 2"
+#define APP_VERSION "@VERSION@"
+
+[Setup]
+AppName={#APP_NAME}
+AppVersion={#APP_VERSION}
+DefaultDirName={pf}\PHDGuiding2
+DefaultGroupName=PHD Guiding 2
+UninstallDisplayIcon={app}\phd2.exe
+Compression=lzma2
+SolidCompression=yes
+OutputDir=.
+OutputBaseFilename=phd2-x64-v{#APP_VERSION}-installer
+DirExistsWarning=no
+DisableWelcomePage=no
+DisableDirPage=no
+DisableProgramGroupPage=no
+
+[Files]
+Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion; AfterInstall: UpdateFirewallRules
+Source: Release\locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
+Source: Release\PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
+Source: README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
+; 32-bit Source: Release\altaircam.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\AltairCam_legacy.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\astroDLLQHY5V.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\astroDLLsspiag.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\gXusb.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\inpout32.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ogmacam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_core4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_highgui4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_imgproc4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_videoio4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_imgcodecs4.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\toupcam.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\SVBCameraSDK.dll; DestDir: {app}; Flags: replacesameversion
+; 32-bit Source: Release\PlayerOneCamera.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\LIBCURL.DLL; DestDir: {app}; Flags: replacesameversion
+Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
+; Missing: TIS_DShowLib09.dll
+; Missing: TIS_UDSHL09_vc10.dll
+; Missing: TIS_UDSHL09_vc9.dll
+Source: Release\msvcp140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\vcomp140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\vcruntime140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\concrt140.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\cfitsio.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\jpeg62.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libcurl.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\liblzma.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebp.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebpdecoder.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libsharpyuv.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libpng16.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\tiff.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\zlib1.dll; DestDir: {app}; Flags: replacesameversion
+
+[Icons]
+Name: {group}\PHD Guiding 2; FileName: {app}\phd2.exe
+
+[Run]
+Filename: {tmp}\dark_mover.vbs; Description: Relocate dark files; Flags: shellexec waituntilterminated
+Filename: {app}\phd2.exe; Description: Launch {#APP_NAME} after installation; Flags: nowait postinstall runasoriginaluser skipifsilent
+
+[Registry]
+Root: HKCU; Subkey: Software\StarkLabs; Flags: uninsdeletekeyifempty
+Root: HKCU; Subkey: Software\StarkLabs\PHDGuidingV2; Flags: uninsdeletekey
+
+[Code]
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode, i: Integer;
+begin
+  if CurStep = ssDone then
+    if WizardSilent() then
+    begin
+      for I := 1 to ParamCount do begin
+        if CompareText(ParamStr(i), '/launch') = 0 then
+        begin
+          ExecAsOriginalUser(ExpandConstant('{app}\phd2.exe'), '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
+          break;
+        end
+      end
+    end
+end;
+
+procedure UpdateFirewallRules();
+var
+  ResultCode: Integer;
+begin
+  Exec('netsh.exe', 'advfirewall firewall delete rule name=' + AddQuotes(ExpandConstant('{#APP_NAME}')) + ' dir=in program=' + AddQuotes(ExpandConstant('{app}\phd2.exe')), '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('netsh.exe', 'advfirewall firewall add rule name=' + AddQuotes(ExpandConstant('{#APP_NAME}')) + ' dir=in action=allow program=' + AddQuotes(ExpandConstant('{app}\phd2.exe')) + ' profile=private', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;

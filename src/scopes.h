@@ -40,8 +40,10 @@
 # define GUIDE_ONCAMERA
 # define GUIDE_ONSTEPGUIDER
 # define GUIDE_ASCOM
-# define GUIDE_GPUSB
-# define GUIDE_GPINT
+# ifdef HAVE_SHOESTRING
+#  define GUIDE_GPUSB
+#  define GUIDE_GPINT
+# endif
 # define GUIDE_INDI
 
 #elif defined(__APPLE__)
