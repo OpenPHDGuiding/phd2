@@ -482,7 +482,7 @@ static wxString SlewWarningEnabledKey()
     return wxString::Format("/Confirm/%d/SlewWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressSlewAlert(long)
+static void SuppressSlewAlert(intptr_t)
 {
     // If the user doesn't want to see these, we shouldn't be checking for the condition
     TheScope()->EnableStopGuidingWhenSlewing(false);
@@ -495,7 +495,7 @@ static wxString PulseGuideFailedAlertEnabledKey()
     return wxString::Format("/Confirm/%d/PulseGuideFailedAlertEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressPulseGuideFailedAlert(long)
+static void SuppressPulseGuideFailedAlert(intptr_t)
 {
     pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
 }

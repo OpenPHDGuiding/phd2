@@ -484,7 +484,7 @@ static wxString RawModeWarningKey(void)
     return wxString::Format("/Confirm/%d/RawModeWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressRawModeWarning(long)
+static void SuppressRawModeWarning(intptr_t)
 {
     pConfig->Global.SetBoolean(RawModeWarningKey(), false);
 }
@@ -1020,7 +1020,7 @@ static wxString DarksWarningEnabledKey()
     return wxString::Format("/Confirm/%d/DarksWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressDarksAlert(long)
+static void SuppressDarksAlert(intptr_t)
 {
     pConfig->Global.SetBoolean(DarksWarningEnabledKey(), false);
 }
@@ -1230,7 +1230,7 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
     }
 }
 
-static void AlertSetRAOnly(long param)
+static void AlertSetRAOnly(intptr_t param)
 {
     pFrame->SetDitherRaOnly(true);
     pFrame->m_infoBar->Dismiss();

@@ -102,9 +102,9 @@ static const bool DefaultScaleImage = true;
 
 // clang-format off
 wxBEGIN_EVENT_TABLE(Guider, wxWindow)
-    EVT_PAINT(Guider::OnPaint)
-    EVT_CLOSE(Guider::OnClose)
-    EVT_ERASE_BACKGROUND(Guider::OnErase)
+EVT_PAINT(Guider::OnPaint)
+EVT_CLOSE(Guider::OnClose)
+EVT_ERASE_BACKGROUND(Guider::OnErase)
 wxEND_EVENT_TABLE();
 // clang-format on
 
@@ -1192,7 +1192,7 @@ void Guider::Reset(bool fullReset)
 }
 
 // Called from the alert to offer auto-restore calibration
-static void SetAutoLoad(long param)
+static void SetAutoLoad(intptr_t)
 {
     pFrame->SetAutoLoadCalibration(true);
     pFrame->m_infoBar->Dismiss();

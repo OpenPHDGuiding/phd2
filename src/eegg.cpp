@@ -50,7 +50,7 @@ static wxString FlipCalEnabledKey()
     return wxString::Format("/Confirm/%d/FlipCalWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressFlipCalAlert(long)
+static void SuppressFlipCalAlert(intptr_t)
 {
     pConfig->Global.SetBoolean(FlipCalEnabledKey(), false);
 }
