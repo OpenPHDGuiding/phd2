@@ -147,7 +147,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib)
             {
                 double min_v, max_v;
                 int num;
-                pCamera->GetDarklibProperties(&num, &min_v, &max_v);
+                pCamera->GetDarkLibraryProperties(&num, &min_v, &max_v);
                 pInfo->SetLabel(
                     wxString::Format(_("Existing dark library covers %d exposure times in the range of %g s to %g s"), num,
                                      min_v / 1000., max_v / 1000.));

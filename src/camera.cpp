@@ -1386,7 +1386,7 @@ void GuideCamera::SelectDark(int exposureDuration)
     }
 }
 
-void GuideCamera::GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp)
+void GuideCamera::GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp)
 {
     double minExp = 9999.0;
     double maxExp = -9999.0;
