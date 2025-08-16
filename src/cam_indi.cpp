@@ -376,8 +376,8 @@ void CameraINDI::updateProperty(INDI::Property property)
             PixSizeY = IUFindNumber(ccdinfo_prop, "CCD_PIXEL_SIZE_Y")->value;
             m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
             m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
-            // defer defining FullSize since it is not simply derivable from max size and binning
-            // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // defer defining FrameSize since it is not simply derivable from max size and binning
+            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
             m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
         }
         else if (nvp == binning_prop)
@@ -386,8 +386,8 @@ void CameraINDI::updateProperty(INDI::Property property)
             m_curBinning = wxMin(binning_x->value, binning_y->value);
             if (Binning > MaxBinning)
                 Binning = MaxBinning;
-            // defer defining FullSize since it is not simply derivable from max size and binning
-            // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // defer defining FrameSize since it is not simply derivable from max size and binning
+            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         }
         else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
         {
@@ -884,7 +884,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
 
     if (takeSubframe)
     {
-        if (FullSize == UNDEFINED_FRAME_SIZE)
+        if (FrameSize == UNDEFINED_FRAME_SIZE)
         {
             // should never happen since we arranged not to take a subframe
             // unless full frame size is known
@@ -892,7 +892,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
             PHD_fits_close_file(fptr);
             return true;
         }
-        if (img.Init(FullSize))
+        if (img.Init(FrameSize))
         {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
@@ -924,9 +924,9 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
     }
     else
     {
-        FullSize.Set(xsize, ysize);
+        FrameSize.Set(xsize, ysize);
 
-        if (img.Init(FullSize))
+        if (img.Init(FrameSize))
         {
             pFrame->Alert(_("Memory allocation error"));
             PHD_fits_close_file(fptr);
@@ -999,9 +999,9 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             SendBinning();
             takeSubframe = false; // subframe may be out of bounds now
             if (Binning == 1)
-                FullSize.Set(m_maxSize.x, m_maxSize.y);
+                FrameSize.Set(m_maxSize.x, m_maxSize.y);
             else
-                FullSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
+                FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
         }
 
         if (!frame_prop || subframe.width <= 0 || subframe.height <= 0)
@@ -1009,7 +1009,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
             takeSubframe = false;
         }
 
-        if (takeSubframe && FullSize == UNDEFINED_FRAME_SIZE)
+        if (takeSubframe && FrameSize == UNDEFINED_FRAME_SIZE)
         {
             // if we do not know the full frame size, we cannot take a
             // subframe until we receive a full frame and get the frame size
@@ -1020,10 +1020,10 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         if (!takeSubframe)
         {
             wxSize sz;
-            if (FullSize != UNDEFINED_FRAME_SIZE)
+            if (FrameSize != UNDEFINED_FRAME_SIZE)
             {
                 // we know the actual frame size
-                sz = FullSize;
+                sz = FrameSize;
             }
             else
             {
@@ -1161,9 +1161,9 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         // for video streaming we do not get the frame size so we have to
         // derive it from the full frame size and the binning
 
-        FullSize.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        FrameSize.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
 
-        if (img.Init(FullSize))
+        if (img.Init(FrameSize))
         {
             DisconnectWithAlert(CAPT_FAIL_MEMORY);
             return true;

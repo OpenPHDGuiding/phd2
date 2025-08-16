@@ -58,7 +58,7 @@ bool CameraNebSBIG::Connect(const wxString& camId)
     bool retval = ServerSendCamConnect(xsize, ysize);
     if (retval)
         return true;
-    FullSize = wxSize(xsize, ysize);
+    FrameSize = wxSize(xsize, ysize);
     Connected = true;
     return false;
 }
@@ -72,7 +72,7 @@ bool CameraNebSBIG::Disconnect()
 
 bool CameraNebSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

@@ -90,7 +90,7 @@ static void uninit_libusb()
 CameraQHY5::CameraQHY5()
 {
     Connected = FALSE;
-    FullSize = wxSize(QHY5_IMAGE_WIDTH, QHY5_IMAGE_HEIGHT);
+    FrameSize = wxSize(QHY5_IMAGE_WIDTH, QHY5_IMAGE_HEIGHT);
     m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = NULL;
@@ -198,9 +198,9 @@ bool CameraQHY5::Capture(int duration, usImage& img, int options, const wxRect& 
     unsigned char *bptr;
     unsigned short *dptr;
     int x, y;
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-    int op_height = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
+    int op_height = FrameSize.GetHeight();
     // bool firstimg = true;
     unsigned char buffer[2]; // for debug purposes
     int offset, value, index;

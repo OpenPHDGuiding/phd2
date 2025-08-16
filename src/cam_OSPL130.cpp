@@ -35,7 +35,7 @@ CameraOpticstarPL130::CameraOpticstarPL130()
 {
     Connected = false;
     Name = _T("Opticstar PL-130M");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = false;
     HasGainControl = false;
     Color = false;
@@ -74,7 +74,7 @@ bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, cons
     bool still_going = true;
 
     int mode = 3 * (int) Color;
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -100,7 +100,7 @@ bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, cons
         wxGetApp().Yield();
     }
     // Download
-    OSPL130_GetRawImage(0, 0, FullSize.GetWidth(), FullSize.GetHeight(), (void *) img.ImageData);
+    OSPL130_GetRawImage(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight(), (void *) img.ImageData);
     // byte swap
 
     if (options & CAPTURE_SUBTRACT_DARK)

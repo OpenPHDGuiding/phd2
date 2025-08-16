@@ -1447,25 +1447,25 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     if (sim.ReadNextImage(img, subframe))
         return true;
 
-    FullSize = img.Size;
+    FrameSize = img.Size;
 
 # else
 
     int width = sim.width / Binning;
     int height = sim.height / Binning;
-    FullSize = wxSize(width, height);
+    FrameSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
     if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
         usingSubframe = false;
     if (!usingSubframe)
-        subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+        subframe = wxRect(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight());
 
     int const exptime = duration;
     int const gain = 30;
     int const offset = 100;
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         pFrame->Alert(_("Memory allocation error"));
         return true;

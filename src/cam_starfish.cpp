@@ -152,7 +152,7 @@ CameraStarfish::CameraStarfish()
 {
     Connected = false;
     Name = _T("Fishcamp Starfish");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     HasSubframes = true;
     HasGainControl = true;
     m_hasGuideOutput = true;
@@ -237,7 +237,7 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     IOReturn rval;
 
     // init memory
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -254,8 +254,8 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
     }
     else
     {
-        xsize = FullSize.GetWidth();
-        ysize = FullSize.GetHeight();
+        xsize = FrameSize.GetWidth();
+        ysize = FrameSize.GetHeight();
         xpos = 0;
         ypos = 0;
     }
@@ -322,7 +322,7 @@ bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRe
         for (int y = 0; y < ysize; y++)
         {
             const unsigned short *pSrc = subImage.ImageData + y * xsize;
-            unsigned short *pDest = img.ImageData + (ypos + y) * FullSize.GetWidth() + xpos;
+            unsigned short *pDest = img.ImageData + (ypos + y) * FrameSize.GetWidth() + xpos;
             memcpy(pDest, pSrc, xsize * sizeof(unsigned short));
         }
         img.Subframe = subframe;

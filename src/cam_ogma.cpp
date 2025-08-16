@@ -389,8 +389,8 @@ bool CameraOgma::Connect(const wxString& camIdArg)
         }
     }
 
-    FullSize.x = m_cam.m_maxSize.x / Binning;
-    FullSize.y = m_cam.m_maxSize.y / Binning;
+    FrameSize.x = m_cam.m_maxSize.x / Binning;
+    FrameSize.y = m_cam.m_maxSize.y / Binning;
 
     size_t buffer_size = m_cam.m_maxSize.x * m_cam.m_maxSize.y;
     if (m_cam.m_bpp != 8)
@@ -523,13 +523,13 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         if (m_cam.SetBinning(Binning))
         {
-            FullSize.x = m_cam.m_maxSize.x / Binning;
-            FullSize.y = m_cam.m_maxSize.y / Binning;
+            FrameSize.x = m_cam.m_maxSize.x / Binning;
+            FrameSize.y = m_cam.m_maxSize.y / Binning;
             useSubframe = false; // subframe pos is now invalid
         }
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -663,7 +663,7 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
         if (m_cam.m_bpp == 8)
         {
             const unsigned char *src = static_cast<unsigned char *>(m_cam.m_buffer) + yofs * sz.x;
-            unsigned short *dst = img.ImageData + subframe.GetTop() * FullSize.GetWidth() + subframe.GetLeft();
+            unsigned short *dst = img.ImageData + subframe.GetTop() * FrameSize.GetWidth() + subframe.GetLeft();
             for (int y = 0; y < subframe.height; y++)
             {
                 unsigned short *d = dst;
@@ -671,19 +671,19 @@ bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& 
                 for (int x = 0; x < subframe.width; x++)
                     *d++ = (unsigned short) *src++;
                 src += dxr;
-                dst += FullSize.GetWidth();
+                dst += FrameSize.GetWidth();
             }
         }
         else // bpp == 16
         {
             const unsigned short *src = static_cast<unsigned short *>(m_cam.m_buffer) + yofs * sz.x;
-            unsigned short *dst = img.ImageData + subframe.GetTop() * FullSize.GetWidth() + subframe.GetLeft();
+            unsigned short *dst = img.ImageData + subframe.GetTop() * FrameSize.GetWidth() + subframe.GetLeft();
             for (int y = 0; y < subframe.height; y++)
             {
                 src += xofs;
                 memcpy(dst, src, subframe.width * sizeof(unsigned short));
                 src += subframe.width + dxr;
-                dst += FullSize.GetWidth();
+                dst += FrameSize.GetWidth();
             }
         }
     }

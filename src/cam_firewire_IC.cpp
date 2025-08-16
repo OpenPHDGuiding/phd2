@@ -54,7 +54,7 @@ CameraFirewire::CameraFirewire()
 {
     Connected = false;
     Name = _T("The Imaging Source");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     HasGainControl = true;
     m_hasGuideOutput = false;
 }
@@ -284,15 +284,15 @@ bool CameraFirewire::Connect(const wxString& camId)
         if (debug)
         {
             debugstep = 6;
-            debugfile->AddLine(_T("Size found - setting FullSize"));
+            debugfile->AddLine(_T("Size found - setting FrameSize"));
             debugfile->Write();
         }
-        FullSize = wxSize((int) sz.cx, (int) sz.cy);
+        FrameSize = wxSize((int) sz.cx, (int) sz.cy);
 
         if (debug)
         {
             debugstep = 7;
-            debugfile->AddLine(wxString::Format("Image: %d %d Camera: ", FullSize.GetWidth(), FullSize.GetHeight()) + Name);
+            debugfile->AddLine(wxString::Format("Image: %d %d Camera: ", FrameSize.GetWidth(), FrameSize.GetHeight()) + Name);
             debugfile->Write();
         }
 
@@ -404,10 +404,10 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
 {
     static int programmed_dur = 200;
 
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         pFrame->Alert(_("Memory allocation error"));
         return true;

@@ -973,7 +973,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     }
                     else
                     {
-                        if (!OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y,
+                        if (!OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y,
                                        pFrame->pGuider->GetMaxMovePixels()))
                         {
                             pFrame->ScheduleAxisMove(m_scope, NORTH, m_pulseWidth, MOVEOPTS_CALIBRATION_MOVE);
@@ -997,7 +997,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 }
             }
             if (m_acceptedMoves >= BACKLASH_MIN_COUNT || m_backlashExemption ||
-                OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y,
+                OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y,
                           pFrame->pGuider->GetMaxMovePixels())) // Ok to go ahead with actual backlash measurement
             {
                 m_bltState = BLT_STATE_STEP_NORTH;
@@ -1020,7 +1020,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
         case BLT_STATE_STEP_NORTH:
             if (m_stepCount < m_northPulseCount &&
-                !OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))
+                !OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))
             {
                 m_lastStatus = wxString::Format(_("Moving North for %d ms, step %d / %d"), m_pulseWidth, m_stepCount + 1,
                                                 m_northPulseCount);

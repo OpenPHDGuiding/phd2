@@ -45,7 +45,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass()
 {
     Connected = FALSE;
     Name = _T("StarShoot Autoguider (OpenSSAG)");
-    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    FrameSize = wxSize(1280, 1024); // Current size of a full frame
     HasGuiderOutput = true; // Do we have an ST4 port?
     HasGainControl = true; // Can we adjust gain?
 
@@ -107,8 +107,8 @@ bool Camera_OpenSSAGClass::Disconnect()
 
 bool Camera_OpenSSAGClass::CaptureFull(int duration, usImage& img, bool recon)
 {
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
 
     if (img.Init(xsize, ysize))
     {

@@ -76,7 +76,7 @@ CameraAtik16::CameraAtik16(bool hsmodel, bool color) : m_dllLoaded(false)
 {
     Connected = false;
     Name = _T("Atik 16");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
     Color = color;
@@ -189,7 +189,7 @@ bool CameraAtik16::Connect(const wxString& camId)
     if (Binning > MaxBinning)
         Binning = MaxBinning;
 
-    FullSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
+    FrameSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
 
     ArtemisBin(Cam_Handle, Binning, Binning);
     ArtemisSubframe(Cam_Handle, 0, 0, m_properties.nPixelsX, m_properties.nPixelsY);
@@ -299,13 +299,13 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
 
     if (m_curBin != Binning)
     {
-        FullSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
+        FrameSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
         ArtemisBin(Cam_Handle, Binning, Binning);
         m_curBin = Binning;
         useSubframe = false; // subframe may be out of bounds now
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -391,7 +391,7 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
         for (int y = 0; y < subframe.height; y++)
         {
             const unsigned short *src = buf + (y + subframePos.y) * w_binned + subframePos.x;
-            unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+            unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
             memcpy(dst, src, subframe.width * sizeof(unsigned short));
         }
     }
@@ -418,8 +418,8 @@ bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect
     unsigned short med[1024];
     int offset;
     double mean;
-    int h = FullSize.GetHeight();
-    int w = FullSize.GetWidth();
+    int h = FrameSize.GetHeight();
+    int w = FrameSize.GetWidth();
     size_t sz = sizeof(unsigned short);
     mean = 0.0;
 

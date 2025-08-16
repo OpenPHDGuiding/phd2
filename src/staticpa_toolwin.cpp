@@ -179,9 +179,9 @@ StaticPaToolWin::StaticPaToolWin()
     m_pxCentre.X = xpx / 2;
     m_pxCentre.Y = ypx / 2;
     m_pxScale = pFrame->GetCameraPixelScale();
-    // Fullsize is easier but the camera simulator does not set this.
-    //    wxSize camsize = pCamera->FullSize;
-    m_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx : pCamera->FullSize.GetWidth();
+    // FrameSize is easier but the camera simulator does not set this.
+    //    wxSize camsize = pCamera->FrameSize;
+    m_camWidth = pCamera->FrameSize.GetWidth() == 0 ? xpx : pCamera->FrameSize.GetWidth();
 
     m_camAngle = 0.0;
     double camAngle_rad = 0.0;
