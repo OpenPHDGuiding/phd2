@@ -110,7 +110,7 @@ bool CameraFirewire::Connect(const wxString& camId)
             CamNames.Add(wxString(current_camera->model));
             dc1394_camera_free(current_camera);
         }
-        CamNum = wxGetSingleChoiceIndex(_T("Select Firewire camera"), ("Camera name"), CamNames);
+        CamNum = wxGetSingleChoiceIndex(_("Select Firewire camera"), _("Camera name"), CamNames);
         if (CamNum == -1)
         {
             dc1394_camera_free_list(cameras);
