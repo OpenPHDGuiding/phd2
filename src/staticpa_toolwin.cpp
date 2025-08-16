@@ -729,7 +729,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
         radiff = norm_angle(radians((m_raPos[0] - m_raPos[1]) * 15.0 * m_hemi));
 
         theta2 = radiff / 2.0; // Half the image rotation for midpoint of chord
-        double lenchord = hypot((x1 - x2), (y1 - y2));
+        double lenchord = hypot(x1 - x2, y1 - y2);
         cr = fabs(lenchord / 2.0 / sin(theta2));
         double lenbase = fabs(cr * cos(theta2));
         // Calculate the slope of the chord in pixels
@@ -757,7 +757,7 @@ void StaticPaToolWin::CalcRotationCentre(void)
 
     // Distance and angle of CoR from centre of sensor
     double cor_r = hypot(xpx / 2 - cx, ypx / 2 - cy);
-    double cor_a = degrees(atan2((ypx / 2 - cy), (xpx / 2 - cx)));
+    double cor_a = degrees(atan2(ypx / 2 - cy, xpx / 2 - cx));
     double rarot = -m_camAngle;
     // Cone and Dec components of CoR vector
     double dec_r = cor_r * sin(radians(cor_a - rarot));
@@ -799,8 +799,8 @@ void StaticPaToolWin::CalcAdjustments(void)
     // Let harot =  camera rotation from Alt axis
     // Alt axis is at HA+90
     // This is camera rotation from RA minus(?) LST angle
-    double hcor_r = hypot((xt - xs), (yt - ys)); // xt,yt: target, xs,ys: measured
-    double hcor_a = degrees(atan2((yt - ys), (xt - xs)));
+    double hcor_r = hypot(xt - xs, yt - ys); // xt,yt: target, xs,ys: measured
+    double hcor_a = degrees(atan2(yt - ys, xt - xs));
     double ra_hrs, dec_deg, st_hrs, ha_deg;
     ha_deg = m_ha;
     if (pPointingSource && !pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
@@ -854,7 +854,7 @@ PHD_Point StaticPaToolWin::Radec2Px(const PHD_Point& radec)
         time_t now = mktime(nowinfo);
         double since = difftime(now, j2000) / 86400.0;
         double hadeg = m_ha;
-        ra_deg = norm((280.46061837 + 360.98564736629 * since - hadeg), 0, 360);
+        ra_deg = norm(280.46061837 + 360.98564736629 * since - hadeg, 0, 360);
     }
 
     // Target hour angle - or rather the rotation needed to correct.
@@ -867,7 +867,7 @@ PHD_Point StaticPaToolWin::Radec2Px(const PHD_Point& radec)
     a1 = norm(a1, 0, 360);
 
     double l_camAngle;
-    l_camAngle = norm((m_flip ? m_camAngle + 180.0 : m_camAngle), 0, 360);
+    l_camAngle = norm(m_flip ? m_camAngle + 180.0 : m_camAngle, 0, 360);
     double a = l_camAngle - a1 * m_hemi;
 
     PHD_Point px(r * cos(radians(a)), -r * sin(radians(a)));
@@ -1127,7 +1127,7 @@ bool StaticPaToolWin::RotateMount()
             // And prevtheta is how we have already moved;
             // Recalculate the offset based on the actual movement;
             // CAUTION: This might end up in an endless loop.
-            double actpix = hypot((m_pxPos[1].X - m_pxPos[0].X), (m_pxPos[1].Y - m_pxPos[0].Y));
+            double actpix = hypot(m_pxPos[1].X - m_pxPos[0].X, m_pxPos[1].Y - m_pxPos[0].Y);
             double actsec = actpix * m_pxScale;
             double actoffsetdeg = 90 - degrees(acos(actsec / 3600 / m_reqRot));
             Debug.AddLine(
