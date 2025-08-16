@@ -916,7 +916,7 @@ Mount::MOVE_RESULT StepGuider::MoveAxis(GUIDE_DIRECTION direction, int steps, un
             throw THROW_INFO("Guiding disabled");
         }
 
-        // Acutally do the guide
+        // Actually do the guide
         assert(steps >= 0);
 
         if (steps > 0)
@@ -1126,7 +1126,7 @@ Mount::MOVE_RESULT StepGuider::MoveOffset(GuiderOffset *ofs, unsigned int moveOp
                 long now = ::wxGetUTCTime();
                 if (now - m_bumpStartTime > BumpWarnTime)
                 {
-                    pFrame->SuppressableAlert(SlowBumpWarningEnabledKey(),
+                    pFrame->SuppressibleAlert(SlowBumpWarningEnabledKey(),
                                               _("A mount \"bump\" was needed to bring the AO back to its center position,\n"
                                                 "but the bump did not complete in a reasonable amount of time.\n"
                                                 "You probably need to increase the AO Bump Step setting."),
