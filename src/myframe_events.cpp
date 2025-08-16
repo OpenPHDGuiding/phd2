@@ -438,7 +438,7 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
 
     this->subframe = subframe;
     if (!this->subframe.IsEmpty())
-        subframe.Intersect(wxRect(pCamera->FullSize));
+        subframe.Intersect(wxRect(pCamera->FrameSize));
 
     this->save = save;
     this->path = path;
@@ -492,7 +492,7 @@ static void SuppressRawModeWarning(intptr_t)
 
 static void WarnRawImageMode(void)
 {
-    if (pCamera->FullSize != pCamera->DarkFrameSize())
+    if (pCamera->FrameSize != pCamera->DarkFrameSize())
     {
         pFrame->SuppressibleAlert(RawModeWarningKey(),
                                   _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "

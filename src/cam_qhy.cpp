@@ -844,7 +844,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     m_curBin = Binning;
 
     m_maxSize = wxSize(imagew, imageh);
-    FullSize = wxSize(imagew / Binning, imageh / Binning);
+    FrameSize = wxSize(imagew / Binning, imageh / Binning);
 
     delete[] RawBuffer;
     size_t size = GetQHYCCDMemLength(m_camhandle);
@@ -853,7 +853,7 @@ bool Camera_QHY::Connect(const wxString& camId)
     m_devicePixelSize = sqrt(pixelw * pixelh);
 
     m_curGain = -1;
-    m_roi = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight()); // binned coordinates
+    m_roi = wxRect(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight()); // binned coordinates
 
     Debug.Write(wxString::Format("QHY: call SetQHYCCDResolution roi = %d,%d\n", m_roi.width, m_roi.height));
     ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
@@ -937,18 +937,18 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (Binning != m_curBin)
     {
-        FullSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
+        FrameSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
         m_curBin = Binning;
         useSubframe = false; // subframe may be out of bounds now
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
-    wxRect frame = useSubframe ? subframe : wxRect(FullSize);
+    wxRect frame = useSubframe ? subframe : wxRect(FrameSize);
     if (useSubframe)
         img.Clear();
 
@@ -1155,7 +1155,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
         if (bpp == 8)
         {
             const unsigned char *src = RawBuffer + yofs * w;
-            unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
+            unsigned short *dst = img.ImageData + frame.GetTop() * FrameSize.GetWidth() + frame.GetLeft();
             for (int y = 0; y < frame.height; y++)
             {
                 unsigned short *d = dst;
@@ -1163,19 +1163,19 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
                 for (int x = 0; x < frame.width; x++)
                     *d++ = (unsigned short) *src++;
                 src += dxr;
-                dst += FullSize.GetWidth();
+                dst += FrameSize.GetWidth();
             }
         }
         else // bpp == 16
         {
             const unsigned short *src = (const unsigned short *) RawBuffer + yofs * w;
-            unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
+            unsigned short *dst = img.ImageData + frame.GetTop() * FrameSize.GetWidth() + frame.GetLeft();
             for (int y = 0; y < frame.height; y++)
             {
                 src += xofs;
                 memcpy(dst, src, frame.width * sizeof(unsigned short));
                 src += frame.width + dxr;
-                dst += FullSize.GetWidth();
+                dst += FrameSize.GetWidth();
             }
         }
     }

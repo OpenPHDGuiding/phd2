@@ -471,7 +471,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     m_maxSize.x = info.MaxWidth;
     m_maxSize.y = info.MaxHeight;
 
-    FullSize = BinnedFrameSize(Binning);
+    FrameSize = BinnedFrameSize(Binning);
     m_prevBinning = Binning;
 
     ::free(m_buffer);
@@ -559,7 +559,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
         Debug.Write(wxString::Format("ZWO: set color balance WB_R = %d\n", UNIT_BALANCE));
     }
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
@@ -713,12 +713,12 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {
-        FullSize = BinnedFrameSize(Binning);
+        FrameSize = BinnedFrameSize(Binning);
         m_prevBinning = Binning;
         binning_change = true;
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -746,7 +746,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else
     {
-        frame = wxRect(FullSize);
+        frame = wxRect(FrameSize);
     }
 
     long exposureUS = duration * 1000;
@@ -925,7 +925,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
@@ -935,7 +935,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }

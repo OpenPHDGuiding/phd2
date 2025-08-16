@@ -122,7 +122,7 @@ public:
 
     int GuideCameraGain;
     wxString Name; // User-friendly name
-    wxSize FullSize; // Size of current image
+    wxSize FrameSize; // Size of current image
     bool Connected;
     PropDlgType PropertyDialogType;
     bool HasPortNum;
@@ -202,7 +202,7 @@ public:
     void SubtractDark(usImage& img);
     void GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
-    virtual const wxSize& DarkFrameSize() { return FullSize; }
+    virtual const wxSize& DarkFrameSize() { return FrameSize; }
 
     static double GetProfilePixelSize();
 

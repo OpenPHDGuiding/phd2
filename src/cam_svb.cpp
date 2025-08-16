@@ -417,8 +417,8 @@ bool SVBCamera::Connect(const wxString& camId)
     m_maxSize.x = props.MaxWidth;
     m_maxSize.y = props.MaxHeight;
 
-    FullSize.x = m_maxSize.x / Binning;
-    FullSize.y = m_maxSize.y / Binning;
+    FrameSize.x = m_maxSize.x / Binning;
+    FrameSize.y = m_maxSize.y / Binning;
     m_prevBinning = Binning;
 
     ::free(m_buffer);
@@ -498,7 +498,7 @@ bool SVBCamera::Connect(const wxString& camId)
         }
     }
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("SVB: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     SVBSetOutputImageType(m_cameraId, img_type);
@@ -588,13 +588,13 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {
-        FullSize.x = m_maxSize.x / Binning;
-        FullSize.y = m_maxSize.y / Binning;
+        FrameSize.x = m_maxSize.x / Binning;
+        FrameSize.y = m_maxSize.y / Binning;
         m_prevBinning = Binning;
         binning_change = true;
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -622,7 +622,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
     }
     else
     {
-        frame = wxRect(FullSize);
+        frame = wxRect(FrameSize);
     }
 
     SVB_BOOL tmp;
@@ -783,7 +783,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
@@ -793,7 +793,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }

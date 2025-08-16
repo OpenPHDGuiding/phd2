@@ -1775,7 +1775,7 @@ static void get_camera_frame_size(JObj& response, const json_value *params)
 {
     if (pCamera && pCamera->Connected)
     {
-        response << jrpc_result(pCamera->FullSize);
+        response << jrpc_result(pCamera->FrameSize);
     }
     else
         response << jrpc_error(1, "camera not connected");

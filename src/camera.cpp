@@ -217,7 +217,7 @@ GuideCamera::GuideCamera()
     ShutterClosed = false;
     HasSubframes = false;
     HasCooler = false;
-    FullSize = UNDEFINED_FRAME_SIZE;
+    FrameSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
@@ -1343,8 +1343,8 @@ wxString GuideCamera::GetSettingsSummary()
     return wxString::Format("Camera = %s%s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
                             HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
                             HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
-                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FullSize.GetWidth(),
-                            FullSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
+                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FrameSize.GetWidth(),
+                            FrameSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
                             CurrentDefectMap ? "defect map in use" : "no defect map", pixelSizeStr);
 }
 
