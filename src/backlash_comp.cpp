@@ -157,7 +157,7 @@ public:
             blcEvents.erase(blcEvents.begin());
             LogStatus("Oldest BLC event removed");
         }
-        blcEvents.push_back(BLCEvent((when - timeBase), triggerDeflection));
+        blcEvents.push_back(BLCEvent(when - timeBase, triggerDeflection));
         blcIndex = blcEvents.size() - 1;
         windowOpen = true;
     }
