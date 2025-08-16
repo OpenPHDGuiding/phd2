@@ -43,7 +43,7 @@ CameraINovaPLC::CameraINovaPLC()
 {
     Connected = FALSE;
     Name = _T("i-Nova PLC-M");
-    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    FrameSize = wxSize(1280, 1024); // Current size of a full frame
     m_hasGuideOutput = true; // Do we have an ST4 port?
     HasGainControl = true; // Can we adjust gain?
 }
@@ -125,11 +125,11 @@ bool CameraINovaPLC::Disconnect()
 
 bool CameraINovaPLC::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
     DS_CAMERA_STATUS rval;
     int ntries = 1;
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

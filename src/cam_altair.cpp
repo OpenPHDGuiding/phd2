@@ -383,8 +383,8 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         height *= 0.8;
     }
 
-    FullSize.x = width;
-    FullSize.y = height;
+    FrameSize.x = width;
+    FrameSize.y = height;
 
     float xSize, ySize;
     m_devicePixelSize = 3.75; // for all cameras so far....
@@ -435,7 +435,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
 
     m_sdk.put_AutoExpoEnable(m_handle, 0);
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
 
     Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
@@ -536,14 +536,14 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 
 bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
     wxRect frame;
-    frame = wxRect(FullSize);
+    frame = wxRect(FrameSize);
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;

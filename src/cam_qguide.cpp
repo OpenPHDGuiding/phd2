@@ -62,7 +62,7 @@ CameraQGuider::CameraQGuider()
 {
     Connected = false;
     Name = _T("Q-Guider");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
 }
@@ -156,7 +156,7 @@ bool CameraQGuider::Capture(int duration, usImage& img, int options, const wxRec
         while (isExposing())
             wxMilliSleep(10);
     */
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

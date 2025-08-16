@@ -43,7 +43,7 @@ CameraStarShootDSCI::CameraStarShootDSCI()
 {
     Connected = false;
     Name = _T("StarShoot DSCI");
-    FullSize = wxSize(782, 582); // This is *after* squaring
+    FrameSize = wxSize(782, 582); // This is *after* squaring
     HasGainControl = true;
 
     RawX = 752; // Also re-set in connect routine

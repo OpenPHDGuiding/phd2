@@ -675,8 +675,8 @@ bool MoravianCamera::Connect(const wxString& camId)
 
     m_maxSize = m_cam.ChipSize();
 
-    FullSize.x = m_maxSize.x / Binning;
-    FullSize.y = m_maxSize.y / Binning;
+    FrameSize.x = m_maxSize.x / Binning;
+    FrameSize.y = m_maxSize.y / Binning;
     m_curBinning = Binning;
 
     if (!m_cam.SetBinning(Binning))
@@ -805,12 +805,12 @@ bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRe
             return true;
         }
         Debug.Write(wxString::Format("MVN: SetBinning(%u): ok\n", Binning));
-        FullSize.x = m_maxSize.x / Binning;
-        FullSize.y = m_maxSize.y / Binning;
+        FrameSize.x = m_maxSize.x / Binning;
+        FrameSize.y = m_maxSize.y / Binning;
         m_curBinning = Binning;
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -833,7 +833,7 @@ bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRe
     }
     else
     {
-        frame = wxRect(FullSize);
+        frame = wxRect(FrameSize);
         if (m_bpp == 8)
         {
             buf = m_buffer;
@@ -884,7 +884,7 @@ bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRe
             const unsigned char *src = (const unsigned char *) buf;
             for (int y = 0; y < subframe.height; y++)
             {
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
@@ -894,7 +894,7 @@ bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRe
             const unsigned short *src = (const unsigned short *) buf;
             for (int y = 0; y < subframe.height; y++)
             {
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }

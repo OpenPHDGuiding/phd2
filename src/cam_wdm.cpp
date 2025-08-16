@@ -47,7 +47,7 @@ CameraWDM::CameraWDM()
 {
     Connected = false;
     Name = _T("Windows Camera"); // should get overwritten on connect
-    FullSize = wxSize(640, 480); // should get overwritten on connect
+    FrameSize = wxSize(640, 480); // should get overwritten on connect
     m_deviceNumber = -1; // Which WDM device connected
     m_deviceMode = -1;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
@@ -344,7 +344,7 @@ bool CameraWDM::Connect(const wxString& camId)
 
         // RAW YUY2 format encodes two 8-bit greyscale pixels per pseudo-YUY2 value
         // so the width is twice the video mode's advertised width
-        FullSize = m_rawYUY2 ? wxSize(modeInfo.XRes * 2, modeInfo.YRes) : wxSize(modeInfo.XRes, modeInfo.YRes);
+        FrameSize = m_rawYUY2 ? wxSize(modeInfo.XRes * 2, modeInfo.YRes) : wxSize(modeInfo.XRes, modeInfo.YRes);
 
         // Start the stream
         m_captureMode = NOT_CAPTURING; // Make sure we don't start saving yet
@@ -411,7 +411,7 @@ bool CameraWDM::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
     {
         assert(captureMode == CAPTURE_ONE_FRAME || captureMode == CAPTURE_STACK_FRAMES);
 
-        if (img.Init(FullSize))
+        if (img.Init(FrameSize))
         {
             DisconnectWithAlert(CAPT_FAIL_MEMORY);
             throw ERROR_INFO("img.Init() failed");

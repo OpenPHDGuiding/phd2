@@ -106,7 +106,7 @@ bool CameraSBIGRotator::Connect(const wxString& camId)
         bError = m_pSubcamera->Connect(camId);
         Connected = m_pSubcamera->Connected;
 
-        FullSize = m_pSubcamera->FullSize;
+        FrameSize = m_pSubcamera->FrameSize;
         m_hasGuideOutput = m_pSubcamera->ST4HasGuideOutput();
     }
     catch (const wxString& Msg)
