@@ -64,7 +64,7 @@ static const double DefaultSignalVariancePerKer = 20.0; // signal variance of th
 static const double DefaultLengthScaleSE1Ker = 25.0; // length-scale of the short-range SE-kernel
 static const double DefaultSignalVarianceSE1Ker = 10.0; // signal variance of the short range SE-kernel
 
-static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengts for PL estimation
+static const double DefaultPeriodLengthsForPeriodEstimation = 2.0; // minimal number of period lengths for PL estimation
 static const int DefaultNumPointsForApproximation = 100; // number of points used in the GP approximation
 static const double DefaultPredictionGain = 0.5; // amount of GP prediction to blend in
 
@@ -1125,7 +1125,7 @@ static double GetRAGuideRate(const Mount *mount)
     if (calDetails.raGuideSpeed != -1.0)
     {
         // raGuideSpeed is stored in a-s per hour.
-        // We want to normalize relative to the sideral 15 a-s per second.
+        // We want to normalize relative to the sidereal 15 a-s per second.
         guide_speed = 3600.0 * calDetails.raGuideSpeed / 15.0; // normalize!
     }
 

@@ -198,7 +198,7 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
     m_framesToDiscard = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
                                              wxSP_ARROW_KEYS, 0, AltairCamera::MAX_DISCARD_FRAMES, 0);
     m_framesToDiscard->SetToolTip(
-        _("Discard this many frames whan capturing starts. "
+        _("Discard this many frames when capturing starts. "
           "Useful for preventing initial under-exposed frames interfering with automatic star selection."));
     sizer2->Add(m_framesToDiscard, 0, wxALL, 5);
     sbSizer3->Add(sizer2);
@@ -277,7 +277,7 @@ static unsigned int Enum(const SDKLib& sdk, AltaircamDeviceV2 inst[ALTAIRCAM_MAX
         s_model[i].flag = s_inst1[i].model->flag;
         s_model[i].maxspeed = s_inst1[i].model->maxspeed;
         s_model[i].preview = s_inst1[i].model->preview;
-        s_model[i].still = 0; // unknwown
+        s_model[i].still = 0; // unknown
         s_model[i].maxfanspeed = 0; // unknown
         s_model[i].ioctrol = 0;
         s_model[i].xpixsz = 0.f;
@@ -412,7 +412,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
 
 # if 0
-    // TODO: this is the initiailization code copied from cam_touptek.cpp
+    // TODO: this is the initialization code copied from cam_touptek.cpp
     // I was hoping this one of these might help with the problem of the first
     // frame exposure being very low, but it had no effect. Leaving these
     // disabled for now rather than risk introducing a change that is
