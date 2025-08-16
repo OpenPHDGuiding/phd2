@@ -191,7 +191,7 @@ void ScopeASCOM::SetupDialog()
         }
     }
 
-    // We may need to de-register from the GIT to reduce the likelhood of getting into a
+    // We may need to de-register from the GIT to reduce the likelihood of getting into a
     // state where the user has killed the ASCOM local server instance and PHD2 is
     // holding a reference to the defunct driver instance in the global interface
     // table
@@ -692,7 +692,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
             if (!WorkerThread::InterruptRequested())
             {
-                pFrame->SuppressableAlert(PulseGuideFailedAlertEnabledKey(),
+                pFrame->SuppressibleAlert(PulseGuideFailedAlertEnabledKey(),
                                           _("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
                                           SuppressPulseGuideFailedAlert, 0);
             }
@@ -701,7 +701,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
     if (result == MOVE_ERROR_SLEWING)
     {
-        pFrame->SuppressableAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."), SuppressSlewAlert,
+        pFrame->SuppressibleAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."), SuppressSlewAlert,
                                   0);
     }
 

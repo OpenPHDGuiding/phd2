@@ -421,7 +421,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     {
         Debug.Write(wxString::Format("ASIInitCamera ret %d\n", r));
         ASICloseCamera(selected);
-        return CamConnectFailed(_("Failed to initizlize ZWO ASI Camera."));
+        return CamConnectFailed(_("Failed to initialize ZWO ASI Camera."));
     }
 
     Debug.Write(wxString::Format("ZWO: using mode BPP = %u\n", (unsigned int) m_bpp));

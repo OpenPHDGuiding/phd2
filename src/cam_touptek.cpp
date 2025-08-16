@@ -617,7 +617,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
             case TOUPCAM_EVENT_ERROR:
             case TOUPCAM_EVENT_TRIGGERFAIL:
             default:
-                err = _("Capture failed: the camera repoted an error");
+                err = _("Capture failed: the camera reported an error");
                 break;
             }
             DisconnectWithAlert(err, RECONNECT);

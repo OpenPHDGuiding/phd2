@@ -418,7 +418,7 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     {
         Debug.Write(wxString::Format("POAInitCamera ret %d\n", r));
         POACloseCamera(selected);
-        return CamConnectFailed(_("Failed to initizlize Player One Camera."));
+        return CamConnectFailed(_("Failed to initialize Player One Camera."));
     }
 
     Debug.Write(wxString::Format("Player One: using mode BPP = %u\n", (unsigned int) m_bpp));

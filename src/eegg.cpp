@@ -170,7 +170,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
                 if (pPointingSource->CanReportPosition() && pPointingSource->SideOfPier() != PIER_SIDE_UNKNOWN &&
                     lastCal.pierSide != PIER_SIDE_UNKNOWN)
                 {
-                    pFrame->SuppressableAlert(
+                    pFrame->SuppressibleAlert(
                         FlipCalEnabledKey(),
                         _("This is unnecessary because PHD2 has pointing info from the mount.  If you are seeing run-away Dec "
                           "guiding "
