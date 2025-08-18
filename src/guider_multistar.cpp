@@ -239,7 +239,7 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     if (!val)
         m_stabilizing = false;
     pConfig->Profile.SetBoolean("/guider/multistar/enabled", m_multiStarMode);
-    wxString msg = wxString::Format("MultiStar mode %s", (val ? "enabled" : "disabled"));
+    wxString msg = wxString::Format("MultiStar mode %s", val ? "enabled" : "disabled");
     if (autoFindForced)
         msg += ", AutoFind forced\n";
     else
@@ -904,7 +904,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         refined = true;
                     }
                     Debug.Write(wxString::Format("%s, %d included, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n",
-                                                 (refined ? "refined" : "single-star"), validStars, sumX, sumY,
+                                                 refined ? "refined" : "single-star", validStars, sumX, sumY,
                                                  origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
                 }
             }
