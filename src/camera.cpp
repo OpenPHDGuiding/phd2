@@ -655,6 +655,12 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
     return pReturn;
 }
 
+bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
+{
+    bool err = camera->Connect(cameraId);
+    return err;
+}
+
 bool GuideCamera::HandleSelectCameraButtonClick(wxCommandEvent&)
 {
     return false; // not handled

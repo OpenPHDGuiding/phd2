@@ -163,7 +163,9 @@ public:
     static const wxString DEFAULT_CAMERA_ID;
     virtual bool EnumCameras(wxArrayString& names, wxArrayString& ids);
 
-    // Opens up and connects to camera. cameraId identifies which camera to connect to if
+    static bool ConnectCamera(GuideCamera *camera, const wxString& cameraId);
+
+    // Opens connection to the camera. cameraId identifies which camera to connect to if
     // there is more than one camera present
     virtual bool Connect(const wxString& cameraId) = 0;
     virtual bool Disconnect() = 0; // Disconnects, unloading any DLLs loaded by Connect
