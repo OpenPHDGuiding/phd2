@@ -57,7 +57,7 @@ enum CaptureMode
 
 class PlayerOneCamera : public GuideCamera
 {
-    wxRect m_maxSize;
+    wxSize m_maxSize;
     wxRect m_frame;
     unsigned short m_prevBinning;
     void *m_buffer;
