@@ -47,7 +47,7 @@ CameraVFW::CameraVFW()
 {
     Connected = false;
     Name = _T("Windows VFW");
-    FullSize = wxSize(640, 480); // should be overwritten
+    FrameSize = wxSize(640, 480); // should be overwritten
     VFW_Window = NULL;
     Extra_Window = NULL;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
@@ -110,14 +110,14 @@ bool CameraVFW::Connect(const wxString& camId)
         //      int w,h,bpp;
         //      FOURCC fourcc;
         //      VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
-        //      FullSize = wxSize(w,h);
+        //      FrameSize = wxSize(w,h);
     }
 
     int w, h, bpp;
     FOURCC fourcc;
     capwin->GetVideoFormat(&w, &h, &bpp, &fourcc);
     //  capwin->SetVideoFormat(640,480,-1,-1);
-    FullSize = wxSize(w, h);
+    FrameSize = wxSize(w, h);
     pFrame->StatusMsg(wxString::Format("%d x %d mode activated", w, h));
     Connected = true;
     return false;
@@ -139,8 +139,8 @@ bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& s
 {
     int xsize, ysize;
     int NFrames = 0;
-    xsize = FullSize.GetWidth();
-    ysize = FullSize.GetHeight();
+    xsize = FrameSize.GetWidth();
+    ysize = FrameSize.GetHeight();
     unsigned short *dptr;
     unsigned char *imgdata;
     bool still_going = true;
@@ -149,7 +149,7 @@ bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& s
     wxStopWatch swatch;
 
     // gNumFrames = 0;
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -186,7 +186,7 @@ void CameraVFW::ShowPropertyDialog()
             int w,h,bpp;
             FOURCC fourcc;
             VFW_Window->GetVideoFormat( &w,&h, &bpp, &fourcc );
-            FullSize = wxSize(w,h);
+            FrameSize = wxSize(w,h);
         }*/
     //  else {
     if (VFW_Window->HasVideoSourceDialog())

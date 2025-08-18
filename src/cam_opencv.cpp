@@ -46,7 +46,7 @@ CameraOpenCV::CameraOpenCV(int devNumber)
 {
     Connected = false;
     Name = _T("OpenCV");
-    FullSize = wxSize(640, 480);
+    FrameSize = wxSize(640, 480);
     m_hasGuideOutput = false;
     pCapDev = NULL;
     DeviceNum = devNumber;

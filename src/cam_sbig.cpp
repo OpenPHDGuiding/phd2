@@ -99,7 +99,7 @@ CameraSBIG::CameraSBIG() : m_driverLoaded(false)
 {
     Connected = false;
     Name = _T("SBIG");
-    // FullSize = wxSize(1280,1024);
+    // FrameSize = wxSize(1280,1024);
     // HasGainControl = true;
     m_hasGuideOutput = true;
     m_useTrackingCCD = false;
@@ -398,7 +398,7 @@ bool CameraSBIG::Connect(const wxString& camId)
     if (Binning > MaxBinning)
         Binning = MaxBinning;
 
-    FullSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[Binning - 1];
 
     IsColor = false;
 
@@ -461,10 +461,10 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 {
     bool TakeSubframe = UseSubframes;
 
-    FullSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[Binning - 1];
 
-    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FullSize.GetWidth() ||
-        subframe.GetBottom() >= FullSize.GetHeight())
+    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FrameSize.GetWidth() ||
+        subframe.GetBottom() >= FrameSize.GetHeight())
     {
         TakeSubframe = false;
     }
@@ -508,12 +508,12 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         sep.top = 0;
         sep.left = 0;
-        sep.width = (unsigned short) FullSize.GetWidth();
-        sep.height = (unsigned short) FullSize.GetHeight();
+        sep.width = (unsigned short) FrameSize.GetWidth();
+        sep.height = (unsigned short) FrameSize.GetHeight();
     }
 
     // init memory
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -593,7 +593,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
         for (int y = 0; y < subframe.height; y++)
         {
-            unsigned short *dataptr = img.ImageData + subframe.x + (y + subframe.y) * FullSize.GetWidth();
+            unsigned short *dataptr = img.ImageData + subframe.x + (y + subframe.y) * FrameSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR)
             {
@@ -605,12 +605,12 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
     else
     {
         rlp.pixelStart = 0;
-        rlp.pixelLength = (unsigned short) FullSize.GetWidth();
+        rlp.pixelLength = (unsigned short) FrameSize.GetWidth();
         unsigned short *dataptr = img.ImageData;
-        for (int y = 0; y < FullSize.GetHeight(); y++)
+        for (int y = 0; y < FrameSize.GetHeight(); y++)
         {
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
-            dataptr += FullSize.GetWidth();
+            dataptr += FrameSize.GetWidth();
             if (err != CE_NO_ERROR)
             {
                 DisconnectWithAlert(_("Error downloading data"), NO_RECONNECT);

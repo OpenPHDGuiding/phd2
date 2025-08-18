@@ -71,7 +71,7 @@ CameraOpenSSAG::CameraOpenSSAG()
 {
     Connected = false;
     Name = _T("StarShoot Autoguider (OpenSSAG)");
-    FullSize = wxSize(1280, 1024); // Current size of a full frame
+    FrameSize = wxSize(1280, 1024); // Current size of a full frame
     m_hasGuideOutput = true; // Do we have an ST4 port?
     HasGainControl = true; // Can we adjust gain?
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
@@ -170,7 +170,7 @@ bool CameraOpenSSAG::Disconnect()
 
 bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

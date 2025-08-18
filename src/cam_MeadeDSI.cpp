@@ -70,7 +70,7 @@ public:
 CameraDSI::CameraDSI() : MeadeCam(0)
 {
     Name = _T("Meade DSI");
-    FullSize = wxSize(768, 505); // CURRENTLY ULTRA-RAW
+    FrameSize = wxSize(768, 505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
 
@@ -133,14 +133,14 @@ bool CameraDSI::Connect(const wxString& camId)
     //      MeadeCam->IsColor,MeadeCam->GetWidth(),MeadeCam->GetHeight()));
     if (!retval)
     {
-        FullSize = wxSize(MeadeCam->GetWidth(), MeadeCam->GetHeight());
+        FrameSize = wxSize(MeadeCam->GetWidth(), MeadeCam->GetHeight());
         //      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-II: %d\n%u x %u",MeadeCam->CcdName,MeadeCam->ModelName,
         //      MeadeCam->ModelNumber,
-        //          MeadeCam->IsColor,MeadeCam->IsDsiII, FullSize.GetWidth(), FullSize.GetHeight()) + "\n" +
+        //          MeadeCam->IsColor,MeadeCam->IsDsiII, FrameSize.GetWidth(), FrameSize.GetHeight()) + "\n" +
         //          MeadeCam->ErrorMessage);
         //      wxMessageBox(wxString::Format("%s\n%s (%d)\nColor: %d\n-USB2: %d\n%u x
         //      %u",MeadeCam->CcdName,MeadeCam->ModelName, MeadeCam->ModelNumber,
-        //                                    MeadeCam->IsColor,MeadeCam->IsUSB2, FullSize.GetWidth(), FullSize.GetHeight()) +
+        //                                    MeadeCam->IsColor,MeadeCam->IsUSB2, FrameSize.GetWidth(), FrameSize.GetHeight()) +
         //                                    "\n" + MeadeCam->ErrorMessage);
         MeadeCam->Initialize();
         MeadeCam->SetHighGain(true);

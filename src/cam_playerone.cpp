@@ -462,7 +462,7 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     m_maxSize.x = info.maxWidth;
     m_maxSize.y = info.maxHeight;
 
-    FullSize = BinnedFrameSize(Binning);
+    FrameSize = BinnedFrameSize(Binning);
     m_prevBinning = Binning;
 
     ::free(m_buffer);
@@ -554,7 +554,7 @@ bool PlayerOneCamera::Connect(const wxString& camId)
         Debug.Write(wxString::Format("Player One: set color balance WB_R = %d\n", UNIT_BALANCE));
     }
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("Player One: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     POASetImageBin(m_cameraId, Binning);
@@ -711,12 +711,12 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {
-        FullSize = BinnedFrameSize(Binning);
+        FrameSize = BinnedFrameSize(Binning);
         m_prevBinning = Binning;
         binning_change = true;
     }
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -744,7 +744,7 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
     }
     else
     {
-        frame = wxRect(FullSize);
+        frame = wxRect(FrameSize);
     }
 
     long exposureUS = duration * 1000;
@@ -927,7 +927,7 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
@@ -937,7 +937,7 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
