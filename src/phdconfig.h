@@ -85,12 +85,14 @@ public:
     double GetDouble(const wxString& name, double defaultValue);
     long GetLong(const wxString& name, long defaultValue);
     int GetInt(const wxString& name, int defaultValue);
+    wxRect GetRect(const wxString& name);
 
     void SetBoolean(const wxString& name, bool value);
     void SetString(const wxString& name, const wxString& value);
     void SetDouble(const wxString& name, double value);
     void SetLong(const wxString& name, long value);
     void SetInt(const wxString& name, int value);
+    void SetRect(const wxString& name, const wxRect& value);
 
     bool HasEntry(const wxString& name) const;
 
