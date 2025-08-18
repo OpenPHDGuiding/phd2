@@ -499,16 +499,6 @@ bool AltairCamera::Disconnect()
     return false;
 }
 
-inline static int round_down(int v, int m)
-{
-    return v & ~(m - 1);
-}
-
-inline static int round_up(int v, int m)
-{
-    return round_down(v + m - 1, m);
-}
-
 void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 {
     if (event == ALTAIRCAM_EVENT_IMAGE)
