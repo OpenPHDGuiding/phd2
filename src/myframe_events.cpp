@@ -494,7 +494,7 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FullSize != pCamera->DarkFrameSize())
     {
-        pFrame->SuppressableAlert(RawModeWarningKey(),
+        pFrame->SuppressibleAlert(RawModeWarningKey(),
                                   _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "
                                     "different size from ordinary guide frames for this camera."),
                                   SuppressRawModeWarning, 0);
@@ -932,7 +932,7 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     m_mgr.Update();
 }
 
-// Redock windows and restore main window to size/position where everything should be readily accessible
+// Re-dock windows and restore main window to size/position where everything should be readily accessible
 void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 {
     wxAuiPaneInfoArray& panes = m_mgr.GetAllPanes();
@@ -1009,7 +1009,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     }
     else
     {
-        // Cancel event may require non-trivial undos
+        // Cancel event may require non-trivial undo actions
         Debug.Write("User exited setup dialog with 'cancel'\n");
         pAdvancedDialog->Undo();
     }
@@ -1031,7 +1031,7 @@ static void ValidateDarksLoaded(void)
 {
     if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
     {
-        pFrame->SuppressableAlert(DarksWarningEnabledKey(),
+        pFrame->SuppressibleAlert(DarksWarningEnabledKey(),
                                   _("For best results, use a Dark Library or a Bad-pixel Map "
                                     "while guiding. This will help prevent PHD from locking on to a hot pixel. "
                                     "Use the Darks menu to build a Dark Library or Bad-pixel Map."),

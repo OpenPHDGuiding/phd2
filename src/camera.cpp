@@ -405,7 +405,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         {
         }
 
-        // Chack ASCOM and INDI first since those choices may match match other choices below (like Simulator)
+        // Check ASCOM and INDI first since those choices may match match other choices below (like Simulator)
 #if defined(ASCOM_CAMERA)
         else if (choice.Contains(_T("ASCOM")))
         {
@@ -482,7 +482,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice == _T("MallinCam SkyRaider"))
             pReturn = SkyraiderCameraFactory::MakeSkyraiderCamera();
 #endif
-#if defined(CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
+#if defined(CAM_QHY5) // must come after other QHY 5's since this pattern would match them
         else if (choice.Contains(_T("QHY 5")))
             pReturn = new CameraQHY5();
 #endif

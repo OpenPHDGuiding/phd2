@@ -192,7 +192,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame)
 
     BuildCtrlSets(); // Populates the m_brainCtrls map with all UI controls
 
-    // Pane contruction now pulls controls from the map and places them where they make sense to a user
+    // Pane construction now pulls controls from the map and places them where they make sense to a user
     // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
     m_pGlobalPane->LayoutControls(m_brainCtrls);

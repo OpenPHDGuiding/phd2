@@ -498,9 +498,9 @@ void MyFrame::SetupMenuBar()
                        _("Automatically determine the correct meridian flip settings"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"),
-                       _("Align by analysing star drift near the celestial equator (Accurate)"));
+                       _("Align by analyzing star drift near the celestial equator (Accurate)"));
     tools_menu->Append(MENU_POLARDRIFTTOOL, _("&Polar Drift Align"),
-                       _("Align by analysing star drift near the celestial pole (Simple)"));
+                       _("Align by analyzing star drift near the celestial pole (Simple)"));
     tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"),
                        _("Align by measuring the RA axis offset from the celestial pole (Fast)"));
     tools_menu->AppendSeparator();
@@ -1326,7 +1326,7 @@ void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& b
 
 // Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is
 // made if the user has blocked the alert for this type of problem
-void MyFrame::SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, intptr_t arg,
+void MyFrame::SuppressibleAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, intptr_t arg,
                                 bool showHelpButton, int flags)
 {
     if (pConfig->Global.GetBoolean(configPropKey, true))
