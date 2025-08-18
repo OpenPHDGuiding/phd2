@@ -2013,6 +2013,50 @@ static void set_variable_delay_settings(JObj& response, const json_value *params
     response << jrpc_result(0);
 }
 
+static void get_limit_frame(JObj& response, const json_value *params)
+{
+    JObj rslt;
+
+    if (!pCamera || !pCamera->HasFrameLimiting || pCamera->LimitFrame.IsEmpty())
+        rslt << NV("roi", NULL_VALUE);
+    else
+        rslt << NV("roi", pCamera->LimitFrame);
+    response << jrpc_result(rslt);
+}
+
+static void set_limit_frame(JObj& response, const json_value *params)
+{
+    Params p("roi", params);
+    const json_value *j = p.param("roi");
+    if (!j)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing required param `roi`");
+        return;
+    }
+    wxRect roi;
+    if (j->type != JSON_NULL && !parse_rect(&roi, j))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid ROI param");
+        return;
+    }
+    if (!pCamera)
+    {
+        response << jrpc_error(1, "no guide camera");
+        return;
+    }
+    if (!pCamera->HasFrameLimiting)
+    {
+        response << jrpc_error(1, "guide camera does not support frame limiting");
+        return;
+    }
+    bool err = pCamera->SetLimitFrame(roi);
+
+    if (err)
+        response << jrpc_error(1, "could not set ROI. See Debug Log for more info.");
+    else
+        response << jrpc_result(0);
+}
+
 static GUIDE_DIRECTION dir_param(const json_value *p)
 {
     if (!p || p->type != JSON_STRING)
@@ -2389,6 +2433,8 @@ static bool handle_request(JRpcCall& call)
         { "export_config_settings", &export_config_settings },
         { "get_variable_delay_settings", &get_variable_delay_settings },
         { "set_variable_delay_settings", &set_variable_delay_settings },
+        { "get_limit_frame", &get_limit_frame },
+        { "set_limit_frame", &set_limit_frame },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
