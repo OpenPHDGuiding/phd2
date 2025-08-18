@@ -400,7 +400,8 @@ void MyFrame::OnButtonLoop(wxCommandEvent& WXUNUSED(event))
 void MyFrame::FinishStop(void)
 {
     assert(!CaptureActive);
-    m_singleExposure.Complete(true);
+    if (m_singleExposure.enabled)
+        m_singleExposure.Complete(true);
     EvtServer.NotifyLoopingStopped();
     // when looping resumes, start with at least one full frame. This enables applications
     // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
@@ -540,7 +541,8 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
                 pGuider->StopGuiding();
                 pGuider->UpdateImageDisplay();
             }
-            m_singleExposure.Complete(false, "camera error -- see debug log");
+            if (m_singleExposure.enabled)
+                m_singleExposure.Complete(false, "camera error -- see debug log");
             EvtServer.NotifyLoopingStopped();
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
