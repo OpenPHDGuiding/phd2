@@ -171,6 +171,26 @@ void ConfigSection::SetInt(const wxString& name, int value)
     SetLong(name, value);
 }
 
+void ConfigSection::SetRect(const wxString& name, const wxRect& value)
+{
+    wxString stringValue = wxString::Format("%d;%d;%d;%d", value.x, value.y, value.width, value.height);
+    SetString(name, stringValue);
+}
+
+wxRect ConfigSection::GetRect(const wxString& name)
+{
+    wxString value = GetString(name, wxEmptyString);
+    wxArrayString fields = wxSplit(value, ';');
+    if (fields.size() == 4)
+    {
+        long x, y, width, height;
+        if (fields[0].ToLong(&x) && fields[1].ToLong(&y) && fields[2].ToLong(&width) && fields[3].ToLong(&height) &&
+            width >= 0 && height >= 0)
+            return wxRect(x, y, width, height);
+    }
+    return wxRect();
+}
+
 bool ConfigSection::HasEntry(const wxString& name) const
 {
     return m_pConfig && m_pConfig->HasEntry(m_prefix + name);
