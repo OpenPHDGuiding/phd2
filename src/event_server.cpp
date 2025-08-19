@@ -232,6 +232,12 @@ struct NV
         ary << s.x << s.y;
         v = ary.str();
     }
+    NV(const wxString& n_, const wxRect& r) : n(n_)
+    {
+        JAry ary;
+        ary << r.x << r.y << r.width << r.height;
+        v = ary.str();
+    }
     NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
