@@ -58,7 +58,7 @@ enum CaptureMode
 
 class Camera_ZWO : public GuideCamera
 {
-    wxRect m_maxSize;
+    wxSize m_maxSize;
     wxRect m_frame;
     unsigned short m_prevBinning;
     void *m_buffer;

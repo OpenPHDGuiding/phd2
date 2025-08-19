@@ -53,7 +53,6 @@ struct SkyraiderCamera : public GuideCamera
     int m_defaultGainPct;
     volatile bool m_frameReady;
     int m_cameraId;
-    wxRect m_maxSize;
     MallincamGuider m_Guider;
 
     SkyraiderCamera();
