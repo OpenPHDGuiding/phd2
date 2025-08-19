@@ -371,20 +371,18 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         Disconnect();
         return CamConnectFailed(_("Failed to get camera resolution for Altair Camera."));
     }
+    wxSize fullFrameSize(width, height);
 
     delete[] m_buffer;
-    m_buffer =
-        new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
+    // new SDK has issues with some ROI functions needing full resolution buffer size
+    m_buffer = new unsigned char[fullFrameSize.x * fullFrameSize.y];
 
     m_reduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    FrameSize = fullFrameSize;
     if (hasROI && m_reduceResolution)
     {
-        width *= 0.8;
-        height *= 0.8;
+        FrameSize.Scale(0.8, 0.8);
     }
-
-    FrameSize.x = width;
-    FrameSize.y = height;
 
     float xSize, ySize;
     m_devicePixelSize = 3.75; // for all cameras so far....
@@ -441,7 +439,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
 
     if (hasROI && m_reduceResolution)
     {
-        m_sdk.put_Roi(m_handle, 0, 0, width, height);
+        m_sdk.put_Roi(m_handle, 0, 0, FrameSize.x, FrameSize.y);
     }
 
     return false;
