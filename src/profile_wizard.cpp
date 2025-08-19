@@ -915,7 +915,7 @@ struct AutoConnectCamera
             else
                 camDeviceId = parent->GetCamDeviceId();
             wxBusyCursor busy;
-            m_camera->Connect(camDeviceId);
+            GuideCamera::ConnectCamera(m_camera, camDeviceId);
             pFrame->ClearAlert();
         }
 
