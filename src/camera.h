@@ -130,6 +130,7 @@ public:
     bool HasGainControl;
     bool HasShutter;
     bool HasSubframes;
+    bool HasFrameLimiting;
     wxByte MaxBinning;
     wxByte Binning;
     short Port;
@@ -137,6 +138,8 @@ public:
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;
+    wxRect LimitFrame; // limit full frames to this region of interest (ROI). An empty rect for no limit.
+    wxByte LimitFrameBinning; // binning value associated with the LimitFrame
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage *CurrentDarkFrame;
@@ -183,6 +186,7 @@ public:
     static void GetBinningOpts(int maxBin, wxArrayString *opts);
     void GetBinningOpts(wxArrayString *opts);
     bool SetBinning(int binning);
+    bool SetLimitFrame(const wxRect& roi);
 
     virtual void ShowPropertyDialog() { return; }
     bool SetCameraPixelSize(double pixel_size);
@@ -215,6 +219,13 @@ public:
     int GetCameraGain() const;
     bool SetCameraGain(int cameraGain);
     virtual int GetDefaultCameraGain();
+
+    // hook method allowing child classes to apply constraints to a requested frame
+    // limit ROI.  For example, some cameras have constraints on the alignment of a ROI,
+    // or a constraint on the number of pixels transferred. The method should return a
+    // ROI as close as possible to the requested ROI but meeting whatever constraints
+    // the camera may have.  The base class implementation just returns requestedRoi.
+    virtual wxRect ConstrainLimitFrame(const wxRect& requestedRoi);
 
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
 
@@ -271,6 +282,11 @@ inline unsigned short GuideCamera::GetSaturationADU() const
 inline int GuideCamera::GetCameraGain() const
 {
     return GuideCameraGain;
+}
+
+inline wxRect GuideCamera::ConstrainLimitFrame(const wxRect& requestedRoi)
+{
+    return requestedRoi;
 }
 
 #endif /* CAMERA_H_INCLUDED */
