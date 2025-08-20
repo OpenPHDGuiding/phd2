@@ -1073,11 +1073,6 @@ if(UNIX AND NOT APPLE)
       message(FATAL_ERROR "unknown system architecture")
     endif()
 
-    find_path(ZWO_INCLUDE_DIR ASICamera2.h
-      NO_DEFAULT_PATHS
-      PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
-    )
-
     # The binary libraries below do not support FreeBSD, ignore them
     # when building for FreeBSD.
     if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
@@ -1130,11 +1125,13 @@ if(UNIX AND NOT APPLE)
       endif()
       message(STATUS "Found SVBCameraSDK lib ${SVBCameraSDK}")
       add_definitions(-DHAVE_SVB_CAMERA=1)
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/include)
       list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
       list(APPEND PHD_INSTALL_LIBS ${SVBCameraSDK})
 
       if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
         add_definitions(-DHAVE_QHY_CAMERA=1)
+        include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/include)
 
         # be careful not to pick up any other qhy lib on the system
         find_library(qhylib
