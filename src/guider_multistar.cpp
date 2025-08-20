@@ -457,7 +457,7 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
             throw ERROR_INFO("No Current Image");
         }
 
-        // If mount is not calibrated, we need to chose a star a bit farther
+        // If mount is not calibrated, we need to choose a star a bit farther
         // from the edge to allow for the motion of the star during
         // calibration
         //
