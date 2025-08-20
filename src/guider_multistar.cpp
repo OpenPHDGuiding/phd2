@@ -155,7 +155,7 @@ public:
         limits[2] = m_highMass * (1. + threshold);
         // when mass is depressed by sky conditions, we still want to trigger a rejection when
         // there is a large spike in mass, even if it is still below the high water mark-based
-        // threhold
+        // threshold
         limits[3] = med * (1. + 2.0 * threshold);
 
         double adjmass = AdjustedMass(mass);
@@ -457,8 +457,8 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
             throw ERROR_INFO("No Current Image");
         }
 
-        // If mount is not calibrated, we need to chose a star a bit farther
-        // from the egde to allow for the motion of the star during
+        // If mount is not calibrated, we need to choose a star a bit farther
+        // from the edge to allow for the motion of the star during
         // calibration
         //
         int edgeAllowance = 0;
