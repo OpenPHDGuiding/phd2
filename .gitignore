@@ -1,3 +1,95 @@
+# Editor and IDE files
 TAGS
+/.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
 /tmp*
-/.vscode
+*.tmp
+*.temp
+
+# Build directories and artifacts
+build/
+build-*/
+Release/
+Debug/
+x64-Debug/
+x64-Release/
+Win32-Debug/
+Win32-Release/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Makefile
+*.cmake
+install_manifest.txt
+
+# Compiled binaries and libraries
+*.exe
+*.bin
+*.dll
+*.so
+*.so.*
+*.a
+*.lib
+*.dylib
+phd2
+phd2.bin
+phd2.exe
+
+# Object files
+*.o
+*.obj
+
+# Generated files
+moc_*.cpp
+*_automoc.cpp
+*autogen/
+unitybuild_*.c*
+
+# Documentation build artifacts
+tmp_build_html/
+tmp_build_translations/
+tmp_gaussian_process/
+PHD2GuideHelp.zip
+doxygen_warnings.txt
+documentation/
+
+# Package files
+*.deb
+*.rpm
+*.dmg
+*.pkg
+*.msi
+
+# Test artifacts
+Testing/
+*.gcov
+*.gcda
+*.gcno
+
+# Platform specific
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.opendb
+_ReSharper.Caches/
+
+# Backup files
+*.orig
+*.bak
+*.backup
+
+# Xmake
+.xmake
