@@ -1,15 +1,18 @@
 # Editor and IDE files
 TAGS
 /.vscode/
+.vscode/settings.json
 .idea/
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # Temporary files
 /tmp*
 *.tmp
 *.temp
+*.log
 
 # Build directories and artifacts
 build/
@@ -20,6 +23,9 @@ x64-Debug/
 x64-Release/
 Win32-Debug/
 Win32-Release/
+tmp/
+tmp_debug/
+.cache/
 
 # CMake generated files
 CMakeCache.txt
@@ -31,6 +37,11 @@ CPackSourceConfig.cmake
 Makefile
 *.cmake
 install_manifest.txt
+compile_commands.json
+
+# Ninja build files
+.ninja_deps
+.ninja_log
 
 # Compiled binaries and libraries
 *.exe
@@ -55,6 +66,54 @@ moc_*.cpp
 *autogen/
 unitybuild_*.c*
 
+# Python-specific files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+htmlcov/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.prof
+
+# Python packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
 # Documentation build artifacts
 tmp_build_html/
 tmp_build_translations/
@@ -62,6 +121,8 @@ tmp_gaussian_process/
 PHD2GuideHelp.zip
 doxygen_warnings.txt
 documentation/
+docs/_build/
+docs/build/
 
 # Package files
 *.deb
@@ -69,12 +130,21 @@ documentation/
 *.dmg
 *.pkg
 *.msi
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
 
 # Test artifacts
 Testing/
 *.gcov
 *.gcda
 *.gcno
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
 
 # Platform specific
 .DS_Store
@@ -84,12 +154,19 @@ Thumbs.db
 *.sdf
 *.opensdf
 *.VC.opendb
+*.lnk
 _ReSharper.Caches/
+Desktop.ini
+$RECYCLE.BIN/
 
 # Backup files
 *.orig
 *.bak
 *.backup
 
-# Xmake
+# Development tools
 .xmake
+node_modules/
+.npm
+.yarn/
+.pnp.*

@@ -1,0 +1,67 @@
+# Simple CMakeLists.txt for EventServer tests
+# This can be integrated into the main PHD2 build system
+
+cmake_minimum_required(VERSION 3.16)
+
+# Only build tests if GTest is available
+if(NOT USE_SYSTEM_GTEST)
+    # Use the same GTest setup as the main project
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/03597a01ee50f33f9142fd2d6828e8e5ab0f0a4a.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+    set(GTEST_LIBRARIES gtest gtest_main)
+else()
+    find_package(GTest REQUIRED)
+    set(GTEST_LIBRARIES ${GTEST_LIBRARIES})
+endif()
+
+# Find wxWidgets (should already be found by main project)
+if(NOT wxWidgets_FOUND)
+    find_package(wxWidgets REQUIRED COMPONENTS core base net)
+    include(${wxWidgets_USE_FILE})
+endif()
+
+# Create simple EventServer test executable
+add_executable(SimpleEventServerTest
+    simple_event_server_test.cpp
+)
+
+# Link libraries
+target_link_libraries(SimpleEventServerTest
+    ${GTEST_LIBRARIES}
+    ${wxWidgets_LIBRARIES}
+    pthread
+)
+
+# Include directories
+target_include_directories(SimpleEventServerTest PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/communication/network
+)
+
+# Compiler definitions
+target_compile_definitions(SimpleEventServerTest PRIVATE
+    -DUNIT_TESTING=1
+)
+
+# Add test to CTest
+add_test(NAME SimpleEventServerTest COMMAND SimpleEventServerTest)
+
+# Set test properties
+set_tests_properties(SimpleEventServerTest
+    PROPERTIES
+        LABELS "EventServer;Unit"
+        TIMEOUT 60
+)
+
+# Set target properties
+set_property(TARGET SimpleEventServerTest PROPERTY FOLDER "Tests")
+
+# Print status
+message(STATUS "Added SimpleEventServerTest to build")

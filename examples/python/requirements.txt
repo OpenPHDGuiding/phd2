@@ -1,0 +1,23 @@
+# PHD2 Python Client Requirements
+#
+# This client uses only Python standard library modules,
+# so no additional packages are required.
+#
+# Minimum Python version: 3.7
+#
+# Standard library modules used:
+# - socket (TCP communication)
+# - json (JSON-RPC protocol)
+# - threading (event handling)
+# - time (timing operations)
+# - logging (diagnostic output)
+# - queue (thread communication)
+# - typing (type hints)
+# - dataclasses (data structures)
+# - enum (enumerations)
+# - contextlib (context managers)
+
+# Optional packages for enhanced functionality:
+# numpy>=1.19.0  # For advanced statistics calculations
+# matplotlib>=3.3.0  # For plotting guide performance
+# pandas>=1.1.0  # For data analysis of guide logs

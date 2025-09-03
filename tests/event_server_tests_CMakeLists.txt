@@ -1,0 +1,276 @@
+# CMakeLists.txt for PHD2 EventServer Tests
+# Comprehensive test suite for the EventServer module
+
+cmake_minimum_required(VERSION 3.16)
+project(PHD2_EventServer_Tests)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Find required packages
+find_package(PkgConfig REQUIRED)
+
+# Find Google Test
+find_package(GTest REQUIRED)
+
+# Try to find GMock, but make it optional
+find_library(GMOCK_LIBRARY gmock PATHS /opt/conda/lib)
+find_library(GMOCK_MAIN_LIBRARY gmock_main PATHS /opt/conda/lib)
+find_path(GMOCK_INCLUDE_DIR gmock/gmock.h PATHS /opt/conda/include)
+
+if(GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY AND GMOCK_INCLUDE_DIR)
+    set(GMOCK_FOUND TRUE)
+    set(GMOCK_LIBRARIES ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY})
+    set(GMOCK_INCLUDE_DIRS ${GMOCK_INCLUDE_DIR})
+    message(STATUS "Found GMock: ${GMOCK_LIBRARY}")
+else()
+    set(GMOCK_FOUND FALSE)
+    message(WARNING "GMock not found, some advanced mocking features will be disabled")
+endif()
+
+# Find wxWidgets
+find_package(wxWidgets REQUIRED COMPONENTS core base net)
+include(${wxWidgets_USE_FILE})
+
+# Find threads (required for socket operations)
+find_package(Threads REQUIRED)
+
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/core)
+include_directories(${CMAKE_SOURCE_DIR}/src/communication/network)
+include_directories(${CMAKE_SOURCE_DIR}/src/utilities)
+include_directories(${CMAKE_SOURCE_DIR}/thirdparty)
+include_directories(${GTEST_INCLUDE_DIRS})
+if(GMOCK_FOUND)
+    include_directories(${GMOCK_INCLUDE_DIRS})
+endif()
+
+# Compiler definitions for testing
+add_definitions(-DUNIT_TESTING=1)
+add_definitions(-DTESTING_EVENT_SERVER=1)
+
+# Source files for the event server (excluding main PHD2 dependencies)
+set(EVENT_SERVER_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/communication/network/json_parser.cpp
+    # Note: event_server.cpp would need to be modified to be testable
+    # or we need to create a testable wrapper
+)
+
+# Mock implementation sources
+set(MOCK_SOURCES
+    event_server_mocks.cpp
+    mock_phd_components.cpp
+)
+
+# Test source files
+set(TEST_SOURCES
+    event_server_tests.cpp
+    event_server_integration_tests.cpp
+    event_server_performance_tests.cpp
+)
+
+# Create mock implementations library
+add_library(event_server_mocks STATIC ${MOCK_SOURCES})
+target_link_libraries(event_server_mocks
+    ${wxWidgets_LIBRARIES}
+)
+if(GMOCK_FOUND)
+    target_link_libraries(event_server_mocks ${GMOCK_LIBRARIES})
+endif()
+
+# Create the main test executable
+add_executable(event_server_tests
+    ${TEST_SOURCES}
+    ${EVENT_SERVER_SOURCES}
+)
+
+# Link libraries
+target_link_libraries(event_server_tests
+    event_server_mocks
+    ${GTEST_LIBRARIES}
+    ${wxWidgets_LIBRARIES}
+    Threads::Threads
+    pthread
+)
+if(GMOCK_FOUND)
+    target_link_libraries(event_server_tests ${GMOCK_LIBRARIES})
+endif()
+
+# Compiler flags for testing
+target_compile_definitions(event_server_tests PRIVATE
+    -DUNIT_TESTING=1
+    -DTESTING_EVENT_SERVER=1
+    -DwxUSE_SOCKETS=1
+)
+
+# Enable testing
+enable_testing()
+
+# Add individual test suites
+add_test(NAME EventServerCoreTests 
+         COMMAND event_server_tests --gtest_filter="EventServerTest.*")
+
+add_test(NAME EventServerIntegrationTests 
+         COMMAND event_server_tests --gtest_filter="EventServerIntegrationTest.*")
+
+add_test(NAME EventServerPerformanceTests 
+         COMMAND event_server_tests --gtest_filter="EventServerPerformanceTest.*")
+
+add_test(NAME EventServerApiTests 
+         COMMAND event_server_tests --gtest_filter="EventServerApiTest.*")
+
+add_test(NAME EventServerErrorHandlingTests 
+         COMMAND event_server_tests --gtest_filter="EventServerErrorTest.*")
+
+# Custom targets for running specific test suites
+add_custom_target(run_event_server_core_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "EventServerCoreTests"
+    DEPENDS event_server_tests
+    COMMENT "Running EventServer core functionality tests"
+)
+
+add_custom_target(run_event_server_integration_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "EventServerIntegrationTests"
+    DEPENDS event_server_tests
+    COMMENT "Running EventServer integration tests"
+)
+
+add_custom_target(run_event_server_performance_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "EventServerPerformanceTests"
+    DEPENDS event_server_tests
+    COMMENT "Running EventServer performance tests"
+)
+
+add_custom_target(run_all_event_server_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --verbose
+    DEPENDS event_server_tests
+    COMMENT "Running all EventServer tests"
+)
+
+# Test discovery for CTest
+include(GoogleTest)
+gtest_discover_tests(event_server_tests)
+
+# Coverage target (if coverage tools are available)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_program(GCOV_PATH gcov)
+    find_program(LCOV_PATH lcov)
+    find_program(GENHTML_PATH genhtml)
+    
+    if(GCOV_PATH AND LCOV_PATH AND GENHTML_PATH)
+        target_compile_options(event_server_tests PRIVATE --coverage)
+        target_link_libraries(event_server_tests --coverage)
+        
+        add_custom_target(event_server_coverage
+            COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
+            COMMAND ${LCOV_PATH} --remove coverage.info '/usr/*' --output-file coverage.info
+            COMMAND ${LCOV_PATH} --list coverage.info
+            COMMAND ${GENHTML_PATH} -o coverage coverage.info
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating code coverage report for EventServer tests"
+        )
+    endif()
+endif()
+
+# Memory leak detection (if valgrind is available)
+find_program(VALGRIND_PATH valgrind)
+if(VALGRIND_PATH)
+    add_custom_target(event_server_memcheck
+        COMMAND ${VALGRIND_PATH} --tool=memcheck --leak-check=full --show-leak-kinds=all 
+                --track-origins=yes --verbose --log-file=valgrind-out.txt 
+                $<TARGET_FILE:event_server_tests>
+        DEPENDS event_server_tests
+        COMMENT "Running EventServer tests with Valgrind memory checking"
+    )
+endif()
+
+# Thread sanitizer target (if supported)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_executable(event_server_tests_tsan
+        ${TEST_SOURCES}
+        ${EVENT_SERVER_SOURCES}
+    )
+    
+    target_link_libraries(event_server_tests_tsan
+        event_server_mocks
+        ${GTEST_LIBRARIES}
+        ${GMOCK_LIBRARIES}
+        ${wxWidgets_LIBRARIES}
+        Threads::Threads
+        pthread
+    )
+    
+    target_compile_options(event_server_tests_tsan PRIVATE -fsanitize=thread -g)
+    target_link_options(event_server_tests_tsan PRIVATE -fsanitize=thread)
+    
+    add_test(NAME EventServerThreadSanitizerTests 
+             COMMAND event_server_tests_tsan)
+endif()
+
+# Address sanitizer target (if supported)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_executable(event_server_tests_asan
+        ${TEST_SOURCES}
+        ${EVENT_SERVER_SOURCES}
+    )
+    
+    target_link_libraries(event_server_tests_asan
+        event_server_mocks
+        ${GTEST_LIBRARIES}
+        ${GMOCK_LIBRARIES}
+        ${wxWidgets_LIBRARIES}
+        Threads::Threads
+        pthread
+    )
+    
+    target_compile_options(event_server_tests_asan PRIVATE -fsanitize=address -g)
+    target_link_options(event_server_tests_asan PRIVATE -fsanitize=address)
+    
+    add_test(NAME EventServerAddressSanitizerTests 
+             COMMAND event_server_tests_asan)
+endif()
+
+# Documentation target (if Doxygen is available)
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in 
+                   ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    
+    add_custom_target(event_server_tests_doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating EventServer tests documentation with Doxygen"
+        VERBATIM
+    )
+endif()
+
+# Install targets (for packaging tests)
+install(TARGETS event_server_tests
+        RUNTIME DESTINATION bin/tests
+        COMPONENT tests)
+
+install(FILES event_server_mocks.h
+        DESTINATION include/tests
+        COMPONENT tests)
+
+# CPack configuration for test packaging
+set(CPACK_COMPONENT_TESTS_DISPLAY_NAME "EventServer Tests")
+set(CPACK_COMPONENT_TESTS_DESCRIPTION "Unit and integration tests for PHD2 EventServer")
+
+# Print configuration summary
+message(STATUS "EventServer Tests Configuration:")
+message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "  GTest Found: ${GTEST_FOUND}")
+message(STATUS "  GMock Found: ${GMOCK_FOUND}")
+message(STATUS "  wxWidgets Found: ${wxWidgets_FOUND}")
+message(STATUS "  Threads Found: ${Threads_FOUND}")
+if(VALGRIND_PATH)
+    message(STATUS "  Valgrind: ${VALGRIND_PATH}")
+endif()
+if(GCOV_PATH AND LCOV_PATH AND GENHTML_PATH)
+    message(STATUS "  Coverage Tools: Available")
+endif()
