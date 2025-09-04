@@ -5,10 +5,11 @@ set -e
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+TESTS_DIR="$(dirname "$SCRIPT_DIR")"
+CPP_TESTS_DIR="$TESTS_DIR/cpp"
 
 # Default values
-BUILD_DIR="build"
+BUILD_DIR="$CPP_TESTS_DIR/build"
 RUN_UNIT_TESTS=true
 RUN_INTEGRATION_TESTS=true
 VERBOSE=false

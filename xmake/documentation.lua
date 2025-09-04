@@ -17,8 +17,8 @@ local default_locale = "en_EN"
 local html_build_folder = "tmp_build_html"
 local translation_build_folder = "tmp_build_translations"
 
--- Function to find required tools
-function find_documentation_tools()
+-- Function to find required tools (global scope)
+find_documentation_tools = function()
     local tools = {}
 
     -- Find zip command for packaging
@@ -67,8 +67,8 @@ function find_documentation_tools()
     return tools
 end
 
--- Function to parse .hhp file and extract HTML file list
-function parse_hhp_file(hhp_path, base_folder)
+-- Function to parse .hhp file and extract HTML file list (global scope)
+parse_hhp_file = function(hhp_path, base_folder)
     if not os.isfile(hhp_path) then
         return {}
     end
@@ -104,8 +104,8 @@ function parse_hhp_file(hhp_path, base_folder)
     return files
 end
 
--- Function to generate .hhk index file
-function generate_hhk_file(html_files, output_file)
+-- Function to generate .hhk index file (global scope)
+generate_hhk_file = function(html_files, output_file)
     local hhk_content = [[<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
@@ -362,5 +362,8 @@ function setup_documentation()
         end
 end
 
--- Call setup function when module is loaded
-setup_documentation()
+-- Call setup function when module is loaded (only once)
+if not _DOCUMENTATION_SETUP_DONE then
+    setup_documentation()
+    _DOCUMENTATION_SETUP_DONE = true
+end

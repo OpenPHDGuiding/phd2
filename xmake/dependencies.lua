@@ -240,3 +240,19 @@ function build_indi_target()
         add_defines("LIBNOVA")
         set_group("External")
 end
+
+-- Build libusb target if not using system libusb
+-- Temporarily disabled - using system libusb for now
+-- if not has_config("use_system_libusb") then
+--     build_libusb_target()
+-- end
+
+-- Build OpenSSAG target if not opensource_only
+if not has_config("opensource_only") then
+    build_openssag_target()
+end
+
+-- Build INDI target if not using system libindi
+if not has_config("use_system_libindi") then
+    build_indi_target()
+end
