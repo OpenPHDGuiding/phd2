@@ -70,7 +70,8 @@ FitsFname::FitsFname(const wxString& path, bool create, bool clobber)
         }
 
         int fd = wxOpen(path, O_BINARY | O_WRONLY | O_CREAT, wxS_DEFAULT);
-        wxClose(fd);
+        if (fd != -1)
+            wxClose(fd);
     }
 
     // use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO

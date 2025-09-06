@@ -113,7 +113,7 @@ CameraSSPIAG::CameraSSPIAG()
 {
     Connected = false;
     Name = _T("StarShoot PIAG");
-    FullSize = wxSize(752, 480);
+    FrameSize = wxSize(752, 480);
     m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = NULL;
@@ -358,11 +358,11 @@ bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect
     unsigned char *bptr;
     unsigned short *dptr;
     int x, y;
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
     //  bool firstimg = true;
 
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

@@ -54,7 +54,7 @@ CameraFirewire::CameraFirewire() : m_dcContext(0), camera(0)
     //  HaveBPMap = false;
     //  NBadPixels=-1;
     Name = _T("The Imaging Source Firewire");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     HasGainControl = true;
     m_hasGuideOutput = false;
 }
@@ -110,7 +110,7 @@ bool CameraFirewire::Connect(const wxString& camId)
             CamNames.Add(wxString(current_camera->model));
             dc1394_camera_free(current_camera);
         }
-        CamNum = wxGetSingleChoiceIndex(_T("Select Firewire camera"), ("Camera name"), CamNames);
+        CamNum = wxGetSingleChoiceIndex(_("Select Firewire camera"), _("Camera name"), CamNames);
         if (CamNum == -1)
         {
             dc1394_camera_free_list(cameras);
@@ -212,10 +212,10 @@ bool CameraFirewire::Connect(const wxString& camId)
 
     // Setup my params
     dc1394_get_image_size_from_video_mode(camera, vidmode, &w, &h);
-    FullSize = wxSize((int) w, (int) h);
+    FrameSize = wxSize((int) w, (int) h);
     Name = wxString(camera->model);
 
-    //  wxMessageBox(Name + wxString::Format(" - %d x %d - %ld ms",FullSize.GetWidth(),FullSize.GetHeight(),t1));
+    //  wxMessageBox(Name + wxString::Format(" - %d x %d - %ld ms",FrameSize.GetWidth(),FrameSize.GetHeight(),t1));
     //  dc1394feature_info_t feature;
 
     // set shutter speed mode
@@ -274,8 +274,8 @@ bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRe
     static int programmed_dur = 1000;
     wxStopWatch swatch;
 
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
+    int xsize = FrameSize.GetWidth();
+    int ysize = FrameSize.GetHeight();
 
     if (img.NPixels != (unsigned int) (xsize * ysize))
     {

@@ -79,7 +79,7 @@ struct VarDelayCfg
     int longDelay;
 };
 
-typedef void alert_fn(long);
+typedef void alert_fn(intptr_t);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -112,9 +112,19 @@ struct DitherSpiral
 struct SingleExposure
 {
     bool enabled;
-    int duration;
+    int duration; // exposure duration, millis
     wxRect subframe;
+    bool save;
+    wxString path;
+    wxByte prev_binning;
+    int prev_gain;
+
+    SingleExposure();
+    bool Activate(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path);
+    void Complete(bool succeeded, const wxString& errorMsg = wxEmptyString);
 };
+
+inline SingleExposure::SingleExposure() : enabled(false), duration(0) { }
 
 class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
@@ -411,7 +421,7 @@ public:
 
     void StartCapturing();
     bool StopCapturing();
-    bool StartSingleExposure(int duration, const wxRect& subframe);
+    bool StartSingleExposure(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path);
 
     bool AutoSelectStar(const wxRect& roi = wxRect());
 
@@ -434,9 +444,9 @@ public:
     double GetCameraPixelScale() const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, long arg,
+    void Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, intptr_t arg,
                bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
-    void SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg,
+    void SuppressibleAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, intptr_t arg,
                            bool showHelpButton = false, int flags = wxICON_EXCLAMATION);
     void ClearAlert();
     void StatusMsg(const wxString& text);
@@ -489,7 +499,7 @@ private:
 
     alert_fn *m_alertDontShowFn;
     alert_fn *m_alertSpecialFn;
-    long m_alertFnArg;
+    intptr_t m_alertFnArg;
 
     std::vector<time_t> m_cameraReconnectAttempts; // for rate-limiting camera reconnect attempts
 

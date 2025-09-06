@@ -111,7 +111,9 @@ void DebugLog::InitDebugLog(bool enable, bool forceOpen)
 
     if (enable && (m_path.IsEmpty() || forceOpen))
     {
-        m_path = GetLogDir() + PATHSEPSTR + logFileTime.Format(_T("PHD2_DebugLog_%Y-%m-%d_%H%M%S.txt"));
+        // Keep log files separated for multiple PHD2 instances
+        wxString qualifier = wxGetApp().GetInstanceNumber() > 1 ? std::to_string(wxGetApp().GetInstanceNumber()) + "_" : "";
+        m_path = GetLogDir() + PATHSEPSTR + _("PHD2_DebugLog_") + qualifier + logFileTime.Format(_T("%Y-%m-%d_%H%M%S.txt"));
 
         if (!wxFFile::Open(m_path, "a"))
         {

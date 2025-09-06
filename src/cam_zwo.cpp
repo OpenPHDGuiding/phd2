@@ -37,7 +37,7 @@
 #ifdef ZWO_ASI
 
 # include "cam_zwo.h"
-# include "cameras/ASICamera2.h"
+# include "ASICamera2.h"
 
 # ifdef __WINDOWS__
 
@@ -58,7 +58,7 @@ enum CaptureMode
 
 class Camera_ZWO : public GuideCamera
 {
-    wxRect m_maxSize;
+    wxSize m_maxSize;
     wxRect m_frame;
     unsigned short m_prevBinning;
     void *m_buffer;
@@ -95,6 +95,7 @@ public:
     bool SetCoolerSetpoint(double temperature) override;
     bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
     bool GetSensorTemperature(double *temperature) override;
+    wxRect ConstrainLimitFrame(const wxRect& requestedRoi) override;
 
 private:
     void StopCapture();
@@ -110,6 +111,7 @@ Camera_ZWO::Camera_ZWO() : m_buffer(nullptr)
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = true;
+    HasFrameLimiting = true;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
                            // true later when the camera is connected
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
@@ -421,7 +423,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     {
         Debug.Write(wxString::Format("ASIInitCamera ret %d\n", r));
         ASICloseCamera(selected);
-        return CamConnectFailed(_("Failed to initizlize ZWO ASI Camera."));
+        return CamConnectFailed(_("Failed to initialize ZWO ASI Camera."));
     }
 
     Debug.Write(wxString::Format("ZWO: using mode BPP = %u\n", (unsigned int) m_bpp));
@@ -471,7 +473,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     m_maxSize.x = info.MaxWidth;
     m_maxSize.y = info.MaxHeight;
 
-    FullSize = BinnedFrameSize(Binning);
+    FrameSize = BinnedFrameSize(Binning);
     m_prevBinning = Binning;
 
     ::free(m_buffer);
@@ -559,7 +561,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
         Debug.Write(wxString::Format("ZWO: set color balance WB_R = %d\n", UNIT_BALANCE));
     }
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("ZWO: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
@@ -689,6 +691,24 @@ inline static int round_up(int v, int m)
     return round_down(v + m - 1, m);
 }
 
+inline static wxRect constrain_roi(const wxRect& requestedRoi)
+{
+    // The transfer size must be a multiple of 1024
+    wxRect roi;
+    roi.SetLeft(round_down(requestedRoi.GetLeft(), 32));
+    roi.SetRight(round_up(requestedRoi.GetRight() + 1, 32) - 1);
+    roi.SetTop(round_down(requestedRoi.GetTop(), 32));
+    roi.SetBottom(round_up(requestedRoi.GetBottom() + 1, 32) - 1);
+    return roi;
+}
+
+wxRect Camera_ZWO::ConstrainLimitFrame(const wxRect& requestedRoi)
+{
+    // First ensure that the requested ROI is within the full camera frame (binned),
+    // then apply the transfer size constraint.
+    return constrain_roi(requestedRoi.Intersect(wxRect(BinnedFrameSize(Binning))));
+}
+
 static void flush_buffered_image(int cameraId, void *buf, size_t size)
 {
     enum
@@ -713,12 +733,17 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {
-        FullSize = BinnedFrameSize(Binning);
         m_prevBinning = Binning;
         binning_change = true;
     }
 
-    if (img.Init(FullSize))
+    // always update the frame size in case the limit frame or binning changed
+    if (LimitFrame.IsEmpty())
+        FrameSize = BinnedFrameSize(Binning);
+    else
+        FrameSize = LimitFrame.GetSize();
+
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -734,19 +759,21 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (useSubframe)
     {
-        // ensure transfer size is a multiple of 1024
         //  moving the sub-frame or resizing it is somewhat costly (stopCapture / startCapture)
 
-        frame.SetLeft(round_down(subframe.GetLeft(), 32));
-        frame.SetRight(round_up(subframe.GetRight() + 1, 32) - 1);
-        frame.SetTop(round_down(subframe.GetTop(), 32));
-        frame.SetBottom(round_up(subframe.GetBottom() + 1, 32) - 1);
+        wxRect subframeRawCoords = subframe; // subframe in raw camera coordinates
+        subframeRawCoords.Offset(LimitFrame.GetPosition());
 
-        subframePos = subframe.GetLeftTop() - frame.GetLeftTop();
+        frame = constrain_roi(subframeRawCoords);
+
+        subframePos = subframeRawCoords.GetLeftTop() - frame.GetLeftTop();
     }
     else
     {
-        frame = wxRect(FullSize);
+        if (LimitFrame.IsEmpty())
+            frame = wxRect(FrameSize);
+        else
+            frame = LimitFrame;
     }
 
     long exposureUS = duration * 1000;
@@ -925,7 +952,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }
@@ -935,7 +962,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             for (int y = 0; y < subframe.height; y++)
             {
                 const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
                 for (int x = 0; x < subframe.width; x++)
                     *dst++ = *src++;
             }

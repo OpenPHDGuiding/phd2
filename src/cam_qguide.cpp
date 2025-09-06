@@ -62,7 +62,7 @@ CameraQGuider::CameraQGuider()
 {
     Connected = false;
     Name = _T("Q-Guider");
-    FullSize = wxSize(1280, 1024);
+    FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
 }
@@ -121,7 +121,7 @@ bool CameraQGuider::ST4PulseGuideScope(int direction, int duration)
 void CameraQGuider::InitCapture()
 {
     //  CameraReset();
-    ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
+    ProgramCamera(0, 0, 1280, 1024, GuideCameraGain * 63 / 100);
     //  SetNoiseReduction(0);
 }
 
@@ -150,13 +150,13 @@ bool CameraQGuider::Capture(int duration, usImage& img, int options, const wxRec
 
     // qglogfile->AddLine(wxString::Format("Capturing dur %d",duration)); //qglogfile->Write();
     //  ThreadedExposure(10, buffer);
-    ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
+    ProgramCamera(0, 0, 1280, 1024, GuideCameraGain * 63 / 100);
 
     /*  ThreadedExposure(10, NULL);
         while (isExposing())
             wxMilliSleep(10);
     */
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

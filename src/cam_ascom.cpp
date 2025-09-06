@@ -781,9 +781,9 @@ bool CameraASCOM::Connect(const wxString& camId)
         }
     }
 
-    // defer defining FullSize since it is not simply derivable from max size and binning
-    // no: FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
-    FullSize = UNDEFINED_FRAME_SIZE;
+    // defer defining FrameSize since it is not simply derivable from max size and binning
+    // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    FrameSize = UNDEFINED_FRAME_SIZE;
     m_roi = wxRect(); // reset ROI state in case we're reconnecting
 
     Connected = true;
@@ -994,12 +994,12 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
         binning_changed = true;
         takeSubframe = false; // subframe may be out of bounds now
         if (Binning == 1)
-            FullSize.Set(m_maxSize.x, m_maxSize.y);
+            FrameSize.Set(m_maxSize.x, m_maxSize.y);
         else
-            FullSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
+            FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
     }
 
-    if (takeSubframe && FullSize == UNDEFINED_FRAME_SIZE)
+    if (takeSubframe && FrameSize == UNDEFINED_FRAME_SIZE)
     {
         // if we do not know the full frame size, we cannot take a
         // subframe until we receive a full frame and get the frame size
@@ -1010,10 +1010,10 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     if (!takeSubframe)
     {
         wxSize sz;
-        if (FullSize != UNDEFINED_FRAME_SIZE)
+        if (FrameSize != UNDEFINED_FRAME_SIZE)
         {
             // we know the actual frame size
-            sz = FullSize;
+            sz = FrameSize;
         }
         else
         {
@@ -1092,7 +1092,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     }
 
     // Get the image
-    if (ASCOM_Image(cam.IDisp(), img, takeSubframe, roi, &FullSize, m_maxSize, &m_swapAxes, &excep))
+    if (ASCOM_Image(cam.IDisp(), img, takeSubframe, roi, &FrameSize, m_maxSize, &m_swapAxes, &excep))
     {
         Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
         pFrame->Alert(ExcepMsg(_("Error reading image"), excep));

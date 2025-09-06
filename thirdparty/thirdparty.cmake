@@ -49,6 +49,14 @@ set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
 set(PHD_EXTERNAL_PROJECT_DEPENDENCIES)
 
+if(WIN32)
+ if(CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+  set(WINDOWS_ARCH "x64")
+ else()
+  set(WINDOWS_ARCH "x86")
+ endif()
+endif()
+
 if(APPLE)
   # make sure not to pick up any homebrew or macports dependencies
   set(CMAKE_IGNORE_PREFIX_PATH /opt/local)
@@ -68,17 +76,17 @@ if(WIN32)
     GIT_TAG f7423ee180c4b7f40d43402c2feb3859161ef625
     UPDATE_COMMAND bootstrap-vcpkg.bat -disableMetrics
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg cfitsio"
-    COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:x86-windows
+    COMMAND vcpkg install --binarysource=default --no-print-usage cfitsio:${WINDOWS_ARCH}-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg curl[ssl]"
-    COMMAND vcpkg install --binarysource=default --no-print-usage curl[ssl]:x86-windows
+    COMMAND vcpkg install --binarysource=default --no-print-usage curl[ssl]:${WINDOWS_ARCH}-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg eigen3"
-    COMMAND vcpkg install --binarysource=default --no-print-usage eigen3:x86-windows
+    COMMAND vcpkg install --binarysource=default --no-print-usage eigen3:${WINDOWS_ARCH}-windows
     COMMAND ${CMAKE_COMMAND} -E echo "Building vcpkg opencv4"
-    COMMAND vcpkg install --binarysource=default --no-print-usage opencv4:x86-windows
+    COMMAND vcpkg install --binarysource=default --no-print-usage opencv4:${WINDOWS_ARCH}-windows
   )
   message(STATUS "Preparing VCPKG")
   FetchContent_MakeAvailable(vcpkg)
-  set(VCPKG_PREFIX ${vcpkg_SOURCE_DIR}/installed/x86-windows)
+  set(VCPKG_PREFIX ${vcpkg_SOURCE_DIR}/installed/${WINDOWS_ARCH}-windows)
   set(VCPKG_DEBUG_BIN ${VCPKG_PREFIX}/debug/bin)
   set(VCPKG_RELEASE_BIN ${VCPKG_PREFIX}/bin)
   set(VCPKG_DEBUG_LIB ${VCPKG_PREFIX}/debug/lib)
@@ -143,7 +151,7 @@ endif()
 ##############################################
 # VidCapture
 
-if(WIN32)
+if(WIN32 AND WINDOWS_ARCH STREQUAL "x86")
 
   set(libvidcap_root ${thirdparty_dir}/VidCapture)
 
@@ -416,7 +424,11 @@ if(WIN32)
   endif()
 
   set(wxWidgets_ROOT_DIR ${wxWidgets_PREFIX_DIRECTORY})
-  set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/vc_lib)
+  if(WINDOWS_ARCH STREQUAL "x64")
+    set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/vc_x64_lib)
+  else()
+    set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/vc_lib)
+  endif()
   set(wxWidgets_USE_STATIC ON)
   set(wxWidgets_USE_DEBUG ON)
   set(wxWidgets_USE_UNICODE OFF)
@@ -488,7 +500,7 @@ else()
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
-    GIT_TAG 856ac85b965177d23cd0c819a49fd50bdaeece60  # v2.0.5
+    GIT_TAG cce992ebced4d73ee6d482cb894c5c897bb059b7  # v2.1.5
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
@@ -604,8 +616,8 @@ if (NOT OPENSOURCE_ONLY)
   FetchContent_MakeAvailable(OGMAcamSDK)
   include_directories(${ogmacamsdk_SOURCE_DIR}/inc)
   if (WIN32)
-    list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.lib)
-    list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/x86/ogmacam.dll)
+    list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.lib)
+    list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.dll)
   endif()
 endif()
 
@@ -620,90 +632,241 @@ if(WIN32)
   )
 
   # gpusb
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
+  find_library(shoestringGPUSB
+               NAMES ShoestringGPUSB_DLL
+               NO_DEFAULT_PATHS
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/${WINDOWS_ARCH})
 
-  # ASI cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
+  if(shoestringGPUSB)
+   message(STATUS "Found shoestring ${shoestringGPUSB}")
+   add_definitions(-DHAVE_SHOESTRING=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/${WINDOWS_ARCH}/ShoestringGPUSB_DLL.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/${WINDOWS_ARCH}/ShoestringGPUSB_DLL.dll)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/${WINDOWS_ARCH}/ShoestringLXUSB_DLL.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/shoestring/${WINDOWS_ARCH}/ShoestringLXUSB_DLL.dll)
+  endif()
+
+  # ZWO ASI cameras
+  find_library(asiCamera2
+               NAMES ASICamera2
+               NO_DEFAULT_PATHS
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/win/${WINDOWS_ARCH})
+
+  if(NOT asiCamera2)
+    message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
+  endif()
+  message(STATUS "Found ASICamera2 lib ${asiCamera2}")
+  add_definitions(-DHAVE_ZWO_CAMERA=1)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
+  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/win/${WINDOWS_ARCH}/ASICamera2.lib)
+  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/win/${WINDOWS_ARCH}/ASICamera2.dll)
 
   # ToupTek cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/toupcam.dll)
+  find_library(toupcam
+               NAMES toupcam
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/win/${WINDOWS_ARCH})
+  if(NOT toupcam)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the toupcam SDK")
+    endif()
+  endif()
+  if(toupcam)
+   add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/win/${WINDOWS_ARCH}/toupcam.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/win/${WINDOWS_ARCH}/toupcam.dll)
+  endif()
 
   # QHY cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccd.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhyccd.dll)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/tbb.dll)
+  find_library(qhylib
+               NAMES qhyccd
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/win/${WINDOWS_ARCH})
+  if(NOT qhylib)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the QHY SDK")
+    endif()
+  endif()
+  if(qhylib)
+   add_definitions(-DHAVE_QHY_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/win/${WINDOWS_ARCH}/qhyccd.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/win/${WINDOWS_ARCH}/qhyccd.dll)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/win/${WINDOWS_ARCH}/tbb.dll)
+  endif()
 
   # altair cameras
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/altaircam.dll)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/AltairCam_legacy.dll)
+  find_library(altair
+               NAMES altaircam
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH})
+  if(NOT altair)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the Altair SDK")
+    endif()
+  endif()
+  if(altair)
+   add_definitions(-DHAVE_ALTAIR_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/altair/include)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/altaircam.dll)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/AltairCam_legacy.dll)
+  endif()
 
   # SBIGUDrv
-  add_definitions(-DHAVE_SBIG_CAMERA=1)
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
-  #list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
+  find_library(sbig
+               NAMES SBIGUDrv
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/sbig/win/${WINDOWS_ARCH})
+  if(NOT sbig)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the SBIG SDK")
+    endif()
+  endif()
+  if(sbig)
+   add_definitions(-DHAVE_SBIG_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/sbig/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/sbig/win/${WINDOWS_ARCH}/SBIGUDrv.lib)
+   #list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/sbig/win/${WINDOWS_ARCH}/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
+  endif()
 
-  # DICAMSDK
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
+  # DICAMSDK aka INOVA_PLC
+  find_library(inovaplc
+               NAMES DICAMSDK
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/inovaplc/win/${WINDOWS_ARCH})
+  if(NOT inovaplc)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the inova_plc SDK")
+    endif()
+  endif()
+  if(inovaplc)
+   add_definitions(-DHAVE_INOVA_PLC_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/inovaplc/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/inovaplc/win/${WINDOWS_ARCH}/DICAMSDK.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/inovaplc/win/${WINDOWS_ARCH}/DICAMSDK.dll)
+  endif()
 
-  # SXUSB
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
+  # starlight xpress
+  find_library(sxv
+               NAMES SXUSB
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/sxv/win/${WINDOWS_ARCH})
+  if(NOT sxv)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the SXV SDK")
+    endif()
+  endif()
+  if(sxv)
+   message(STATUS "Found SXV lib ${sxv}")
+   add_definitions(-DHAVE_SXV_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/sxv/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/sxv/win/${WINDOWS_ARCH}/SXUSB.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/sxv/win/${WINDOWS_ARCH}/SXUSB.dll)
+  endif()
 
-  # astroDLL
-  #list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLGeneric.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLQHY5V.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll
-  )
+  # astroDLL / SSPIAG
+  find_library(sspiag
+               NAMES astroDLLQHY5V
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH})
+  if(NOT sspiag)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the SSPIAG SDK")
+    endif()
+  endif()
+  if(sspiag)
+   add_definitions(-DHAVE_SSPIAG_CAMERA=1)
+   #list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL
+     ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH}/astroDLLGeneric.dll
+     ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH}/astroDLLQHY5V.dll
+     ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH}/astroDLLsspiag.dll
+     ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH}/SSPIAGCAM.dll
+     ${PHD_PROJECT_ROOT_DIR}/cameras/sspiag/win/${WINDOWS_ARCH}/SSPIAGUSB_WIN.dll
+   )
+  endif()
 
-  # CMOSDLL
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
-
-  # inpout32 ?
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
-
-  # some other that are explicitly loaded at runtime
-  list(APPEND PHD_COPY_EXTERNAL_ALL
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGUSB_WIN.dll
-  )
+  # qguide
+  find_library(qguide
+               NAMES CMOSDLL
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/qguide/win/${WINDOWS_ARCH})
+  if(NOT qguide)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the qguide SDK")
+    endif()
+  endif()
+  if(qguide)
+   add_definitions(-DHAVE_QGUIDE_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/qguide/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/qguide/win/${WINDOWS_ARCH}/CMOSDLL.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/qguide/win/${WINDOWS_ARCH}/CMOSDLL.dll)
+  endif()
 
   # SVB cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/SVBCameraSDK.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/SVBCameraSDK.dll)
+  find_library(svbony
+               NAMES SVBCameraSDK
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/win/${WINDOWS_ARCH})
+  if(NOT svbony)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the Svbony SDK")
+    endif()
+  endif()
+  if(svbony)
+   add_definitions(-DHAVE_SVB_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/win/${WINDOWS_ARCH}/SVBCameraSDK.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/win/${WINDOWS_ARCH}/SVBCameraSDK.dll)
+  endif()
 
   # Moravian gX-driver cameras
-  list(APPEND PHD_LINK_EXTERNAL
-    # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.lib
-    ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.lib
-  )
-  list(APPEND PHD_COPY_EXTERNAL_ALL
-    # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXeth.dll
-    ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/lib/gXusb.dll
-  )
-  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
+  find_library(moravian
+               NAMES gXusb
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/${WINDOWS_ARCH})
+  if(NOT moravian)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the Moravian SDK")
+    endif()
+  endif()
+  if(moravian)
+   add_definitions(-DHAVE_MORAVIAN_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/moravian/include)
+   list(APPEND PHD_LINK_EXTERNAL
+     # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/${WINDOWS_ARCH}/gXeth.lib
+     ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/${WINDOWS_ARCH}/gXusb.lib
+   )
+   list(APPEND PHD_COPY_EXTERNAL_ALL
+     # ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/${WINDOWS_ARCH}/gXeth.dll
+     ${PHD_PROJECT_ROOT_DIR}/cameras/moravian/win/${WINDOWS_ARCH}/gXusb.dll
+   )
+  endif()
 
   # Player One cameras
-  list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.lib)
-  list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/PlayerOneCamera.dll)
-  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+  find_library(playerone
+               NAMES PlayerOneCamera
+               PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/${WINDOWS_ARCH})
+  if(NOT playerone)
+    if(WINDOWS_ARCH STREQUAL "x86")
+      message(FATAL_ERROR "Cannot find the QHY SDK")
+    endif()
+  endif()
+  if(playerone)
+   add_definitions(-DHAVE_PLAYERONE_CAMERA=1)
+   include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/playerone/include)
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/${WINDOWS_ARCH}/PlayerOneCamera.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/playerone/win/${WINDOWS_ARCH}/PlayerOneCamera.dll)
+  endif()
+
+  if(WINDOWS_ARCH STREQUAL "x86")
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/msvcr120.dll)
+  endif()
 
   list(APPEND PHD_COPY_EXTERNAL_ALL
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcr120.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/msvcp140.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcomp140.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/vcruntime140.dll
-    ${PHD_PROJECT_ROOT_DIR}/WinLibs/concrt140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/msvcp140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/vcomp140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/vcruntime140.dll
+    ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/concrt140.dll
   )
+
+  if(WINDOWS_ARCH STREQUAL "x86")
+   # inpout32 - used by parallelport_win32 for LE_PARALLEL_CAMERA
+   list(APPEND PHD_LINK_EXTERNAL ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/inpout32.lib)
+   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/WinLibs/${WINDOWS_ARCH}/inpout32.dll)
+  endif()
 
 endif()
 
@@ -779,6 +942,7 @@ if(APPLE)
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
   add_definitions(-DHAVE_ZWO_CAMERA=1)
   list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
   list(APPEND phd2_OSX_FRAMEWORKS ${asiCamera2})
@@ -792,6 +956,7 @@ if(APPLE)
 
   if(SVBCameraSDK)
     add_definitions(-DHAVE_SVB_CAMERA=1)
+    include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/include)
     list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
     list(APPEND phd2_OSX_FRAMEWORKS ${SVBCameraSDK})
   endif()
@@ -803,6 +968,7 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the qhy SDK libs")
   endif()
   add_definitions(-DHAVE_QHY_CAMERA=1)
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/include)
   list(APPEND PHD_LINK_EXTERNAL ${qhylib})
   list(APPEND phd2_OSX_FRAMEWORKS ${qhylib})
 
@@ -812,6 +978,7 @@ if(APPLE)
   if(NOT toupcam)
     message(FATAL_ERROR "Cannot find the toupcam drivers")
   endif()
+  include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/include)
   list(APPEND PHD_LINK_EXTERNAL ${toupcam})
   add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
   list(APPEND phd2_OSX_FRAMEWORKS ${toupcam})
@@ -906,23 +1073,19 @@ if(UNIX AND NOT APPLE)
       message(FATAL_ERROR "unknown system architecture")
     endif()
 
-    find_path(ZWO_INCLUDE_DIR ASICamera2.h
-      NO_DEFAULT_PATHS
-      PATHS ${PHD_PROJECT_ROOT_DIR}/cameras
-    )
-
     # The binary libraries below do not support FreeBSD, ignore them
     # when building for FreeBSD.
     if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
       find_library(asiCamera2
              NAMES ASICamera2
              NO_DEFAULT_PATHS
-             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${zwoarch})
+             PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/linux/${zwoarch})
 
       if(NOT asiCamera2)
         message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
       endif()
       message(STATUS "Found ASICamera2 lib ${asiCamera2}")
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/include)
       add_definitions(-DHAVE_ZWO_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
 
@@ -935,6 +1098,7 @@ if(UNIX AND NOT APPLE)
         message(FATAL_ERROR "Cannot find the toupcam drivers")
       endif()
       message(STATUS "Found toupcam lib ${toupcam}")
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/toupcam/include)
       add_definitions(-DHAVE_TOUPTEK_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${toupcam})
       list(APPEND PHD_INSTALL_LIBS ${toupcam})
@@ -961,11 +1125,13 @@ if(UNIX AND NOT APPLE)
       endif()
       message(STATUS "Found SVBCameraSDK lib ${SVBCameraSDK}")
       add_definitions(-DHAVE_SVB_CAMERA=1)
+      include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/include)
       list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
       list(APPEND PHD_INSTALL_LIBS ${SVBCameraSDK})
 
       if(IS_DIRECTORY ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/linux/${qhyarch})
         add_definitions(-DHAVE_QHY_CAMERA=1)
+        include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/qhyccdlibs/include)
 
         # be careful not to pick up any other qhy lib on the system
         find_library(qhylib
@@ -1043,9 +1209,7 @@ endif()
 # Starlight Xpress
 #############################################
 
-if(WIN32)
-  add_definitions(-DHAVE_SXV_CAMERA=1)
-elseif(UNIX OR APPLE)
+if(UNIX OR APPLE)
   add_definitions(-DHAVE_SXV_CAMERA=1)
   set(SXV_PLATFORM_SRC
       ${PHD_PROJECT_ROOT_DIR}/cameras/SXMacLib.h

@@ -80,100 +80,100 @@ wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 // clang-format off
 // clang-format off
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
-    EVT_MENU_HIGHLIGHT_ALL(MyFrame::OnMenuHighlight)
-    EVT_MENU_CLOSE(MyFrame::OnAnyMenuClose)
-    EVT_MENU(wxID_ANY, MyFrame::OnAnyMenu)
-    EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
-    EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-    EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
-    EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
-    EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
-    EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
-    EVT_MENU(MENU_CALIBRATIONASSIST, MyFrame::OnCalibrationAssistant)
-    EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
-    EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
-    EVT_MENU(EEGG_FLIPCAL, MyFrame::OnEEGG)
-    EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
-    EVT_MENU(MENU_POLARDRIFTTOOL, MyFrame::OnPolarDriftTool)
-    EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
-    EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
-    EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
-    EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
-    EVT_MENU(MENU_HELP_ONLINE, MyFrame::OnHelpOnline)
-    EVT_MENU(MENU_HELP_LOG_FOLDER, MyFrame::OnHelpLogFolder)
-    EVT_MENU(MENU_HELP_UPLOAD_LOGS, MyFrame::OnHelpUploadLogs)
-    EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
-    EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
-    EVT_MENU(wxID_SAVE, MyFrame::OnSave)
-    EVT_MENU(MENU_TAKEDARKS,MyFrame::OnDark)
-    EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadDark)
-    EVT_MENU(MENU_LOADDEFECTMAP,MyFrame::OnLoadDefectMap)
-    EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
-    EVT_MENU(MENU_STARCROSS_TEST, MyFrame::OnStarCrossTest)
-    EVT_MENU(MENU_PIERFLIP_TOOL, MyFrame::OnPierFlipTool)
-    EVT_MENU(MENU_XHAIR0, MyFrame::OnOverlay)
-    EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
-    EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
-    EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
-    EVT_MENU(MENU_XHAIR4,MyFrame::OnOverlay)
-    EVT_MENU(MENU_XHAIR5,MyFrame::OnOverlay)
-    EVT_MENU(MENU_SLIT_OVERLAY_COORDS, MyFrame::OnOverlaySlitCoords)
-    EVT_MENU(MENU_BOOKMARKS_SHOW, MyFrame::OnBookmarksShow)
-    EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
-    EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
-    EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
-    EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
-    EVT_MENU(MENU_IMPORTCAMCAL,MyFrame::OnImportCamCal)
+EVT_MENU_HIGHLIGHT_ALL(MyFrame::OnMenuHighlight)
+EVT_MENU_CLOSE(MyFrame::OnAnyMenuClose)
+EVT_MENU(wxID_ANY, MyFrame::OnAnyMenu)
+EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
+EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
+EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
+EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
+EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
+EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
+EVT_MENU(MENU_CALIBRATIONASSIST, MyFrame::OnCalibrationAssistant)
+EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
+EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
+EVT_MENU(EEGG_FLIPCAL, MyFrame::OnEEGG)
+EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
+EVT_MENU(MENU_POLARDRIFTTOOL, MyFrame::OnPolarDriftTool)
+EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
+EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
+EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
+EVT_MENU(MENU_HELP_ONLINE, MyFrame::OnHelpOnline)
+EVT_MENU(MENU_HELP_LOG_FOLDER, MyFrame::OnHelpLogFolder)
+EVT_MENU(MENU_HELP_UPLOAD_LOGS, MyFrame::OnHelpUploadLogs)
+EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
+EVT_MENU(wxID_HELP_CONTENTS, MyFrame::OnHelp)
+EVT_MENU(wxID_SAVE, MyFrame::OnSave)
+EVT_MENU(MENU_TAKEDARKS, MyFrame::OnDark)
+EVT_MENU(MENU_LOADDARK, MyFrame::OnLoadDark)
+EVT_MENU(MENU_LOADDEFECTMAP, MyFrame::OnLoadDefectMap)
+EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
+EVT_MENU(MENU_STARCROSS_TEST, MyFrame::OnStarCrossTest)
+EVT_MENU(MENU_PIERFLIP_TOOL, MyFrame::OnPierFlipTool)
+EVT_MENU(MENU_XHAIR0, MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR1, MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR2, MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR3, MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR4, MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR5, MyFrame::OnOverlay)
+EVT_MENU(MENU_SLIT_OVERLAY_COORDS, MyFrame::OnOverlaySlitCoords)
+EVT_MENU(MENU_BOOKMARKS_SHOW, MyFrame::OnBookmarksShow)
+EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
+EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
+EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
+EVT_MENU(MENU_REFINEDEFECTMAP, MyFrame::OnRefineDefMap)
+EVT_MENU(MENU_IMPORTCAMCAL, MyFrame::OnImportCamCal)
 
-    EVT_CHAR_HOOK(MyFrame::OnCharHook)
+EVT_CHAR_HOOK(MyFrame::OnCharHook)
 
 #if defined (V4L_CAMERA)
-    EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
-    EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
+EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
+EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
-    EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
-    EVT_MENU(MENU_STATS, MyFrame::OnStats)
-    EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
-    EVT_MENU(MENU_TARGET, MyFrame::OnTarget)
-    EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
-    EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
-    EVT_MENU(MENU_RESTORE_WINDOWS, MyFrame::OnRestoreWindows)
-    EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
-    EVT_TOOL(BUTTON_GEAR,MyFrame::OnSelectGear)
-    EVT_MENU(MENU_CONNECT,MyFrame::OnSelectGear)
-    EVT_TOOL(BUTTON_LOOP, MyFrame::OnButtonLoop)
-    EVT_MENU(MENU_LOOP, MyFrame::OnButtonLoop)
-    EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
-    EVT_TOOL(BUTTON_AUTOSTAR, MyFrame::OnButtonAutoStar)
-    EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
-    EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
-    EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
-    EVT_TOOL(BUTTON_GUIDE,MyFrame::OnButtonGuide)
-    EVT_MENU(MENU_GUIDE,MyFrame::OnButtonGuide)
-    EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_TOOL(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
-    EVT_MENU(MENU_CAM_SETTINGS, MyFrame::OnSetupCamera)
-    EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
-    EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
-    EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
-    EVT_SOCKET(SOCK_SERVER_CLIENT_ID, MyFrame::OnSockServerClientEvent)
-    EVT_CLOSE(MyFrame::OnClose)
-    EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
-    EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
+EVT_MENU(MENU_TOOLBAR, MyFrame::OnToolBar)
+EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
+EVT_MENU(MENU_STATS, MyFrame::OnStats)
+EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
+EVT_MENU(MENU_TARGET, MyFrame::OnTarget)
+EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
+EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
+EVT_MENU(MENU_RESTORE_WINDOWS, MyFrame::OnRestoreWindows)
+EVT_MENU(MENU_AUTOSTAR, MyFrame::OnAutoStar)
+EVT_TOOL(BUTTON_GEAR, MyFrame::OnSelectGear)
+EVT_MENU(MENU_CONNECT, MyFrame::OnSelectGear)
+EVT_TOOL(BUTTON_LOOP, MyFrame::OnButtonLoop)
+EVT_MENU(MENU_LOOP, MyFrame::OnButtonLoop)
+EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
+EVT_TOOL(BUTTON_AUTOSTAR, MyFrame::OnButtonAutoStar)
+EVT_MENU(MENU_STOP, MyFrame::OnButtonStop)
+EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
+EVT_MENU(MENU_BRAIN, MyFrame::OnAdvanced)
+EVT_TOOL(BUTTON_GUIDE, MyFrame::OnButtonGuide)
+EVT_MENU(MENU_GUIDE, MyFrame::OnButtonGuide)
+EVT_MENU(BUTTON_ALERT_CLOSE, MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_TOOL(BUTTON_CAM_PROPERTIES, MyFrame::OnSetupCamera)
+EVT_MENU(MENU_CAM_SETTINGS, MyFrame::OnSetupCamera)
+EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
+EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
+EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
+EVT_SOCKET(SOCK_SERVER_CLIENT_ID, MyFrame::OnSockServerClientEvent)
+EVT_CLOSE(MyFrame::OnClose)
+EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
+EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
 
-    EVT_COMMAND(wxID_ANY, REQUEST_EXPOSURE_EVENT, MyFrame::OnRequestExposure)
-    EVT_COMMAND(wxID_ANY, WXMESSAGEBOX_PROXY_EVENT, MyFrame::OnMessageBoxProxy)
+EVT_COMMAND(wxID_ANY, REQUEST_EXPOSURE_EVENT, MyFrame::OnRequestExposure)
+EVT_COMMAND(wxID_ANY, WXMESSAGEBOX_PROXY_EVENT, MyFrame::OnMessageBoxProxy)
 
-    EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnStatusMsg)
-    EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
-    EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
-    EVT_THREAD(UPDATER_EVENT, MyFrame::OnUpdaterStateChanged)
-    EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
-    EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusBarTimerEvent)
+EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnStatusMsg)
+EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
+EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
+EVT_THREAD(UPDATER_EVENT, MyFrame::OnUpdaterStateChanged)
+EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
+EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusBarTimerEvent)
 
-    EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
+EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
 wxEND_EVENT_TABLE();
 // clang-format on
 
@@ -365,9 +365,6 @@ MyFrame::MyFrame()
     CaptureActive = false;
     m_exposurePending = false;
 
-    m_singleExposure.enabled = false;
-    m_singleExposure.duration = 0;
-
     m_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -501,9 +498,9 @@ void MyFrame::SetupMenuBar()
                        _("Automatically determine the correct meridian flip settings"));
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"),
-                       _("Align by analysing star drift near the celestial equator (Accurate)"));
+                       _("Align by analyzing star drift near the celestial equator (Accurate)"));
     tools_menu->Append(MENU_POLARDRIFTTOOL, _("&Polar Drift Align"),
-                       _("Align by analysing star drift near the celestial pole (Simple)"));
+                       _("Align by analyzing star drift near the celestial pole (Simple)"));
     tools_menu->Append(MENU_STATICPATOOL, _("&Static Polar Align"),
                        _("Align by measuring the RA axis offset from the celestial pole (Fast)"));
     tools_menu->AppendSeparator();
@@ -1201,7 +1198,7 @@ struct alert_params
     int flags;
     alert_fn *fnDontShow;
     alert_fn *fnSpecial;
-    long arg;
+    intptr_t arg;
     bool showHelp;
 };
 
@@ -1287,7 +1284,7 @@ void MyFrame::DoAlert(const alert_params& params)
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
 
-void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, long arg,
+void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& buttonLabel, alert_fn *SpecialFn, intptr_t arg,
                     bool showHelpButton, int flags)
 {
     if (wxThread::IsMain())
@@ -1313,14 +1310,23 @@ void MyFrame::Alert(const wxString& msg, alert_fn *DontShowFn, const wxString& b
         params->arg = arg;
         params->showHelp = showHelpButton;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
+#if defined(_WIN64)
+        // on 64-bit Windows, sizeof(long) is 4 so we have to split the 64-bit param into
+        // two pieces. The low order 32 bits will go in m_commandInt and the high order
+        // 32 bits in m_extraLong
+        unsigned long long extra = (unsigned long long) params;
+        event->SetInt((int) (unsigned int) extra);
+        event->SetExtraLong((long) (unsigned int) (extra >> 32));
+#else
         event->SetExtraLong((long) params);
+#endif
         wxQueueEvent(this, event);
     }
 }
 
 // Standardized version for building an alert that has the "don't show again" option button.  Insures that debug log entry is
 // made if the user has blocked the alert for this type of problem
-void MyFrame::SuppressableAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, long arg,
+void MyFrame::SuppressibleAlert(const wxString& configPropKey, const wxString& msg, alert_fn *dontShowFn, intptr_t arg,
                                 bool showHelpButton, int flags)
 {
     if (pConfig->Global.GetBoolean(configPropKey, true))
@@ -1338,7 +1344,13 @@ void MyFrame::Alert(const wxString& msg, int flags)
 
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
 {
+#if defined(_WIN64)
+    unsigned long long lo = (unsigned long long) event.GetInt();
+    unsigned long long hi = (unsigned long long) event.GetExtraLong();
+    alert_params *params = (alert_params *) ((hi << 32) | lo);
+#else
     alert_params *params = (alert_params *) event.GetExtraLong();
+#endif
     DoAlert(*params);
     delete params;
 }
@@ -1801,9 +1813,11 @@ void MyFrame::ScheduleManualMove(Mount *mount, const GUIDE_DIRECTION direction, 
     ScheduleAxisMove(mount, direction, duration, MOVEOPT_MANUAL);
 }
 
-bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
+bool MyFrame::StartSingleExposure(int duration, wxByte binning, int gain, const wxRect& subframe, bool save,
+                                  const wxString& path)
 {
-    Debug.Write(wxString::Format("StartSingleExposure duration=%d\n", duration));
+    Debug.Write(wxString::Format("StartSingleExposure duration=%d binning=%d gain=%d save=%d path=[%s]\n", duration, binning,
+                                 gain, save, path));
 
     if (!pCamera || !pCamera->Connected)
     {
@@ -1813,11 +1827,11 @@ bool MyFrame::StartSingleExposure(int duration, const wxRect& subframe)
 
     StatusMsgNoTimeout(_("Capturing single exposure"));
 
-    m_singleExposure.enabled = true;
-    m_singleExposure.duration = duration;
-    m_singleExposure.subframe = subframe;
-    if (!m_singleExposure.subframe.IsEmpty())
-        m_singleExposure.subframe.Intersect(wxRect(pCamera->FullSize));
+    if (!m_singleExposure.Activate(duration, binning, gain, subframe, save, path))
+    {
+        Debug.Write("StartSingleExposure: invalid exposure parameters\n");
+        return true;
+    }
 
     StartCapturing();
 
@@ -2736,8 +2750,8 @@ bool MyFrame::SetFocalLength(int focalLength)
 
 void MyFrame::SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS)
 {
-    Debug.Write(wxString::Format("Variable delay: %s, Short = %d ms, Long = %d ms\n",
-                                 (varDelayEnabled ? "Enabled" : "Disabled"), ShortDelayMS, LongDelayMS));
+    Debug.Write(wxString::Format("Variable delay: %s, Short = %d ms, Long = %d ms\n", varDelayEnabled ? "Enabled" : "Disabled",
+                                 ShortDelayMS, LongDelayMS));
 
     m_varDelayConfig.enabled = varDelayEnabled;
     m_varDelayConfig.shortDelay = ShortDelayMS;

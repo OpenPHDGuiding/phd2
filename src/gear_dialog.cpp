@@ -987,7 +987,7 @@ static void AutoLoadDarks()
     }
 }
 
-static wxString CameraSelectionKey(const wxString& camName)
+wxString GearDialog::CameraSelectionKey(const wxString& camName)
 {
     std::hash<std::string> hash_fn;
     std::string name(camName.c_str());
@@ -996,7 +996,7 @@ static wxString CameraSelectionKey(const wxString& camName)
 
 static wxString SelectedCameraId(const wxString& camName)
 {
-    wxString key = CameraSelectionKey(camName);
+    wxString key = GearDialog::CameraSelectionKey(camName);
     return pConfig->Profile.GetString(key, GuideCamera::DEFAULT_CAMERA_ID);
 }
 
@@ -1101,7 +1101,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
 
         int profileBinning = m_pCamera->Binning;
-        if (m_pCamera->Connect(cameraId))
+        if (GuideCamera::ConnectCamera(m_pCamera, cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");
         }
@@ -1191,7 +1191,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
         m_cameraUpdated = true;
 
         Debug.AddLine("Connected Camera: " + m_pCamera->Name);
-        Debug.Write(wxString::Format("FullSize=(%d,%d)\n", m_pCamera->FullSize.x, m_pCamera->FullSize.y));
+        Debug.Write(wxString::Format("FrameSize=(%d,%d)\n", m_pCamera->FrameSize.x, m_pCamera->FrameSize.y));
         Debug.Write(wxString::Format("PixelSize=%.2f\n", m_pCamera->GetCameraPixelSize()));
         Debug.Write(wxString::Format("BitsPerPixel=%u\n", m_pCamera->BitsPerPixel()));
         Debug.Write(wxString::Format("HasGainControl=%d\n", m_pCamera->HasGainControl));

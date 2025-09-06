@@ -119,9 +119,9 @@ PolarDriftToolWin::PolarDriftToolWin()
     m_drifting = false;
 
     m_pxScale = pFrame->GetCameraPixelScale();
-    // Fullsize is easier but the camera simulator does not set this.
-    //    wxSize camsize = pCamera->FullSize;
-    //    g_camWidth = pCamera->FullSize.GetWidth() == 0 ? xpx: pCamera->FullSize.GetWidth();
+    // FrameSize is easier but the camera simulator does not set this.
+    //    wxSize camsize = pCamera->FrameSize;
+    //    g_camWidth = pCamera->FrameSize.GetWidth() == 0 ? xpx: pCamera->FrameSize.GetWidth();
 
     //    g_camAngle = 0.0;
     //    if (pMount && pMount->IsConnected() && pMount->IsCalibrated())

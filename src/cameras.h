@@ -41,39 +41,82 @@
 
 # if defined(__WINDOWS__)
 // Windows cameras
-#  define ALTAIR
+
 #  define ASCOM_CAMERA
-#  define ATIK16
-#  define ATIK_GEN3
 #  define INDI_CAMERA
-#  define INOVA_PLC
-#  define IOPTRON_CAMERA
-#  define LE_CAMERA
-#  define LE_LXUSB_CAMERA
-#  define LE_PARALLEL_CAMERA
-#  define LE_SERIAL_CAMERA
-#  define MORAVIAN_CAMERA
-#  define OGMA_CAMERA
 #  define OPENCV_CAMERA
-#  define ORION_DSCI
-#  define PLAYERONE_CAMERA
-#  define QGUIDE
-#  define QHY_CAMERA
-#  define SBIG
-#  define SBIGROTATOR_CAMERA
 #  define SIMULATOR
-#  define SSPIAG
-#  define SVB_CAMERA
-#  define SXV
-#  define TOUPTEK_CAMERA
-#  define WDM_CAMERA
-#  define ZWO_ASI
+
+#  if !defined(_WIN64)
+
+// 32-bit Windows cameras
+#   define ATIK16
+#   define ATIK_GEN3
+#   define IOPTRON_CAMERA
+#   define LE_CAMERA
+#   define LE_LXUSB_CAMERA
+#   define LE_PARALLEL_CAMERA
+#   define LE_SERIAL_CAMERA
+#   define OGMA_CAMERA
+#   define ORION_DSCI
+#   define WDM_CAMERA
 
 // # define OS_PL130  // the Opticstar library is not yet included
 // # define FIREWIRE_CAMERA // the The Imaging Source library is not yet included
 
+#  endif // _WIN64
+
+#  ifdef HAVE_ALTAIR_CAMERA
+#   define ALTAIR
+#  endif
+
+#  ifdef HAVE_INOVA_PLC_CAMERA
+#   define INOVA_PLC
+#  endif
+
+#  ifdef HAVE_MORAVIAN_CAMERA
+#   define MORAVIAN_CAMERA
+#  endif
+
+#  ifdef HAVE_PLAYERONE_CAMERA
+#   define PLAYERONE_CAMERA
+#  endif
+
+#  ifdef HAVE_QGUIDE_CAMERA
+#   define QGUIDE
+#  endif
+
+#  ifdef HAVE_QHY_CAMERA
+#   define QHY_CAMERA
+#  endif
+
+#  ifdef HAVE_SBIG_CAMERA
+#   define SBIG
+#   define SBIGROTATOR_CAMERA
+#  endif
+
+#  ifdef HAVE_SSPIAG_CAMERA
+#   define SSPIAG
+#  endif
+
+#  ifdef HAVE_SVB_CAMERA
+#   define SVB_CAMERA
+#  endif
+
+#  ifdef HAVE_SXV_CAMERA
+#   define SXV
+#  endif
+
 #  ifdef HAVE_WXVIDCAP // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
 #   define VFW_CAMERA
+#  endif
+
+#  ifdef HAVE_ZWO_CAMERA
+#   define ZWO_ASI
+#  endif
+
+#  ifdef HAVE_TOUPTEK_CAMERA
+#   define TOUPTEK_CAMERA
 #  endif
 
 # elif defined(__APPLE__)

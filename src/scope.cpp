@@ -597,7 +597,7 @@ int Scope::CalibrationMoveSize()
     return m_calibrationDuration;
 }
 
-static wxString LimitReachedWarningKey(long axis)
+static wxString LimitReachedWarningKey(intptr_t axis)
 {
     // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
     // to be per-profile
@@ -605,7 +605,7 @@ static wxString LimitReachedWarningKey(long axis)
                             axis == GUIDE_RA ? "RA" : "Dec");
 }
 
-static void SuppressLimitReachedWarning(long axis)
+static void SuppressLimitReachedWarning(intptr_t axis)
 {
     pConfig->Global.SetBoolean(LimitReachedWarningKey(axis), false);
 }
@@ -673,13 +673,13 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
                             "confirm the ST-4 cable is working properly.");
                 }
             }
-            pFrame->SuppressableAlert(LimitReachedWarningKey(axis), msg, SuppressLimitReachedWarning, axis, false,
+            pFrame->SuppressibleAlert(LimitReachedWarningKey(axis), msg, SuppressLimitReachedWarning, axis, false,
                                       wxICON_INFORMATION);
         }
         else // Max duration has been decreased by user, start by recommending use of default value
         {
             wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-            pFrame->SuppressableAlert(
+            pFrame->SuppressibleAlert(
                 LimitReachedWarningKey(axis),
                 wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
                                    "Try restoring %s to its default value to allow PHD2 to make larger corrections."),
@@ -690,7 +690,7 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
     else // Already at maximum allowed value
     {
         wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
-        pFrame->SuppressableAlert(
+        pFrame->SuppressibleAlert(
             LimitReachedWarningKey(axis),
             wxString::Format(
                 _("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
@@ -846,7 +846,7 @@ void Scope::SetCalibrationWarning(CalibrationIssueType etype, bool val)
 }
 
 // Generic hook for "details" button in calibration sanity check alert
-static void ShowCalibrationIssues(long scopeptr)
+static void ShowCalibrationIssues(intptr_t scopeptr)
 {
     Scope *pscope = reinterpret_cast<Scope *>(scopeptr);
     pscope->HandleSanityCheckDialog();
@@ -968,7 +968,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
                                        true)) // User hasn't disabled this type of alert
         {
             // Generate alert with 'Help' button that will lead to trouble-shooting section
-            pFrame->Alert(alertMsg, 0, _("Details..."), ShowCalibrationIssues, (long) this, true);
+            pFrame->Alert(alertMsg, 0, _("Details..."), ShowCalibrationIssues, (intptr_t) this, true);
         }
         else
         {
@@ -1207,7 +1207,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             GetRADecCoordinates(&m_calibrationStartingCoords);
 
             Debug.Write(wxString::Format(
-                "Scope::UpdateCalibrationstate: starting location = %.2f,%.2f coords = %s\n", currentLocation.X,
+                "Scope::UpdateCalibrationState: starting location = %.2f,%.2f coords = %s\n", currentLocation.X,
                 currentLocation.Y,
                 m_calibrationStartingCoords.IsValid()
                     ? wxString::Format("%.2f,%.1f", m_calibrationStartingCoords.X, m_calibrationStartingCoords.Y)
@@ -1640,7 +1640,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (!CanPulseGuide())
                 {
                     if (fabs(southDistMoved) < 0.10 * northDistMoved)
-                        msg = wxTRANSLATE("Advisory: Calibration succeessful but little or no south movement was measured, so "
+                        msg = wxTRANSLATE("Advisory: Calibration successful but little or no south movement was measured, so "
                                           "guiding will probably be impaired.\n "
                                           "This is usually caused by a faulty guide cable or very large Dec backlash. \n"
                                           "Check the guide cable and read the online Help for how to identify these types of "
@@ -1663,7 +1663,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // if (!m_eastAlertShown)
                 //{
                 //     const wxString& translated(wxGetTranslation(msg));
-                //     pFrame->SuppressableAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
+                //     pFrame->SuppressibleAlert(DecBacklashAlertKey(), translated, SuppressDecBacklashAlert, 0, true);
                 // }
                 Debug.Write("Omitted calibration alert: " + msg + "\n");
             }
@@ -1900,7 +1900,7 @@ static wxString GuideSpeedSummary()
         return "RA Guide Speed = Unknown, Dec Guide Speed = Unknown";
 }
 
-// unstranslated settings summary
+// untranslated settings summary
 wxString Scope::GetSettingsSummary() const
 {
     Calibration calInfo;

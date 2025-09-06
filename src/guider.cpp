@@ -102,9 +102,9 @@ static const bool DefaultScaleImage = true;
 
 // clang-format off
 wxBEGIN_EVENT_TABLE(Guider, wxWindow)
-    EVT_PAINT(Guider::OnPaint)
-    EVT_CLOSE(Guider::OnClose)
-    EVT_ERASE_BACKGROUND(Guider::OnErase)
+EVT_PAINT(Guider::OnPaint)
+EVT_CLOSE(Guider::OnClose)
+EVT_ERASE_BACKGROUND(Guider::OnErase)
 wxEND_EVENT_TABLE();
 // clang-format on
 
@@ -161,7 +161,7 @@ static const wxStringCharType *StateStr(GUIDER_STATE st)
 }
 
 Guider::Guider(wxWindow *parent, int xSize, int ySize)
-    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
+    : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(xSize, ySize), wxFULL_REPAINT_ON_RESIZE)
 {
     m_state = STATE_UNINITIALIZED;
     Debug.Write(wxString::Format("guider state => %s\n", StateStr(m_state)));
@@ -1192,7 +1192,7 @@ void Guider::Reset(bool fullReset)
 }
 
 // Called from the alert to offer auto-restore calibration
-static void SetAutoLoad(long param)
+static void SetAutoLoad(intptr_t)
 {
     pFrame->SetAutoLoadCalibration(true);
     pFrame->m_infoBar->Dismiss();

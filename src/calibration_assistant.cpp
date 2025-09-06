@@ -272,7 +272,7 @@ CalibrationAssistant::CalibrationAssistant()
     vSizer->Add(m_pMessage, wxSizerFlags().Center().Border(wxTOP, 15));
     vSizer->Add(btnSizer, wxSizerFlags().Center().Border(wxTOP, 5));
 
-    m_pTimer = new wxTimer(this, wxID_ANY); // asynch updates to current position fields
+    m_pTimer = new wxTimer(this, wxID_ANY); // async updates to current position fields
     m_pTimer->SetOwner(this);
     this->Connect(wxEVT_TIMER, wxTimerEventHandler(CalibrationAssistant::OnTimer), NULL, this);
     this->Bind(wxEVT_CLOSE_WINDOW, &CalibrationAssistant::OnClose, this);
@@ -324,7 +324,8 @@ void CalibrationAssistant::PerformSanityChecks(void)
     else
         minSpd = raSpd;
     sidRate = RateX(minSpd);
-    if (sidRate < 0.5)
+    // Ignore rounding errors that aren't meaningful (SB driver)
+    if (sidRate < 0.5 && pFrame->pAdvancedDialog->PercentChange(sidRate, 0.5) > 5.0)
     {
         if (sidRate <= 0.2)
             msg = _("Your mount guide speed is too slow for effective calibration and guiding."
@@ -975,7 +976,7 @@ void CalibrationAssistant::OnCalibrate(wxCommandEvent& evt)
         ShowStatus(_("Slew the scope closer to Dec = 0"));
         return;
     }
-    if (!m_justSlewed && pPointingSource->CanSlew())
+    if (!m_justSlewed && pPointingSource->CanSlew() && !pPointingSource->HasHPEncoders())
     {
         if (pFrame->CaptureActive)
             pFrame->StopCapturing();
@@ -1242,7 +1243,7 @@ CalAssistExplanationDialog::CalAssistExplanationDialog(const wxString& Why)
                                                 wxSize(600, textHeight), wxALIGN_LEFT);
         pRates->SetLabelText(_("Measured RA and Dec movements on the camera sensor aren't related by the expected ratio "
                                "(cos(dec)).  This can be caused "
-                               "by sustantial weight imbalance in Dec or physical resistance to movement because of cables or "
+                               "by substantial weight imbalance in Dec or physical resistance to movement because of cables or "
                                "over-tight gear mesh."));
         pRates->Wrap(wrapPoint);
         ratesGrp->Add(pRates, wxSizerFlags().Center().Border(wxALL, 5));

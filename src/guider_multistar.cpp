@@ -155,7 +155,7 @@ public:
         limits[2] = m_highMass * (1. + threshold);
         // when mass is depressed by sky conditions, we still want to trigger a rejection when
         // there is a large spike in mass, even if it is still below the high water mark-based
-        // threhold
+        // threshold
         limits[3] = med * (1. + 2.0 * threshold);
 
         double adjmass = AdjustedMass(mass);
@@ -225,11 +225,13 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
         if (GetState() >=
             STATE_SELECTED) // If we have a single star, need to force an auto-find to be sure we have the right secondary stars
         {
+            bool guiding_active = IsCalibratingOrGuiding();
             StopGuiding();
             InvalidateCurrentPosition(true);
             if (!AutoSelect(wxRect(0, 0, 0, 0)))
             {
-                StartGuiding();
+                if (guiding_active)
+                    StartGuiding();
                 autoFindForced = true;
             }
         }
@@ -237,7 +239,7 @@ void GuiderMultiStar::SetMultiStarMode(bool val)
     if (!val)
         m_stabilizing = false;
     pConfig->Profile.SetBoolean("/guider/multistar/enabled", m_multiStarMode);
-    wxString msg = wxString::Format("MultiStar mode %s", (val ? "enabled" : "disabled"));
+    wxString msg = wxString::Format("MultiStar mode %s", val ? "enabled" : "disabled");
     if (autoFindForced)
         msg += ", AutoFind forced\n";
     else
@@ -455,8 +457,8 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
             throw ERROR_INFO("No Current Image");
         }
 
-        // If mount is not calibrated, we need to chose a star a bit farther
-        // from the egde to allow for the motion of the star during
+        // If mount is not calibrated, we need to choose a star a bit farther
+        // from the edge to allow for the motion of the star during
         // calibration
         //
         int edgeAllowance = 0;
@@ -577,7 +579,7 @@ wxRect GuiderMultiStar::GetBoundingBox() const
     if (subframe)
     {
         wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
-        box.Intersect(wxRect(pCamera->FullSize));
+        box.Intersect(wxRect(pCamera->FrameSize));
         return box;
     }
     else
@@ -902,7 +904,7 @@ bool GuiderMultiStar::RefineOffset(const usImage *pImage, GuiderOffset *pOffset)
                         refined = true;
                     }
                     Debug.Write(wxString::Format("%s, %d included, MultiStar: {%0.2f, %0.2f}, one-star: {%0.2f, %0.2f}\n",
-                                                 (refined ? "refined" : "single-star"), validStars, sumX, sumY,
+                                                 refined ? "refined" : "single-star", validStars, sumX, sumY,
                                                  origOffset.cameraOfs.X, origOffset.cameraOfs.Y));
                 }
             }

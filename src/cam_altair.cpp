@@ -48,7 +48,7 @@ struct SDKLib
 
 #  define SDK(f) decltype(Altaircam_##f) *f;
 #  define SDK_OPT(f) SDK(f)
-#  include "cameras/altaircam_sdk.h"
+#  include "altaircam_sdk.h"
 #  undef SDK
 #  undef SDK_OPT
 
@@ -88,7 +88,7 @@ struct SDKLib
       {                                                                                                                        \
           _GPA(f);                                                                                                             \
       } while (false);
-#  include "cameras/altaircam_sdk.h"
+#  include "altaircam_sdk.h"
 #  undef SDK
 #  undef SDK_OPT
 #  undef _GPA
@@ -198,7 +198,7 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
     m_framesToDiscard = pFrame->MakeSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1),
                                              wxSP_ARROW_KEYS, 0, AltairCamera::MAX_DISCARD_FRAMES, 0);
     m_framesToDiscard->SetToolTip(
-        _("Discard this many frames whan capturing starts. "
+        _("Discard this many frames when capturing starts. "
           "Useful for preventing initial under-exposed frames interfering with automatic star selection."));
     sizer2->Add(m_framesToDiscard, 0, wxALL, 5);
     sbSizer3->Add(sizer2);
@@ -277,7 +277,7 @@ static unsigned int Enum(const SDKLib& sdk, AltaircamDeviceV2 inst[ALTAIRCAM_MAX
         s_model[i].flag = s_inst1[i].model->flag;
         s_model[i].maxspeed = s_inst1[i].model->maxspeed;
         s_model[i].preview = s_inst1[i].model->preview;
-        s_model[i].still = 0; // unknwown
+        s_model[i].still = 0; // unknown
         s_model[i].maxfanspeed = 0; // unknown
         s_model[i].ioctrol = 0;
         s_model[i].xpixsz = 0.f;
@@ -371,20 +371,18 @@ bool AltairCamera::Connect(const wxString& camIdArg)
         Disconnect();
         return CamConnectFailed(_("Failed to get camera resolution for Altair Camera."));
     }
+    wxSize fullFrameSize(width, height);
 
     delete[] m_buffer;
-    m_buffer =
-        new unsigned char[width * height]; // new SDK has issues with some ROI functions needing full resolution buffer size
+    // new SDK has issues with some ROI functions needing full resolution buffer size
+    m_buffer = new unsigned char[fullFrameSize.x * fullFrameSize.y];
 
     m_reduceResolution = pConfig->Profile.GetBoolean("/camera/Altair/ReduceResolution", false);
+    FrameSize = fullFrameSize;
     if (hasROI && m_reduceResolution)
     {
-        width *= 0.8;
-        height *= 0.8;
+        FrameSize.Scale(0.8, 0.8);
     }
-
-    FullSize.x = width;
-    FullSize.y = height;
 
     float xSize, ySize;
     m_devicePixelSize = 3.75; // for all cameras so far....
@@ -412,7 +410,7 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     m_sdk.put_Option(m_handle, ALTAIRCAM_OPTION_RAW, 1);
 
 # if 0
-    // TODO: this is the initiailization code copied from cam_touptek.cpp
+    // TODO: this is the initialization code copied from cam_touptek.cpp
     // I was hoping this one of these might help with the problem of the first
     // frame exposure being very low, but it had no effect. Leaving these
     // disabled for now rather than risk introducing a change that is
@@ -435,13 +433,13 @@ bool AltairCamera::Connect(const wxString& camIdArg)
 
     m_sdk.put_AutoExpoEnable(m_handle, 0);
 
-    m_frame = wxRect(FullSize);
+    m_frame = wxRect(FrameSize);
 
     Debug.Write(wxString::Format("Altair: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
     if (hasROI && m_reduceResolution)
     {
-        m_sdk.put_Roi(m_handle, 0, 0, width, height);
+        m_sdk.put_Roi(m_handle, 0, 0, FrameSize.x, FrameSize.y);
     }
 
     return false;
@@ -499,16 +497,6 @@ bool AltairCamera::Disconnect()
     return false;
 }
 
-inline static int round_down(int v, int m)
-{
-    return v & ~(m - 1);
-}
-
-inline static int round_up(int v, int m)
-{
-    return round_down(v + m - 1, m);
-}
-
 void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 {
     if (event == ALTAIRCAM_EVENT_IMAGE)
@@ -536,14 +524,14 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 
 bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
     wxRect frame;
-    frame = wxRect(FullSize);
+    frame = wxRect(FrameSize);
 
     long exposureUS = duration * 1000;
     unsigned int cur_exp;

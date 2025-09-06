@@ -232,6 +232,12 @@ struct NV
         ary << s.x << s.y;
         v = ary.str();
     }
+    NV(const wxString& n_, const wxRect& r) : n(n_)
+    {
+        JAry ary;
+        ary << r.x << r.y << r.width << r.height;
+        v = ary.str();
+    }
     NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
@@ -709,6 +715,17 @@ struct Params
     {
         const char *n[] = { n1, n2, n3, n4 };
         Init(n, 4, params);
+    }
+    Params(const char *n1, const char *n2, const char *n3, const char *n4, const char *n5, const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3, n4, n5 };
+        Init(n, 5, params);
+    }
+    Params(const char *n1, const char *n2, const char *n3, const char *n4, const char *n5, const char *n6,
+           const json_value *params)
+    {
+        const char *n[] = { n1, n2, n3, n4, n5, n6 };
+        Init(n, 6, params);
     }
     const json_value *param(const std::string& name) const
     {
@@ -1369,11 +1386,17 @@ static void capture_single_frame(JObj& response, const json_value *params)
         response << jrpc_error(1, "cannot capture single frame when capture is currently active");
         return;
     }
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "cannot capture single frame when camera is not connected");
+    }
 
-    Params p("exposure", "subframe", params);
-    const json_value *j = p.param("exposure");
-    int exposure;
-    if (j)
+    Params p("exposure", "binning", "gain", "subframe", "path", "save", params);
+
+    const json_value *j;
+
+    int exposure = pFrame->RequestedExposureDuration();
+    if ((j = p.param("exposure")) != nullptr)
     {
         if (j->type != JSON_INT || j->int_value < 1 || j->int_value > 10 * 60000)
         {
@@ -1382,13 +1405,31 @@ static void capture_single_frame(JObj& response, const json_value *params)
         }
         exposure = j->int_value;
     }
-    else
+
+    wxByte binning = pCamera->Binning;
+    if ((j = p.param("binning")) != nullptr)
     {
-        exposure = pFrame->RequestedExposureDuration();
+        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxBinning)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS,
+                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxBinning));
+            return;
+        }
+        binning = j->int_value;
+    }
+
+    int gain = pCamera->GetCameraGain();
+    if ((j = p.param("gain")) != nullptr)
+    {
+        if (j->type != JSON_INT || j->int_value < 0 || j->int_value > 100)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid gain value: must be between 0 and 100");
+            return;
+        }
+        gain = j->int_value;
     }
 
     wxRect subframe;
-
     if ((j = p.param("subframe")) != nullptr)
         if (!parse_rect(&subframe, j))
         {
@@ -1396,7 +1437,45 @@ static void capture_single_frame(JObj& response, const json_value *params)
             return;
         }
 
-    bool err = pFrame->StartSingleExposure(exposure, subframe);
+    wxString path;
+    if ((j = p.param("path")) != nullptr)
+    {
+        if (j->type != JSON_STRING)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid path param: string expected");
+            return;
+        }
+        wxFileName fn(j->string_value);
+        if (!fn.IsAbsolute())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param must be an absolute path");
+            return;
+        }
+        if (fn.Exists())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "destination file already exists");
+            return;
+        }
+        path = j->string_value;
+    }
+
+    bool save = !path.empty();
+    if ((j = p.param("save")) != nullptr)
+    {
+        if (!bool_param(j, &save))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "save param must be a boolean");
+            return;
+        }
+    }
+
+    if (!save && !path.empty())
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param not allowed when save = false");
+        return;
+    }
+
+    bool err = pFrame->StartSingleExposure(exposure, binning, gain, subframe, save, path);
     if (err)
     {
         response << jrpc_error(2, "failed to start exposure");
@@ -1702,7 +1781,7 @@ static void get_camera_frame_size(JObj& response, const json_value *params)
 {
     if (pCamera && pCamera->Connected)
     {
-        response << jrpc_result(pCamera->FullSize);
+        response << jrpc_result(pCamera->FrameSize);
     }
     else
         response << jrpc_error(1, "camera not connected");
@@ -1932,6 +2011,50 @@ static void set_variable_delay_settings(JObj& response, const json_value *params
     VarDelayCfg currParams;
     pFrame->SetVariableDelayConfig(enabled, (int) shortDelaySec * 1000, (int) longDelaySec * 1000);
     response << jrpc_result(0);
+}
+
+static void get_limit_frame(JObj& response, const json_value *params)
+{
+    JObj rslt;
+
+    if (!pCamera || !pCamera->HasFrameLimiting || pCamera->LimitFrame.IsEmpty())
+        rslt << NV("roi", NULL_VALUE);
+    else
+        rslt << NV("roi", pCamera->LimitFrame);
+    response << jrpc_result(rslt);
+}
+
+static void set_limit_frame(JObj& response, const json_value *params)
+{
+    Params p("roi", params);
+    const json_value *j = p.param("roi");
+    if (!j)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing required param `roi`");
+        return;
+    }
+    wxRect roi;
+    if (j->type != JSON_NULL && !parse_rect(&roi, j))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid ROI param");
+        return;
+    }
+    if (!pCamera)
+    {
+        response << jrpc_error(1, "no guide camera");
+        return;
+    }
+    if (!pCamera->HasFrameLimiting)
+    {
+        response << jrpc_error(1, "guide camera does not support frame limiting");
+        return;
+    }
+    bool err = pCamera->SetLimitFrame(roi);
+
+    if (err)
+        response << jrpc_error(1, "could not set ROI. See Debug Log for more info.");
+    else
+        response << jrpc_result(0);
 }
 
 static GUIDE_DIRECTION dir_param(const json_value *p)
@@ -2257,208 +2380,62 @@ static bool handle_request(JRpcCall& call)
     {
         const char *name;
         void (*fn)(JObj& response, const json_value *params);
-    } methods[] = { {
-                        "clear_calibration",
-                        &clear_calibration,
-                    },
-                    {
-                        "deselect_star",
-                        &deselect_star,
-                    },
-                    {
-                        "get_exposure",
-                        &get_exposure,
-                    },
-                    {
-                        "set_exposure",
-                        &set_exposure,
-                    },
-                    {
-                        "get_exposure_durations",
-                        &get_exposure_durations,
-                    },
-                    {
-                        "get_profiles",
-                        &get_profiles,
-                    },
-                    {
-                        "get_profile",
-                        &get_profile,
-                    },
-                    {
-                        "set_profile",
-                        &set_profile,
-                    },
-                    {
-                        "get_connected",
-                        &get_connected,
-                    },
-                    {
-                        "set_connected",
-                        &set_connected,
-                    },
-                    {
-                        "get_calibrated",
-                        &get_calibrated,
-                    },
-                    {
-                        "get_paused",
-                        &get_paused,
-                    },
-                    {
-                        "set_paused",
-                        &set_paused,
-                    },
-                    {
-                        "get_lock_position",
-                        &get_lock_position,
-                    },
-                    {
-                        "set_lock_position",
-                        &set_lock_position,
-                    },
-                    {
-                        "loop",
-                        &loop,
-                    },
-                    {
-                        "stop_capture",
-                        &stop_capture,
-                    },
-                    {
-                        "guide",
-                        &guide,
-                    },
-                    {
-                        "dither",
-                        &dither,
-                    },
-                    {
-                        "find_star",
-                        &find_star,
-                    },
-                    {
-                        "get_pixel_scale",
-                        &get_pixel_scale,
-                    },
-                    {
-                        "get_app_state",
-                        &get_app_state,
-                    },
-                    {
-                        "flip_calibration",
-                        &flip_calibration,
-                    },
-                    {
-                        "get_lock_shift_enabled",
-                        &get_lock_shift_enabled,
-                    },
-                    {
-                        "set_lock_shift_enabled",
-                        &set_lock_shift_enabled,
-                    },
-                    {
-                        "get_lock_shift_params",
-                        &get_lock_shift_params,
-                    },
-                    {
-                        "set_lock_shift_params",
-                        &set_lock_shift_params,
-                    },
-                    {
-                        "save_image",
-                        &save_image,
-                    },
-                    {
-                        "get_star_image",
-                        &get_star_image,
-                    },
-                    {
-                        "get_use_subframes",
-                        &get_use_subframes,
-                    },
-                    {
-                        "get_search_region",
-                        &get_search_region,
-                    },
-                    {
-                        "shutdown",
-                        &shutdown,
-                    },
-                    {
-                        "get_camera_binning",
-                        &get_camera_binning,
-                    },
-                    {
-                        "get_camera_frame_size",
-                        &get_camera_frame_size,
-                    },
-                    {
-                        "get_current_equipment",
-                        &get_current_equipment,
-                    },
-                    {
-                        "get_guide_output_enabled",
-                        &get_guide_output_enabled,
-                    },
-                    {
-                        "set_guide_output_enabled",
-                        &set_guide_output_enabled,
-                    },
-                    {
-                        "get_algo_param_names",
-                        &get_algo_param_names,
-                    },
-                    {
-                        "get_algo_param",
-                        &get_algo_param,
-                    },
-                    {
-                        "set_algo_param",
-                        &set_algo_param,
-                    },
-                    {
-                        "get_dec_guide_mode",
-                        &get_dec_guide_mode,
-                    },
-                    {
-                        "set_dec_guide_mode",
-                        &set_dec_guide_mode,
-                    },
-                    {
-                        "get_settling",
-                        &get_settling,
-                    },
-                    {
-                        "guide_pulse",
-                        &guide_pulse,
-                    },
-                    {
-                        "get_calibration_data",
-                        &get_calibration_data,
-                    },
-                    {
-                        "capture_single_frame",
-                        &capture_single_frame,
-                    },
-                    {
-                        "get_cooler_status",
-                        &get_cooler_status,
-                    },
-                    {
-                        "set_cooler_state",
-                        &set_cooler_state,
-                    },
-                    {
-                        "get_ccd_temperature",
-                        &get_sensor_temperature,
-                    },
-                    {
-                        "export_config_settings",
-                        &export_config_settings,
-                    },
-                    { "get_variable_delay_settings", &get_variable_delay_settings },
-                    { "set_variable_delay_settings", &set_variable_delay_settings } };
+    } methods[] = {
+        { "clear_calibration", &clear_calibration },
+        { "deselect_star", &deselect_star },
+        { "get_exposure", &get_exposure },
+        { "set_exposure", &set_exposure },
+        { "get_exposure_durations", &get_exposure_durations },
+        { "get_profiles", &get_profiles },
+        { "get_profile", &get_profile },
+        { "set_profile", &set_profile },
+        { "get_connected", &get_connected },
+        { "set_connected", &set_connected },
+        { "get_calibrated", &get_calibrated },
+        { "get_paused", &get_paused },
+        { "set_paused", &set_paused },
+        { "get_lock_position", &get_lock_position },
+        { "set_lock_position", &set_lock_position },
+        { "loop", &loop },
+        { "stop_capture", &stop_capture },
+        { "guide", &guide },
+        { "dither", &dither },
+        { "find_star", &find_star },
+        { "get_pixel_scale", &get_pixel_scale },
+        { "get_app_state", &get_app_state },
+        { "flip_calibration", &flip_calibration },
+        { "get_lock_shift_enabled", &get_lock_shift_enabled },
+        { "set_lock_shift_enabled", &set_lock_shift_enabled },
+        { "get_lock_shift_params", &get_lock_shift_params },
+        { "set_lock_shift_params", &set_lock_shift_params },
+        { "save_image", &save_image },
+        { "get_star_image", &get_star_image },
+        { "get_use_subframes", &get_use_subframes },
+        { "get_search_region", &get_search_region },
+        { "shutdown", &shutdown },
+        { "get_camera_binning", &get_camera_binning },
+        { "get_camera_frame_size", &get_camera_frame_size },
+        { "get_current_equipment", &get_current_equipment },
+        { "get_guide_output_enabled", &get_guide_output_enabled },
+        { "set_guide_output_enabled", &set_guide_output_enabled },
+        { "get_algo_param_names", &get_algo_param_names },
+        { "get_algo_param", &get_algo_param },
+        { "set_algo_param", &set_algo_param },
+        { "get_dec_guide_mode", &get_dec_guide_mode },
+        { "set_dec_guide_mode", &set_dec_guide_mode },
+        { "get_settling", &get_settling },
+        { "guide_pulse", &guide_pulse },
+        { "get_calibration_data", &get_calibration_data },
+        { "capture_single_frame", &capture_single_frame },
+        { "get_cooler_status", &get_cooler_status },
+        { "set_cooler_state", &set_cooler_state },
+        { "get_ccd_temperature", &get_sensor_temperature },
+        { "export_config_settings", &export_config_settings },
+        { "get_variable_delay_settings", &get_variable_delay_settings },
+        { "set_variable_delay_settings", &set_variable_delay_settings },
+        { "get_limit_frame", &get_limit_frame },
+        { "set_limit_frame", &set_limit_frame },
+    };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
     {
@@ -2800,6 +2777,25 @@ void EventServer::NotifyLooping(unsigned int exposure, const Star *star, const F
 void EventServer::NotifyLoopingStopped()
 {
     SIMPLE_NOTIFY("LoopingExposuresStopped");
+}
+
+void EventServer::NotifySingleFrameComplete(bool succeeded, const wxString& errorMsg, const SingleExposure& info)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("SingleFrameComplete");
+    ev << NV("Success", succeeded);
+
+    if (!succeeded)
+        ev << NV("Error", errorMsg);
+
+    if (info.save)
+    {
+        ev << NV("Path", info.path);
+    }
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifyStarSelected(const PHD_Point& pt)

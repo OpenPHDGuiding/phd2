@@ -53,7 +53,6 @@ struct SkyraiderCamera : public GuideCamera
     int m_defaultGainPct;
     volatile bool m_frameReady;
     int m_cameraId;
-    wxRect m_maxSize;
     MallincamGuider m_Guider;
 
     SkyraiderCamera();
@@ -105,7 +104,7 @@ SkyraiderCamera::SkyraiderCamera() : m_buffer(nullptr), m_capturing(false)
 {
     Connected = false;
     Name = _T("MallinCam SkyRaider");
-    FullSize = wxSize(1280, 960);
+    FrameSize = wxSize(1280, 960);
     m_hasGuideOutput = true;
     HasGainControl = true;
     m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
@@ -151,9 +150,9 @@ bool SkyraiderCamera::Connect(const wxString& camId)
         return true;
     }
 
-    FullSize.x = width;
-    FullSize.y = height;
-    m_frame = wxRect(FullSize);
+    FrameSize.x = width;
+    FrameSize.y = height;
+    m_frame = wxRect(FrameSize);
 
     HasGainControl = false;
 
@@ -174,7 +173,7 @@ bool SkyraiderCamera::Connect(const wxString& camId)
         delete[] m_buffer;
     }
 
-    m_buffer = new unsigned char[FullSize.x * FullSize.y];
+    m_buffer = new unsigned char[FrameSize.x * FrameSize.y];
 
     // Mallincam_put_AutoExpoEnable(m_Guider.m_Hmallincam, 0);
     // Toupcam_put_AutoExpoEnable(reinterpret_cast<HToupCam>(m_Guider.m_Hmallincam), 0);
@@ -190,7 +189,7 @@ bool SkyraiderCamera::Disconnect()
 
 bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    if (img.Init(FullSize))
+    if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;

@@ -124,12 +124,12 @@ wxDEFINE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
 
 // clang-format off
 wxBEGIN_EVENT_TABLE(IndiGui, wxDialog)
-    EVT_CLOSE(IndiGui::OnQuit)
-    EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
-    EVT_THREAD(INDIGUI_THREAD_NEWPROPERTY_EVENT, IndiGui::OnNewPropertyFromThread)
-    EVT_THREAD(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, IndiGui::OnUpdatePropertyFromThread)
-    EVT_THREAD(INDIGUI_THREAD_NEWMESSAGE_EVENT, IndiGui::OnNewMessageFromThread)
-    EVT_THREAD(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, IndiGui::OnRemovePropertyFromThread)
+EVT_CLOSE(IndiGui::OnQuit)
+EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
+EVT_THREAD(INDIGUI_THREAD_NEWPROPERTY_EVENT, IndiGui::OnNewPropertyFromThread)
+EVT_THREAD(INDIGUI_THREAD_UPDATEPROPERTY_EVENT, IndiGui::OnUpdatePropertyFromThread)
+EVT_THREAD(INDIGUI_THREAD_NEWMESSAGE_EVENT, IndiGui::OnNewMessageFromThread)
+EVT_THREAD(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, IndiGui::OnRemovePropertyFromThread)
 wxEND_EVENT_TABLE();
 // clang-format on
 
@@ -180,7 +180,16 @@ void IndiGui::removeProperty(INDI::Property property)
             return;
 
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_REMOVEPROPERTY_EVENT);
+#if defined(_WIN64)
+        // on 64-bit Windows, sizeof(long) is 4 so we have to split the 64-bit param into
+        // two pieces. The low order 32 bits will go in m_commandInt and the high order
+        // 32 bits in m_extraLong
+        unsigned long long extra = (unsigned long long) indiProp;
+        event->SetInt((int) (unsigned int) extra);
+        event->SetExtraLong((long) (unsigned int) (extra >> 32));
+#else
         event->SetExtraLong((long) indiProp);
+#endif
         wxQueueEvent(this, event);
     }
 }
@@ -756,7 +765,13 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent& event)
 
 void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 {
+#if defined(_WIN64)
+    unsigned long long lo = (unsigned long long) event.GetInt();
+    unsigned long long hi = (unsigned long long) event.GetExtraLong();
+    IndiProp *indiProp = (IndiProp *) ((hi << 32) | lo);
+#else
     IndiProp *indiProp = (IndiProp *) event.GetExtraLong();
+#endif
     if (!indiProp)
         return;
     IndiDev *indiDev = (IndiDev *) indiProp->idev;

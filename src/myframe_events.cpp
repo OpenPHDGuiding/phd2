@@ -400,7 +400,8 @@ void MyFrame::OnButtonLoop(wxCommandEvent& WXUNUSED(event))
 void MyFrame::FinishStop(void)
 {
     assert(!CaptureActive);
-    m_singleExposure.enabled = false;
+    if (m_singleExposure.enabled)
+        m_singleExposure.Complete(true);
     EvtServer.NotifyLoopingStopped();
     // when looping resumes, start with at least one full frame. This enables applications
     // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
@@ -411,21 +412,89 @@ void MyFrame::FinishStop(void)
     PhdController::AbortController("Stopped capturing");
 }
 
+bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRect& subframe, bool save, const wxString& path)
+{
+    // initiate a single exposure with the requested parameters. Returns true on success.
+    // Parameters:
+    //   duration - the exposure duration in milliseconds
+    //   binning - the camera binning
+    //   gain - the camera gain value (phd2 gain units 0..100)
+    //   subframe - the requested ROI; an empty wxRect means to use the full frame
+    //   save - whether to automatically save the image when the exposure completes
+    //   path - path to save the completed image, or empty string to allow phd2 to choose
+    bool error;
+
+    this->duration = duration;
+
+    prev_binning = pCamera->Binning;
+    error = pCamera->SetBinning(binning);
+    if (error)
+        return false;
+
+    prev_gain = pCamera->GuideCameraGain;
+    error = pCamera->SetCameraGain(gain);
+    if (error)
+        return false;
+
+    this->subframe = subframe;
+    if (!this->subframe.IsEmpty())
+        subframe.Intersect(wxRect(pCamera->FrameSize));
+
+    this->save = save;
+    this->path = path;
+
+    enabled = true;
+    return true;
+}
+
+void SingleExposure::Complete(bool succeeded, const wxString& errorMsgArg)
+{
+    wxString errorMsg(errorMsgArg);
+    if (succeeded && save)
+    {
+        bool created = false;
+        if (path.empty())
+        {
+            path = wxFileName::CreateTempFileName(MyFrame::GetDefaultFileDir() + PATHSEPSTR + "save_image_");
+            created = true;
+        }
+
+        bool err = pFrame->pGuider->SaveCurrentImage(path);
+        if (err)
+        {
+            if (created)
+                ::wxRemove(path);
+            succeeded = false;
+            errorMsg = wxString::Format("error saving image file [%s] -- see debug log for more info", path);
+        }
+    }
+
+    Debug.Write(wxString::Format("SingleExposure::Complete ok=%d path=[%s]\n", succeeded, path));
+
+    EvtServer.NotifySingleFrameComplete(succeeded, errorMsg, *this);
+
+    if (pCamera->Binning != prev_binning)
+        pCamera->SetBinning(prev_binning);
+    if (pCamera->GuideCameraGain != prev_gain)
+        pCamera->SetCameraGain(prev_gain);
+    enabled = false;
+}
+
 static wxString RawModeWarningKey(void)
 {
     return wxString::Format("/Confirm/%d/RawModeWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressRawModeWarning(long)
+static void SuppressRawModeWarning(intptr_t)
 {
     pConfig->Global.SetBoolean(RawModeWarningKey(), false);
 }
 
 static void WarnRawImageMode(void)
 {
-    if (pCamera->FullSize != pCamera->DarkFrameSize())
+    if (pCamera->FrameSize != pCamera->DarkFrameSize())
     {
-        pFrame->SuppressableAlert(RawModeWarningKey(),
+        pFrame->SuppressibleAlert(RawModeWarningKey(),
                                   _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "
                                     "different size from ordinary guide frames for this camera."),
                                   SuppressRawModeWarning, 0);
@@ -437,11 +506,11 @@ static void WarnRawImageMode(void)
  * by the background thread.
  *
  * It:
- * - causes the image to be redrawn by calling pGuider->UpateImageDisplay()
+ * - causes the image to be redrawn by calling pGuider->UpdateImageDisplay()
  * - calls the routine to update the guider state (which may do nothing)
  * - calls any other appropriate state update routine depending upon the current state
  * - updates button state based on appropriate state variables
- * - schedules another exposure if CaptureActive is stil true
+ * - schedules another exposure if CaptureActive is still true
  *
  */
 void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
@@ -472,7 +541,8 @@ void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
                 pGuider->StopGuiding();
                 pGuider->UpdateImageDisplay();
             }
-            m_singleExposure.enabled = false;
+            if (m_singleExposure.enabled)
+                m_singleExposure.Complete(false, "camera error -- see debug log");
             EvtServer.NotifyLoopingStopped();
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
@@ -862,7 +932,7 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     m_mgr.Update();
 }
 
-// Redock windows and restore main window to size/position where everything should be readily accessible
+// Re-dock windows and restore main window to size/position where everything should be readily accessible
 void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 {
     wxAuiPaneInfoArray& panes = m_mgr.GetAllPanes();
@@ -939,7 +1009,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     }
     else
     {
-        // Cancel event may require non-trivial undos
+        // Cancel event may require non-trivial undo actions
         Debug.Write("User exited setup dialog with 'cancel'\n");
         pAdvancedDialog->Undo();
     }
@@ -952,7 +1022,7 @@ static wxString DarksWarningEnabledKey()
     return wxString::Format("/Confirm/%d/DarksWarningEnabled", pConfig->GetCurrentProfileId());
 }
 
-static void SuppressDarksAlert(long)
+static void SuppressDarksAlert(intptr_t)
 {
     pConfig->Global.SetBoolean(DarksWarningEnabledKey(), false);
 }
@@ -961,7 +1031,7 @@ static void ValidateDarksLoaded(void)
 {
     if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
     {
-        pFrame->SuppressableAlert(DarksWarningEnabledKey(),
+        pFrame->SuppressibleAlert(DarksWarningEnabledKey(),
                                   _("For best results, use a Dark Library or a Bad-pixel Map "
                                     "while guiding. This will help prevent PHD from locking on to a hot pixel. "
                                     "Use the Darks menu to build a Dark Library or Bad-pixel Map."),
@@ -1162,7 +1232,7 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
     }
 }
 
-static void AlertSetRAOnly(long param)
+static void AlertSetRAOnly(intptr_t param)
 {
     pFrame->SetDitherRaOnly(true);
     pFrame->m_infoBar->Dismiss();

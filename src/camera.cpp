@@ -216,8 +216,9 @@ GuideCamera::GuideCamera()
     HasShutter = false;
     ShutterClosed = false;
     HasSubframes = false;
+    HasFrameLimiting = false;
     HasCooler = false;
-    FullSize = UNDEFINED_FRAME_SIZE;
+    FrameSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
@@ -405,7 +406,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         {
         }
 
-        // Chack ASCOM and INDI first since those choices may match match other choices below (like Simulator)
+        // Check ASCOM and INDI first since those choices may match match other choices below (like Simulator)
 #if defined(ASCOM_CAMERA)
         else if (choice.Contains(_T("ASCOM")))
         {
@@ -482,7 +483,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice == _T("MallinCam SkyRaider"))
             pReturn = SkyraiderCameraFactory::MakeSkyraiderCamera();
 #endif
-#if defined(CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
+#if defined(CAM_QHY5) // must come after other QHY 5's since this pattern would match them
         else if (choice.Contains(_T("QHY 5")))
             pReturn = new CameraQHY5();
 #endif
@@ -655,6 +656,22 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
     return pReturn;
 }
 
+// ConnectCamera is the one place where we call camera->Connect(). Any work done here
+// applies to all camera types, regardless of how the various camera sub-ckasses
+// implement Connect().
+bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
+{
+    bool err = camera->Connect(cameraId);
+    if (err)
+        return err;
+    if (camera->HasFrameLimiting)
+    {
+        wxRect roi = pConfig->Profile.GetRect("/camera/LimitFrame");
+        err = camera->SetLimitFrame(roi);
+    }
+    return err;
+}
+
 bool GuideCamera::HandleSelectCameraButtonClick(wxCommandEvent&)
 {
     return false; // not handled
@@ -715,6 +732,27 @@ bool GuideCamera::SetBinning(int binning)
 
     Binning = binning;
     pConfig->Profile.SetInt("/camera/binning", binning);
+
+    // if a Limit Frame ROI is in use, adjust it for the new binning
+    if (HasFrameLimiting && !LimitFrame.IsEmpty() && binning != LimitFrameBinning)
+    {
+        SetLimitFrame(wxRect(LimitFrame.x * binning / LimitFrameBinning, LimitFrame.y * binning / LimitFrameBinning,
+                             LimitFrame.width * binning / LimitFrameBinning, LimitFrame.height * binning / LimitFrameBinning));
+    }
+
+    return false;
+}
+
+bool GuideCamera::SetLimitFrame(const wxRect& roi)
+{
+    LimitFrame = ConstrainLimitFrame(roi);
+    LimitFrameBinning = Binning;
+
+    pConfig->Profile.SetRect("/camera/LimitFrame", LimitFrame);
+    pConfig->Profile.SetInt("/camera/LimitFrameBinning", LimitFrameBinning);
+
+    Debug.Write(wxString::Format("camera: updated LimitFrame => (%d,%d),(%dx%d)\n", LimitFrame.x, LimitFrame.y,
+                                 LimitFrame.width, LimitFrame.height));
 
     return false;
 }
@@ -1343,8 +1381,8 @@ wxString GuideCamera::GetSettingsSummary()
     return wxString::Format("Camera = %s%s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
                             HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
                             HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
-                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FullSize.GetWidth(),
-                            FullSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
+                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FrameSize.GetWidth(),
+                            FrameSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
                             CurrentDefectMap ? "defect map in use" : "no defect map", pixelSizeStr);
 }
 
@@ -1386,7 +1424,7 @@ void GuideCamera::SelectDark(int exposureDuration)
     }
 }
 
-void GuideCamera::GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp)
+void GuideCamera::GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp)
 {
     double minExp = 9999.0;
     double maxExp = -9999.0;
