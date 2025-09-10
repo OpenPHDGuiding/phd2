@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Algoritmy navádění</title><style type="text/css">
+ body {font-family:Arial, Verdana, sans-serif; font-size: 10pt;}
+ h1, h2, h3, h4, h5 {font-family: Arial, Verdana, sans-serif; color: blue;}
+</style></head>
+<body>
+<h2>Algoritmy navádění</h2><a href="#Guiding_Theory">Teorie navádění</a><br><a href="#Guide_Algorithm_Parameters">Parametry algoritmů navádění</a><br><br><h3><a name="Guiding_Theory"></a>Teorie navádění</h3>Výchozí algoritmy navádění v <span style="font-style: italic;">PHD2</span> jsou osvědčené a měly by dobře fungovat pro většinu
+uživatelů. &nbsp;Pokud již nemáte zkušenosti s naváděním a nechápete jeho principy, měli byste být při změnách
+algoritmů opatrní. &nbsp;Dialog Pokročilá nastavení v <span style="font-style: italic;">PHD2</span> však tyto změny
+usnadňuje. &nbsp;Každý algoritmus má sadu parametrů, které
+řídí, jak se pozorované změny v poloze vodicí hvězdy (vychýlení hvězdy)
+překládají do korekcí navádění, jež se posílají montáži. <br><br>Než se budeme věnovat
+podrobnostem těchto parametrů, stojí za to připomenout si trochu teorie navádění a podívat se, čeho se tyto algoritmy snaží dosáhnout.
+&nbsp;Pokud pomineme
+zařízení adaptivní optiky, která jsou podstatně jiná, čelí konvenční
+navádění značným výzvám. &nbsp;Úkolem je
+pohybovat strojem, který váží desítky až stovky kilogramů, s přesností, jež nezpůsobí protažené či zploštělé hvězdy. &nbsp;Ačkoli mnoho vodicích kamer je citlivých na vychýlení vodicí hvězdy o jen několik
+mikrometrů na senzoru (např. 0,0002 palce, 0,005
+milimetru),&nbsp; stále očekáváme, že montáž a naváděcí software
+budou posouvat kameru po obloze celé hodiny s touto úrovní
+přesnosti. Aplikace pro navádění jako PHD2 si nejlépe poradí s
+chybami sledování, které jsou
+„pomalé a plynulé“, nikoli „rychlé a náhodné.“ &nbsp;Zdroje pomalých,
+plynulých nebo předvídatelných (korigovatelných) chyb zahrnují: <br><ul><li>Některé typy mechanických nedokonalostí v převodech rektascenze, včetně těch, které způsobují&nbsp;periodickou chybu.</li><li>Malé chyby v siderické rychlosti sledování montáže</li><li>Rozumné množství vůle (zpětné vůle) v deklinaci</li><li>Atmosférickou refrakci – hvězdy se při přibližování k horizontu zdánlivě pohybují pomaleji</li><li>Určité omezené typy mechanického průhybu a flexe – ale <span style="font-weight: bold;">ne </span>diferenciální flexe</li><li>Nesouosost osy rektascenze s nebeským pólem (chyba polární orientace)</li></ul>Co
+naopak v seznamu není a co konvenční navádění nedokáže korigovat? &nbsp;Bohužel je to&nbsp;dlouhý seznam, mj.: <br><ul><li>Atmosférický seeing („turbulence“)</li><li>Zvuk převodů, drsnost a vibrace</li><li>Zatuhnutí a vysoké statické tření v pohonech os způsobené přetažením nebo jinými mechanickými problémy</li><li>Hrubá nevyváženost tubusu na osách montáže</li><li>Diferenciální flexe – relativní pohyb mezi obrazovým dalekohledem a guidrem</li><li>Nárazy větru, zachycené kabely, nečistoty v ozubení</li><li>A mnoho dalšího…</li></ul>Společným
+jmenovatelem všech algoritmů navádění je potřeba
+reagovat na pomalá, plynulá nebo předvídatelná vychýlení a
+ignorovat
+ostatní. &nbsp;To je i za ideálních podmínek obtížné, protože každé
+jednotlivé vychýlení vodicí hvězdy bude mít pravděpodobně příspěvky z více zdrojů.
+&nbsp;A pokud by to nebylo dostatečně náročné, pamatujte, že reálné
+montáže nejsou nikdy dokonalé – takže korekce, kterou požadujete, nemusí být přesně
+tou korekcí, kterou dostanete. &nbsp;Obvykle je nejdůležitějším požadavkem
+jakéhokoli algoritmu
+vyhnout se překorigování, kdy je montáž popoháněna sem a tam a navádění se nikdy nestabilizuje. &nbsp;Typický
+přístup v těchto algoritmech je ignorovat vychýlení, která jsou nejspíše způsobena seeingem, a aplikovat na
+korekce posílané montáži „setrvačnost“ nebo „impedanci“. &nbsp;To obvykle znamená dělat
+korekce, které sledují určitý vzorec
+pohybu a jsou obecně konzistentní s dříve
+provedenými korekcemi; zároveň být&nbsp;neochotný provádět korekce, které vyžadují velkou
+změnu směru nebo amplitudy. &nbsp;Odolnost vůči změnám směru je obzvlášť důležitá v deklinaci, kde&nbsp;je zpětné vůle
+častý problém. &nbsp;Doufejme, že toto pozadí vám
+poskytne dostatek vhledů do základů navádění, aby dávaly různé parametry navádění v <span style="font-style: italic;">PHD2</span> smysl.<br><h3><a name="Guide_Algorithm_Parameters"></a>Parametry algoritmů navádění</h3>V
+<span style="font-style: italic;">PHD2</span> lze různé algoritmy navádění použít jak pro osu rektascenze,
+tak pro deklinaci. &nbsp;Většina těchto&nbsp;algoritmů
+obsahuje parametr <span style="font-weight: bold;"><a name="minimum_move"></a>minimálního pohybu</span>.
+&nbsp;Ten slouží k tomu, aby se zabránilo provádění naváděcích korekcí, které
+jsou příliš malé, pravděpodobně nemají žádný vliv na tvar hvězd a
+jsou většinou způsobeny přechodnými efekty seeingu. &nbsp;Hodnoty se
+zadávají v pixelech, takže o nich musíte uvažovat v
+kontextu vaší obrazové škály a typické velikosti vodicích hvězd.
+&nbsp;Pokud jste použili průvodce novým profilem ke konfiguraci systému,
+hodnoty min-pohyb budou nastaveny na hodnoty, které pravděpodobně dobře fungují
+pro vaši obrazovou škálu. &nbsp;Naváděcí Asistent může
+rovněž upravit tyto hodnoty na základě svého měření vysokofrekvenčních
+poruch seeingu. &nbsp;Pokud vidíte vysokou frekvenci korekcí v deklinaci a mnoho obratů směru, může se stát, že „honíte seeing“ – v takovém případě zvýšení hodnot min-pohyb může být jednoduchým způsobem, jak
+to omezit. &nbsp;<span style="font-weight: bold;">Ze všech detailních parametrů navádění popsaných
+zde jsou právě dvě hodnoty min-pohyb těmi, které si nejčastěji zaslouží
+každonoční úpravu podle podmínek seeingu.</span><br><br>Algoritmy&nbsp;<a name="hystereze"></a><span style="font-weight: bold;">Hystereze</span>
+si vedou historii naváděcích korekcí, které byly v nedávné minulosti
+provedeny, a ta je použita k výpočtu další
+naváděcí korekce. &nbsp;Parametr <span style="font-weight: bold;">hystereze</span>, vyjádřený v procentech, určuje „váhu“,
+jakou má mít tato historie oproti&nbsp; sledování pouze vychýlení
+hvězdy v posledním vodicím snímku. &nbsp;Zvažte příklad,
+kdy je parametr hystereze 10 %. &nbsp;V takovém případě bude další
+naváděcí korekce z 90 % ovlivněna pohybem hvězdy v
+aktuálním snímku a z 10 % korekcemi provedenými
+v nedávné minulosti. &nbsp;Zvýšení hodnoty hystereze vyhlazuje
+korekce, ale hrozí, že budou příliš pomalé reagovat na
+oprávněnou změnu směru. &nbsp;Algoritmy hystereze také
+obsahují parametr <a name="agresivita"></a><span style="font-weight: bold;">agresivity</span>,
+opět v procentech,&nbsp; který slouží ke snížení
+překorigování. &nbsp;V každém snímku <span style="font-style: italic;">PHD2</span>
+vypočítá, o kolik a jakým směrem by se měla montáž posunout.&nbsp;Parametr agresivity
+výsledek škáluje. Vezměme případ, kdy bylo vyhodnoceno vychýlení hvězdy a je odůvodněný korekční posun o 0,5 pixelu.
+&nbsp;Je-li agresivita nastavena na 100 %, bude vydán
+povel k posunu montáže o plných 0,5 pixelu. &nbsp;Pokud je
+agresivita 60 %, montáž bude požádána, aby se posunula jen o 60 %
+této hodnoty, tedy o 0,3 pixelu. &nbsp;Pokud jste rozumně nastavili
+hodnoty Min-Move, obvykle není třeba tyto parametry měnit a jakékoli úpravy by měly vycházet z
+pečlivé analýzy&nbsp;dlouhých seancí navádění pomocí nástroje PHD2 LogViewer.<br><br>Algoritmus&nbsp;<a name="ResistSwitch"></a><span style="font-weight: bold;">ResistSwitch</span>
+se chová přesně tak, jak napovídá jeho název. &nbsp;Podobně jako algoritmy
+hystereze si udržuje
+historii minulých korekcí a jakákoli změna směru musí být
+„přesvědčivá“, aby byl vydán obrácený korekční povel. &nbsp;To je
+vhodné pro navádění v deklinaci, kde jsou obraty ve
+směru jak&nbsp;podezřelé, tak i&nbsp;pravděpodobně
+spojeny s zpětné vůle
+v převodech. &nbsp;Z tohoto důvodu je ResistSwitch výchozí
+algoritmus pro deklinaci, nikoli však pro rektascenzi, kde jsou legitimní obraty ve směru očekávány. &nbsp;K dispozici jsou dva parametry
+pro řízení algoritmu ResistSwitch. &nbsp;Prvním je
+„agresivita“, procentní
+hodnota se stejným chováním jako agresivita u hystereze popsaná výše.
+Druhým parametrem je
+zaškrtávací volba „Rychlý přepínač pro velká vychýlení“. &nbsp;Je-li
+zaškrtnuta, PHD2 zareaguje okamžitě na velkou změnu směru,
+namísto čekání na tři po sobě jdoucí vychýlení v novém
+směru, což je normální chování. &nbsp;To může pomoci rychleji se
+vzpamatovat
+z velkých výkyvů v Dec, způsobených třeba větrem, zachycením kabelu nebo jinými mechanickými posuny. &nbsp;Definice „velkého vychýlení“ je
+3× hodnota minimálního pohybu (min-pohyb). &nbsp;Pokud PHD2 naopak přereagovává na
+změny směru, můžete chování doladit parametrem min-pohyb
+nebo volbu „rychlý přepínač“ úplně vypnout. &nbsp;Stojí za připomenutí, že „méně bývá více“ pokud jde o navádění v Dec,
+proto se nesnažte tyto parametry přetunovat.<br><br>Algoritmus <a name="LowPass"></a><span style="font-weight: bold;">LowPass </span>
+rovněž využívá historii nedávných naváděcích korekcí k výpočtu
+následující korekce. &nbsp;Výchozím bodem pro vypočtený pohyb
+je medián vychýlení vodicí hvězdy,
+která se vyskytla v nedávné historii. &nbsp;To znamená, že vychýlení
+viděné v aktuálním snímku má relativně malý vliv na
+výpočet dalšího kroku a algoritmus je&nbsp;odolný vůči rychlým změnám. &nbsp;Hromaděná historie však také
+obsahuje výpočet, který zjišťuje, zda vychýlení vykazují trend
+v konzistentním směru. &nbsp;Parametr <span style="font-weight: bold;"><a name="slope_weight_"></a>váha sklonu</span>,
+vyjádřený v procentech, určuje, jak velký vliv má tento trend při výpočtu skutečného naváděcího pohybu – je tu proto, aby zabránil přílišné lenosti algoritmu. &nbsp;Pokud
+nastavíte váhu sklonu na nulu, naváděcí impuls bude vždy pouze mediánem nedávné historie. &nbsp;Pokud nastavíte nenulovou váhu sklonu, bude medián upraven
+nahoru nebo dolů
+podle nedávného trendu pohybů vodicí hvězdy. &nbsp;Protože
+algoritmus low-pass je velmi odolný vůči rychlým změnám, je pravděpodobně
+nejvhodnější pro navádění v deklinaci nebo pro montáže s absolutními
+enkodéry. &nbsp;Použití tohoto algoritmu je však deprecated ve prospěch
+algoritmu LowPass2.<br><br><span style="font-weight: bold;"><a name="LowPass2"></a>LowPass2</span>
+je variací původního LowPass s poněkud odlišným chováním. &nbsp;Také udržuje historii
+naváděcích korekcí, ale další korekce je jednoduše lineární
+extrapolací povelů, které ji předcházely (tj. výpočet sklonu).
+&nbsp;To pokračuje, dokud se neobjeví významná změna
+směru, v tom okamžiku se historie vymaže. &nbsp;Algoritmus má dva nastavitelné parametry: minimální pohyb a
+agresivitu. &nbsp;Minimální pohyb má stejný efekt jako v
+ostatních algoritmech, a agresivita (v procentech) je způsob,
+joště více tlumit velikost korekcí. LowPass2 je velmi
+konzervativní, vysoce impedanční algoritmus, který je dobrou volbou pro
+uživatele s dobrým seeingem a dobře se chovajícími montážemi s malou
+nebo žádnou vůlí v deklinaci. &nbsp;Je doporučeným algoritmem pro
+montáže s vysoce přesnými enkodéry.<br>
+<br>
+
+<p>Algoritmus <a name="Z-filter"></a><span style="font-weight: bold;">Z-filter</span>
+je variací algoritmů LowPass, ale pracuje v diskrétní frekvenční neboli „Z“ doméně. Z hlediska navádění aplikuje plnou
+korekci na nízkofrekvenční složky způsobené periodickou chybou montáže.
+Vyšší frekvence jsou korigovány s agresivitou, která se postupně snižuje až na nulu.</p>
+
+<p>Algoritmus Z-filter vám umožňuje používat kratší expoziční časy vodicí kamery
+(např. 1 s nebo 0,5 s), aniž byste „honili“ vysokofrekvenční seeing.
+Výhodou kratších expozičních časů je menší zpoždění při
+aplikaci korekcí a menší jednotlivé korekce.</p>
+
+<p>Algoritmus Z-filter nabízí pouze dvě nastavení: Faktor Expozice
+(XFac) a Minimální pohyb (MinMo). Virtuální vodicí expoziční čas
+je dán skutečným expozičním časem vynásobeným faktorem Exposure
+Factor. Daný virtuální expoziční čas se bude chovat podobně jako
+nefiltrovaný algoritmus používající stejný skutečný expoziční čas. Například
+expoziční čas 1 s s faktorem Exposure 4 dává
+virtuální expoziční čas 4 s (4 × 1 s) a chová se podobně jako
+Hysterezes Agresivita 100 % a Hystereze0,0 při expozičním čase 4 s. Expoziční čas 2 s s faktorem Exposure 2 má také
+virtuální expoziční čas 4 s (2 × 2 s) a chová se tedy velmi
+podobně. Hlavní rozdíl je v tom, že kratší skutečné expozice umožňují
+aplikovat korekce dříve a častěji, takže jsou menší.</p>
+
+<p>Tato funkce vám umožňuje upravit vodicí expoziční čas pro optimalizaci
+SNR vodicí hvězdy a latence navádění. Poté můžete upravit faktor Expozice,
+abyste dostali požadovanou odezvu navádění. Virtuální expoziční čas 2–4 s dle obvyklého doporučení je dobrým výchozím bodem pro osu RA.
+Na ose Dec lze použít delší virtuální expozice, což může pomoci
+minimalizovat obraty, které mohou vést k backlashi.</p>
+
+<p>Všimněte si, že při používání krátkých expozic bude pohyb způsobený seeingem
+na grafu navádění viditelnější. To neznamená, že je navádění horší.
+Jiné algoritmy se spoléhají na vodicí expoziční čas k odfiltrování pohybu od seeingu. Faktor Exposure u Z-filtru plní stejnou
+funkci.</p>
+
+<p>Z-filter má také nastavení MinMo. Hodnota by měla odpovídat schopnostem montáže přesně provádět malé
+korekce. U jiných algoritmů je MinMo někdy doporučován jako filtr, např. aby se zabránilo obratům osy Dec. U
+Z-filtru je doporučený přístup zvýšit faktor Expozice.
+&nbsp;Algoritmus Z-filter je složitější a hůře pochopitelný a je nepravděpodobné, že by u většiny montáží dosahoval lepších výsledků než LowPass2, takže obecně není doporučen.</p>
+
+<br>
+<br>
+
+<a name="Predictive_PEC"></a><b>PHD2 Prediktivní PEC Naváděcí Algoritmus (PPEC)</b>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b>Přehled</b></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Algoritmus PPEC se od ostatních v PHD2 liší díky svým
+modelovacím a prediktivním schopnostem.&nbsp;
+Algoritmus analyzuje výkon sledování montáže v
+reálném čase a jakmile je analýza dokončena, začne počítat naváděcí
+korekce ještě předtím, než se opakujících se chyba skutečně projeví.&nbsp;
+Vydávání proaktivních korekcí snižuje
+zpoždění vlastní tradičnímu navádění a může významně zlepšit
+výkon.&nbsp;
+U ostatních algoritmů,
+které jsou zcela reaktivní, jsou korekce vydány až potom, co je
+chyba zaznamenána na senzoru kamery.&nbsp;&nbsp;
+</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Jakmile navádění začne, algoritmus analyzuje
+výkon montáže a vyhledává chyby sledování, které jsou opakovatelné a
+tedy předvídatelné.&nbsp;
+Algoritmus používá
+sofistikovaný model založený na Gaussovském procesu vyvinutý výzkumným týmem na Max-Planck-Institutu v Německu.&nbsp;
+Matematické detaily naleznete v odkazu na článek:</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><a href="http://ieeexplore.ieee.org/document/7105398/?reload=true">http://ieeexplore.ieee.org/document/7105398/?reload=true</a></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Algoritmus PPEC se obvykle používá pro osu RA, kde
+zbytková periodická chyba a jiné chyby související s převody často snižují přesnost sledování.&nbsp;
+Algoritmus používá oddělené
+časové škály k charakterizaci chování systému: 
+
+<ul>
+<li>Krátkodobé: pro vysokofrekvenční chyby, jako jsou chyby způsobené drsností převodů nebo seeingem</li>
+<li>Střednědobé: pro zbytkové periodické chyby, typicky se vyskytující v intervalech kratších nebo rovných periodě šneku</li>
+<li>Dlouhodobé: pro stálý drift a pro nízkofrekvenční (delší časový interval) harmonické složky, které mohou být způsobeny interakcí více kol v převodovém řetězci</li>
+</ul>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Krátkodobé chování slouží k identifikaci
+nepředvídatelného šumu v systému, který je v podstatě odfiltrován, aby bylo možné
+identifikovat složky, které jsou předvídatelné.&nbsp;
+Pro většinu montáží bude nejdůležitější složka střednědobá.&nbsp;
+Pokud dodržujete osvědčené postupy, máte v montáži naprogramovanou korekci periodické chyby (PEC) (pokud je tato funkce k dispozici).&nbsp;
+Tím se snižuje množství práce, kterou musí vykonávat PHD2, a korekce PEC v montáži je obvykle uložena trvale.&nbsp;
+Tento přístup je lepší než pokaždé znovu měřit a odvozovat chování periodické chyby při každém sestavení vybavení.&nbsp;
+To ovšem neznamená, že PEC v montáži je dokonalá, a často uvidíte zbytkové opakující se chyby i při aktivní PEC.&nbsp;
+Ty často vznikají, když
+chyby sledování nastávají s frekvencí, která není harmonickou (celistvým
+násobkem) periody šneku montáže – většina implementací PEC si s tím neporadí.&nbsp;
+Zbytkové periodické chyby se mohou objevit i tehdy, pokud závisejí na mechanickém zatížení montáže, nebo
+pokud se chování montáže od doby naprogramování PEC změnilo.&nbsp;
+Algoritmus PPEC může být při identifikaci a redukci těchto chyb velmi účinný, protože není závislý na periodě šneku a neustále provádí novou analýzu aktuálního chování montáže.</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Algoritmus PPEC také detekuje a proaktivně koriguje
+drift.&nbsp;
+Přestože drift je obvykle dobře zvládán
+jakýmkoli z algoritmů navádění, korekce budou mít vždy určité zpoždění za chybou.&nbsp;
+Pro některé případy použití – třeba spektroskopii, fotometrii nebo sledování komet – to může být problém, a v takovém případě může PPEC přinést lepší výsledky.&nbsp;
+</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Protože PPEC využívá proces učení, obvykle trvá asi
+2 periody šneku, než se montáž namodeluje a algoritmus se stane plně účinným.&nbsp;
+Během této tréninkové fáze se algoritmus
+chová spíše jako algoritmus „hystereze“, takže obvykle neuvidíte penalizaci výkonu, zatímco se vnitřní model buduje.&nbsp;
+Naopak, pravděpodobně uvidíte postupné
+zlepšování sledování, jak se model zpřesňuje a algoritmus plynule přechází
+z hystereze na prediktivní režim.&nbsp; Toto zlepšení je obvykle patrné i předtím, než je střednědobé chování montáže plně namodelováno. </p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Protože je model PPEC implicitně svázán se stavem
+převodového ústrojí, musí se naučit znovu, pokud montáž přejede na podstatně jinou pozici.&nbsp;
+Z téhož důvodu jej nelze uchovat
+mezi různými seancemi navádění, což je důvod, proč je důležitý konvenční PEC.&nbsp;
+Model PPEC však zůstane zachován během ditheringu a při pauze navádění (automatizací)
+pro činnosti, jako je ostření.&nbsp;
+Pro nejčastější případ použití, tj. snímání stejného objektu po několik hodin s periodickým ditheringem, zůstane model PPEC platný.&nbsp;
+Každopádně proces učení a
+přechod mezi režimy jsou řešeny automaticky, takže se o to nemusíte starat.</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p><b>Detaily algoritmu</b></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Po dokončení tréninkové fáze počítá algoritmus PPEC
+velikost korekce ze dvou složek.&nbsp;
+Jedna je reaktivní, založená na vychýlení
+vodicí hvězdy v nejnovější expozici.&nbsp;
+Druhá je prediktivní, vycházející z výstupu modelu Gaussovského procesu
+sestaveného během tréninku.&nbsp;
+Každá z těchto složek má vlastní zisk neboli faktor agresivity,
+takže výsledná velikost naváděcího pulzu je součtem: </p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>&nbsp;&nbsp;&nbsp; Korekce navádění = (predikovaná hodnota × prediktivní zisk) +
+(aktuální vychýlení × reaktivní zisk)</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Parametry ‘<b>prediktivní</b> <b>zisk’</b> a ‘<b>reaktivní</b> <b>zisk’</b>
+jsou dostupné v dialogu Pokročilá nastavení a jejich výchozí hodnoty by měly dobře fungovat pro většinu montáží.&nbsp;
+Měňte je opatrně,
+protože špatné volby mohou vaše navádění
+zhoršit. &nbsp;Pamatujte, že obě složky ve výpočtu
+korekce jsou vektorové veličiny – mohou mít opačné
+východ/západ polarity. &nbsp;Proto není nutné,
+aby součet obou zisků byl menší než 100 % – ale dávejte pozor, abyste nepřekorigovali.</p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p>Během tréninku musí algoritmus identifikovat
+periodické chyby v pozorovaném pohybu vodicí hvězdy.&nbsp;
+Pro první pokusy můžete použít
+periodu šneku vaší montáže jako výchozí hodnotu pro ‘<b>délku</b> <b>periody’</b>.&nbsp;
+To dá
+algoritmu dobrý start, ale zpočátku ponechte zaškrtnutou volbu ‘auto-adjust period’, dokud nebudete mít jasný obraz o periodické chybě vaší montáže.&nbsp;
+Tím
+řeknete
+algoritmu, aby periodu upravoval podle potřeby, aby lépe kontroloval
+jakékoli periodické
+chyby, které najde. &nbsp;Jakmile algoritmus pustíte vícekrát
+a budete spokojeni s výsledky, můžete obvykle volbu
+‘auto-adjust period’ odškrtnout, aby se PPEC zaměřoval
+na nejdůležitější frekvenci. Podobně pokud máte
+montáž s opakující se chybou sledování, která se vyskytuje na neharmonické
+frekvenci, &nbsp;odškrtnutí této volby je pravděpodobně také dobrý nápad. &nbsp;Zjevně je k tomu potřeba FFT analýza
+nativního výkonu sledování – to umí PHD LogViewer.</p><p class="MsoNormal">Parametr '<span style="font-weight: bold;">Zachovat model (% period)</span>'
+určuje, jak dlouho může montáž sledovat bez navádění, než bude
+algoritmus PPEC resetován. &nbsp;Počítá se jako procento
+aktuální délky periody. &nbsp;To je užitečné v situacích, jako je
+auto-focusing, kdy montáž nadále sleduje siderickou rychlostí,
+ale navádění neběží. &nbsp;Platí to také pro změny polohy v RA
+směrem na západ v důsledku přejetí. Opatrnosti je třeba, pokud
+výchozí nastavení 40 % zvyšujete. &nbsp;Provoz po delší dobu bez navádění způsobí, že model PPEC ztratí
+přesnost, v takovém případě je reset nejlepší postup.
+   &nbsp;Bod, kdy k tomu dojde, závisí na konkrétní montáži a
+   aktuálních podmínkách seeingu, takže pokud chcete tento parametr upravovat,
+   budete možná muset experimentovat.</p>
+
+
+
+ <p class="MsoNormal">Parametr &#8216;<b>min-pohyb&#8217;</b>
+ ovlivňuje pouze reaktivní složku algoritmu. Pokud je naměřené vychýlení hvězdy menší
+ než tato hodnota, reaktivní složka bude nastavena na nulu. Prediktivní složka algoritmu se však stále
+  vypočítá a aplikuje.</p>
+  <br><br><br>&nbsp;&nbsp;</body></html>

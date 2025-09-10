@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Nástroje a pomůcky</title>
+<style type="text/css">
+ body {font-family: Arial, Verdana, sans-serif; font-size: 10pt;}
+ h1, h2, h3, h4, h5 {font-family: Arial, Verdana, sans-serif; color: blue;}
+</style>
+</head>
+<body>
+<h2>Nástroje a pomůcky</h2>
+<a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;">Nástroje pro polární ustavení</span></a><br>
+<a href="Tools.htm#Auto-Select_Star">Automatický výběr hvězd</a><br>
+<a href="Tools.htm#Calibration_Assistant">Průvodce kalibrací</a><br>
+<a href="Tools.htm#Guiding_Assistant">Naváděcí Asistent</a><br>
+<a href="Tools.htm#Calibration_Details">Kontrola a úpravy kalibrace</a><br>
+<a href="#Manual_Guide">Ruční navádění</a><br>
+<a href="Tools.htm#Star_cross_tool">Star Cross test</a><br>
+<a href="Tools.htm#pierflip_cal_tool">Nástroj kalibrace pro meridiánový flip</a><br>
+<a href="Tools.htm#Comet_Tracking">Sledování komet</a><br>
+<a href="#Lock_Positions">Lock pozice</a><br>
+<a href="#PHD2_Server">PHD2 Server</a><br>
+
+<h3><a name="Polar_alignment_tools"></a>Nástroje pro polární ustavení</h3>
+PHD2 nabízí tři různé nástroje pro polární ustavení. Cíl je stejný: pomoci vám fyzicky zarovnat osu RA montáže na nebeský pól. Tyto nástroje se liší od „dvou-/tří-hvězdičkových“ procedur v go-to montážích, které optimalizují přesnost najíždění, nikoli fyzické seřízení alt/az montáže potřebné pro snímání a navádění.
+<br><br>
+Níže je srovnání požadavků a chování. Sloupce přesnosti a rychlosti mají rozsah 1–3 (1 = nejnižší, 3 = nejvyšší):
+<br>
+<table style="text-align:left; width:100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr><td style="font-weight:bold;">Metoda</td><td style="font-weight:bold;">Přesnost</td><td style="font-weight:bold;">Rychlost</td><td style="font-weight:bold;">Pohled na oblohu</td><td style="font-weight:bold;">Další</td></tr>
+<tr><td>Klasické drift ustavení</td><td>3</td><td>1</td><td>Východ/západní horizont; meridián/rovník</td><td>Nejvíce přejezdů; osy zvlášť</td></tr>
+<tr><td>Statické polární ustavení</td><td>1</td><td>3</td><td>Polární oblast</td><td>Nutná identifikace hvězd u pólu; minimum přejezdů</td></tr>
+<tr><td>Polar Drift Alignment</td><td>2</td><td>2</td><td>Polární oblast</td><td>Minimum přejezdů</td></tr>
+</tbody></table>
+
+Drift ustavení je stále „zlatý standard“ přesnosti, protože přímo měří drift způsobený chybou polárního ustavení. Je však pomalejší a vyžaduje vhodný výhled. Statické polární ustavení (SPU) obětuje trochu přesnosti ve prospěch rychlosti a umožňuje současně upravovat obě osy – stačí výhled na polární oblast. Polar Drift Alignment je nejjednodušší na provedení, ale trochu méně přesné a pomalejší než SPU; pracuje také v polární oblasti.
+<br><br>
+Přesnost polárního ustavení je často přeceňována. Většinu driftu v Dec zvládne PHD2, pokud montáž nemá velký zpětné vůle. Příliš velká chyba polárního ustavení ale způsobí rotaci pole, kterou nelze opravovat. Čím větší senzor a čím blíže k pólu, tím větší problém. Pro výpočet očekávané rotace můžete použít kalkulátor:
+<br>
+<a href="http://celestialwonders.com/tools/rotationMaxErrorCalc.html">http://celestialwonders.com/tools/rotationMaxErrorCalc.html</a>
+
+<h3><a href="Tutorials.htm#Drift_Align">Návod: Drift Alignment</a></h3>
+<h3><a href="Tutorials.htm#Static_polar_alignment">Návod: Statické polární ustavení</a></h3>
+<h3><a href="Tutorials.htm#Polar_Drift_Align">Návod: Polar Drift Alignment</a></h3>
+
+<h3><a name="Auto-Select_Star"></a>Automatický výběr hvězd</h3>
+Auto‑výběr hvězd spustíte ikonou „Auto-Výběr Hvězdy“ v hlavním okně (vedle „Navádění“), klávesou Alt+S, nebo položkou v nabídce „Tools“. PHD2 prohledá aktuální vodicí obraz a vybere hvězdy vhodné pro navádění: dost jasné, nesaturované, dostatečné velikosti, ne příliš blízko jiných hvězd či okraje. Na displeji mohou vypadat slabě – upravte gamma, chcete‑li je lépe vidět. Auto‑výběr je téměř vždy lepší než „klikáním od oka“ a je jediný způsob, jak zapnout multi‑star navádění. Pro nejlepší výsledky používejte MVP nebo dark knihovnu a nastavte Min‑HFD (Pokročilé/Navádění), dále měření saturace podle Max‑ADU (Pokročilé/Kamera) s ohledem na 8bit (~255) nebo 16bit (~65000) kameru.
+<br><br>
+Zrušení výběru a pokračování v loopu: Shift‑klik na ikonu „Auto-Výběr“ nebo kdekoli v obraze (užitečné se sub‑framem, chcete‑li zpět na full‑frame).
+
+<h3><a name="Calibration_Assistant"></a>Průvodce kalibrací (Kalibrační Asistent)</h3>
+Kalibrační Asistent (KA) pomáhá provést správnou kalibraci a vyhnout se provozním chybám (důležité pro začátečníky). Pracuje ve 3 fázích: 1) přejezd na optimální pozici (Dec≈0, ±5° od meridiánu) a „pročištění“ vůle v Dec, 2) spuštění a dokončení kalibrace, 3) vyhodnocení kvality (poor/acceptable/good) a doporučení, co zlepšit. Pro KA je třeba mít „montáž“ nebo „aux‑montáž“, které poskytují informaci o míření (ASCOM/INDI nebo „Požádat o souřadnice“). KA je interaktivní nástroj – spouští se z „Nástroje/Kalibarční Asistent…“ a sám obslouží start/stop expozic i auto‑výběr hvězd. Pokud kalibrujete Shift‑klikem na „Navádění“ a míříte mimo vhodnou oblast, KA nabídne asistentní dialog a doporučí přejezd.
+
+Ve fázi „Přejezd“ KA navrhne pozici u Dec=0 a ±5° od meridiánu (volí východ/západ tak, aby se vyhnul překlopení). Lze upravit hodnoty, případně uložit a znovu použít. Při přejezdu KA nejprve posune jižněji a pak o 1° na sever, aby „vybral“ vůli v Dec. Teprve tlačítkem „Kalibarce“ spustíte kalibraci. KA zkontroluje nastavení (rychlost navádění, krok kalibrace) a nabídne přepočet (Přepočítat) nebo doporučí zvýšit guide speed (≥0,5×). Po kalibraci zobrazí hodnocení a případné vysvětlení „Vysvětlení“.
+
+<h3><a name="Guiding_Assistant"></a>Naváděcí Asistent</h3>
+Naváděcí Asistent (NA) dočasně vypne výstup korekcí a měří chování hvězdy, aby ukázal vliv seeingu (vysoké frekvence – nekorigovatelné), drift v RA/Dec a případně změřil zpětné vůlev Dec (pokud volba zapnuta). Pokud už guidujete, měření se spustí samo; jinak nejprve spusťte loop, auto‑select a guide. Po cca 2 minutách se stabilizují veličiny jako „Vysokofrekvenční Pohyb Hvězd“ a „Chyba Polárního Zarovnání“. Pro nejpřesnější PAE namiřte poblíž rovníku a meridiánu. Po „Stop“ lze spustit měření zpětné vůle: NAprovede velké kroky na sever a pak na jih, vyhodnotí zpoždění/otočení a doporučí kompenzaci vůle v PHD2 (pokud je přiměřená), nebo jednosměrné navádění v Dec (je‑li vůle velmi velká, >3 s). Graf „Zobrazit graf“ vizualizuje průběh.
+
+<h3><a name="Calibration_Details"></a>Kontrola a úpravy kalibrace</h3>
+Kalibrační okna (včetně „sanity‑check“) zobrazují graf pohybů hvězdy v odpovědi na pulzy během kalibrace a tabulku parametrů (poloha míření, nastavení ASCOM atd.). Čáry RA a Dec by měly být přibližně kolmé; „návratové“ body (východ/jih) ukazují vliv seeingu a vůle. Tabulka uvádí i „ideální“ vodicí rychlosti pro dané nastavení – neřešte je, pokud nejsou varování. Je rozumné občas kalibraci zkontrolovat, zvlášť když ji chcete dlouho používat. Další volby jsou v Nástroje/Změnit Kalibraci: vymazat kalibraci (vynutit rekalibraci), ruční zadání (pro vývoj/pokročilé), obnova/flip apod.
+
+<h3><a name="Manual_Guide"></a>Ruční navádění</h3>
+<img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png"><br><br>
+Při potížích s kalibrací ověřte, že povely <i>PHD2</i> do montáže dorazí a montáž reaguje. V „Nástroje/Ruční Řízení“ lze posílat krátké pulzy v jednotlivých směrech (rychlostí guide). U AO zařízení uvidíte samostatná tlačítka pro AO i montáž. Každé kliknutí odešle pulz zadané délky; podržení tlačítka nic nemění. Při denním testu je lepší „poslouchat“ motory. Noční test „Hvězdný-kříž“ viz <a href="Trouble_shooting.htm#Star_cross_test">zde</a> je lepší.
+<br><br>
+<a name="Dithering_Manual"></a>Dithering lze také ručně testovat v dolní části dialogu – zadáte velikost v pixelech a spustíte posun.
+
+</body></html>
