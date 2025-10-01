@@ -1,153 +1,141 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Pokročilá nastavení</title><style type="text/css">
- body {font-family:Arial, Verdana, sans-serif; font-size: 10pt;}
- h1, h2, h3, h4, h5 {font-family: Arial, Verdana, sans-serif; color: blue;}
-</style></head>
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Pokročilá nastavení</title></head>
 <body>
 <h2>Pokročilá nastavení</h2>
-Pokročilá nastavení se otevírají kliknutím na „tlačítko Mozek“ v hlavním zobrazení.
-&nbsp;<span style="font-style: italic;">PHD2</span> má rozsáhlou sadu parametrů, které lze upravit pro optimalizaci navádění. Ačkoliv jsou nazývána „pokročilá“, nejsou nijak zvlášť obtížná na pochopení a mohou nastat situace, kdy je potřebujete změnit. Všechna pole v těchto formulářích obsahují „tool-tipy“, malé informační bubliny popisující každé pole podrobněji. Jednoduše přejíždějte kurzorem nad polem a zobrazí se tool-tip. V mnoha případech to poskytne všechny potřebné informace. Protože je k dispozici mnoho parametrů, je dialog Pokročilá nastavení v <span style="font-style: italic;">PHD2</span> uspořádán do karet, které se aktivují kliknutím na názvy karet. Všechny karty sdílejí společná tlačítka „OK“ a „Zrušit“ ve spodní části. Kliknutím na „OK“ se uplatní všechny změny, kliknutím na „Zrušit“ se změny zahodí.<br><br>
-<span style="text-decoration: underline;"><a href="#Global_Tab">Karta Globální</a></span><br>
-<span style="text-decoration: underline;"><a href="#Camera_Tab">Karta Kamera</a></span><br>
-<span style="text-decoration: underline;"><a href="#Guiding_Tab">Karta Navádění</a></span><br>
-<span style="text-decoration: underline;"><a href="#Algorithms_Tab">Karta Algoritmy</a></span><br>
-<span style="text-decoration: underline;"><a href="#Other_Devices_Tab">Karta Další zařízení</a></span><br>
+Pokročilá nastavení otevřete kliknutím na tlačítko s ikonou „mozku“ v hlavním okně.
+<span style="font-style: italic;">PHD2</span> nabízí širokou škálu parametrů, které lze upravit, abyste navádění přizpůsobili své sestavě.
+Ačkoli nesou označení „pokročilá“, nejsou nijak složitá a v určitých situacích se jejich úprava vyplatí.
+Každé pole ve formuláři má vlastní „tool tip“, tedy krátkou nápovědu, která popisuje význam daného prvku.
+Stačí na políčku podržet kurzor myši.
+Ve většině případů tím získáte všechny potřebné informace.
+Protože je parametrů mnoho, je dialog rozdělen do několika karet; kliknutím na záložku se mezi nimi přepíná.
+Všechny karty sdílejí společná tlačítka „Ok“ a „Cancel“ ve spodní části.
+Stisk „Ok“ uloží všechny změny provedené na jednotlivých kartách, „Cancel“ je naopak zahodí.<br><br>
+<span style="text-decoration: underline;"><a href="#Global_Tab">Karta Global</a></span><br>
+<span style="text-decoration: underline;"><a href="#Camera_Tab">Karta Camera</a></span><br>
+<span style="text-decoration: underline;"><a href="#Guiding_Tab">Karta Guiding</a></span><br>
+<span style="text-decoration: underline;"><a href="#Algorithms_Tab">Karta Algorithms</a></span><br>
+<span style="text-decoration: underline;"><a href="#Other_Devices_Tab">Karta Other Devices</a></span><br>
+<span style="text-decoration: underline;"><a href="#Rotator_Tab">Karta Rotator</a></span><br>
 
-<h3><a name="Global_Tab"></a>Karta Globální</h3>
+<h3><a name="Global_Tab"></a>Karta Global</h3>
 <img style="width: 604px; height: 577px;" alt="" src="Advanced_global.png"><br><br>
-Ovládací prvky na kartě „Globální“ jsou dobře popsány ve svých tool-tipech, ale pro úplnost jsou shrnuty zde:<br>
+Ovládací prvky na kartě „Global“ (Globální) jsou detailně popsány v nápovědách, níže uvádíme přehled:<br>
 <ul>
-  <li>'<a name="Language"></a>Jazyk' – určuje jazyk použitého rozhraní <span style="font-style: italic;">PHD2</span> podle dostupné lokalizace. Změna vyžaduje restart programu.</li>
-  <li>'<a name="Reset_Configuration"></a>Obnovit konfiguraci' – vrátí všechna nastavení na počáteční hodnoty, jako by <span style="font-style: italic;">PHD2</span> bylo čerstvě nainstalováno.</li>
-  <li>'<a name="Reset_Dont_Ask"></a>Obnovit zprávy „Nezobrazovat znovu“' – znovu zapne zobrazování výstrah, pokud jste dříve zvolili jejich potlačení.</li>
-  <li><a name="Check_for_updates"></a>Aktualizace softwaru
-    <ul>
-      <li><a name="Automatically_check_for_updates"></a>Automaticky kontrolovat aktualizace – umožní <span style="font-style: italic;">PHD2</span> kontrolovat aktualizace softwaru při startu. Bez připojení k internetu bude kontrola odložena do příštího spuštění.</li>
-      <li><a name="Only_check_for_major_releases"></a>Kontrolovat pouze hlavní vydání – při kontrole nepočítat vývojové buildy.</li>
-    </ul>
-    Viz <a href="Supplemental_Info.htm#Software_Update">Aktualizace softwaru</a> pro více informací o aktualizacích <span style="font-style: italic;">PHD2</span>.
-  </li>
-  <li>'<a name="Log_File_Location"></a>Umístění logů' – určuje adresář, kam budou ukládány guide logy PHD2, debug logy a případné diagnostické obrazové soubory. Výchozí umístění ve Windows je složka „Dokumenty“ přiřazená přihlášenému uživateli.</li>
-  <li><a name="Dither_Settings"></a>Nastavení ditheru
-    <ul>
-      <li><a name="Dither_Random_Mode"></a>'Náhodný režim' – používá generátor náhodných čísel k výpočtu velikosti i směru ditheru, s ohledem na omezení režimu pouze RA nebo když je Dec vedení vypnuto.</li>
-      <li><a name="Dither_Spiral_Mode"></a>'Spirálový režim' – provádí dither s pevnou velikostí ve směru hodinových ručiček do spirály. Vhodné např. při výrazném fixed-pattern šumu kamery nebo při velké vůli (zpětné vůle) v Dec.</li>
-    </ul>
-  </li>
-  <li>'<a name="Dither_RA_only"></a>Dither pouze RA' – ditheruje jen v ose RA.</li>
-  <li>'<a name="Dither_scale"></a>Měřítko ditheru' – volitelný násobitel pro úpravu maximální velikosti ditheru zadané zobrazovací aplikací. Viz <a href="Supplemental_Info.htm#Dithering_Ops">Operace ditheringu</a>.</li>
-  <li><a name="Image_Logging"></a>'Povolit záznam diagnostických obrazů' – určeno primárně pro podporu a diagnostiku problémů s guide kamerou nebo rozpoznáváním hvězd v PHD2. Snímky se ukládají ve formátu FITS a řídí se filtry/spouštěči v této sekci. Jsou ukládány do podsložek logovacího adresáře PHD2 s datem a časem v názvu, např. 'PHD2_CameraFrames_2022-03-03-184542'. Jednotlivé snímky mají názvy indikující čas i důvod uložení. Hlavička FITS obsahuje užitečné informace (např. expozici). Podsložky s obrazy se automaticky odstraňují po 30 dnech. Pokud si chcete snímky ponechat, podsložky přejmenujte nebo je zkopírujte/přesuňte jinam. Při spuštění logování „událostí“ (např. ztracená hvězda, velká chyba) se uloží sada snímků kolem spouštěcího okamžiku, aby bylo vidět, jak vypadala hvězda a snímek před i po neobvyklém stavu. Ovládací prvky spouštění a filtrování jsou popsány níže a v tooltipech:
-    <ul>
-      <li>'Všechny snímky se ztracenou hvězdou' – loguje sadu obrazů pro jakoukoliv ztrátu hvězdy bez ohledu na příčinu.</li>
-      <li>'Všechny snímky pro auto-výběr hvězdy' – loguje sadu obrazů pro všechny snímky použité pro automatický výběr hvězdy (neúspěšné pokusy se vždy logují).</li>
-      <li>'Když relativní chyba přesáhne' – uloží sadu, když vychýlení na aktuálním snímku přesáhne běžnou průměrnou chybu o zvolený faktor.</li>
-      <li>'Když absolutní chyba přesáhne' – uloží sadu, když vychýlení přesáhne zadaný počet pixelů.</li>
-      <li>'Dokud nebude dosaženo tohoto počtu' – ukládá snímky, dokud čítač nedosáhne zvolené hodnoty (poté se vynuluje).</li>
-    </ul>
-  </li>
+<li><a name="Language"></a><span style="font-weight: bold;">„Jazyk“</span> – určuje jazyk uživatelského rozhraní <span style="font-style: italic;">PHD2</span> (v závislosti na dostupné lokalizaci). Změna se projeví po restartu programu.</li>
+<li><a name="Reset_Configuration"></a><span style="font-weight: bold;">„Obnovit konfiguraci“</span> – vrátí veškerá nastavení do výchozího stavu, jako by bylo <span style="font-style: italic;">PHD2</span> právě nainstalováno.</li>
+<li><a name="Reset_Dont_Ask"></a><span style="font-weight: bold;">„Obnovit zprávy“</span> – znovu zobrazí varovná okna, která jste dříve nechali skrývat.</li>
+<li><a name="Check_for_updates"></a><span style="font-weight: bold;">„Aktualizace softwaru“</span>
+  <ul>
+    <li><a name="Automatically_check_for_updates"></a><span style="font-weight: bold;">„Automaticky kontrolovat aktualizace“</span> – při startu programu zkontroluje nové verze. Pokud není k dispozici internetové připojení, kontrola se odloží na další spuštění.</li>
+    <li><a name="Only_check_for_major_releases"></a><span style="font-weight: bold;">„Kontrolovat pouze hlavní vydání“</span> – vynechá vývojové buildy a hlásí pouze oficiální vydání.</li>
+  </ul>
+  Podrobnosti viz kapitola <a href="Supplemental_info.htm#Software_Update">Software Update</a>.
+</li>
+<li><a name="Log_File_Location"></a><span style="font-weight: bold;">„Umístění souboru protokolu“</span> – určuje adresář, kam se ukládají naváděcí logy, ladicí záznamy a diagnostické snímky. Ve Windows je výchozí složkou „Dokumenty“ přihlášeného uživatele.</li>
+<li><a name="Dither_Settings"></a><span style="font-weight: bold;">„Nastavení ditheringu“</span>
+  <ul>
+    <li><a name="Dither_Random_Mode"></a><span style="font-weight: bold;">„Náhodný režim“</span> – PHD2 použije náhodnou velikost i směr ditheringu (respektuje-li se RA-only nebo vypnuté navádění v Dec).</li>
+    <li><a name="Dither_Spiral_Mode"></a><span style="font-weight: bold;">„Spirálový režim“</span> – dithering probíhá po pevně daných krocích v spirále po směru hodin. Hodí se například při výrazných vzorech šumu v čipu nebo při velkém backlashi v Dec.</li>
+    <li><a name="Dither_RA_only"></a><span style="font-weight: bold;">„Dithering pouze v RA“</span> – dithering provádět pouze v ose RA.</li>
+    <li><a name="Dither_scale"></a><span style="font-weight: bold;">„Měřítko ditheringu“</span> – násobící faktor, kterým lze upravit maximální dithering požadovaný snímací aplikací. Více v kapitole <a href="Supplemental_info.htm#Dithering_Ops">Dithering Operations</a>.</li>
+  </ul>
+</li>
+<li><a name="Image_Logging"></a><span style="font-weight: bold;">„Zapnout diagnostické zaznamenávání snímků“</span> – slouží hlavně podpoře a diagnostice problémů s kamerou či detekcí hvězd. Ukládají se snímky ve formátu FITS do podsložek logovacího adresáře. Název složky obsahuje datum a čas zahájení (např. `PHD2_CameraFrames_2022-03-03-184542`). Po 30 dnech se složky automaticky mažou; chcete-li snímky zachovat, složku přejmenujte nebo přesuňte. Při spuštění logování událostí (např. ztracená hvězda) se uloží celá sada snímků okolo okamžiku události. Jednotlivé volby jsou:</li>
+  <ul>
+    <li><span style="font-weight: bold;">„Všechny snímky se ztracenou hvězdou“</span> – ukládá snímky při každé ztrátě hvězdy bez ohledu na důvod.</li>
+    <li><span style="font-weight: bold;">„Všechny snímky s automatickým výběrem hvězdy“</span> – ukládá snímky, které se používají pro automatický výběr hvězdy; neúspěšné pokusy se ukládají vždy.</li>
+    <li><span style="font-weight: bold;">„Když relativní chyba překročí“</span> – uloží snímky, pokud aktuální odchylka překročí průběžný průměr o zadaný faktor.</li>
+    <li><span style="font-weight: bold;">„Když absolutní chyba překročí“</span> – uloží snímky, pokud odchylka přesáhne zadaný počet pixelů.</li>
+    <li><span style="font-weight: bold;">„Dokud není dosaženo tohoto počtu“</span> – ukládá snímky, dokud jejich počet nedosáhne nastaveného limitu (poté se čítač vynuluje).</li>
+  </ul>
 </ul>
 <div style="margin-left: 40px;">
-Protože jsou snímky ukládány ve standardním formátu FITS, existuje mnoho (i bezplatných) astro aplikací, které je umí zobrazit/analyzovat. Většina aplikací pro pořizování i zpracování obrazu to zvládá, stejně jako nástroje pro detailní měření hvězd a kvality pole. Pokud chcete snímky jen prohlédnout kvůli ostření nebo kontrole kvality, můžete použít PHD2: v nečinném stavu (neprobíhá loop ani guiding) přetáhněte jeden z uložených FITS snímků do hlavního okna a zobrazí se. Není nutné mít připojený hardware. Můžete upravit gamma, vybrat hvězdu (ručně/automaticky) a použít Profil Hvězdy pro zobrazení HFD a profilu vybrané hvězdy.
+Snímky ve formátu FITS lze prohlížet v celé řadě astronomických programů (mnohé jsou zdarma). Pokud chcete pouze rychle zkontrolovat zaostření nebo kvalitu snímků, stačí nechat PHD2 v nečinném stavu (bez smyčky a navádění) a přetáhnout FITS soubor do hlavního okna. Zobrazí se daný snímek a můžete využít posuvník gamma, ručně či automaticky vybrat hvězdu a v nástroji Star Profile ověřit HFD a profil.
 </div>
 
 <h3><a name="Camera_Tab"></a>Karta Kamera</h3>
-<img style="width: 750px; height: 681px;" alt="" src="Advanced_camera.png"><br>
-<br>
-Ovládací prvky na kartě „Kamera“ se používají takto: <br>
+<img style="width: 750px; height: 681px;" alt="" src="Advanced_camera.png"><br><br>
+Ovládací prvky na kartě „Kamera“:
 <ul>
-  <li>'<a name="Noise_reduction"></a>Redukce šumu' – určuje algoritmus pro práci s hlučnými snímky z guide kamery – takovými, kde nestačí dark framy. Možnosti zahrnují Žádná, 2x2 průměr a 3x3 medián. 3x3 medián je obzvlášť účinný při odstraňování hot pixelů a ani jeden z nich výrazně neovlivňuje přesnost navádění. Nicméně vytvoření mapy vadných pixelů je obvykle lepším řešením s menším dopadem na detekci slabých hvězd.</li>
-  <li>'<a name="Time_lapse"></a>Prodleva (Časový úsek)' – vkládá pevnou prodlevu mezi guide expozicemi. Užitečné, pokud jsou expozice velmi krátké a nechcete přetěžovat montáž ani linku kamery vysokou přenosovou rychlostí.</li>
-  <li>Proměnná prodleva expozic – velmi přesné/enkodérové montáže často profitují z konzervativního autoguidingu: středně dlouhé expozice (4+ s) a dodatečná prodleva mezi snímky. Cílem je pomalé „tempo“ navádění, které nereaguje na to, co už řeší enkodéry či model pointace. Podrobnosti: <a href="Supplemental_Info.htm#Variable_delay_guiding">Navádění s proměnnou prodlevou</a>. Ovládací prvky umožní dosáhnout těchto cílů a vyhnout se zbytečným prodlevám mimo „ustálené“ navádění.</li>
+<li><a name="Noise_reduction"></a><span style="font-weight: bold;">„Redukce šumu“</span> – volba algoritmu pro potlačení šumu v naváděcích snímcích (None, 2×2 mean, 3×3 median). Volba 3×3 median účinně odstraňuje horké pixely; často je ale lepší vytvořit mapu vadných pixelů.</li>
+<li><a name="Time_lapse"></a><span style="font-weight: bold;">„Časová prodleva“</span> – přidá pevnou prodlevu mezi expozicemi. Hodí se u velmi krátkých expozic, kdy nechcete zahlcovat montáž nebo kameru.</li>
+<li><span style="font-weight: bold;">„Variabilní prodleva expozice“</span> – pro montáže s přesnými enkodéry lze navádění zpomalit kombinací delších expozic (4+ s) a prodlev. Detailní popis viz <a href="Supplemental_info.htm#Variable_delay_guiding">Variable Delay Guiding</a>. Ovládací prvky:
   <ul>
-    <li>'Použít proměnné prodlevy expozic' – zapne funkci</li>
-    <li>Krátká prodleva (s) – při cyklování, výběru hvězdy, kalibraci, ditheru a ustalování, či běhu Asistentu Navádění. U některých montáží má být nenulová, aby měly enkodéry čas dokončit polohové korekce.</li>
-    <li>Dlouhá prodleva (s) – při běžném navádění mimo výše zmíněné stavy. Definuje čas mezi dokončením posledního guide příkazu a startem další expozice.</li>
-    <li>Pro dlouhé i krátké prodlevy platí interval: exposure_time + guide_pulse_times + delay_value.</li>
+    <li><span style="font-weight: bold;">„Použít variabilní prodlevy expozice“</span> – zapne funkci.</li>
+    <li><span style="font-weight: bold;">„Krátká prodleva (s)“</span> – prodleva při smyčce, výběru hvězdy, kalibraci, ditheringu, settle, běhu asistenta. Pro některé montáže je vhodné zadat nenulovou hodnotu, aby měly enkodéry čas na vlastní korekce.</li>
+    <li><span style="font-weight: bold;">„Dlouhá prodleva (s)“</span> – prodleva při běžném navádění (mimo výše uvedené stavy). Definuje čas mezi dokončením posledního naváděcího impulsu a začátkem další expozice.</li>
+    <li>V obou režimech platí, že interval mezi snímky je `exposure_time + guide_pulse_times + delay_value`.</li>
   </ul>
-  <li><a name="Auto_exposure_settings"></a>'Auto Exposure' – nastavení řídící automatickou dobu expozice; užitečné pro automatizované snímání nebo AO guiding:</li>
+</li>
+<li><a name="Auto_exposure_settings"></a><span style="font-weight: bold;">„Automatická expozice“</span> – nastavení automatické expozice (užitečné pro automatizaci nebo AO navádění):
   <ul>
-    <li>Min expozice – PHD2 nenastaví kratší dobu ani při vyšším SNR, jinak riskujete „nahánění“ seeingu.</li>
-    <li>Max expozice – před výběrem hvězdy PHD2 nastaví maximum a po výběru postupně snižuje, dokud nedosáhne cílového SNR.</li>
-    <li>Cílové SNR – průměrná hodnota SNR, které se PHD2 snaží dosáhnout změnou expozice. SNR kolísá, PHD2 odmítá snímky pod 3,0; výchozí 6,0 je rozumné minimum, doporučují se dvouciferné hodnoty.</li>
+    <li><span style="font-weight: bold;">„Minimální expozice“</span> – minimální čas. Pokud je příliš nízký, můžete „honit seeing“; u AO je ale někdy vhodné jít níže (až k 0,5 s).</li>
+    <li><span style="font-weight: bold;">„Maximální expozice“</span> – maximální čas. Před výběrem hvězdy se použije právě tato hodnota a postupně se zkracuje, dokud SNR nedosáhne cílové hodnoty.</li>
+    <li><span style="font-weight: bold;">„Cílové SNR“</span> – průměrné SNR, kterého se PHD2 snaží dosáhnout úpravou času expozice. SNR kolísá, proto je dobré mít rezervu (výchozí 6, lépe dvouciferné hodnoty). PHD2 vždy odmítne snímky se SNR &lt; 3.</li>
   </ul>
-  <li><a name="Star_saturation_detection"></a>'Detekce saturace hvězdy' – PHD2 se snaží vyhnout saturovaným hvězdám pro přesnější výpočet polohy. Můžete určit, jak saturaci posuzovat:</li>
+</li>
+<li><a name="Star_saturation_detection"></a><span style="font-weight: bold;">„Detekce nasycení hvězdy“</span> – PHD2 při výběru hvězd preferuje nesaturované objekty pro přesnější měření. Vybrat si můžete způsob detekce:
   <ul>
-    <li>Podle ADU – výchozí; opírá se o jasové úrovně snímače (8bit ~ 255, 16bit ~ nad 65000). Lze ověřit v nástroji Profil Hvězdy.</li>
-    <li>Dle profilu hvězdy – méně přesné posouzení podle „plochého vrcholu“ profilu; pro běžné použití se nedoporučuje.</li>
+    <li><span style="font-weight: bold;">„Nasycení podle hodnoty ADU“</span> – výchozí volba, vychází z hodnot jasů (8bitové kamery saturují kolem 255, 16bitové kolem 65 000). Hodnotu lze snadno ověřit nástrojem Star Profile na jasné hvězdě.</li>
+    <li><span style="font-weight: bold;">„Nasycení podle profilu hvězdy“</span> – detekce podle „plochého vrcholu“ profilu. Méně přesná, běžně se nedoporučuje.</li>
   </ul>
-  <li>'<a name="Pixel_size"></a>Velikost pixelu' – v mikronech. Slouží k výpočtu měřítka a hlášení v obloukových vteřinách. Pokud je ovladač  šedý, hodnotu hlásí kamera. Při binningu v PHD2 uvádějte nativní (nebinovanou) velikost.</li>
-  <li>'<a name="Camera_gain"></a>Zisk kamery' – procentuálně v rozsahu zisku kamery; snížení může pomoci se šumem či saturací. Změna zisku vyžaduje nové dark knihovny a mapy vadných pixelů.</li>
-  <li>'<a name="Disconnect_nonresponsive_camera"></a>Odpojit nereagující kameru po (s)' – jak dlouho čekat po uplynutí expozice. Při překročení limitu se PHD2 pokusí operaci zastavit, odpojit a znovu připojit kameru. Příčina bývá HW/napájení/USB – nastavte velkorysý timeout.</li>
-  <li><a name="Binning_setting"></a>Binning – pro kamery s HW binningem. Zobrazí se jen pokud je kamera připojena a funkci podporuje. Pro různé binningy používejte samostatné profily PHD2.</li>
-  <li>'<a name="Use_subframes"></a>Používat Výřez senzoru ' – stahuje se jen podokno kolem hvězdy (rychlejší u pomalých kamer). Plný snímek vyvoláte Shift+klikem. Pozn.: v režimu subframe není dostupné vícenásobné hvězdné navádění.</li>
-  <li><a name="Camera_cooler"></a>Ovládání chlazení – u kamer, které podporují, lze zapnout/vypnout a nastavit setpoint.</li>
+</li>
+<li><a name="Pixel_size"></a><span style="font-weight: bold;">„Velikost pixelu“</span> – velikost pixelu naváděcí kamery v µm. PHD2 ji používá pro výpočet obrazové škály a prezentaci výsledků v arcsec. U kamer s nesouměrnými pixely zadejte větší rozměr nebo průměr. Drobné nepřesnosti nevadí. Pokud nastavujete binning v PHD2, zadejte nativní (nebinovanou) hodnotu. Většina ovladačů předává údaj automaticky; v takovém případě je pole neaktivní.</li>
+<li><a name="Camera_gain"></a><span style="font-weight: bold;">„Zisk kamery“</span> – nastavení zesílení (pokud kamera podporuje). V PHD2 se uvádí v procentech rozsahu mezi minimem a maximem. Změna gainu obvykle vyžaduje nové dark snímky a mapy vadných pixelů.</li>
+<li><a name="Disconnect_nonresponsive_camera"></a><span style="font-weight: bold;">„Odpojit nereagující kameru po (sekundách)“</span> – určuje, jak dlouho má PHD2 čekat na odezvu kamery. Po uplynutí času se pokusí operaci zastavit, kameru odpojit, upozornit a znovu připojit. Při sdílení USB s hlavní kamerou je vhodné nastavit delší čas (pokrývající stažení plného snímku). Základní problém bývá v hardwaru nebo ovladači.
+</li>
+<li><a name="Binning_setting"></a><span style="font-weight: bold;">„Binning“</span> – pro kamery podporující hardwarový binning lze nastavit binovací faktor. Tato volba se zobrazí, jen pokud je kamera připojena a funkci podporuje. Pro každé nastavení binningu používejte samostatný profil, protože má dopad na mnoho dalších parametrů.</li>
+<li><a name="Use_subframes"></a><span style="font-weight: bold;">„Použít výřezy“</span> – pokud to kamera umožňuje, stahuje PHD2 pouze výřez kolem naváděcí hvězdy. Zrychluje to práci kamer s pomalým přenosem. Při kalibraci i navádění tak získáte menší data; pro návrat k plnému snímku stačí podržet &lt;Shift&gt; a kliknout v okně nebo na „Auto-select star“. Při použití subframe není k dispozici multihvězdné navádění.</li>
+<li><a name="Camera_cooler"></a><span style="font-weight: bold;">„Ovládání chladiče“</span> – některé naváděcí kamery mají chlazení. Tady lze nastavit zapnuto / vypnuto a cílovou teplotu.</li>
 </ul>
-<span style="font-weight: bold;">Pozn.: některé ovladač e budou neaktivní, pokud není kamera připojena nebo ovladač funkci nepodporuje.</span>
+<span style="font-weight: bold;">Poznámka: některé ovládací prvky jsou nedostupné, pokud kamera není připojena nebo ovladač danou funkci nepodporuje.</span><br><br>
 
-<h3><a name="Guiding_Tab"></a>Karta Navádění</h3>
+<h3><a name="Guiding_Tab"></a>Karta Guiding</h3>
 <img style="width: 632px; height: 572px;" alt="" src="Advanced_guiding.png"><br><br>
-Karta zobrazuje parametry pro kalibraci, sledování a chování navádění sdílené všemi algoritmy.<br><br>
-Sledování guide hvězdy
+Karta „Guiding“ obsahuje parametry společné pro kalibraci, sledování hvězdy a chování navádění.<br><br>
+<span style="font-weight: bold;">Sledování průvodní hvězdy</span>
 <ul>
-  <li>'<a name="Search_region"></a>Oblast hledání' – velikost sledovacího obdélníku (v pixelech). Větší hodnota může pomoci při horším ustavení nebo pro měření zpětné vůlev Asistentu Navádění, ale příliš velká oblast zvyšuje riziko více hvězd uvnitř.</li>
-  <li>'<a name="Star_mass_change_detection"></a>Detekce změny „jasu" hvězdy' – zastaralé; obvykle ponechte vypnuté.</li>
-  <li>'<a name="Star_mass_tolerance"></a>Tolerance jasu' – při zapnutí vyvolá „ztracená hvězda“, pokud se jas/velikost liší nad zadané %. Užité při dvou hvězdách v obdélníku nebo při tenkých mracích/šumu; u slabých hvězd může být nespolehlivé.</li>
-  <li>'<a name="Minimum_star_HFD"></a>Minimální HFD hvězdy' – prevence záměny hot pixelů za hvězdy. Výchozí 1,5 px funguje ve většině případů.</li>
-  <li>Min SNR pro AutoFind – minimum SNR pro auto-výběr nesaturovaných hvězd; nastavujte opatrně.</li>
-  <li>'<a name="Multi-Star_Option"></a>Použít více hvězd' – volba vícenásobného navádění. Viz <a href="Basic_use.htm#Multi-star_Guiding">Multi-star Navádění</a>.</li>
-  <li>Převzorkování pro auto-výběr – pro neobvyklé případy špatně tvarovaných hvězd; většinou ponechte „Auto“.</li>
-  <li>Pípnout při ztrátě hvězdy – zapíná zvukovou signalizaci.</li>
+<li><a name="Search_region"></a><span style="font-weight: bold;">„Oblast vyhledávání“</span> – velikost „sledovacího čtverce“ v pixelech (hodnota je poloměr; 15 =&gt; plocha 30×30). Zvětšete, pokud montáž sleduje špatně, navádíte daleko od pólu nebo používáte Asistenta navádění k měření backlashe. Příliš velká oblast ale zvyšuje riziko více hvězd uvnitř.</li>
+<li><a name="Star_mass_change_detection"></a><span style="font-weight: bold;">„Detekce hmotnosti hvězdy“</span> – sledování jasnosti a velikosti průvodní hvězdy. Funkce je dnes spíše zastaralá, většinou ji nechte vypnutou.</li>
+<li><a name="Star_mass_tolerance"></a><span style="font-weight: bold;">„Tolerance hmotnosti hvězdy“</span> – pokud je detekce aktivní, PHD2 vyhlásí ztrátu hvězdy, pokud se jas/velikost změní o více než zadané procento. Může pomoci vyhnout se záměně hvězd uvnitř čtverce nebo upozornit na mraky. Při přílišné citlivosti zkuste hodnotu zvýšit nebo funkci vypnout.</li>
+<li><a name="Minimum_star_HFD"></a><span style="font-weight: bold;">„Minimální HFD hvězdy“</span> – minimální poloviční průměr hvězdy. Výborný způsob, jak zabránit záměně horkých pixelů za hvězdy. Nastavte podle hvězd ve vašem poli (použijte nástroj Star Profile). Výchozí hodnota 1,5 px obvykle funguje.</li>
+<li><span style="font-weight: bold;">„Minimální SNR hvězdy pro automatický výběr“</span> – minimální SNR pro automatický výběr nesaturované hvězdy. Upravují jen zkušenější uživatelé; příliš vysoká hodnota může způsobit, že se žádná hvězda nenajde.</li>
+<li><a name="Multi-Star_Option"></a><span style="font-weight: bold;">„Použít více hvězd“</span> – zapne multihvězdné navádění. Viz kapitola <a href="Basic_use.htm#Multi-star_Guiding">Multi-star Guiding</a>.</li>
+<li><span style="font-weight: bold;">„Podvzorkování snímku při automatickém výběru“</span> – speciální volba pro netypicky tvarované hvězdy. Ve většině případů ponechte hodnotu „Auto“.</li>
+<li><span style="font-weight: bold;">„Pípnout při ztrátě hvězdy“</span> – zvuková signalizace ztráty hvězdy.</li>
 </ul>
 
-Kalibrace
+<span style="font-weight: bold;">Kalibrace</span>
 <ul>
-  <li>'<a name="Focal_length"></a>Ohnisková vzdálenost' – jeden ze dvou parametrů pro měřítko a report v obloukových vteřinách; zadejte správně v průvodci profilem.</li>
-  <li>'<a name="Calibration_step-size"></a>Velikost kroku kalibrace' – délka guide pulzu při kalibraci; obecně kalibrujte do 20° od rovníku a směřujte na 8–14 kroků na směr. „Pokročilé…“ otevře kalkulátor.</li>
-  <li>'<a name="Auto_restore_calibration"></a>Automaticky obnovit kalibraci' – po připojení zařízení načte poslední kalibraci (vhodné s ASCOM/Indi nebo Aux). Nepoužívejte, pokud PHD2 nezná polohu dalekohledu. Pozor na natočení guide kamery.</li>
-  <li>'<a name="Assert_Dec_Orthogonal"></a>Předpoklad, Dec je kolmo na RA' – vynutí kolmost úhlů, užitečné při velké periodické chybě RA, velké vůli Dec nebo špatném seeingu.</li>
-  <li>'<a name="Clear_calibration"></a>Smazat kalibraci montáže' – smaže aktuální kalibraci a vynutí rekalibraci (ekvivalent Shift+Klik na „Navádění“).</li>
-  <li>'<a name="Declination_compensation"></a>Použít kompenzaci deklinace' – automaticky upravuje RA guide rychlost podle deklinace při dostupném směrování přes ASCOM/Indi. Neplést s kompenzací zpětné vůle.</li>
+<li><a name="Focal_length"></a><span style="font-weight: bold;">„Ohnisková vzdálenost“</span> – ohnisko průvodního dalekohledu (v mm). Jedna ze dvou hodnot potřebných pro výpočet obrazové škály a prezentaci výsledků v arcsec. Nesprávná hodnota znamená špatně nastavené výchozí parametry a ztíženou diagnostiku. Nejlépe vyplníte pomocí průvodce novým profilem.</li>
+<li><a name="Calibration_step-size"></a><span style="font-weight: bold;">„Velikost kroku kalibrace“</span> – délka naváděcího impulsu během kalibrace. Podrobně popsáno v kapitole „Auto Calibration“. Ideální kalibraci provedete v oblasti ±20° od rovníku a s nastavením, které vytvoří cca 8–14 kroků na směr. Tlačítko „Advanced…“ otevře kalkulačku. Hodnota se nastaví automaticky v rámci průvodce profilem.</li>
+<li><a name="Auto_restore_calibration"></a><span style="font-weight: bold;">„Automaticky obnovit kalibraci“</span> – po připojení zařízení znovu načte poslední kalibraci. Použijte, pokud máte ASCOM/INDI montáž nebo pomocné připojení (aux). Pokud PHD2 nemá informace o poloze, nechte volbu vypnutou. Nastavení se pamatuje pro každý profil zvlášť. Před konkrétní nocí můžete kalibraci vynutit např. podržením &lt;Shift&gt; při kliknutí na tlačítko „Guide“. <span style="font-weight: bold;">Pokud auto-restore používáte, nesmí se změnit orientace naváděcí kamery vůči obloze.</span></li>
+<li><a name="Assert_Dec_Orthogonal"></a><span style="font-weight: bold;">„Předpokládat Dec kolmé k RA“</span> – standardně se úhly pro RA a Dec určují nezávisle. Pokud má montáž velmi vysoký periodický kmit, velký backlash v Dec nebo trpí silným seeingem, můžete vynutit, aby Dec byla kolmá k RA.</li>
+<li><a name="Clear_calibration"></a><span style="font-weight: bold;">„Vymazat kalibraci montáže“</span> – ručně vymaže kalibrační data a před dalším naváděním provede novou kalibraci. Vhodné např. po změně konfigurace.</li>
 </ul>
 
-Sdílené parametry navádění
-<ul>
-  <li>'<a name="Fast_Re-center"></a>Rychlé návraty po kalibraci/ditheru' – rychle vrací hvězdu na zamčenou pozici velkými povolenými pulzy. Vypněte, pokud často dochází ke ztrátě hvězdy – může to indikovat špatnou polární alignaci nebo velkou periodickou chybu RA.</li>
-  <li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Obrátit výstup DEC po překlopení poledníku' – nastavení reakce po překlopení. Pokud si nejste jisti chováním montáže, použijte <a href="Tools.htm#pierflip_cal_tool">nástroj kalibrace překlopení</a> nebo proveďte ruční test popsaný v originále. Změna platí až pro příští kalibraci.</li>
-  <li>'<a name="Enable_guide_output"></a>Povolit výstup navádění příkazů' – obvykle zapnuto; vypínejte jen pro sledování chování montáže bez korekcí (Asistent Navádění to řeší automaticky).</li>
-  <li>'<a name="Stop_guiding_on_slew"></a>Zastavit navádění při přejezdu' – brání snaze navádět během přejezdu; vyžaduje ASCOM/INDI montáž.</li>
-</ul>
-
-<a name="Calculator_auto-step-size"></a>Pokročilý kalkulátor kalibrace<br><br>
-<img style="width: 600px; height: 441px;" alt="" src="Advanced_calstep_calculator.png"><br>
-<br>
-Zkontrolujte, že horní čtyři pole (ohnisko, velikost pixelu, rychlost hledáčku, kalibrační deklinace) jsou správně. Rychlost hledáčku je násobek siderické (např. 1×, 0,5×) – změna zde nemění nastavení v montáži, to lze pouze v driveru/ručce. Výchozí počet kroků 12 obvykle stačí; příliš málo zvyšuje riziko chyb, příliš mnoho trpí PE/Driftem. Při změně hodnot PHD2 přepočítá „velikost kalibračního kroku“ a při OK vloží hodnotu do dialogu „Navádění“ a přenese případné změny ohniska/pixelu i do karet „Navádění“ a „Kamera“. Cancel hodnoty neuloží.
-
-<h3><a name="Algorithms_Tab"></a>Karta Algoritmy</h3>
+<h3><a name="Algorithms_Tab"></a>Karta Algorithms</h3>
 <img style="width: 633px; height: 610px;" alt="" src="Advanced_algorithms.png"><br><br>
-Karta slouží k výběru guiding algoritmů a jemnému doladění jejich parametrů. Parametry se mění podle zvoleného algoritmu – podrobnosti viz <a href="Guide_algorithms.htm">Navádění algoritmy</a>.
-<br><br>
-Nezávislé ovladač e:
+<p>Karta algoritmů lze použít k výběru naváděcích algoritmů, které chcete použít, a k doladění parametrů s nimi spojených. Zobrazené parametry se výrazně změní, pokud změníte výběr algoritmů. Z tohoto důvodu budou všechny parametry související s <a href="Guide_algorithms.htm">naváděcími algoritmy</a> zpracovány společně v samostatné sekci.</p>
+
+<p>Zbývající ovládací prvky, které jsou nezávislé na výběru naváděcího algoritmu, jsou popsány níže:</p>
 <ul>
-  <li>'<a name="Max_Duration_RA"></a>Max. doba RA' – horní limit délky pulzu v RA; můžete snížit, aby se „nehonily“ výkyvy způsobené náhodou (vítr, hot pixel).</li>
-  <li>'Povolit kompenzaci zpětné vůlev PHD2' – zapíná adaptivní kompenzaci vůle v Dec. Viz níže.</li>
-  <li>'<a name="Max_Duration_Declination"></a>Max. doba Dec' – horní limit pro Dec; při zapnuté kompenzaci zpětné vůlejej řídí algoritmus kompenzace.</li>
-  <li>'<a name="Dec_guide_mode"></a>Režim navádění v Dec' – auto/north/south/off. U velké vůle zvažte jednosměrné režimy (sever/jih) a konzervativní agresivitu.</li>
-  <li>'Reset' – vrátí parametry zvoleného RA/Dec algoritmu na výchozí; min-pohyb bude nastaven obdobně jako v průvodci profilem. Pokud jste použili Asistent Navádění k úpravě min-pohyb, zopakujte jej.</li>
+<li><a name="Max_Duration_RA"></a><span style="font-weight: bold;">„Maximální délka impulsu RA“</span> – určuje maximální povolenou dobu trvání naváděcího impulsu pro rektascenzi. Můžete ji snížit pod výchozí hodnotu, pokud se chcete vyhnout honění velké odchylky, která by mohla být způsobena náhodnou událostí (např. náraz větru, horký pixel atd.). Existuje však zřídka důvod ji měnit, pokud jste se chránili proti horkým pixelům (Minimum star HFD).</li>
+<li><span style="font-weight: bold;">„Zapnout kompenzaci vůle PHD2“</span> – řídí, zda PHD2 použije kompenzační faktor, když je třeba obrátit směr navádění v deklinaci. <span style="font-weight: bold;">Viz sekce níže</span>.</li>
+<li><a name="Max_Duration_Declination"></a><span style="font-weight: bold;">„Maximální délka impulsu Dec“</span> – určuje maximální povolenou dobu trvání naváděcího impulsu pro deklinaci (stejné jako výše, ale pro deklinaci). <span style="font-weight: bold;">POZNÁMKA</span>: pokud je povolena kompenzace vůle, toto nastavení bude spravováno algoritmem kompenzace vůle.</li>
+<li><a name="Dec_guide_mode"></a><span style="font-weight: bold;">„Režim navádění v deklinaci“</span> – poskytuje další kontrolu nad naváděním v deklinaci. Navádění v deklinaci není jako navádění v RA, protože chyby sledování nejsou způsobeny nedokonalostmi v pohonném systému montáže – motor Dec je během normálního siderického sledování nečinný a běží pouze v reakci na krátké naváděcí příkazy Dec. Místo toho jsou chyby sledování v deklinaci způsobeny chybou polárního zarovnání, mechanickou flexí, větrem, vázáním nebo táhnutím kabelů nebo nežádoucím pohybem naváděcí sestavy. Bez těchto mechanických problémů by mělo být sledování v deklinaci hladké a většinou jednosměrné za předpokladu, že nedochází k přestřelení z dřívější korekce. Výchozí hodnota „auto" říká <span style="font-style: italic;">PHD2</span>, že některé obrácení směru jsou přijatelné, v závislosti na chování různých naváděcích algoritmů. Pokud však má vaše montáž závažnou vůli v deklinaci, možná budete chtít zabránit obrácení směru úplně. Pak můžete vybrat buď „north" nebo „south", abyste omezili korekce pouze na tento směr (jednosměrné navádění Dec). Mějte však na paměti, že přestřelení v korekci s jedním z těchto režimů může ponechat hvězdu umístěnou mimo cíl po delší dobu. Takže pravděpodobně budete chtít použít konzervativní hodnoty agresivity pro režimy „North" nebo „South" a možná budete chtít záměrně zhoršit polární zarovnání, aby rychlost driftu zůstala větší než odchylky způsobené seeingem. Nakonec volba „off" zde zcela zakáže navádění v deklinaci, což je vhodná volba pro jednoduché sledovací montáže, které nepodporují navádění Dec.</li>
+<li><span style="font-weight: bold;">„Resetovat“</span> – resetuje naváděcí parametry pro vybraný algoritmus RA nebo Dec na jejich výchozí hodnoty. Nastavení min-move budou nastavena pomocí stejného algoritmu použitého v průvodci novým profilem. Pokud jste dříve použili Asistenta navádění k úpravě nastavení min-move, měli byste tento postup zopakovat.</li>
 </ul>
 
-<h4><a name="Declination_backlash_comp"></a>Kompenzace vůle (zpětné) v deklinaci</h4>
-Většina montáží má nějakou vůli v Dec, která způsobuje zpoždění při změně směru. Nastavení zpětné vůlev montáži se pro navádění obvykle nehodí. V PHD2 je kompenzace adaptivní – velikost se upravuje dle výsledků. Před zapnutím změřte v Asistentu Navádění čas potřebný k plnému obrácení směru. Pokud je ≤ ~3 s, vyzkoušejte kompenzaci a nechte doporučená minima/maxima. Při větší nestabilitě kompenzaci vypněte a pošlete debug log na fórum PHD2.
+<h4><a name="Declination_backlash_comp"></a>Kompenzace vůle v deklinaci</h4>
+<p>Většina běžně používaných montáží má určitou vůli v deklinaci. Vůle způsobuje zpoždění, kdykoli dojde ke změně směru naváděcích příkazů Dec. Během tohoto intervalu nejsou převody deklinace plně zapojeny a osa se nepohybuje v reakci na naváděcí příkazy. Mnoho montáží má nastavení pro kompenzaci vůle, ale ta by se neměla používat pro navádění – jsou obvykle určena pouze pro vizuální použití. Protože skutečné množství kompenzace potřebné v daném okamžiku závisí na poloze zaměření a mechanickém zatížení systému, pevná hodnota obvykle povede k oscilacím, které se nikdy nestabilizují. Kompenzace vůle implementovaná PHD2 je adaptivní, což znamená, že množství kompenzace se upravuje nahoru nebo dolů v závislosti na naměřených výsledcích. Před povolením této funkce byste měli spustit Asistenta navádění a změřit vůli v deklinaci – časové zpoždění potřebné k úplnému obrácení směru v deklinaci.</p>
 
-<h3><a name="Other_Devices_Tab"></a>Karta Další zařízení</h3>
-<img style="width: 597px; height: 329px;" alt="" src="Advanced_other.png"><br><br>
-Pokud používáte adaptivní optika (AO) nebo rotátor, zobrazí se tato karta. Obecně o AO viz <a href="Supplemental_Info.htm#AO_Devices">AO Navádění</a>.
-Horní část řeší AO: nastavíte kroky kalibrace (počet kroků AO v jednotlivých směrech), počet vzorků k průměrování na začátku/konci každé nohy kalibrace, prah „bump percentage“ pro spuštění posunů montáže před dosažením limitu cestování AO a velikost kroků bumpu. AO koriguje v omezeném rozsahu, proto se velké posuny dělí do kroků a průběžně se kompenzují AO, aby nevznikly protažené hvězdy. „AO Travel“ je počet kroků AO na osu – pokud AO naráží do limitů, snižte. „Bump on dither“ vrací hvězdu blíže středu AO při ditheru. Povolení guide příkazů pro AO je nezávislé na „Povolit výstup guide příkazů“ pro montáž. „Smazat kalibraci AO“ rekalibruje pouze AO. „Montáž Zpětné vůle  Kompenzována“ umožní aplikovat kompenzaci Dec i během bumpů montáže (vhodné jen při omezené vůli; zvažte hodnotu ~1/2 doporučení Asistentu Navádění, protože s AO se neadaptuje automaticky).
-<br><br>
-Při použití AO karta „Algoritmy“ zobrazuje pouze volby pro řízení tip/tilt prvku AO.
-<br><br>
-<img style="width: 635px; height: 574px;" alt="" src="Advanced_other_Algo.png"><br><br>
-Protože AO nepohybuje těžkým břemenem, můžete použít agresivnější nastavení algoritmů (výchozí „Hystereze“ je dobrý start). Ostatní sdílené parametry se pro AO nezobrazují.
-<br><br>
-Rotátor má jediný parametr pro soulad se standardem ASCOM ohledně směru kladných/záporných úhlů. Zaškrtávátko Obrátit použijte u optických soustav převracejících obraz (lichý počet zrcadel). Směr a velikost rotace se používají k úpravě kalibrace; PHD2 následuje standard ASCOM: „pozice rotátoru je úhel 0 až < 360°, proti směru hodinových ručiček vůči obloze.“ Ověření je nejrychlejší experimentem.
+<h3><a name="Other_Devices_Tab"></a>Karta Other Devices</h3>
+<p>Karta „Other Devices" (Ostatní zařízení) se zobrazí pouze v případě, že máte připojené zařízení adaptivní optiky (AO). Ovládací prvky na této kartě vám umožňují upravit parametry specifické pro vaše AO zařízení. Podrobnosti o použití AO zařízení najdete v sekci <a href="Supplemental_Info.htm#AO_Devices">Použití AO</a>.</p>
 
-</body></html>
+<h3><a name="Rotator_Tab"></a>Karta Rotator</h3>
+<p>Karta „Rotator" se zobrazí pouze v případě, že máte připojený rotátor kamery. Hlavní ovládací prvek na této kartě je „Reverse sign of angle" (Obrátit znaménko úhlu), který určuje, jak PHD2 interpretuje úhel rotace hlášený rotátorem. Pokud zjistíte, že navádění nefunguje správně po rotaci kamery, možná budete muset toto nastavení změnit. Podrobnosti o nastavení rotátoru najdete v sekci <a href="Basic_use.htm#Rotator_Selection">Výběr rotátoru</a>.</p>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>Tutoriály</title>
+</head>
+<body>
+<h1><a name="Drift_Align"></a>Nástroj drift zarovnání PHD2</h1>
+<p>Nástroj drift zarovnání v PHD2 lze použít k rychlému získání přesného polárního zarovnání vaší rovníkové montáže. Proces vyžaduje trochu praxe, ale po několika pokusech byste měli být schopni získat přesné polární zarovnání během několika minut. Můžete použít buď samostatný naváděcí dalekohled, nebo hlavní dalekohled pro provedení zarovnání, podle toho, co je pohodlnější.</p>
+
+<h2>Příprava</h2>
+<ul>
+<li>Ujistěte se, že vaše montáž je přiměřeně vyrovnaná.</li>
+<li>Ujistěte se, že váš dalekohled je vyvážený a připravený k navádění.</li>
+<li>Pokuste se získat přibližné zarovnání polární osy montáže pomocí polárního zaměřovače montáže, pokud jej má. Jinak se ujistěte, že polární osa montáže míří k pólu a nastavení výšky odpovídá vaší místní zeměpisné šířce.</li>
+<li>Ujistěte se, že vidíte obrazovku počítače, když stojíte u montáže.</li>
+<li>Spusťte PHD2 a připojte své vybavení.</li>
+<li>Měli byste používat aktuální verzi PHD2.</li>
+<li>Tyto pokyny předpokládají, že máte připojení ASCOM k montáži, takže PHD2 ví, kam váš dalekohled míří. Stále můžete provést drift zarovnání bez připojení ASCOM, viz poznámka o ASCOM.</li>
+<li>Kalibrujte na jakékoli vhodné průvodní hvězdě, nejlépe na deklinaci do 20 stupňů od Dec=0, nebo znovu načtěte přesnou kalibraci, pokud máte připojení ASCOM nebo INDI montáže. Ujistěte se, že kalibrace je správná pro stranu pilíře, kde plánujete provést zarovnání.</li>
+<li>Ujistěte se, že vaše nastavení PHD2 má správné hodnoty pro ohniskovou vzdálenost vašeho naváděcího dalekohledu a velikost pixelu vaší naváděcí kamery. (Mozek =&gt; karta Global pro ohniskovou vzdálenost, karta Camera pro velikost pixelu)</li>
+</ul>
+
+<p>Nyní jste připraveni na drift zarovnání.</p>
+
+<h2>Zarovnání azimutu</h2>
+<p>Otevřete nástroj Drift zarovnání. Uvidíte okno podobné tomuto:</p>
+<img style="width: 403px; height: 358px;" alt="" src="da_IMG02.png"><br><br>
+
+<p>Umístěte svůj dalekohled pro úpravu osy azimutu. Namiřte poblíž poledníku a nebeského rovníku. Můžete buď kliknout na tlačítko „Slew", nebo přesunout montáž ručně. Váš dalekohled by nyní měl mířit přibližně takto:</p>
+
+<p>Budete střídat mezi měřením chyby („Drift") a úpravou montáže („Adjust"). Rychlost driftu v deklinaci nám říká velikost chyby zarovnání. Každá úprava sníží chybu a proces opakujete tolikrát, kolikrát potřebujete, abyste dostali chybu blízko nuly.</p>
+
+<p>Klikněte na „Drift" a začněte měřit drift v deklinaci. PHD2 vybere průvodní hvězdu a začne navádět. Po několika okamžicích byste měli vidět něco takového:</p>
+
+<p>Věnujte zvláštní pozornost trendové čáře deklinace (červená). Zpočátku bude trendová čára Dec skákat nahoru a dolů, ale brzy by se šum měl „vyprůměrovat" a sklon čáry by se měl stát poněkud stabilním. Když se to stane, jste připraveni upravit azimut montáže.</p>
+
+<p>Naším cílem je udělat trendovou čáru Dec „plochou" – ani se nezvyšující, ani neklesající v čase. Úpravou azimutu montáže změníte sklon trendové čáry Dec.</p>
+
+<p>Pokud upravujete azimut poprvé, nebudete vědět, kterým směrem jít – východ nebo západ? PHD2 to také neví, takže musíte hádat a máte 50-50 šanci, že to uhodnete správně. Pokud zvolíte správně, nová driftová čára bude plošší (méně strmá, blíže k horizontále). Pokud zvolíte nesprávně, rychlost driftu se zvýší (strmější dolů v příkladu výše).</p>
+
+<p>Klikněte na tlačítko „Adjust". PHD2 přestane navádět a můžete provést úpravu. Pomalu otáčejte nastavením azimutu montáže, sledujte obrazovku a pohybujte průvodní hvězdou směrem k purpurovému kruhu. Purpurový kruh ukazuje, jak daleko se průvodní hvězda musí posunout.</p>
+
+<p>Opakujte měření a úpravu montáže, dokud nedosáhnete dobré ploché horizontální trendové čáry dec.</p>
+
+<h2>Zarovnání výšky</h2>
+<p>Nyní budete muset proces opakovat pro úpravu výšky montáže. Klikněte na tlačítko Altitude; nástroj Drift bude nyní vypadat takto:</p>
+
+<p>Klikněte na „Slew" nebo ručně najeďte montáží směrem k horizontu (východ nebo západ). Přesná poloha není důležitá, ale 23-35 stupňů nad horizontem funguje dobře.</p>
+
+<p>Klikněte na „Drift" a začněte driftovat. Driftujte, dokud nemáte stabilní sklon Dec. Klikněte na Adjust, poté otočte knoflíkem nastavení výšky montáže. Stejně jako u úpravy azimutu opakujte cykly Drift a Adjust, provádějte měření a pohybujte průvodní hvězdou k purpurovému kruhu. Opět je cílem dostat driftovou čáru dec do horizontální polohy.</p>
+
+<h3>Použití záložek</h3>
+<p>Dokud nemáte zkušenosti s drift zarovnáním vaší konkrétní montáže, může být část „úpravy" procesu trochu únavná. Zpočátku budete muset určit, jak upravit knoflík na montáži, abyste dosáhli požadovaného efektu: „kolik" a „jakým směrem". Aby vám to pomohlo, nástroj drift zarovnání <span style="font-style: italic;">PHD2</span> podporuje „záložky". Ty jsou šikovný způsob, jak zaznamenat polohy průvodní hvězdy před a po provedení úpravy.</p>
+
+<h2><a name="Static_polar_alignment"></a>Tutoriál statického polárního zarovnání</h2>
+<p>Statické polární zarovnání je rychlejší alternativa k drift zarovnání, která vyžaduje viditelnost polární oblasti a identifikaci několika hvězd poblíž pólu.</p>
+
+<h2><a name="Polar_Drift_Align"></a>Tutoriál polárního drift zarovnání</h2>
+<p>Polární drift zarovnání je nejjednodušší metoda, která kombinuje výhody obou předchozích přístupů s minimálním vstupem uživatele.</p>
+
+</body>
+</html>

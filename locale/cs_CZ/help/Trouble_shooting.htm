@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Řešení problémů</title>
+</head>
+<body>
+<h2>Řešení problémů a analýza</h2>
+
+<h3><a name="Problems-_General_trouble-shooting"></a>Obecný průvodce řešením problémů</h3>
+<p>Zkušenosti s PHD2 od jeho prvního vydání v roce 2013, zahrnující tisíce uživatelů po celém světě, ukázaly, že 99 % toho, co lidé považují za „problémy s naváděním", ve skutečnosti vůbec nejsou. Místo toho obvykle pocházejí ze dvou zdrojů:</p>
+<div style="margin-left: 40px;">
+1) Provozní chyby provedené uživatelem<br>
+2) Mechanické problémy s montáží nebo fyzickým vybavením na montáži
+</div>
+
+<p>Je důležité si to pamatovat, když narazíte na potíže a nemůžete dosáhnout výsledků, které chcete. Provozním chybám se lze vyhnout pečlivým studiem dokumentace na webové stránce PHD2 (nebo v této vestavěné nápovědě), dodržováním kroků popsaných v dokumentu „Best Practices" a používáním nástrojů „search" na fóru podpory PHD2.</p>
+
+<p>Jednou z nejčastějších chyb je divoké změny naváděcích parametrů PHD2 v marném pokusu opravit mechanické problémy, které existují ve vašem nastavení. To jen zhoršuje věci. Výchozí naváděcí parametry vypočítané PHD2 odrážejí parametry, které jste zadali v průvodci novým profilem, takže jsou již upraveny pro vaše nastavení. Měli byste být schopni získat rozumné výsledky ihned po instalaci, pokud se vybavení chová správně, a pokud ne, pravděpodobně se potýkáte s provozními chybami nebo mechanickými problémy.</p>
+
+<p>PHD2 nebo jakýkoli naváděcí software je často poslem špatných zpráv kvůli neuvěřitelné úrovni přesnosti požadované pro navádění. Moderní naváděcí kamery jsou schopny měřit pohyb na škálách pouhých několika mikronů – pro srovnání, lidský vlas je tlustý asi 50 mikronů. Dokud jste nezkoušeli navádění, vaše nastavení vybavení pravděpodobně nikdy nebylo testováno nebo měřeno na této úrovni přesnosti ani výrobci.</p>
+
+<p>Pokud nejste spokojeni s celkovými výsledky navádění, měli byste postupovat pečlivým a systematickým způsobem k identifikaci zdrojů. Zde je rychlý plán pro řešení problémů:</p>
+
+<ol>
+<li>Ujistěte se, že parametry, které jste zadali v průvodci novým profilem, byly přesné – ohnisková vzdálenost naváděcího dalekohledu, rychlost navádění montáže a velikost pixelu kamery, pokud jste ji museli zadat ručně. Pokud najdete chyby, nepokoušejte se je opravit ručně – jen znovu spusťte průvodce novým profilem.</li>
+<li>Ujistěte se, že máte spolehlivé operace kamery, které poskytují konzistentní, rozumně vypadající snímky oblohy.</li>
+<li>Ujistěte se, že naváděcí kamera je dobře zaostřená a nedostáváte časté zprávy o ztrátě hvězdy při použití 2sekundových expozic naváděcí kamery.</li>
+<li>Získejte rozumné mechanické polární zarovnání, které je přibližně do 30 obloukových minut od skutečného pólu.</li>
+<li>Proveďte úspěšnou kalibraci. Použijte Kalibračního asistenta, abyste se ujistili, že kalibrace proběhne správně.</li>
+<li>Spusťte Asistenta navádění a změřte chování vašeho systému. To vám poskytne objektivní měření výkonu montáže a pomůže identifikovat problémy.</li>
+<li>Zkontrolujte protokoly PHD2 a grafy, abyste viděli, co se skutečně děje během navádění.</li>
+</ol>
+
+<h3><a name="Problems-_Camera_Timeouts"></a>Problémy s časovým limitem a stahováním kamery</h3>
+<p>V některých případech můžete zaznamenat problémy, kdy se snímky z naváděče nestahují nebo nezobrazují. V extrémních případech to může dokonce způsobit, že <i>PHD2</i> nebo jiné aplikace související s kamerou přestanou reagovat (tj. "zamrznou"). To je téměř vždy způsobeno hardwarem, ovladačem kamery nebo problémy s připojením, přičemž jedním z nejčastějších viníků je vadný USB kabel nebo zařízení. Je vysoce nepravděpodobné, že by to bylo způsobeno aplikací jako <i>PHD2</i>, takže byste měli začít své vyšetřování na nižších úrovních systému.</p>
+
+<p>Aby PHD2 pomohlo detekovat tyto problémy a vyhnout se "zamrznutí", používá mechanismus časového limitu/opakování kamery. Tato hodnota časového limitu je nastavena na kartě Camera v Pokročilých nastaveních a používá výchozí hodnotu 15 sekund. To znamená, že PHD2 bude čekat až 15 sekund <i>po očekávaném dokončení expozice</i> na přijetí snímku z kamery. To je velmi velkorysé množství času a mělo by fungovat dobře pro většinu kamer.</p>
+
+<p>Zde je přístup, který můžete použít k reprodukci a následné identifikaci problému:</p>
+<ol>
+<li>Ujistěte se, že používáte nejnovější verzi PHD2 – často vývojovou verzi – a nejnovější verze ovladačů kamery.</li>
+<li>Potvrďte, že naváděcí kamera je v zásadě funkční – zkuste použít krátký, přímý kabel z kamery do počítače a pořizování expozic s nativní nebo testovací aplikací, která byla dodána s kamerou.</li>
+<li>Opakujte krok 2, ale použijte PHD2 jako aplikaci. Můžete to udělat ve dne pouhým připojením ke kameře a smyčkou 1-2sekundových expozic po přiměřeně dlouhou dobu.</li>
+<li>Pokud nemůžete spustit selhání v kroku 3, přidejte do mixu snímací kameru. Použijte svou snímací aplikaci ke smyčce expozic paralelně s tím, co dělá PHD2.</li>
+<li>Pokud v kroku 4 nedojde k žádným problémům po delší dobu, použijte stejné USB kabely a hostitelský počítač, které jste používali, když jste poprvé narazili na problémy.</li>
+</ol>
+
+<p>Zdroje problémů souvisejících s USB zahrnují následující:</p>
+<ul>
+<li><b>Nekvalitní nebo mírně poškozené USB kabely</b> – v posledních letech začali někteří výrobci kamer dodávat nekvalitní USB kabely se svými kamerami. Doporučují se vysoce kvalitní USB kabely s vodiči 24AWG a délkami ne větší než 15 stop (4,5 m).</li>
+<li><b>USB-2 kamery a kabely zapojené do USB-3 portů</b> – tyto kombinace by měly být zpětně kompatibilní, ale to je pouze na úrovni hardwaru, implementace ovladačů mohou být nepříznivě ovlivněny.</li>
+<li><b>Pozastavení USB portu operačním systémem</b> – použijte správce zařízení Windows a najděte všechny položky, které odkazují na USB "hub" nebo USB řadič. Pro každou z těchto položek otevřete jejich dialog vlastností a klikněte na kartu "správa napájení". Zakažte všechna oprávnění, která umožňují OS pozastavit zařízení z důvodů správy napájení.</li>
+<li><b>Okrajové dodávání energie do naváděcí kamery</b> – vaše hlavní snímací kamera má pravděpodobně vlastní napájecí zdroj, ale jiná zařízení jako naváděcí kamera jsou obvykle napájena přes USB kabel. Zejména u notebooků a levných počítačů možná budete chtít zkusit použít napájený USB hub k dodávání energie do kamery.</li>
+</ul>
+
+<h3><a name="Problems-_Mount_Control"></a>Problémy s kalibrací a ovládáním montáže</h3>
+<p>Pokud právě začínáte používat <span style="font-style: italic;">PHD2</span> nebo se poprvé připojujete k novému vybavení, můžete mít potíže s dokončením kalibrace. <span style="font-weight: bold;">Nejlepší způsob, jak minimalizovat toto riziko, je použít <a href="Tools.htm#Calibration_Assistant">Kalibračního asistenta</a>, a začátečníkům se důrazně doporučuje, aby to udělali</span>.</p>
+
+<p>Problémy s kalibrací obecně mají dvě formy: 1) přímá selhání kalibrace, protože se montáž nepohnula dostatečně daleko v RA a deklinaci, nebo 2) případy, kdy kalibrace dokončí, ale výsledky jsou podezřelé. Oba typy výsledků jsou zobrazeny varovnými zprávami v horní části okna PHD2.</p>
+
+<p>Pro situaci, kdy kalibrace selže, existují opět dva pravděpodobné důvody:</p>
+<ol>
+<li><span style="font-weight: bold;">Problémy s montáží/připojením nebo provozní chyby:</span> Toto jsou nejčastější zdroje problému. Nejlepší nástroje pro jejich řešení jsou dialog "Ruční řízení" nebo test hvězdného kříže, oba v nabídce "Nástroje". Jednoduše použijte směrová ovládání v okně "Ruční řízení" k posílání příkazů přímo do montáže, zatímco sledujete hvězdu v okně zobrazení obrazu. Použijte poměrně velké množství naváděcích impulsů – alespoň několik sekund – abyste jasně viděli, zda se montáž pohybuje. Pokuste se pohybovat montáží ve všech čtyřech směrech a ověřte, že se cílová hvězda pohybuje přibližně stejnými množstvími. Pokud montáž nereaguje, víte, že máte buď hardwarové nebo problémy s připojením k vyřešení – nic společného s <span style="font-style: italic;">PHD2</span>.</li>
+<li><span style="font-weight: bold;">Nesprávná velikost kalibračního kroku:</span> Pokud jste použili průvodce novým profilem a poskytli jste správné hodnoty pro ohniskovou vzdálenost, velikost pixelu kamery a rychlost navádění montáže, "velikost kroku" použitá v kalibraci by již měla být správná. Měli byste to však potvrdit, protože začátečníci často zadávají nesprávné hodnoty pro tyto parametry.</li>
+</ol>
+
+<h3><a name="Calibration_sanity_check"></a>Kontrola správnosti kalibrace a upozornění</h3>
+<p>Je také možné, že kalibrační proces dokončí, ale PHD2 zveřejní varovnou zprávu o kalibraci říkající, že některé výsledky jsou pochybné. Opět, pravděpodobnost získání těchto upozornění bude minimalizována použitím Kalibračního asistenta (CA). I když jsou upozornění spuštěna při použití CA, dostanete konkrétnější vysvětlení, jaké problémy se vyskytly během kalibrace.</p>
+
+<p>Varovné zprávy <span style="font-weight: bold;">neznamenají</span>, že kalibrace selhala nebo je nepoužitelná, ale varují vás, že některé výsledky nevypadají úplně správně. Takový dialog "kontroly správnosti" ukáže vysvětlení problému a některé podrobnosti kalibračních výsledků.</p>
+
+<p>Existují aktuálně 4 věci kontrolované PHD2 jako součást kalibrace:</p>
+<ul>
+<li><span style="font-weight: bold;">Příliš málo kroků</span> - vyřešení tohoto problému může být snadné za předpokladu, že montáž skutečně funguje správně. Stačí upravit velikost kalibračního kroku dolů, dokud nezískáte alespoň 8 kroků v západní i severní kalibraci. Pokud jste použili průvodce novým profilem k nastavení konfigurace, dobrá počáteční hodnota pro velikost kalibračního kroku již bude nastavena.</li>
+<li><span style="font-weight: bold;">Chyba ortogonality</span> - osy kamery jsou normálně vypočítávány nezávisle, i když <span style="font-style: italic;">by měly</span> být kolmé. Výpočty úhlů nevyžadují velkou přesnost, ale pokud jsou výrazně neortogonální, měli byste kalibraci opakovat. Běžné příčiny jsou špatné polární zarovnání, velká vůle v deklinaci nebo velká periodická chyba v RA.</li>
+<li><span style="font-weight: bold;">Pochybné rychlosti RA a Dec</span> - za předpokladu, že rychlosti navádění hlášené montáží jsou přesné, měla by být naměřená rychlost navádění pro rektascenzi vztažena k rychlosti navádění deklinace přibližně faktorem kosinus (Deklinace). Jinými slovy, zdánlivá rychlost RA se zmenšuje, jak posouváte dalekohled blíže k pólu. <span style="font-weight: bold;">Rychlost deklinace, která je výrazně menší než rychlost RA, je často známkou značné vůle v deklinaci</span>.</li>
+<li><span style="font-weight: bold;">Nekonzistentní výsledky</span> - pokud se kalibrační výsledky výrazně liší od vaší naposledy použité kalibrace, bude vygenerována varovná zpráva. To se může stát, protože jste provedli změnu v konfiguraci. To neznamená skutečný problém, ale pravděpodobně byste měli zvážit vytvoření samostatného profilu pro novou konfiguraci.</li>
+</ul>
+
+<p>S kterýmkoli z těchto upozornění bude příslušné datové pole zvýrazněno na základě typu zprávy. Můžete se rozhodnout upozornění ignorovat ('Accept calibration'), znovu spustit kalibraci ('Discard calibration') nebo obnovit svou poslední dobrou kalibraci ('Restore old calibration').</p>
+
+<h3><a name="Declination_backlash"></a>Vůle v deklinaci</h3>
+<p>Nejčastějším zdrojem kalibračních problémů je vůle v deklinaci, která je do určité míry přítomna ve většině ozubených montáží. Vůle může nastat, když se směr pohybu na ose obrátí. Dalekohled se nemusí okamžitě začít pohybovat v opačném směru, i když se motor otáčí. Obvyklou příčinou je volné zabírání ozubených kol v pohonném ústrojí. U mnoha levnějších montáží může trvat několik sekund, než se osa začne pohybovat správným směrem, a to může vést ke špatné kalibraci a výsledkům navádění.</p>
+
+<p>Kalibrace může být zlepšena provedením těchto kroků:</p>
+<div style="margin-left: 40px;">
+Spusťte smyčku expozic naváděcí kamery na poli s použitelnými hvězdami, nejlépe poblíž Dec=0 a do 15 stupňů od nebeského poledníku<br>
+Pomocí ručního ovladače posuňte montáž na sever (šipka 'nahoru'), dokud neuvidíte hvězdy v zobrazení pohybující se<br>
+Spusťte kalibraci
+</div>
+
+<p>Jakmile je to hotovo, většina vůle v deklinaci ve vaší montáži by měla být vyčištěna a pravděpodobně získáte lepší výsledky z kalibrace. Základní problém s vůlí obecně vyžaduje nějakou mechanickou úpravu montáže. Pokud montáž nepoužívá rychlost navádění blízkou 1x siderické, pravděpodobně můžete získat okamžité zlepšení zvýšením rychlosti navádění montáže. Můžete také zkusit použít nastavení kompenzace vůle PHD2, ale to pravděpodobně nebude fungovat dobře, pokud je vůle velká - více než 3 sekundy, například.</p>
+
+<h3><a name="Star_cross_test"></a>Validace základního ovládání montáže - test hvězdného kříže</h3>
+<p>Pokud máte opakované problémy s dokončením kalibrace bez varovných zpráv, měli byste spustit velmi jednoduchý test, abyste zjistili, zda montáž reaguje na naváděcí příkazy. Tento test v podstatě napodobuje to, co se děje během kalibrace, ale je přímější a může vám dát lepší pocit, co se děje. Budeme to nazývat "test hvězdného kříže". Myšlenka je otevřít závěrku na hlavní snímací kameře, poté poslat naváděcí příkazy, které by měly způsobit, že hvězdy v poli vykreslí charakteristický vzor kříže.</p>
+
+<p>Jinými slovy, chcete získat obraz, který vypadá nějak takto:</p>
+<img style="width: 360px; height: 382px;" alt="" src="Star_cross_1.png"><br><br>
+
+<p>Úhlová orientace nezáleží, to je jen funkce toho, jak máte naváděcí kameru otočenou. Co je důležité, je to, že čáry v kříži jsou kolmé a mají přibližně stejné délky v každém ze čtyř směrů vzhledem k počátečnímu bodu uprostřed. Pokud obraz, který získáte, nemá tento přibližný vzhled, navádění bude buď narušeno, nebo možná nemožné.</p>
+
+<p>Zde jsou kroky pro ruční spuštění testu:</p>
+<ol>
+<li>Nastavte rychlost navádění montáže na 1X siderickou. Vyvolejte nástroj 'Ruční řízení' v PHD2 a zvolte počáteční hodnotu pro 'Délka naváděcího impulsu' - začněte například s 5 sekundami.</li>
+<li>Spusťte 60sekundovou expozici na hlavní kameře.</li>
+<li>Pošlete 5sekundový impuls na západ, poté dva 5sekundové impulsy na východ, poté konečný 5sekundový impuls na západ. To by mělo vrátit hvězdu na její přibližnou počáteční pozici. Měli byste počkat asi 5 sekund po odeslání každého naváděcího impulsu, abyste dali příkazu čas na dokončení před odesláním dalšího impulsu.</li>
+<li>Nyní pošlete 5sekundový impuls na sever, poté dva 5sekundové impulsy na jih, poté konečný 5sekundový impuls na sever. To by opět mělo vrátit hvězdu na její počáteční pozici.</li>
+<li>Počkejte na stažení obrazu z hlavní kamery a podívejte se, co získáte.</li>
+</ol>
+
+<p>Můžete použít různé délky impulsů, pokud chcete, možná použít menší hodnoty k potvrzení, že montáž na ně bude reagovat. Jen se ujistěte, že celková doba expozice na hlavní snímací kameře je delší než součet délek navádění plus rezerva pro chybu.</p>
+
+<h3><a name="Problems-_Guide_star_deflections"></a>Velké/náhlé odchylky průvodní hvězdy</h3>
+<p>Většina uživatelů nakonec narazí na situace, kdy se průvodní hvězda zdá provádět velkou, náhlou exkurzi od uzamčeného bodu. Velká většina těchto problémů nevzniká ani z montáže, ani z naváděcích příkazů PHD2. Místo toho obvykle pocházejí z nežádoucího mechanického pohybu v zařízení, které je namontováno na montáži, zejména sestavy naváděcí kamery/naváděcího dalekohledu. To platí zejména v případě, že k velkým odchylkám dochází v deklinaci, protože motor Dec je normálně nečinný s výjimkou provádění velmi krátkých, relativně zřídkavých naváděcích příkazů, které přijímá.</p>
+
+<p>Nežádoucí mechanický pohyb obvykle pochází z několika zdrojů:</p>
+<ol>
+<li>Drobné pohyby různých komponent v naváděcí sestavě v důsledku měnících se gravitačních sil, zatímco montáž sleduje cílový objekt</li>
+<li>Tahání, vázání nebo zachycení kabelů, zejména těch, které jsou připojeny k naváděcí kameře</li>
+<li>Poryvy větru nebo méně často efekty ze změn filtrů kamery, automatického zaostřování nebo pohybu zrcadla</li>
+<li>Použití funkcí montáže pro kompenzaci vůle – ty by se neměly používat s naváděním PHD2</li>
+</ol>
+
+<p>Pro velké odchylky Dec je snadné určit, zda tyto věci přicházejí do hry. Stačí použít nástroj PHDLogViewer k přiblížení času zájmu a zjistit, zda odchylce bezprostředně předcházel odpovídajícím způsobem velký naváděcí příkaz ve směru pohybu. Ve většině případů zjistíte, že se to nestalo.</p>
+
+<h3>Získání pomoci</h3>
+<p>Pokud nemůžete vyřešit problém sami, můžete získat pomoc na fóru PHD2. Při žádosti o pomoc poskytněte:</p>
+<ul>
+<li>Podrobný popis problému</li>
+<li>Soubory protokolů PHD2</li>
+<li>Snímky obrazovky grafů a upozornění</li>
+<li>Informace o vašem vybavení a nastavení</li>
+</ul>
+
+</body>
+</html>

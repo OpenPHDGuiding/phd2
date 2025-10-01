@@ -2,418 +2,53 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>Doplňující informace</title>
-<style type="text/css">
- body {font-family: Arial, Verdana, sans-serif; font-size: 10pt;}
- h1, h2, h3, h4, h5 {font-family: Arial, Verdana, sans-serif; color: blue;}
-</style>
 </head>
 <body>
 <h2>Doplňující informace</h2>
-<a href="#Astronomical_seeing">Astronomický seeing</a><br>
-<a href="#Binning_usage">Použití binningu</a><br>
-<a href="#Dithering_Ops">Dithering</a><br>
-<a href="#Common_mount_problems">Běžné mechanické problémy montáže</a><br>
-<a href="#Declination-Uni-directional_guiding">Jednosměrné navádění v deklinaci</a><br>
-<a href="#Variable_delay_guiding">Guidování s proměnným zpožděním</a><br>
-<a href="#Differential_flexure">Diferenciální flexe</a><br>
-<a href="#AO_Devices">Zařízení AO</a><br>
-<a href="#Logging_and_Debug_Output">Záznamy (logy) a ladicí výstup</a><br>
-<a href="Tools.htm#Polar_alignment_tools"><span style="text-decoration: underline;"></span></a>
-<a href="#Managing_Equipment_Profiles">Profily vybavení</a><br>
-<a href="#Ask_for_coordinates_aux_mount">Aux‑montáž „Dotázat se na souřadnice“</a><br>
-<a href="#Advanced_Settings_for_the_Simulators">Parametry simulátoru</a><br>
-<a href="#Multiple_Executions">Více instancí programu</a><br>
-<a href="#Keyboard_Shortcuts">Klávesové zkratky</a><br>
-<a href="#Software_Update">Aktualizace softwaru</a><br>
 
-<h3><a name="Astronomical_seeing"></a>Astronomický seeing a navádění</h3>
-<p class="MsoNormal">Bez pochopení astronomického seeingu se v astrofotografii a navádění daleko nedostanete.
-Je to složité téma, takže zde pokryjeme jen nezbytné minimum. „Seeing“ je označení pro polohové chvění
-a náhlé změny jasu hvězd, které vidíme (nebo fotografujeme) dalekohledem. Okem to vnímáme jako „blikání“,
-protože nedokážeme rozlišit drobné polohové pohyby hvězdy. Jde o atmosférickou turbulenci způsobenou pohybem
-termálních buněk v různých vrstvách zemské atmosféry. Světlo se při průchodu každou vrstvou láme, takže při
-pohledu na hvězdu ve skutečnosti nahlížíte sloupcem vzduchu, který se chová jako sloupec drobných čoček.
-Míra lomu závisí na teplotě buňky a buňky mívají různé teploty. Protože je atmosféra velmi dynamická, všechny
-prvky se různě rychle pohybují, přicházejí do vašeho „sloupce vzduchu“ a zase jej opouštějí. Zvláště při delších
-ohniskových délkách je atmosférický seeing největším zdrojem pohybu vodicí hvězdy, který vidíme i u správně
-fungující montáže – a ten se „nevyguiduje“. Pohyby atmosférických buněk způsobují, že poloha hvězdy se mění
-rychlostmi desítek až tisíců za sekundu a amatérská technika, dokonce ani zařízení adaptivní optiky, nedokáže
-reagovat dostatečně rychle. Profesionální observatoře to do velké míry zvládají za použití velmi drahých měřicích
-zařízení, umělých hvězd a mechanismů, které umí deformovat zrcadlo a posouvat obraz ve velmi vysokých frekvencích.
-Pro tato pracoviště pochází většina poruch seeingu z horních vrstev atmosféry a ty se také používají v modelech
-seeingu a předpovědích. Pro amatéry, zejména ty, kteří fotí z města nebo ze dvora, však problémy se seeingem
-vznikají i v blízkosti dalekohledu: konvekce tepla z pevných povrchů nebo střech vytváří nízkofrekvenční „var“,
-který zhoršuje navádění i obraz. Teplo při zemi může vytvářet proudy v tubusu i nerovnoměrné vrstvy horkého
-vzduchu uvnitř tubusu – to může napodobovat nízkofrekvenční seeing. Dělejte maximum pro omezení těchto vlivů a
-v horkých lokalitách počítejte s tím, že vyrovnání teplot vybavení může trvat mnoho hodin po setmění.</p>
+<h3><a name="Common_mount_problems"></a>Běžné problémy s montáží</h3>
+<p>Existuje několik běžných mechanických problémů, které mohou ovlivnit výkon navádění:</p>
 
-<p class="MsoNormal">Z pohledu navádění vždy „podvzorkováváme“ chování seeingu. Než pořídíme expozici,
-stáhneme snímek, spočítáme polohu vodicích hvězd a odešleme korekční povel, poloha hvězdy na senzoru se už
-pravděpodobně stokrát změnila. Se zkracováním expozice se chyby měření ještě zvyšují – jde o jev zvaný aliasing.
-Znát ho můžete z filmu či TV, když se rychle točí třeba kola automobilu – opravdu se při honičce točí dozadu?
-To se děje proto, že snímkovací frekvence (např. 60 sn./s) je příliš pomalá na přesné změření pohybu. U
-autoguidingu tedy pracujeme se zpožděnou informací o skutečné poloze vodicí hvězdy – a to ještě nepočítáme
-nedokonalosti montáže při vykonávání povelů. Pohyby hvězdy, které dokážeme korigovat – drift, periodická chyba,
-atmosférická refrakce, mechanické průhyby apod. – se skrývají v moři šumu vytvářeného seeingem. Jedním z hlavních
-cílů algoritmů navádění v PHD2 je rozpoznat a reagovat na chyby sledování, které lze korigovat, a ignorovat ty,
-které způsobuje seeing a korigovat nelze. Volba expozičního času vodicí kamery vám v tom může výrazně pomoci.</p>
+<h4><a name="Dec_backlash"></a>Vůle v deklinaci</h4>
+<p>Vůle (backlash) je mezera v převodech, která způsobuje zpoždění, když se směr pohybu obrátí. Když montáž změní směr v deklinaci, převody se musí nejprve „zabrat", než se osa začne skutečně pohybovat. Toto zpoždění může trvat od zlomků sekundy až po několik sekund v závislosti na montáži. PHD2 může měřit vůli v deklinaci pomocí Asistenta navádění a může ji kompenzovat pomocí adaptivní kompenzace vůle.</p>
 
-<h3><span style="font-size: 12pt;"><big>Seeing a expoziční časy</big></span></h3>
-<p class="MsoNormal">Vysokofrekvenční pohyb hvězdy způsobený seeingem, který vidí vodicí kamera, je silně
-ovlivněn délkou expozice. Podívejte se na následující graf, jak se pozorovaný rozsah pohybu vodicí hvězdy s delší
-expozicí zmenšuje:</p>
-<img style="width: 717px; height: 447px;" alt="" src="Supplemental_Graph_Seeing.png"><br>
-<p class="MsoNormal">Senzor kamery v podstatě průměruje měnící se světelný obraz hvězdy a výsledek vyhlazuje.
-Nejistota měření kvůli podvzorkování zůstává, ale delší expozice PHD2 usnadňují izolovat a rozpoznat nižší
-frekvence chyb, které lze guidováním skutečně zlepšit. Samozřejmě existuje praktická horní hranice expozice,
-obvykle daná tím, jak dlouho vaše montáž zvládne běžet bez korekce. Malé chyby z periodické chyby, driftu, flexe a
-jiných zdrojů je třeba opravit dřív, než zničí snímek. Správná rovnováha závisí na seeingu i kvalitě vybavení.
-Jako výchozí nastavení v PHD2 doporučujeme expozice okolo 2 s a kratší expozice alespoň 0,5 s pouze pokud to
-montáž vyžaduje a ideálně při navádění na více hvězd.</p>
+<h4>Periodická chyba</h4>
+<p>Periodická chyba (PE) je systematická chyba v rychlosti sledování montáže způsobená nedokonalostmi v převodech. Projevuje se jako sinusová vlna v grafu navádění RA s periodou odpovídající jedné otáčce červového kola. Mnoho montáží má vestavěnou korekci periodické chyby (PEC), která může tuto chybu výrazně snížit.</p>
 
-<h3><a name="Binning_usage"></a><span style="font-weight: bold;">Použití binningu</span></h3>
-<p>Řada vodicích kamer podporovaných v PHD2 umožňuje hardwarový binning, který může pomoci při navádění na
-velkých ohniscích nebo pokud má vodicí kamera velmi malé pixely. Tyto scénáře často vedou k používání slabých hvězd
-a k výraznému převzorkování (over‑sampling) vodicích obrazů. Převzorkování nepřináší skutečný užitek a projekce
-slabého hvězdného disku do mnoha malých pixelů může vést k nízkému poměru SNR. Binningem snížíte vliv čtecího
-šumu kamery a zlepšíte SNR; a pokud jste byli převzorkováni, nezhoršíte přesnost výpočtu polohy hvězdy. Volba
-binningu většího než 1 má tyto dopady:</p>
-<ol>
-<li>Hvězdy budou mít vyšší SNR a půjdou snáze detekovat nad pozadím – zvlášť pokud jste omezeni na slabé hvězdy
-(SNR pod ~10).</li>
-<li>Objem dat stažených z kamery se sníží s druhou mocninou binning faktoru. To pomůže u kamer náročných na USB,
-i když už je jas a SNR hvězd bez binningu přijatelný. Stejného efektu lze po výběru hvězdy dosáhnout i Výřez senzoru .</li>
-<li>Rozlišení (obrazová škála) vodicího obrazu se zmenší úměrně faktoru binningu. Není to problém, pokud je
-nebinovaná škála pod 1″/px, ale může uškodit, pokud je nad ~2,5″/px. Výsledky závisí i na škále hlavní kamery –
-je třeba vyzkoušet.</li>
-</ol>
-<p>Každá úroveň binningu vyžaduje vlastní dark snímky a mapu vadných pixelů – nejsou zaměnitelné a nelze je
-automaticky transformovat. Pokud chcete pružně přepínat mezi hodnotami binningu, vytvořte pro každý binning
-samostatný profil. Pro každý profil pak vybudujte knihovnu darků a mapu vadných pixelů. Při změně binningu
-jednoduše přepněte na příslušný profil a knihovna/mapa budou k dispozici. Správnost binningu můžete ověřit v okně
-<a href="Visualization.htm#Stats_Display">Statistiky</a> (velikost snímku a on‑camera bin). I když se rozhodnete
-binning změnit natrvalo, vytvořte nový profil průvodcem – automaticky upraví parametry závislé na obrazové škále.
-Z pohledu navádění je změna binningu v podstatě totéž, jako byste připojili jinou kameru.</p>
+<h4>Tření a stiction</h4>
+<p>Tření v osách montáže může způsobit, že montáž nereaguje na malé naváděcí příkazy. Stiction (statické tření) je obzvláště problematické, protože způsobuje, že montáž „přeskočí", když se konečně začne pohybovat. Vyšší rychlosti navádění (0,7x–1,0x siderická) mohou pomoci překonat tření.</p>
 
-<h3><a name="Dithering_Ops"></a>Dithering</h3>
-<p class="MsoNormal" style="line-height: normal;">Aby se snížil fixní vzorek šumu a vliv horkých pixelů, posouvají
-imagéři mezi expozicemi polohu dalekohledu o velmi malé hodnoty – tomu se říká dithering. Dithering vždy řídí
-imagingová aplikace, protože jedině ona může pozastavit expozice hlavní kamery během změny polohy. Role PHD2 je
-pouze vydat korekční povely, které zajistí požadovaný posun – prostě dělá, co jí bylo řečeno. Malý posun polohy
-PHD2 provede ve dvou krocích:</p>
-<p class="MsoNormal" style="line-height: normal;">1. Změní zamčenou pozici (lock‑point) primární vodicí hvězdy o
-hodnotu požadovanou imagingovou aplikací.</p>
-<p class="MsoNormal" style="line-height: normal;">2. Pomocí běžných rutin navádění přesune primární vodicí hvězdu na
-nový lock‑point.</p>
-<p class="MsoNormal" style="line-height: normal;">Velikost ditheru řídí imagingová aplikace, alespoň nepřímo.
-Můžete zadat maximální velikost ditheru, obvykle v pixelech. PHD2 to chápe jako horní mez náhodně volených hodnot
-v rozsahu 0…max. Náhodnost zajišťuje, aby se dithering nedělal triviálně tam a zpět nebo aby se snímek nevracel na
-nedávné pozice. U některých aplikací, které dither PHD2 používají, maximální hodnotu zadat nelze – jsou jen volby
-small/medium/large s přednastavenými limity. Proto má PHD2 v globální záložce Pokročilých nastavení „měřítko
-(dither scale)“ – násobící faktor, kterým upravíte rozsah ditherů. Hodnota 1 nemění nic, 10 jej násobí 10× apod.
-Pokud vaše aplikace (např. PHD_Dither) umí zadat maximum přímo, nechte dither scale = 1, jinak ho dolaďte dle
-potřeby.</p>
-<p class="MsoNormal" style="line-height: normal;">Je na imagingové aplikaci, aby poznala, kdy se navádění po ditheru
-ustálilo a lze spustit další expozici. PHD2 pro tento účel poskytuje volitelná měření průběhu ustalování. Aplikace
-může zadat, jakou stabilitu požaduje, pomocí tří parametrů:</p>
-<p class="MsoNormal" style="line-height: normal;">1. Maximální tolerovaná poloha vodicí hvězdy – tolerance polohy,
-<b>PT</b>.</p>
-<p class="MsoNormal" style="line-height: normal;">2. Doba, po kterou musí poloha zůstat v toleranci – hodnoticí čas,
-<b>ET</b>.</p>
-<p class="MsoNormal" style="line-height: normal;">3. Maximální doba, po jejímž uplynutí se ustalování prohlásí za
-„hotovo“ bez ohledu na stabilitu – časový limit, <b>TO</b>.</p>
-<p class="MsoNormal" style="line-height: normal;">Stručně: ustalování je „hotovo“, když je vodicí chyba ≤ <b>PT</b>
-po dobu <b>ET</b> sekund, nebo po uplynutí <b>TO</b> sekund, pokud se podmínka nesplní. Jakmile je vyhodnocení hotové,
-PHD2 pošle aplikaci zprávu, že je ustáleno. Běžné navádění přitom běží od okamžiku změny lock‑pointu.</p>
-<p class="MsoNormal" style="line-height: normal;">Volba parametrů <b>PT</b>, <b>ET</b>, <b>TO</b> je na vás a musí dávat
-smysl. Aplikace nemusí všechny tři zpřístupňovat nebo je může pojmenovat jinak. Při velkých dither ech a horší
-montáži čekejte delší ustalování. Příliš velké <b>PT</b> nebo příliš malé <b>ET</b> může spustit expozici brzy a hvězdy se
-protáhnou; totéž při příliš malém <b>TO</b>. Naopak příliš malé <b>PT</b> nebo příliš velké <b>ET</b> povede k častým timeoutům –
-požadujete příliš. Rozumný postup je vycházet z minulého výkonu montáže a obvyklých podmínek. Pokud má montáž velký
-zpětné vůlev Dec, sledujte, jak dlouho trvá ustalování po změně směru Dec. Parametry <b>ET</b> a <b>PT</b> nastavte tak,
-aby odpovídaly běžnému výkonu s určitou rezervou; občasné time‑outy jsou běžné, ale zkontrolujte logy v LogVieweru,
-že hlavní kamera nezačíná exponovat během velkých korekcí.</p>
-<p class="MsoNormal" style="line-height: normal;">PHD2 podporuje i různé způsoby pohybu v RA a Dec. Ve výchozím stavu
-se montáž posouvá v RA i Dec o různé náhodné hodnoty. Zvolíte‑li „spirálu“, hvězda se bude posouvat po spirále
-okolo původního lock‑pointu; tím se snižuje počet reverzí Dec a je to dobré při větším backlashi. V tomto režimu se
-nerandomizuje a každý dither má velikost zadanou aplikací. Alternativně můžete zvolit „pouze RA“ a eliminovat
-reverze Dec – to však nemusí být dobré, pokud má obrazová kamera výrazný fixní šum. Při stanovení velikosti ditherů
-berte v úvahu obrazové škály vodicí i hlavní kamery. U CMOS kamer se často doporučují velké dither y, např. 10–20 px –
-myslí se ale pixely hlavní kamery, nikoli vodicí! Spočítejte tedy, jaký posun na vodicí kameře vyvolá požadovaný
-posun na hlavní kameře – často to bude méně.</p>
-<p class="MsoNormal" style="line-height: normal;">Má‑li vaše montáž výrazný zpětné vůlev Dec a guidujete jen na sever
-nebo jen na jih, PHD2 při požadavku na dither v Dec dočasně povolí navádění v obou směrech, dokud se dither a
-ustalování nedokončí, a pak se vrátí k původnímu módu sever/jih. Pokud to nechcete, omezte dither na „pouze RA“.
-Všechny ovládací prvky ditheru v PHD2 jsou v globální záložce Pokročilých nastavení.</p>
+<h4>Flexe</h4>
+<p>Flexe je ohýbání nebo pohyb různých částí sestavy dalekohledu v důsledku gravitace, když se montáž pohybuje po obloze. Může ovlivnit jak hlavní dalekohled, tak naváděcí dalekohled. Flexe se projevuje jako pomalý drift v grafu navádění, který se mění s polohou dalekohledu.</p>
 
-<h3><a name="Common_mount_problems"></a>Běžné mechanické problémy montáže</h3>
-<h3>Periodická chyba v rektascenzi (PE)</h3>
-<p class="MsoNormal">Periodická chyba vzniká nejčastěji drobnými obráběcími nepřesnostmi v komponentách
-pohonu RA. Jedna část typického systému je na obrázku:</p>
-<p class="MsoNormal"><img style="width: 489px; height: 313px;" alt="" src="Supplement_RA_Gears.png"></p>
-<p class="MsoNormal">Kredit: Mathis Instruments</p>
-<p class="MsoNormal">Vysoce přesný šnek (1) pohání mnohem větší šnekové kolo (2). To je připojeno k hřídeli RA a při
-siderickém sledování vykoná kolo jednu otáčku za siderický den (23,934 h). Aby bylo sledování dokonalé, musí platit
-mimo jiné:
-</p>
-<p class="MsoNormal" style="margin-left: 40px;">– Stejný stoupání a rozteč každého závitu šneku</p>
-<p class="MsoNormal" style="margin-left: 40px;">– Rigidní uchycení šneku bez průhybů a pohybů</p>
-<p class="MsoNormal" style="margin-left: 40px;">– Stejný tvar a rozteč všech zubů šnekového kola</p>
-<p class="MsoNormal" style="margin-left: 40px;">– Kolo dokonale kruhové a souosé se svou osou</p>
-<p class="MsoNormal">To je jen část požadavků a je jasné, že taková přesnost není u většiny amatérských montáží reálná. Nejtěžší je
-obvykle výroba šneku, a proto chyby často vznikají právě zde. Šnek se při siderickém sledování otáčí konstantní
-rychlostí a doba jedné otáčky se nazývá „perioda šneku“. Liší se podle montáží, typicky 4–10 minut. Nepřesnost na
-některém závitu se projeví jednou v každé periodě šneku. Protože nepřesnosti mívá více závitů, každý přispěje k chybě
-během periody. Vykreslí‑li se chyba za jednu periodu, křivka bývá přibližně sinusová s různými sklony a vrcholy – to
-je periodická chyba. Na grafu uvidíte i vysokofrekvenční pohyby způsobené seeingem, které nejsou součástí mechanické
-periodické chyby.</p>
-<p class="MsoNormal">V systému RA bývají i další převody mezi motorem a šnekem. Převádějí rychlost motoru na pomalejší
-otáčení šneku a zvyšují točivý moment. Každá z částí má své nepřesnosti a přispívá k celkové chybě sledování.
-Mnohé chyby se projevují na kratších periodách než perioda šneku. Některé montáže používají řemeny, aby obešly
-„upstream“ nepřesnosti ozubení, ale i ty mohou vnášet chyby (napnutí, boční pohyb řemene atd.).</p>
+<h3><a name="Astronomical_seeing"></a>Astronomický seeing</h3>
+<p>Seeing je termín používaný k popisu stability atmosféry. Špatný seeing způsobuje, že hvězdy „tančí" na senzoru kamery kvůli turbulenci v atmosféře. To vytváří vysokofrekvenční pohyby, které nelze korigovat naváděním. Pokus o korekci těchto pohybů se nazývá „honění seeingu" a obvykle vede ke špatným výsledkům. Správné nastavení min-move a použití delších expozic (2-4 sekundy) může pomoci vyfiltrovat efekty seeingu.</p>
 
-<h3><a name="RA_periodic_error"></a>Korekce periodické chyby v RA</h3>
-<p class="MsoNormal">Korekce periodické chyby (PEC) v firmware montáže je pro autoguiding přínosná, pokud je správně
-implementována – což bohužel není vždy. Při dobré implementaci PEC koriguje část chyb dřív, než se projeví na obrazu
-vodicí kamery. Tyto korekce jsou prediktivní (model montáže), na rozdíl od reaktivního autoguidingu. PHD2 pak má
-méně práce, aby udrželo osu RA na cíli. I při dobré implementaci je nutné kvalitní PEC křivku pečlivě změřit
-specializovanou aplikací. Ta musí vyhladit seeingem způsobené pohyby a vytvořit hladkou křivku z vícera period šneku
-s ohledem na periodu a harmonické převodů, aby aplikovala korekce jen na chyby s frekvencemi, které jsou celistvými
-násobky periody šneku. Špatně vytvořená PEC křivka může RA sledování zhoršit oproti stavu bez PEC. Není‑li PEC na
-vaší montáži k dispozici nebo je špatně implementován, můžete v PHD2 použít algoritmus PPEC:
-<a href="Guide_algorithms.htm#Predictive_PEC">PHD2 Prediktivní PEC</a>.</p>
-
-<h3><a name="Dec_backlash"></a>Vůle a „tření“ v deklinaci</h3>
-<p class="MsoNormal">Vůle (zpětné vůle) se projevuje při změně směru – dalekohled se nezačne hned pohybovat opačným směrem,
-ačkoli se motor točí. Obvykle je příčinou volnější záběr převodů. U autoguidingu to nevadí v RA, protože osa RA se
-stále pohybuje na západ a směr kvůli navádění nemění. V Dec je to častý problém, protože osa většinu času stojí a
-pohybuje se jen v krátkých impulsech na sever/jih. Jednoduchý obrázek příčiny vůle je zde:</p>
-<p class="MsoNormal"><img style="width: 336px; height: 219px;" alt="" src="Supplement_Backlash.png"></p>
-<p class="MsoNormal">Schéma ukazuje čelní kola, ale princip platí i pro šnek/šnekové kolo. Představte si, že spodní kolo je
-hnací a točí se proti směru hodin. Zuby jsou v záběru, horní kolo se točí po směru. Ale hrana zubu hnacího kola se
-nedotýká protilehlého zubu – je tam mezera. Po otočení chvíli trvá, než se zuby opět zapojí a pohyb horního kola se
-obnoví. Toto „zpoždění reverze“ je dáno vůlí. Malá mezera je nutná kvůli mazivu a tepelné roztažnosti; pokud je záběr
-příliš těsný, osa trpí „tření“ (statickým třením), kdy se pohybuje trhaně či těžko rozbíhá. V Dec to vede ke
-vzoru: počáteční zpoždění podobné vůli a pak velké překmitnutí, když se osa konečně rozjede. Kromě chybně zapnuté
-kompenzace vůle v řídicím SW je tření nejčastější příčinou oscilací v Dec.</p>
-<p class="MsoNormal">Naváděcí Asistent měří chování osy Dec při vynucené otočení. Umí měřit „zpoždění reverze“ – čas, než se osa
-roztočí opačně očekávanou rychlostí. Ne vždy lze rozlišit, zda jde o vůli, tření, nebo obojí; graf NAale často
-napoví. To lze vidět i během běžného navádění bez velkých impulsů GA. Je‑li zpoždění velké (např. >3 s), je lepší
-zkusit mechanické seřízení osy Dec. Je‑li menší, zvládne je funkce Kompenzace vůle v PHD2 docela dobře. Zpoždění je
-inverzně úměrné naváděcí rychlosti – vyšší guide‑speed zpoždění zmenšuje; proto doporučujeme ≥0,5× siderická.</p>
-<p class="MsoNormal">Zpoždění reverze nebývá konstantní – závisí na poloze na obloze a vyvážení na ose Dec. S věkem se kola
-opotřebují a nejvíc tam, kde trávíte nejvíc času – pro severní pozorovatele typicky Dec 0–40°. U starších montáží se
-může zpoždění lišit proti oblastem blízko pólu. I proto je kompenzace vůle v PHD2 lepší než pevná velikost v řídicím
-kontroléru.</p>
-
-<h3><a name="Declination-Uni-directional_guiding"></a><span style="font-weight: bold;">Jednosměrné navádění v deklinaci</span></h3>
-<p>Jak bylo uvedeno výše, některé montáže mají v Dec příliš velké zpoždění reverze a nehodí se pro navádění v obou
-směrech. To lze zmírnit nastavením PHD2 tak, aby v Dec korigoval jen jedním směrem – tzv. jednosměrné navádění.
-Je to proveditelné, protože navádění v Dec má primárně kompenzovat pomalý drift z polar alignment chyby a částečně
-mechanické flexe. Paradoxně může pomoci záměrně mírně „rozladit“ polární ustavení, aby byl drift jasnější a seeing
-méně rušil jednosměrné navádění. Přiměřeně špatné polární ustavení obvykle nezhorší navádění, ale může vést k
-rotaci pole, zejména při focení blízko pólu a s velkým senzorem. Jako první krok se ustavte na 5–10 arcmin od pólu a
-poté nastavte jednosměrné navádění. Později můžete zkontrolovat rotaci pole: pořiďte testovací snímek v nejvyšší
-plánované deklinaci (třeba 70° sever). Nevidíte‑li rotaci, nechte polar alignment tak.</p>
-<p>Kroky nastavení jednosměrného navádění:</p>
-<ol>
-<li>Přejděte do pole s dobrou vodicí hvězdou a spusťte Naváděcí Asistent na několik minut. Sledujte graf a zjistěte,
-zda hvězda driftuje na sever nebo na jih. Poté nastavte směr korekcí v Dec na <b>opačný</b>. Pokud hvězda driftuje na
-sever, nastavte „jih“.</li>
-<li>Vyzkoušejte pro Dec algoritmus „LowPass2“ a začněte s nízkou agresivitou, např. 50 %. Vysoká agresivita může hvězdu
-přetlačit na „špatnou“ stranu lock‑pointu, kde zůstane, dokud ji pomalý drift nevrátí. Lepší je několik menších
-korekčních impulsů než jeden velký.</li>
-<li>Sledujte graf, zda se korekce vydávají správným směrem a hvězda neodjíždí mimo cíl. Během minut až hodin se může
-množství driftu zmenšovat – blížíte se bodu reverze v Dec a budete muset změnit směr korekcí.</li>
-<li>Při ditheringu zvažte nastavení „pouze RA“, abyste nenarušili navádění v Dec.</li>
-</ol>
-<p>Pokud se dither provádí přes PHD2 server, bude jednosměrné navádění v Dec dočasně přepnuto na „Auto“, aby šel
-provést dither. To může prodloužit ustalování, ale umožní potřebný dithering pro kamery s fixním vzorem šumu. Po
-ustálení se mód Dec vrátí na původní nastavení. Toto funguje jen přes server rozhraní; nástroj „Manual Guide“
-jednosměrné navádění takto nepřeruší.</p>
-
-<h3><a name="Variable_delay_guiding"></a>Vysoce přesné montáže a navádění s proměnným zpožděním</h3>
-<p class="xxxmsonormal">Montáže s velmi přesnými absolutními enkodéry a detailními modely bodování často umožní
-imaging bez navádění. Má to ale limity, jak dlouho to lze dělat bez zásahu. Cílem je poskytnout „záložní“
-naváděcí mechanismus, který nebude kolidovat s vstupy z enkodérů a modelů a přesto zlepší výsledek. Doporučená
-strategie je:</p>
-<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">1. Udržujte frekvenci naváděcích povelů co
-nejnižší. Tyto montáže jsou „zaměstnané“ korekcemi z enkodérů a modelů, které nejsou pro ASCOM aplikace viditelné.
-Pomalé navádění minimalizuje riziko nestability způsobené externími povely.</p>
-<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">2. Zvlášť dbejte na to, abyste „nehonili seeing“
-– tedy používejte střední až delší expozice vodicí kamery a velkorysá nastavení Min‑Move.</p>
-<p class="xxxmsonormal">V předchozích verzích PHD2 šlo tohoto přístupu dosáhnout delšími expozicemi (4–8 s) spolu s
-nenulovým „časosběrný“ zpožděním – pevným zdržením mezi dokončením posledního povelu a začátkem další expozice
-vodicí kamery. Nevýhodou je, že činnosti mimo ustálené navádění (cyklování, výběr hvězdy, kalibrace, dithering,
-ustalování) se zbytečně zpomalují. Funkce „proměnné zpoždění“ to řeší dvěma různými hodnotami zpoždění:</p>
-<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">1. „Krátké“ zpoždění pro aktivity jiné než
-ustálené navádění. Může být i nulové, ale u některých montáží by mělo být nenulové, aby enkodéry stihly dokončit
-korekce. Hodnoty nad 1 s obvykle nejsou nutné.</p>
-<p class="xxxmsolistparagraph" style="text-indent: -0.25in; margin-left: 40px;">2. „Dlouhé“ zpoždění pro běžné snímek‑po‑snímku
-navádění typické pro dlouhé expozice. Spolu s expoziční dobou kamery určuje „kadenci“ navádění.</p>
-<p class="xxxmsonormal">Příklad: použijte expozice 4 s, „krátké“ zpoždění 1 s a „dlouhé“ zpoždění 4 s. Expozice 4 s dobře
-potlačí vlivy seeingu a součet (4+4) s dává ustálenou kadenci navádění 8 s pro většinu seance. Zároveň budou
-ustalovací časy po ditheru těžit z kratších (4+1) s intervalů mezi expozicemi.</p>
-
-<h3><a name="Differential_flexure"></a>Diferenciální flexe</h3>
-<p class="MsoNormal">Každá sestava dalekohled/kamera se při sledování objektu na obloze určitým způsobem prohýbá a sedá –
-je to důsledek gravitace a fyziky. Každá komponenta se v tomto ohledu chová trochu jinak podle své hmotnosti a
-upevnění na sousední prvky. Zvlášť u větších dalekohledů a těžších kamer může být flexe významná, mějte na paměti,
-že navádění pracuje v jednotkách mikrometrů. Pro srovnání: lidský vlas má ~50 µm, tedy ~10× víc než typická
-korekce navádění.</p>
-<p class="MsoNormal">Používáte‑li oddělený guidroskop vedle obrazového dalekohledu, každý z nich se prohýbá a posouvá jinak –
-to je diferenciální flexe. Pokud PHD2 guiduje odděleným guidroskopem, vidí a koriguje jen jeho pohyby; rozdílné
-pohyby obrazového dalekohledu jsou neviditelné. To vede k časté frustraci: graf navádění vypadá skvěle, ale hvězdy
-na snímcích z hlavní kamery jsou protažené.</p>
-<p class="MsoNormal">V dvojité sestavě bude <b>vždy</b> nějaká diferenciální flexe; jde o to, jak je velká a zda kazí snímky.
-U systémů s ohnisky ≥~1800 mm to obvykle problém je, pokud nejsou expozice krátké. Předpovědět to nelze – je příliš
-mnoho mechanických rozhraní, která se mohou hýbat: pohyblivá zrcadla SCT, spojky mezi kamerou a ostřením, samotné
-ostření, palcové šrouby, upevnění guidroskopu atd. Typickým řešením je zrušit dual‑scope a použít off‑axis guider
-(OAG) na obrazovém dalekohledu. PHD2 pak „vidí“ všechny pohyby, které ovlivní snímky z hlavní kamery. Dříve byly OAG
-obtížné kvůli malé FOV a nedostatku hvězd, ale moderní vodicí kamery s velkými citlivými senzory to výrazně zlepšily.</p>
-<p class="MsoNormal">Máte‑li často protažené hvězdy a přitom podobný výkon v RA i Dec, podezřívejte diferenciální flexi. Ověříte to
-jednoduchým testem: při běžícím navádění najděte s hlavní kamerou nejdelší expozici, která dává přijatelné kulaté
-hvězdy. Nato pořiďte sérii 10–20 snímků s touto expozicí a v zobrazovacím programu je „problikávejte“ v pořadí jak
-vznikly. Obvykle uvidíte konzistentní posun hvězd v každém snímku vůči předchozímu – hvězdy budou „pochodovat“
-jedním směrem. Alternativně je složte bez registrace a elongace se projeví.</p>
-
-<h3><a name="AO_Devices"></a>Zařízení adaptivní/aktivní optiky (AO)</h3>
-<p class="MsoNormal">Obecně platí, že amatérská zařízení AO dokážou řešit jen část problémů, které vedou k nedokonalému
- navádění. AO obvykle maskují či zlepšují chování hůře fungující montáže, protože většinu korekcí dělají pohybem
-malého náklopného optického členu, nikoli 30 kg vybavení. Montáž je pak většinou požádána jen o základní siderické
-sledování. Problémy s vůlí, tření a periodickou chybou jsou z velké části maskovány. Protože AO je inherentně
-OAG, eliminuje i diferenciální flexi. To jsou významné výhody a vysvětlují, proč je mnoho seriózních imagérů používá.</p>
-<p class="MsoNormal">Co AO eliminovat nedokáže, je pohyb hvězdy kvůli seeingu – alespoň ne za běžných podmínek. Pohyby způsobené
-horní atmosférou mají frekvence stovek Hz a není praktické najít dostatečně jasné hvězdy pro tak rychlé měření. Pokud
-se o to pokusíte, narazíte na dvě věci: 1) dostupné hvězdy budou mít nízké SNR a výpočet jejich polohy se zhorší; a
-2) podvzorkujete seeing a vznikne aliasing vedoucí ke špatným povelům, které situaci ještě zhorší. Proto se doporučuje
-expozice AO nekratší než ~0,5 s, aby se „nehonil seeing“. Cílem AO je, aby montáž „vypadala“ přesnější a rychlejší,
-než ve skutečnosti je. Není‑li vaše snímání limitováno výkonem montáže, AO pravděpodobně mnoho nepřinese.</p>
-<p class="MsoNormal">Při AO navádění se povely posílají někdy jen AO, jindy i montáži. Povely jdou pouze do AO, dokud korekce
-nepřekročí fyzické limity náklopného členu. Jak se limit blíží, posílají se „bump“ povely montáži, aby se hvězda
-vrátila blíž středu rozsahu členu. To se děje kvůli driftu z polárního ustavení, velkým výchylkám (zachycený kabel,
-vítr) nebo při velkých dither ech. Popis „míchání“ povelů je v části Pokročilá nastavení/AO parametry:
-<a href="Advanced_settings.htm#Other_Devices_Tab">AO parametry</a>.</p>
-
-<h3><a name="Logging_and_Debug_Output"></a>Záznamy (logy) a ladicí výstup</h3>
-<p><i>PHD2</i> automaticky vytváří dva typy logů: ladicí (debug) a vodicí (guide). Oba jsou užitečné pro jiné účely.
-Guide log je formátován tak, aby se dal snadno číst člověkem i zpracovat externí aplikací. Například aplikace
-PHDLogView (není součástí PHD2) umí z guide logu vytvářet různé grafy a statistiky. Log lze snadno importovat i do
-Excelu a dalších aplikací – jako oddělovač sloupců použijte čárku. Debug log obsahuje úplný záznam všeho, co se v
-<i>PHD2</i> dělo, takže je velmi užitečný při řešení problémů. Je v textovém, i když ukecaném formátu, takže není těžké
-vidět, co se stalo. Pokud budete hlásit problém, téměř jistě budete požádáni o oba logy. Nemáte‑li žádný log,
-s největší pravděpodobností nedostanete pomoc. Logy se vytvářejí vždy, když PHD2 běží, bez ohledu na to, co jste dělali,
-takže <b>vždy</b> budete mít logy pro podporu.</p>
-<p>Umístění logů se řídí polem „Umístění Souborů Protokolu“ v globální záložce Pokročilých nastavení. Standardně se ukládají do
-systémového umístění uživatelských dokumentů. Ve Windows například do podsložky „<i>PHD2</i>“ v „Dokumentech“. To
-nemusí být pohodlné, takže si můžete vybrat jinou složku. Aby se logy nehromadily, PHD2 automaticky maže debug logy
-starší 30 dnů a guide logy starší 60 dnů. Chcete‑li je mít déle, přesuňte je do jiné složky mimo správu PHD2.</p>
-<p>Pro zjednodušení automatického nahrávání logů (viz níže) jsou logy seskupeny podle „imaging day“ – 24 hodin začínající
-v 09:00 místního času. Všechny běhy PHD2 v rámci stejného imaging day zapisují do dvojice logů pro tento den.</p>
-<p>V některých situacích může být potřeba ukládat i snímky z vodicí kamery, obvykle pro ladění. To lze zapnout v globální
-záložce Pokročilých nastavení pomocí „Enable diagnostic image logging“. Snímky se ukládají do stejného umístění jako
-ostatní logy, ve formátu FITS. Jediný snímek uložíte i přes menu File/Save Image…</p>
-
-<h3><a name="Logging-Automatic_Upload"></a>Automatické nahrávání logů</h3>
-<p>Potřebujete‑li pomoc s PHD2 nebo zlepšit navádění, můžete poslat dotaz na fórum Open‑PHD‑Guiding
-(https://groups.google.com/forum/#!forum/open-phd-guiding). Váš dotaz by měl být doplněn logy PHD pro konkrétní seanci.
-Debug logy bývají velké, takže je nelze připojit – použijte nástroj Upload popsaný níže. Logy needitujte, nezkracujte
-ani nepřejmenovávejte. PHD2 má vestavěnou funkci pro výběr, kompresi a automatické nahrání relevantních logů – je v
-menu „Pomoc“. Zobrazí se dialog se všemi dostupnými logy včetně časových známek a délek:</p>
-<p><img style="width: 557px; height: 467px;" alt="" src="Log_Upload_1.png"></p>
-<p>Vyberte požadované soubory a stiskněte „Další“ pro zahájení uploadu. Zkontrolujte sloupec „Noc z“, že log pokrývá
-správný čas – PHD2 vytváří logy při každém běhu, takže některé budou téměř prázdné; ty nenahrávejte. Buďte selektivní
-– pouze logy ze seance, s níž máte problém. Po dokončení nahrávání se zobrazí okno s odkazem na soubory:</p>
-<p><img style="width: 573px; height: 192px;" alt="" src="Log_Upload_2.png"></p>
-<p>Tento odkaz si uložte a přiložte ho ke svému dotazu na fóru. Soubory budou po čase ze serveru automaticky odstraněny.
-Do žádosti o podporu prosím zahrňte úplný popis činnosti, problém, který jste viděli, a zhruba časový úsek, na který
-se máme zaměřit.</p>
+<h3><a name="Dithering_Ops"></a>Operace ditheringu</h3>
+<p>Dithering je technika, při které se mezi expozicemi mírně posune poloha dalekohledu. To pomáhá odstranit vzory fixního šumu a vadné pixely z konečných snímků. PHD2 podporuje dithering prostřednictvím svého serverového rozhraní, které používají snímací aplikace. Dithering lze nastavit na náhodný nebo spirálový režim a lze jej omezit pouze na osu RA.</p>
 
 <h3><a name="Managing_Equipment_Profiles"></a>Správa profilů vybavení</h3>
-<p>Profily vybavení byly představeny v části <a href="Basic_use.htm">Základní použití</a>, kde se používají v dialogu
-„Připojit Zařízení“. Chcete‑li spravovat více profilů, použijte tlačítko „Správa Profilů“ v tomto dialogu. Můžete
-vytvářet nové profily nebo existující upravovat/přejmenovávat/mazat. Nejčastěji použijete spuštění průvodce novým
-profilem, popsaného v „Základním použití“. Ten nastaví parametry PHD2 specifické pro vaši konfiguraci. Každý profil
-obsahuje všechna nastavení aktivní při posledním použití (kromě souborů s darky a mapami vadných pixelů). Chcete‑li
-měnit nastavení existujícího profilu, vyberte jej v rozbalovacím seznamu profilů a klikněte na „Nastavení“ v menu
-„<a name="Manage_Profiles"></a>Správa Profilů“. Otevře se Pokročilé nastavení, kde můžete provést změny. Pamatujte, že
-profil se automaticky ukládá při každé změně během seance <i>PHD2</i>. Nakonec můžete profily importovat/exportovat
-pro účely ladění, zálohování nebo přenosu mezi počítači.</p>
-<p><b>Migrace nastavení PHD2 na jiný počítač</b><br>
-Ve Windows jsou informace o profilech v registru, takže pouhý přenos souborů nestačí. Na starém PC profily „exportujte“
-do souborů, přeneste je na nové PC a tam je „importujte“. Tím přenesete všechna nastavení profilu kromě knihoven darků
- a map vadných pixelů. Data darků a map jsou ve filesystému (kvůli velikosti) v logickém adresáři
-„AppData\Local\PHD2“. Ten je třeba zkopírovat na nové PC beze změny umístění a názvů. Nejlepší praxe je ale knihovny
-na novém PC znovu vybudovat, aby odrážely aktuální chování senzoru vodicí kamery.</p>
+<p>Profily vybavení v PHD2 ukládají všechna nastavení specifická pro konkrétní konfiguraci vybavení. To zahrnuje:</p>
+<ul>
+<li>Připojení kamery, montáže a dalších zařízení</li>
+<li>Naváděcí parametry a nastavení algoritmů</li>
+<li>Kalibrační data</li>
+<li>Výsledky Asistenta navádění</li>
+</ul>
 
-<h3><a name="Ask_for_coordinates_aux_mount"></a>Připojení pomocné montáže pomocí „Dotázat se na souřadnice“</h3>
-<p>Nelze‑li se připojit k montáži pomocí ovladač ů ASCOM nebo INDI, je tu „nouzová“ alternativa: pomocná montáž s volbou
-„Požádat o souřadnice“. Při každém zahájení navádění budete vyzváni k zadání nebo potvrzení polohy dalekohledu:</p>
-<p><img style="width: 212px; height: 248px;" alt="" src="Manual_mount.png"></p>
-<p>Zadáte‑li aktuální deklinaci a informaci, zda míříte na východ/západ, PHD2 automaticky upraví kalibraci pro danou
-polohu na obloze. Není třeba vysoká přesnost – deklinace v rámci pár stupňů stačí. Díky tomu nebudete muset při změně
-cíle rekalibrovat, pokud tyto hodnoty vždy aktualizujete. Například můžete kalibrovat poblíž Dec=0 a po přesunu na
-vysokou Dec zadat nové hodnoty; to bude lepší než kalibrace blízko pólu. Dialog se nezobrazí, pokud je start navádění
-vyvolán ditheringem nebo příkazem přes server z imagingové aplikace. Aby úprava kalibrace fungovala, <b>musí</b> být
-předchozí kalibrace provedena se správnými údaji o poloze.</p>
-<p>Používáte‑li tuto možnost s nástrojem Drift Alignment, dialog vypadá trochu jinak:</p>
-<p><img style="width: 327px; height: 350px;" alt="" src="Manual_mount_drift.png"></p>
-<p>Vyplníte‑li navíc rektascenzi, zeměpisnou šířku a délku, nástroj Drift Alignment může přesněji upravit svou
-magenta cílovou kružnici. Jinak kružnice ukáže jen horní odhad chyby polárního ustavení během „úprava“ fází.</p>
-<p>Připojení/odpojení „Požádat o souřadnice“ aux‑montáž můžete provádět bez vlivu na kameru nebo montáž. Můžete jej použít
-pro drift‑align nebo pro počáteční najetí na cíl a pak odpojit, abyste se vyhnuli opakovaným dialogům. Ať už tuto
-možnost používáte jakkoli, je na vás, abyste zadávali správné hodnoty – výrazně chybné údaje povedou ke špatnému
-výsledku navádění.</p>
+<p>Profily jsou uloženy v konfigurační složce PHD2 a zůstávají zachovány i po aktualizaci softwaru. Můžete vytvořit více profilů pro různé konfigurace vybavení (např. různé naváděcí dalekohledy, různé kamery, různé montáže).</p>
 
-<h3><a name="Advanced_Settings_for_the_Simulators"></a>Pokročilá nastavení simulátorů</h3>
-<p>Simulátory zařízení byly představeny v části <a href="Basic_use.htm">Základní použití</a> jako užitečný nástroj pro
-experimenty s <i>PHD2</i> a seznámení s funkcemi. Pro smysluplný simulátor je třeba zvolit „Simulator“ jako kameru a
-„On‑camera“ jako montáž. Jakmile vás budou zajímat detaily, můžete parametry simulace upravit přes „Nastavení Kamery“
-na hlavní obrazovce:</p>
-<p><img style="width: 659px; height: 543px;" alt="" src="Tools_simulator.png"></p>
-<p>U simulované montáže můžete upravit vůli v Dec, drift z chyby polárního ustavení a periodickou chybu. Dále lze měnit
-úroveň „seeingu“, který generuje realisticky vypadající pohyby hvězd. Měníte‑li parametry po jednom, uvidíte, jak
-ovlivňují pohyby hvězd a jak na ně reagují různé algoritmy. Samozřejmě pracujete s „téměř dokonalou“ montáží (kromě
-vůle), takže simulace nemůže být úplně realistická. Dialog simulace slouží primárně pro vývoj, UI se může měnit bez
-aktuálních tool‑tipů nebo dokumentace.</p>
+<h3><a name="AO_Devices"></a>Použití AO (Adaptive Optics)</h3>
+<p>Zařízení adaptivní optiky (AO) používá rychle se pohybující tip/tilt prvek k provádění velmi rychlých malých korekcí. AO zařízení může provádět korekce mnohem rychleji než montáž, typicky s frekvencí 10 Hz nebo vyšší. Když se průvodní hvězda posune mimo rozsah korekce AO, PHD2 pošle „bump" příkaz montáži, aby ji přesunula zpět. Použití AO vyžaduje pečlivé nastavení a kalibraci.</p>
 
-<h3><a name="Multiple_Executions"></a>Více instancí programu</h3>
-<p>V některých situacích můžete chtít spustit více instancí PHD2 současně. Druhou instanci spustíte s parametrem příkazové
-řádky „-i 2“; třetí s „-i 3“ atd. Ve Windows to lze přes cmd.exe, nebo si vytvořte zástupce na ploše takto:</p>
-<div style="margin-left: 40px;">
-Pravé tlačítko na ploše<br>
-Nový/Zástupce<br>
-Jako umístění programu zadejte:<br>
-"C:\Program Files (x86)\PHDGuiding2\PHD2.exe" -i2<br>
-Další<br>
-Zadejte název, např. „PHD2 #2“<br>
-Dokončit
-</div>
-<p>Pozn.: u třetího řádku jsou ve Windows nutné uvozovky, protože cesta obsahuje mezery.</p>
-
-<h3><a name="Keyboard_Shortcuts"></a>Klávesové zkratky</h3>
-<p>Klávesové zkratky jsou dostupné pro mnoho často používaných nástrojů a funkcí PHD2 – jsou uvedeny v části
-<a href="KeyboardShortcuts.htm">Klávesové zkratky</a>.</p>
+<h3><a name="Ask_for_coordinates_aux_mount"></a>Ask for coordinates</h3>
+<p>Funkce „Ask for coordinates" je jednoduchá alternativa k připojení aux montáže pro uživatele, kteří nemohou použít ASCOM nebo INDI. Když je tato funkce povolena, PHD2 vás vyzve k zadání souřadnic dalekohledu (RA, Dec a strana pilíře) v kritických okamžicích, jako je kalibrace nebo překlopení poledníku. To umožňuje PHD2 správně upravit kalibraci i bez automatického připojení k montáži.</p>
 
 <h3><a name="Software_Update"></a>Aktualizace softwaru</h3>
-<p>Jednou z nejčastějších odpovědí na žádost o podporu ve fóru PHD2 je: aktualizujte na poslední verzi a ověřte, zda
-problém přetrvává. Pokud vidíte problém ve starší verzi PHD2, je pravděpodobné, že nejste první a že už byl nalezen a
-opraven v novější verzi. Proto považují vývojáři PHD2 za důležité používat co nejaktuálnější verzi programu.</p>
-<p>Aktualizace programu, na který spoléháte při bezobslužném snímání, může působit rizikově – jsme také imagéři a chápeme
-to. Je tu nutný kompromis mezi stabilitou instalace a aktuálností oprav chyb a vylepšení. Výrobci kamer někdy vydají
-„breaking“ změny ovladač ů a SDK (např. kvůli novým modelům). To nás nutí SDK aktualizovat, abychom je podporovali –
-ale může to způsobit problémy i u stávajících uživatelů, které lze opravit jen aktualizací ovladač ů a PHD2.</p>
-<p>PHD2 hledá rovnováhu publikováním dvou řad vydání. Vývojová vydání obsahují nejnovější opravy a vylepšení a jsou
-otestována vývojáři – často při reálném snímání – před uvolněním. Uživatelé vývojových verzí dostávají nejnovější
-opravy a funkce. Vývojová vydání mají názvy jako „2.6.3dev6“ (šesté vývojové vydání po 2.6.3).</p>
-<p>Průběžně, po dostatečném otestování vývojové verze, vyjde hlavní vydání. Například 2.6.3dev6 může být uvolněno jako
-hlavní verze 2.6.4.</p>
-<h4>Kontrola aktualizací</h4>
-<p>PHD2 má volbu automaticky kontrolovat aktualizace. Doporučujeme ji zapnout, abyste byli aktuální. Při zapnutí se
-kontrola provádí na pozadí při startu PHD2. Pokud je k dispozici nová verze, PHD2 vám nabídne instalaci. Automatická
-kontrola nezasahuje do běžného provozu PHD2, včetně automatizace. Je bezpečné ji nechat zapnutou i bez internetového
-připojení v terénu – pokud kontrola neproběhne, PHD2 to zkusí při příštím startu.</p>
-<p>Bez ohledu na automatickou kontrolu můžete kdykoli ručně zkontrolovat aktualizace přes „Check for updates“ v menu
-Pomoc.</p>
+<p>PHD2 může automaticky kontrolovat dostupnost aktualizací při spuštění. Můžete si vybrat, zda chcete kontrolovat pouze hlavní vydání nebo také vývojové buildy. Vývojové buildy obsahují nejnovější funkce a opravy chyb, ale mohou být méně stabilní než hlavní vydání. Aktualizace softwaru je důležitá pro získání nejnovějších funkcí, oprav chyb a vylepšení výkonu.</p>
 
-</body></html>
+<h3><a name="Declination-Uni-directional_guiding"></a>Jednosměrné navádění v deklinaci</h3>
+<p>Jednosměrné navádění v deklinaci je technika používaná k vyhnuti se problémům s vůlí v deklinaci. Místo posílání příkazů v obou směrech (sever a jih) PHD2 posílá příkazy pouze v jednom směru. To eliminuje zpoždění způsobené vůlí, ale vyžaduje, aby polární zarovnání bylo mírně rozladěné, aby byl drift v preferovaném směru. Jednosměrné navádění lze nastavit v dialogu Pokročilá nastavení na kartě Algorithms výběrem „North" nebo „South" pro režim navádění Dec.</p>
+
+</body>
+</html>

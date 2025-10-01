@@ -1,428 +1,95 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Dark snímky a mapy vadných pixelů</title><style type="text/css">
- body {font-family:Arial, Verdana, sans-serif; font-size: 10pt;}
- h1, h2, h3, h4, h5 {font-family: Arial, Verdana, sans-serif; color: blue;}
-</style></head>
-<body><h2>Dark snímky a mapy vadných pixelů</h2><br><h3>Úvod</h3>Kamery
-používané pro navádění obvykle nejsou teplotně stabilizované a mohou
-produkovat&nbsp;obrazy, které vypadají poměrně&nbsp;šumové. To platí zejména
-pro starší naváděcí kamery založené na CCD.&nbsp; V důsledku toho se na
-vodicích expozicích často objevují zjevné&nbsp;defekty ve formě &nbsp;hot
-(„přepálených“) pixelů nebo oblastí s nepravými úrovněmi jasu.
-&nbsp;Pro jednoduchost budeme tyto oblasti senzorového šumu nazývat „hot
-pixely“, ale mohou být větší než 1 pixel a mít libovolné
-úrovně jasu.&nbsp; Pokud
-je těchto defektů příliš mnoho, může mít PHD2 potíže s identifikací
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-výběrem&nbsp;vodicích hvězd. &nbsp;To platí zejména tehdy, když jsou podmínky na obloze špatné a je k dispozici málo nebo dokonce žádné skutečné vodicí hvězdy. Nastavení "MinHFD" a "MaxHFD" poskytují nejlepší obranu proti záměně&nbsp;šumu za hvězdy, ale knihovna dark snímků nebo
-mapa vadných pixelů poskytují další úroveň ochrany.&nbsp; I poté,
-co navádění začne, může
-falešný hot pixel blízko vodicí hvězdy narušit výpočet
-polohy vodicí hvězdy a způsobit, že navádění&nbsp; začne „skákat“
-mezi
-skutečnou hvězdou a hot pixelem. &nbsp;Takové problémy lze
-zmírnit pomocí dvou přístupů v PHD2: dark snímků nebo
-map vadných pixelů. &nbsp;Všechny funkce související s dark snímky a
-mapami vadných pixelů se nacházejí v hlavní nabídce „Darks“.<br><br>Protože
-knihovny darků a mapy vadných pixelů spoléhají na syrové ADU hodnoty vrácené
-ovladač em kamery, jsou&nbsp;implicitně závislé na nastaveních kamery,
-která ovlivňují tyto úrovně ADU. &nbsp;To zahrnuje bitovou hloubku
-kamery a zisk kamery. &nbsp;Bitová hloubka je termín používaný k
-označení, zda ovladač  vrací obrazová data v 8bitovém nebo 16bitovém
-formátu. &nbsp;I když některá kamera interně používá 10-, 12- nebo
-14bitové hodnoty, obrazová data budou škálována a předána
-PHD2 jako 16bitová data. Mnoho kamer pracuje pouze v jednom režimu
-bitové hloubky, v tom případě se o to nemusíte starat. &nbsp;Ale některé
-naváděcí kamery podporují oba režimy a budete muset&nbsp;zvolit nebo si
-alespoň uvědomit, který režim je aktivní, než začnete vytvářet knihovnu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ia mapu vadných pixelů. &nbsp;Pokud následně změníte nastavení bitové hloubky,
-budete muset proces jejich tvorby zopakovat.
-&nbsp;Nastavení zisku kamery je trochu jiné v tom, že&nbsp;škáluje
-ADU úrovně libovolným způsobem. &nbsp;Malé změny zisku pravděpodobně
-nebudou mít velký vliv na data knihovny darků/BPM, ale
-velké změny je zneplatní. &nbsp;Z tohoto důvodu
-nedoporučujeme časté úpravy zisku kamery.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark snímky</h3>PHD2
-vytvoří a použije&nbsp;knihovnu dark snímků, které odpovídají rozsahu
-expozic, jež používáte pro navádění. &nbsp;Jakmile je knihovna vytvořena, bude
-automaticky uložena a bude dostupná napříč více
-seancemi PHD2. &nbsp;Díky tomu můžete věnovat rozumné množství času
-vytvoření kvalitní knihovny darků a následně ji používat po delší
-dobu. &nbsp;Jakmile připojíte kameru, můžete
-vytvořit knihovnu darků položkou „Dark Library…“ v nabídce
-„Darks“. &nbsp;Tím se spustí dialog, který vypadá takto: <br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 499px; height: 412px;" alt="" src="Dark_Lib.png"><br><br>
-Dva ovládací prvky nahoře slouží k určení minimální a maximální
-doby expozice, které budou použity pro pořízení dark snímků. &nbsp;Počáteční,
-koncové a mezilehlé hodnoty odpovídají časům expozic používaným
-v hlavním okně PHD2, takže můžete pořídit dark snímky, které budou odpovídat
-libovolné době expozice, kterou pro navádění zvolíte. &nbsp;Třetí ovládací prvek
-určuje počet dark snímků, které budou pořízeny a zprůměrovány
-pro každou dobu expozice. &nbsp;Zprůměrovaný obraz se nazývá
-„hlavní dark“. &nbsp;Historicky PHD používalo pro tento účel 5 dark snímků,
-ale možná budete chtít toto číslo zvýšit pro zlepšení kvality
-master darku. &nbsp;Můžete také přidat poznámku nebo
-komentář – ten bude vložen do hlavičky master darku
-pro pozdější referenci. &nbsp;<br><br>
-Dvě přepínací tlačítka nad polem Poznámky vám umožní určit, zda chcete
-upravit/rozšířit aktuální knihovnu darků, nebo vytvořit novou knihovnu
-od začátku. &nbsp;Pokud jste dostali varovné zprávy, že je třeba knihovnu
-darků přestavět, měli byste zvolit možnost „Create entirely new
-dark library“. &nbsp;To zajistí, že všechny master darky budou odpovídat
-formátu kamery, kterou právě používáte.
-&nbsp;V opačném případě můžete jednoduše aktualizovat nebo rozšířit aktuální
-knihovnu tím, že pořídíte nové dark snímky pro zadané doby expozice<br><br>Jakmile
-nastavíte své
-parametry, klikněte na „Start“ a proces začne. &nbsp;Pokud vaše naváděcí
-kamera nemá závěrku – většina ji nemá – PHD2 vás vyzve,
-abyste zakryli naváděcí dalekohled. &nbsp;Pro dosažení nejlepších výsledků se ujistěte,
-že do naváděcí kamery neproniká světlo – dělat to za dne
-pravděpodobně nebude fungovat dobře. &nbsp;PHD2 pak systematicky
-projde rozsah časů expozic, které jste zvolili, a pořídí
-zadaný počet snímků pro každou dobu expozice. &nbsp;Průběh bude
-zobrazen ve stavovém řádku dole v okně. &nbsp;Jakmile
-proces spustíte, tlačítko „Cancel“ výše se změní na „Stop“.
-&nbsp;Můžete na něj kliknout, pokud se něco pokazí nebo chcete
-změnit parametry dříve, než se dokončí celá sekvence.
-&nbsp;Zastavení tímto způsobem zahodí již nasbíraná data,
-takže budete muset provést úpravy a proces znovu spustit. &nbsp;Jakmile
-budou všechny snímky nasnímány, PHD2
-spočítá master darky, uloží je do souboru knihovny darků
-a poté zobrazí informační okno se souhrnem výsledků. &nbsp;Pokud vaše
-kamera nemá závěrku, budete také vyzváni k odkrytí guiderskopu,
-abyste se mohli vrátit k normálnímu snímání.<br><br>Jakmile je vaše knihovna darků
-vytvořena, její použití ovládáte položkou „Použít Knihovnu Dark“
-&nbsp;v nabídce „Darks“. &nbsp;Zaškrtávací políčko u položky se přepíná
-při každém kliknutí. &nbsp;Nastavení
-je zachováno napříč spuštěními programu, takže pokud ponecháte položku
-zaškrtnutou, PHD2 automaticky načte knihovnu darků
-a obnoví její použití při příštím spuštění aplikace.
-&nbsp;Samotná knihovna darků je uchována na disku, dokud nevytvoříte novou
-knihovnu, takže položku „Použít Knihovnu Dark“ můžete libovolně zapínat/vypínat
-bez ztráty dat. &nbsp;Pokud používáte knihovnu darků a neexistuje hlavní dark,
-který přesně odpovídá vaší době expozice při navádění, PHD2 použije
-nejbližší odpovídající. &nbsp;Nicméně, pro nejlepší výsledky byste měli používat
-odpovídající master darky. &nbsp;Pokud máte knihovnu darků, která má
-některé chybějící doby expozice, můžete jednoduše pořídit chybějící data a ta budou přidána
-do existující knihovny – není třeba začínat od nuly. &nbsp;Změnou nastavení
-položky „Použít Knihovnu Dark“ můžete
-pozorovat efekt použití knihovny darků a posoudit, zda se obrazy z naváděcí kamery dostatečně zlepšily.<br><br>Mějte na paměti,
-že knihovna darků je svázána s konkrétní kamerou a úrovní binningu. &nbsp;PHD2
-zkontroluje, zda knihovna darků odpovídá kameře, kterou
-aktuálně používáte. &nbsp;Pokud ne, zobrazí se varování,
-že knihovnu darků nelze použít a je třeba ji přestavět.
-&nbsp;To se může stát, když jste změnili kameru uvnitř existujícího
-profilu vybavení, což byste dělat neměli, pokud jste neupgradovali
-svoji naváděcí kameru a neplánujete se vracet ke staré.
-&nbsp;Knihovna darků také implicitně závisí na úrovni zisku
-kamery, takže byste ji měli přestavět, pokud jste provedli
-významnou změnu zisku – také něco, co byste po seznámení se s chováním kamery
-neměli často dělat.<br><h3><a name="Bad-pixel_Maps"></a>Mapy vadných pixelů (<a name="Defect_Maps"></a>Defect Maps)</h3>Pro
-některé naváděcí kamery dark snímky nedokážou dostatečně odstranit
-vadné pixely, které jsou viditelné na vodicím snímku. &nbsp;V takových
-situacích pravděpodobně dosáhnete lepších výsledků vytvořením a
-použitím mapy vadných pixelů. &nbsp;Tento přístup přímo měří a
-kompenzuje konkrétní oblasti senzoru, které produkují falešný signál
-(hot/stuck pixely) nebo nereagují správně na dopadající světlo (cold
-pixely). &nbsp;Taková „mapa“ se vytvoří pořízením série
-relativně dlouhých dark expozic (např. 15 sekund), jejich zprůměrováním
-a následnou statistickou analýzou výsledného snímku za účelem identifikace
-umístění vadných pixelů. &nbsp;Tato pixelová umístění se uloží
-pro pozdější použití. &nbsp;Během běžného navádění je každé z těchto
-umístění na vodicím obrazu nahrazeno statistickým vzorkem
-okolních pixelů, čímž se eliminuje celý nebo většina efektu
-„vadného“ pixelu. &nbsp;Výsledkem bývá obraz s hladším
-pozadím a s menším počtem zjevných defektů. &nbsp;Pro jakékoli defekty, které
-zůstanou, poskytuje PHD2 i možnost&nbsp;ručně kliknout na
-umístění vadných pixelů a přidat je do mapy. &nbsp;Celý tento proces
-získání a analýzy dark snímků&nbsp;za vás provede&nbsp;PHD2, takže je snadné
-mapu vadných pixelů vytvořit.<br><br>Vytvoření
-mapy vadných pixelů provedete kliknutím na položku „Bad Pixel Map…“
-v hlavní nabídce „Darks“. &nbsp;Pokud to děláte poprvé, budete vyzváni k pořízení
-série dark snímků
-pro analýzu senzoru vaší kamery a vytvoření mapy: <br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 571px; height: 321px;" alt="" src="Defect_Darks.png"><br><br>
-Toto je mírně odlišná verze dialogu použitého pro pořizování dark snímků,
-popsaného v předchozí sekci. &nbsp;Protože se analýza opírá o statistiku,
-měli byste použít relativně dlouhé doby expozice
-(&gt; 10 s) a alespoň 10 snímků. &nbsp;Protože lze mapu vadných pixelů
-používat po poměrně dlouhou dobu, nebudete tento
-úkon opakovat často a vyplatí se věnovat čas získání kvalitnějších
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- dat.<br><br>Jakmile
-jsou dark snímky pořízeny, PHD2
-spočítá statistiky a identifikuje počáteční sadu vadných
-nebo&nbsp;podezřelých pixelů. &nbsp;Po krátké prodlevě
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- se zobrazí dialog podobný tomuto: <br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 653px; height: 514px;" alt="Bad-pixel Map" src="DefectUI.png"><br><br>
-Sekce „General Information“ zobrazuje souhrn statistik
-vypočtených PHD2 během identifikace poloh vadných pixelů.
-&nbsp;Obvykle je nemusíte zkoumat a můžete tuto část panelu skrýt
-zrušením zaškrtnutí položky „Show Master Dark Details“.
-&nbsp;Skupina „Výsledky“ zobrazuje počty hot a cold pixelů na základě aktuálních hodnot
-obou posuvníků „Agresivita“ níže. &nbsp;Pokud to děláte poprvé,
-budou posuvníky nastaveny na výchozí hodnoty, 75 v rámci
-rozsahu 0 až 100. &nbsp;Budete muset experimentovat nebo použít úsudek,
-zda počty vypadají rozumně vzhledem k tomu, co vidíte
-na běžných vodicích snímcích. &nbsp;Když posunete posuvníky
-„agresivita“ doleva a doprava, uvidíte, jak se počty hot a cold pixelů
-mění. &nbsp;Posuvníky&nbsp;řídí, jak „agresivní“ má PHD2 být
-při identifikaci podezřelých pixelů a jejich označování jako
-vadných – vyšší nastavení agrese povede k vyšším počtům.
-&nbsp;Jakmile budete mít nastavení, která chcete, klikněte
-na tlačítko „generovat“, čímž se vypočte a načte nová mapa defektů. &nbsp;<br><br>V tomto bodě
-si pravděpodobně budete chtít prohlédnout výsledky. &nbsp;Hlavní okno PHD2 je
-stále aktivní, takže můžete pořídit běžnou vodicí expozici
-a podívat se, jak to vypadá. &nbsp;Chcete-li rychle vidět efekt
-použití mapy defektů, jednoduše přepínejte položku „Použít Mapu Vadných pixlů“
-v nabídce „Darks“. &nbsp;Mějte na paměti, že není nutné mít dokonale hladké, černé pozadí vodicího obrazu – stačí
-mít dostatečně malý počet zbývajících hot/cold pixelů, aby si je ani vy,
-ani algoritmy navádění PHD2 nespletly s hvězdou. &nbsp;Pokud
-překorigujete příliš agresivním nastavením, můžete vytvořit
-mnoho oblastí vadných pixelů, které pak budou překážet
-detekci použitelných vodicích hvězd. &nbsp;Úpravy je snadné provádět
-pomocí posuvníků – jednoduše změňte nastavení posuvníků,
-klikněte znovu na „generovat“ a prohlédněte si výsledky v hlavním okně PHD2.<br><br>
-Může se stát, že tento přístup stále ponechá některé hot pixely, které byste&nbsp;chtěli odstranit. &nbsp;Protože se
-výchozí přístup opírá o statistiku a musí být použitelný pro širokou
-škálu kamer, není to „nastav a zapomeň“ operace – často je potřeba ji doladit
-pomocí níže uvedených kroků.<br><br><h4>Podrobný průvodce zpřesněním mapy vadných pixelů</h4>Následující kroky jsou doporučené pro zpřesnění mapy vadných pixelů tak, abyste měli pod kontrolou pixelové artefakty vaší kamery:<br><ol><li>Zakryjte guiderskop a spusťte cyklování 5sekundových expozic</li><li>Otevřete okno Refine Bad-pixel Map (Menu/Darks/Bad-pixel Map), poté jej přesuňte na stranu obrazovky, abyste viděli jak okno BPM, tak okno navádění</li><li>Upravte posuvník gamma v hlavním okně tak, abyste
-viděli hot pixely – může to vyžadovat jasnější obraz, než na jaký jste zvyklí</li><li>Zaškrtněte volbu "Zobrazit vadné pixely".
-&nbsp;Se zaškrtnutím se objeví červené tečky pro všechny hot pixely,
-které jsou již známé. &nbsp;</li><li>Pomalu posouvejte posuvník
-agresivity pro hot pixely doleva a doprava, dokud nebude většina hot pixelů
-pokryta červenou tečkou a zůstane jen malé množství (nebo žádné) nepokrytých hot pixelů. &nbsp;Klikněte na „generovat“</li><li>Nyní doplňte zbývající hot pixely ručním přidáním do mapy vadných pixelů</li></ol><ul style="margin-left: 40px;"><li>Zrušte zaškrtnutí volby "Zobrazit vadné pixely"</li><li>Vyberte hot pixel v okně navádění kliknutím na něj</li><li>Klikněte na „Přidat Chybné pixly“ v okně BPM</li><li>Opakujte podle potřeby, dokud nebudete mít pocit, že většina vadných pixelů je ošetřena</li><li>Zavřete okno MVP – NEKLIKEJTE znovu na „generovat“, protože by to zrušilo ruční výběr pixelů</li></ul>&nbsp;&nbsp;&nbsp; <br>Jakmile
-je vaše mapa vadných pixelů vytvořena, její použití řídíte položkou „Použít Mapu Vadných pixlů“
-&nbsp;v nabídce „Darks“. &nbsp;Toto nastavení je zachováno
-napříč spuštěními programu, takže ponechání zaškrtnuté volby řekne PHD2,
-aby automaticky načetl mapu defektů a používal ji pro všechny vodicí expozice.
-&nbsp;Nastavení „Použít Knihovnu Dark“ a „Použít Mapu Vadných pixlů“ jsou
-vzájemně výlučná – můžete&nbsp;používat jednu nebo žádnou, ale ne obě
-současně. &nbsp;Stejně jako knihovna darků je i soubor s daty mapy vadných pixelů
-ukládán trvale, takže můžete její použití vypnout, aniž byste přišli
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- o jakákoli data. &nbsp;Obě tyto datové struktury lze používat po delší dobu, nicméně stojí za připomenutí, že senzory kamer se v čase mění. &nbsp;Proto můžete chtít knihovnu darků nebo mapu vadných pixelů pravidelně přestavět, případně když začnete pozorovat
-zhoršení vzhledu vašich běžných vodicích snímků. &nbsp;V těchto případech je také vhodné zaškrtnout volbu „Znovu Vytvořit Hlavní Dark Snímek“, která řekne PHD2, aby znovu získal podkladové
-dark snímky a přepočítal výchozí mapu vadných pixelů. &nbsp;Poté budete muset mapu znovu doladit, stejně jako dříve, dokud nebudete spokojeni s výsledky. &nbsp;Není důvod, abyste museli zasahovat přímo do souborů knihovny darků nebo mapy vadných pixelů, ale najdete je v logickém adresáři „AppData\Local“, který používá váš operační systém.<br><br>Podobně jako knihovny darků jsou i mapy vadných pixelů&nbsp;svázány s konkrétní kamerou a úrovní binningu.
-&nbsp;PHD2 zkontroluje, že mapa vadných pixelů odpovídá kameře,
-kterou aktuálně používáte. &nbsp;Pokud ne, zobrazí se výstraha, že mapu vadných pixelů nelze použít
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- a je třeba ji přestavět. &nbsp;To se může stát, když jste změnili kameru
-nebo faktory binningu v existujícím profilu vybavení – něco, co byste dělat neměli, pokud k tomu nemáte důvod.<br><br><h3><a name="reuse_dark_library"></a>Opakované použití dark snímků a map vadných pixelů</h3>Pokud
-používáte stejnou kameru ve více profilech, možná budete chtít
-znovu použít knihovny darků nebo mapy vadných pixelů, které jste pro tuto kameru vytvořili.
-&nbsp;To lze provést importem souvisejících datových souborů kamery
-do profilu, který tyto soubory ještě nemá. &nbsp;Příklad: řekněme, že jste vytvořili původní profil – nazvěme ho Profile1 –
-který používá vaši naváděcí kameru Lodestar, a vytvořili jste pro ni jak knihovnu darků,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- tak mapu vadných pixelů. Později vytvoříte nový profil,
-Profile2, který má jiné vlastnosti montáže nebo ohniskové délky, ale stále
-používá původní kameru Lodestar. &nbsp;V takovém případě
-připojíte vybavení pomocí profilu Profile2 a v hlavní nabídce „Darks“ použijete položku „Import From Profile…“.
-&nbsp;Jako zdroj importu pro knihovnu darků, mapu vadných pixelů nebo obojí zvolíte
-Profile1. &nbsp;Budou vám nabídnuty pouze ty profily,
-které mají kameru s kompatibilní geometrií senzoru (velikost senzoru, velikost pixelu,
-binning). &nbsp;Kliknutím na „Ok“ zkopírujete soubory knihovny/mapy vadných pixelů
-a přiřadíte je k vašemu novému profilu, Profile2. &nbsp;Protože jde o kopie,
-změna datových souborů v jednom profilu neovlivní ostatní profily. &nbsp;Pokud je chcete udržovat synchronizované, bude to vyžadovat následnou operaci „import“.
-<br></body></html>
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Darks_BadPixel_Maps_cz</title></head>
+<body><h2>Dark snímky a mapy vadných pixelů</h2><br><h3>Úvod</h3>Průvodní
+kamery pracují bez aktivní regulace teploty, a výsledkem bývají snímky s citelným šumem.
+To platí zejména pro starší CCD průvodce. Na jednotlivých expozicích se proto často
+objevují nápadné defekty v podobě horkých (či „teplých“) pixelů nebo oblastí se
+zvláštními úrovněmi jasu. V textu je pro jednoduchost označujeme jako „horké pixely“,
+i když mohou zabírat více než jeden pixel a mít libovolnou intenzitu. Pokud jich je příliš,
+může mít PHD2 problém automaticky rozpoznat a vybrat hvězdy vhodné pro navádění. To je
+nejvíce patrné při slabé obloze, kdy je reálných hvězd k dispozici jen málo nebo žádné.
+Nastavení „MinHFD“ a „MaxHFD“ pomáhá předcházet záměně šumu za hvězdy, dark knihovna nebo mapa
+vadných pixelů však přidává další vrstvu ochrany. I když už navádění běží, může horký pixel
+v blízkosti cílové hvězdy zkomolit výpočet její polohy a vyvolat „skákaní“ mezi skutečnou hvězdou
+a artefaktem. Tomu lze předejít dvěma funkcemi v PHD2 – dark snímky a mapami vadných pixelů,
+které najdete v hlavní nabídce „Darks“.<br><br>Protože dark knihovna i mapa vadných pixelů pracují přímo
+s hodnotami ADU vrácenými ovladačem kamery, jsou citlivé na všechna nastavení, která tyto úrovně ovlivňují.
+Patří sem především bitová hloubka a zisk. Bitová hloubka určuje, zda ovladač posílá data v 8bitovém,
+nebo 16bitovém formátu. I když elektronika některých kamer uvnitř používá 10-, 12- či 14bitové hodnoty,
+do PHD2 jsou vždy přepočteny na 16 bitů. Mnoho kamer pracuje jen v jednom režimu a není nutné to řešit,
+některé naváděcí kamery ale dovolují oba režimy. Před sestavením dark knihovny nebo mapy vadných pixelů
+je proto potřeba vědět, který režim je aktivní. Pokud jej později změníte, musíte data vytvořit znovu.
+Zisk kamery škáluje úrovně ADU jiným způsobem – drobné úpravy obvykle nevadí, výrazné změny ale data znehodnotí.
+Časté „hýbání“ zisku se proto nedoporučuje.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark snímky</h3>PHD2 umí sestavit a používat knihovnu dark snímků
+odpovídajících expozičním dobám, které využíváte při navádění. Jakmile knihovnu jednou vytvoříte,
+uloží se na disk a zůstane připravená pro další spuštění PHD2. Stačí tedy investovat trochu času
+do vytvoření kvalitních dat a ta pak můžete dlouho používat. Po připojení naváděcí kamery otevřete
+v nabídce „Darks“ položku „Dark Knihovna…“, která zobrazí dialog jako na obrázku níže:<br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 499px; height: 412px;" alt="" src="Dark_Lib.png"><br><br>
+Dvojice ovládacích prvků v horní části určuje minimální a maximální dobu expozice, pro kterou se budou dark snímky pořizovat.
+Počáteční, koncová i mezilehlá hodnota odpovídají krokům v hlavním okně PHD2, takže lze pokrýt všechny časy, které při navádění používáte.
+Třetí ovládací prvek udává počet snímků, které se pro danou dobu pořídí a zprůměrují do tzv. „master darku“.
+Historicky PHD používalo pět snímků, nicméně chcete-li kvalitu master darku ještě vylepšit, klidně počet navyšte.
+Do pole „Notes“ můžete připsat komentář – uloží se přímo do souboru master darku a při pozdějším použití vám připomene, co data obsahují.<br><br>
+Volby nad polem s poznámkou určují, zda chcete stávající knihovnu rozšířit, nebo postavit úplně novou. Pokud jste obdrželi upozornění,
+že knihovnu je nutné znovu sestavit, zvolte možnost „Vytvořit úplně novou dark knihovnu“, aby měl každý master dark správný formát pro aktuální kameru.
+V ostatních situacích stačí knihovnu doplnit o nové časy expozice a rozšířit tak stávající záznam.<br><br>
+Po nastavení parametrů stiskněte „Start“. Pokud vaše naváděcí kamera nemá závěrku (většina ji nemá), PHD2 vás vyzve k zakrytí průvodního dalekohledu.
+Je důležité, aby do kamery nepronikalo světlo – sbírání dark snímků za dne obvykle nefunguje dobře. PHD2 následně systematicky projde všechny zadané časy,
+pro každý pořídí potřebný počet snímků a na stavovém řádku průběžně informuje o postupu. Po spuštění se tlačítko „Cancel“ změní na „Stop“ – použijte jej,
+pokud potřebujete proces přerušit. Zastavení však zahodí dosud nasbíraná data, takže případné změny je nutné udělat a celý proces spustit znovu.
+Po dokončení pořizování PHD2 spočítá master darky, uloží je do souboru knihovny a zobrazí souhrn výsledků. Pokud byla kamera zakrytá ručně,
+program vás také vyzve k odkrytí dalekohledu, abyste mohli pokračovat v běžné práci.<br><br>
+Použití dark knihovny se zapíná položkou „Použít Dark Knihovnu“ v nabídce „Darks“. Zaškrtávací políčko si pamatuje poslední stav, takže když jej necháte aktivní,
+PHD2 knihovnu načte automaticky i při dalším spuštění. Samotný soubor s knihovnou se uchovává na disku, dokud nevytvoříte novou, takže lze menu kdykoli vypnout nebo zapnout bez ztráty dat.
+Pokud knihovna neobsahuje master dark přesně pro vaši expoziční dobu, PHD2 zvolí nejbližší dostupnou hodnotu, i tak je ale nejlepší mít odpovídající záznam.
+Chybějící časy doplníte jednoduše další sérií snímků – není třeba začínat znovu od nuly. Přepínáním volby „Použít Dark Knihovnu“ si můžete rychle ověřit,
+zda se vzhled snímků z naváděcí kamery zlepšil.<br><br>
+Nezapomeňte, že dark knihovna platí pro konkrétní kameru a nastavení binningu. PHD2 při načtení kontroluje, zda master darky odpovídají právě připojenému zařízení.
+Pokud ne, zobrazí výstrahu a vyžádá přestavění knihovny. K takové situaci může dojít například při výměně kamery ve stávajícím profilu výbavy.
+Stejně tak výrazná změna zisku kamery znamená, že je vhodné knihovnu přestavět – jakmile máte nastavení prověřené, zbytečně je neměňte.<br><h3><a name="Bad-pixel_Maps"></a>Mapy vadných pixelů (<a name="Defect_Maps"></a>Defect Maps)</h3>
+U některých průvodních kamer dark knihovna sama o sobě nestačí k odstranění zřetelných vadných pixelů.
+V takovém případě přichází ke slovu mapa vadných pixelů. Ta přesně lokalizuje pixely, které vysílají falešný signál (hot/stuck pixely),
+nebo naopak neodpovídají na světlo (cold pixely), a během zpracování je nahrazuje hodnotou vypočtenou ze sousedních pixelů.
+Mapa se sestaví z delší série dark expozic (například 15 sekund). Po zprůměrování se snímek statisticky vyhodnotí a vytvoří se seznam problematických pixelů,
+který se uloží pro další použití. V průběhu běžného navádění se na těchto pozicích použije statistický převod z okolí, takže obraz pozadí je hladší a artefaktů výrazně ubude.
+PHD2 navíc nabízí možnost ručně označit další pixely, pokud by po vytvoření mapy nějaké zůstaly. Celý proces získání a zpracování dark snímků PHD2 automatizuje.<br><br>
+Mapu vadných pixelů spustíte přes položku „Mapa Vadných pixelů…“ v nabídce „Darks“. Pokud ji vytváříte poprvé, PHD2 vyzve k nasnímání sady dark snímků,
+podobně jako u tvorby dark knihovny, jen s delšími expozicemi (obvykle více než 10 sekund) a vyšším počtem snímků (alespoň 10).
+Protože lze mapu používat poměrně dlouho, vyplatí se investovat čas do kvalitních dat.<br><br>
+Po nasnímání snímků PHD2 spočítá statistiky a určí první sadu podezřelých pixelů. Následně se zobrazí dialog jako na následujícím obrázku:<br><br><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 653px; height: 514px;" alt="Bad-pixel Map" src="DefectUI.png"><br><br>
+Sekce „Obecné Informace“ shrnuje statistiky počítané během identifikace vadných pixelů a lze ji skrýt zrušením volby „Zobrazit Detaily Master Darku“.
+Skupina „Výsledky“ zobrazuje aktuální počty horkých a studených pixelů podle nastavení posuvníků „Agresivita“.
+Výchozí hodnota je 75 (rozsah 0–100). Posunutím je možné upravit míru „agresivity“, tedy citlivost detekce – vyšší hodnoty označí více pixelů.
+Jakmile jste spokojeni, klikněte na „Generovat“ a načtěte aktuální mapu. Hlavní okno PHD2 zůstává aktivní, takže můžete hned zkontrolovat,
+jak mapa ovlivnila živý obraz. Účinek uvidíte i tak, že přepnete volbu „Použít Mapu Vadných pixelů“ v nabídce „Darks“.
+Není nutné mít dokonale černé pozadí – stačí, aby se počet zbývajících horkých či studených pixelů snížil natolik, že si je algoritmus nesplete s hvězdou.
+Pokud by nastavení bylo příliš agresivní, může vzniknout tolik „opravených“ pixelů, že by chyběly použitelné hvězdy. Proto je jednoduché mapu
+doladit dalším posunutím posuvníků a opětovným stiskem „Generovat“.<br><br>
+Stává se, že i po automatickém zpracování zůstane několik horkých pixelů. Proto PHD2 umožňuje mapu ručně doplnit:
+<br><h4>Krok za krokem k dolaďování mapy vadných pixelů</h4>
+<ol>
+<li>Zakryjte průvodní dalekohled a spusťte smyčku pětisekundových expozic.</li>
+<li>Otevřete okno „Vylepšit Mapu Vadných pixelů“ (Menu → Darks → Bad-pixel Map) a umístěte jej tak, abyste viděli i okno průvodního náhledu.</li>
+<li>Upravte v hlavním okně posuvník gamma tak, aby byly horké pixely dobře patrné – často je potřeba obraz výrazně zesvětlit.</li>
+<li>Zaškrtněte volbu „Zobrazit vadné pixely“, čímž se známé horké pixely zvýrazní červenými body.</li>
+<li>Pomalu posouvejte posuvník „Agresivita horkých pixelů“, dokud většinu horkých pixelů nepokryjí červené body a nezůstane jich jen minimum mimo.
+Poté stiskněte „Generovat“.</li>
+<li>Zbylé pixely přidejte ručně: zrušte zaškrtnutí „Zobrazit vadné pixely“, klikněte v průvodním okně na problematický pixel a v okně mapy vyberte „Přidat vadný pixel“.
+(Po dokončení okno zavřete – znovu na „Generovat“ neklikejte, jinak se ruční výběr smaže.)</li>
+</ol>
+Jakmile máte mapu hotovou, zapínáte ji stejně jako dark knihovnu položkou „Použít Mapu Vadných pixelů“. Nastavení zůstává aktivní mezi jednotlivými spuštěními PHD2.
+Volby „Použít Dark Knihovnu“ a „Použít Mapu Vadných pixelů“ se navzájem vylučují – můžete použít jednu nebo žádnou, nikdy však obě zároveň.
+Soubor s mapou vadných pixelů se ukládá trvale, takže ji můžete kdykoli vypnout bez ztráty dat. Dark knihovny i mapy vadných pixelů
+je možné používat dlouho, senzory se ale časem mění. Pokud si všimnete zhoršení vzhledu snímků nebo uplynula delší doba, vyplatí se data přestavět.
+V takové situaci zaškrtněte volbu „Přestavit Master Dark Snímek“ – PHD2 znovu pořídí zdrojové dark snímky, přepočte základ mapy a vy ji pak ručně doladíte,
+dokud nebudete spokojeni. Soubory s dark snímky ani mapou vadných pixelů není potřeba otevírat ručně – najdete je v logickém adresáři
+`AppData\Local`, kde je PHD2 automaticky ukládá.<br><br>
+Stejně jako dark knihovny jsou i mapy vadných pixelů svázány s konkrétní kamerou a binningem. PHD2 při načtení kontroluje, zda mapa odpovídá
+aktuálně připojené kameře. Pokud ne, zobrazí upozornění, že mapu nelze použít a je nutné ji přestavět. To nastává například při výměně kamery nebo změně
+binningu ve stávajícím profilu – postup, kterému je dobré se vyhnout, pokud se k původní konfiguraci chcete vrátit.<br><br><h3><a name="reuse_dark_library"></a>Opětovné použití dark snímků a map vadných pixelů</h3>
+Používáte-li stejnou kameru ve více profilech, může se hodit znovu využít už vytvořenou dark knihovnu nebo mapu vadných pixelů.
+Stačí importovat příslušné soubory do profilu, který je zatím nemá. Představme si profil „Profile1“ s kamerou Lodestar, pro kterou jste vytvořili dark snímky
+i mapu vadných pixelů. Později založíte nový profil „Profile2“ s jinými parametry montáže nebo ohniska, ale se stejnou kamerou. Připojte vybavení pomocí“Profile2“
+a v nabídce „Darks“ vyberte „Import From Profile…“. Jako zdroj zvolte „Profile1“ a označte, zda chcete importovat dark knihovnu, mapu vadných pixelů, nebo obojí.
+Nabídnou se jen profily s kompatibilní geometrií senzoru (rozměr senzoru, velikost pixelu, binning). Po potvrzení dojde ke zkopírování souborů a jejich přiřazení
+novému profilu. Protože jde o kopie, změny v jednom profilu neovlivní ostatní – pokud je chcete držet synchronní, zopakujte import podle potřeby.<br></body></html>
