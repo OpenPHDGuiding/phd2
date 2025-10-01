@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=UTF-8" http-equiv="content-type"><title>Slovník pojmů</title></head>
+<body><h2>Slovník technických termínů</h2><br>Přestože
+se PHD2 snaží být co nejjednodušší na používání, samotné navádění
+montáže je poměrně složitý úkol.&nbsp; Když řešíte potíže s vybavením
+nebo dolaďujete navádění, snadno narazíte na neznámé pojmy ze statistiky,
+astronomie či strojírenství.&nbsp; Některé z nich se objevují přímo
+v uživatelském rozhraní PHD2, ale také v diskusních fórech a podpůrných
+kanálech, proto se vyplatí mít alespoň základní přehled, co znamenají.
+Níže najdete vysvětlení nejběžnějších termínů, na které při práci s PHD2
+narazíte.<br><br><span style="font-weight: bold;"><a name="RMS"></a>RMS</span>
+– zkratka pro „root-mean-square“, tedy směrodatnou odchylku.
+V PHD2 je RMS právě směrodatná odchylka a popisuje rozptyl dat kolem
+průměru.&nbsp; Pokud sledujeme navádění, zajímá nás, jak moc se průvodní
+hvězda pohybuje v osách RA a Dec.&nbsp; Představte si řadu posunů hvězdy
+ve pixelech: 1,0; -1,2; 1,5; -1,3; …; 1,2.&nbsp; Pokud bychom
+vypočítali prostý průměr, vyjde nula – kladné a záporné hodnoty se
+vyruší.&nbsp; RMS ale ignoruje znaménko, takže vyjde hodnota 1,5, která
+už říká mnohem víc.&nbsp; U dostatečně dlouhé řady můžeme očekávat, že
+68 % odchylek bude menších než ±1,5 px a 95 % se vejde do ±2×RMS (tedy 3,0 úhlové sekundy).&nbsp; RMS proto najdete ve vizualizačních nástrojích PHD2.<br><br><span style="font-weight: bold;"><a name="Backlash"></a>Backlash</span>
+– neboli vůle v převodech, typická pro montáže s ozubením (většina
+amatérských montáží).&nbsp; Vzniká malou mezerou či „vůlí“ mezi dvěma
+zapadajícími koly.&nbsp; Tato vůle musí existovat, jinak by se převod
+při změně směru zablokoval.&nbsp; Když otočíte směrem zpět, motor se chvíli
+točí naprázdno, než se kola opět opřou a osa se rozběhne opačně.
+Kvalitní montáže mají backlash zanedbatelný, takže navádění neovlivní.
+Horší převody však mohou mít vůli tak velkou, že změny směru v deklinaci
+způsobí znatelná zpoždění.&nbsp; V ose RA se backlash neprojeví, pokud
+je naváděcí rychlost ≤ 1× siderická – motor se směrem zpět nikdy neotáčí,
+kola zůstávají v záběru.&nbsp; V deklinaci ale motor většinu času stojí
+a reaguje jen na občasné povely sever/jih, takže změna směru často vůli odhalí.&nbsp;
+Guiding Assistant v PHD2 umí backlash změřit; o tématu se často mluví na
+podpůrných fórech.&nbsp; Nejlepší řešení je mechanická úprava
+převodů – např. seřízení mezer.&nbsp; Softwarové kompenzace backlash
+v montáži téměř vždy vedou k nestabilnímu navádění, proto je nepoužívejte.<br><br><span style="font-weight: bold;"><a name="Periodic_Error"></a>Periodická chyba</span>
+– typická vlastnost převodů v ose RA.&nbsp; Nejčastěji ji způsobují
+nerovnosti na šneku, který pohání RA osu.&nbsp; Chyba je periodická,
+protože se projevuje pokaždé, když šnek udělá plnou otočku.&nbsp; Na
+naváděcím grafu se pak objevují malé, ale pravidelné chyby sledování.
+Pokud se v mechanismu RA vyskytují vady i jinde, může být průběh
+složitější, princip ale zůstává stejný.&nbsp; Montáže určené pro
+astrofotografii by měly umět periodickou chybu kompenzovat dopředu pomocí
+„periodic error correction“ (PEC).&nbsp; PEC se většinou nahrává do
+firmwaru montáže přes specializovaný program (např. PecPrep) a probíhá
+automaticky – navádění PHD2 nebrzdí, naopak mu pomáhá, protože PHD2 pak
+musí korigovat menší odchylky.<br><br><span style="font-weight: bold;"><a name="Image_Scale"></a>Image scale</span>
+– udává, kolik úhlových vteřin na obloze připadá na jeden pixel snímače
+(arcsec/pixel).&nbsp; Tato hodnota určuje, jak se malé úhlové chyby
+sledování projeví na čipu.&nbsp; Například navádíme s optikou o dlouhém
+ohnisku – každý pixel pokrývá menší výřez oblohy, takže i malá úhlová
+odchylka způsobí velký posun hvězdy na snímači. Naopak se širokým ohniskem
+je image scale větší a odchylka se v pixelech projeví méně. PHD2 image scale
+počítá samo, stačí zadat ohnisko průvodního dalekohledu a velikost
+pixelu kamery. Jakmile je image scale známo, mohou být hodnoty v grafech
+zobrazovány přímo v arcsec – a právě v těchto jednotkách má smysl výkon
+navádění posuzovat, protože reflektují skutečné chování soustavy
+nezávisle na optické konfiguraci.<br><br><span style="font-weight: bold;"><a name="SNR"></a>SNR</span>
+– „signal-to-noise ratio“, poměr signálu k šumu.&nbsp; V PHD2 se používá
+k odhadu, jak dobře lze hvězdu odlišit od pozadí. Není totožný s fotometrickým
+SNR, ale princip je podobný – čím vyšší SNR, tím přesněji lze určit
+centroid hvězdy.&nbsp; Ve srovnání s chybami způsobenými seeingem nebo
+mechanikou montáže je však tato nejistota obvykle malá.<br><br><span style="font-weight: bold;"><a name="Saturation"></a>Nasycení</span>
+– nastává, když jas hvězdy překročí maximální kapacitu pixelů průvodní
+kamery.&nbsp; Profil hvězdy pak ztrácí špičku a má „plochý vrchol“, což
+zhoršuje výpočet polohy. Stav snadno odhalíte v nástroji Star Profile.
+Vyhýbejte se mu – snižte expozici nebo zmenšete gain, aby hvězda
+nezhasínala a zároveň se nenasytila.<br><br><span style="font-weight: bold;"><a name="Star_Mass"></a>Star Mass</span>
+– interní metrika PHD2 ukazující celkovou jasnost a zdánlivou velikost
+průvodní hvězdy.&nbsp; Slouží jako hrubý indikátor změn jasu (např.
+procházející mraky) a využívá se zejména v nastavení „star mass detection“
+na kartě Guide v rozšířeném dialogu.<br><br><br><br><br><br><br><br><br></body></html>
