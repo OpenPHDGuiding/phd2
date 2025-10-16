@@ -1105,7 +1105,7 @@ if(UNIX AND NOT APPLE)
       list(APPEND PHD_LINK_EXTERNAL ${toupcam})
       list(APPEND PHD_INSTALL_LIBS ${toupcam})
 
-      if(WIN32)  # OGMA support is Windows-only
+      if(DEFINED ogmacamsdk_SOURCE_DIR)  # OGMA SDK was fetched (Windows only)
       find_library(ogmacam
              NAMES ogmacam
              NO_DEFAULT_PATHS
@@ -1118,7 +1118,7 @@ if(UNIX AND NOT APPLE)
       add_definitions(-DHAVE_OGMA_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${ogmacam})
       list(APPEND PHD_INSTALL_LIBS ${ogmacam})
-      endif()  # WIN32 - OGMA support
+      endif()  # OGMA SDK check
 
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK
