@@ -46,7 +46,7 @@ set(_default_locale "en_EN")
 #    `VERSION_MAJOR`, `VERSION_MINOR` and `VERSION_PATCH`.
 #    Raises an error if the version cannot be extracted
 function(get_phd_version)
-  set(filename_to_extract_from ${PHD_PROJECT_ROOT_DIR}/phd.h)
+  set(filename_to_extract_from ${PHD_PROJECT_ROOT_DIR}/src/phd.h)
   file(STRINGS ${filename_to_extract_from} file_content
        #REGEX "PHDVERSION[ _T\\(]+\"(.*)\""
   )
@@ -318,8 +318,8 @@ function(generate_single_doc_targets)
       # the generation of the main messages.mo (default language) is dependant on all the source files
       # edit: this step is now manual
       #file(GLOB all_sources
-      #     "${PHD_PROJECT_ROOT_DIR}/*.cpp"
-      #     "${PHD_PROJECT_ROOT_DIR}/*.h")
+      #     "${PHD_PROJECT_ROOT_DIR}/src/*.cpp"
+      #     "${PHD_PROJECT_ROOT_DIR}/src/*.h")
 
       # extracts the messages from the sources and merges those messages with the locale/messages.pot
       # into the build folder. This is a manual step
@@ -353,7 +353,7 @@ function(generate_single_doc_targets)
               -E remove 
               "${current_translation_output_folder}/messages.po"
           WORKING_DIRECTORY 
-            "${PHD_PROJECT_ROOT_DIR}"
+            "${PHD_PROJECT_ROOT_DIR}/src"
       )
       list(APPEND translation_target_files
            "${current_translation_output_folder}/messages.pot")

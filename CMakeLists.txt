@@ -43,6 +43,10 @@ if(APPLE)
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 endif()
 
+if(WINDOWS)
+ set(CMAKE_GENERATOR "Visual Studio 17" CACHE STRING INTERNAL "" FORCE)
+endif()
+
 enable_language(C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -57,24 +61,23 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR}/src)
 
 # Additional files in the workspace, To improve maintainability
 add_custom_target(CmakeAdditionalFiles
   SOURCES
-  ${phd_src_dir}/thirdparty/thirdparty.cmake
-  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
-  ${phd_src_dir}/cmake_modules/FindCFITSIO.cmake
-  ${phd_src_dir}/cmake_modules/FindINDI.cmake
-  ${phd_src_dir}/cmake_modules/FindNova.cmake
-  ${phd_src_dir}/cmake_modules/PHD2BuildDoc.cmake
-  ${phd_src_dir}/cmake_modules/PHD2GenerateDocScript.cmake
-  ${phd_src_dir}/cmake_modules/PHD2Removegettextwarning.cmake
-  ${phd_src_dir}/cmake_modules/compiler_options.cmake
-  ${phd_src_dir}/cmake_modules/PHD2Packaging.cmake)
+  ${PHD_PROJECT_ROOT_DIR}/thirdparty/thirdparty.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindASCOM_INTERFACE.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindCFITSIO.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindINDI.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/FindNova.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2BuildDoc.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2GenerateDocScript.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2Removegettextwarning.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/compiler_options.cmake
+  ${PHD_PROJECT_ROOT_DIR}/cmake_modules/PHD2Packaging.cmake)
 
 # compiler options
 include(cmake_modules/compiler_options.cmake)
@@ -146,10 +149,12 @@ add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
 #################################################################################
 #
 # Global include directories
-# WxWidgets inclusion narrowed to PHD2 project only
-# include_directories(${wxWidgets_INCLUDE_DIRS})
-include_directories(${phd_src_dir}/cameras/)
 include_directories(${phd_src_dir})
+include_directories(${PHD_PROJECT_ROOT_DIR}/cameras)
+# PROJECT_ROOT_DIR is added as in include directory file code that
+# uses: #include "cameras/some_camera.h"
+# TODO: would be better to separate cameras/ into per-camera directories
+include_directories(${PHD_PROJECT_ROOT_DIR})
 
 
 
@@ -195,6 +200,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_openssag.h
   ${phd_src_dir}/cam_OSPL130.cpp
   ${phd_src_dir}/cam_OSPL130.h
+  ${phd_src_dir}/cam_playerone.cpp
+  ${phd_src_dir}/cam_playerone.h
   ${phd_src_dir}/cam_qguide.cpp
   ${phd_src_dir}/cam_qguide.h
   ${phd_src_dir}/cam_qhy.cpp
@@ -233,8 +240,7 @@ set(cam_SRC
 
 # windows specific cameras
 if(WIN32)
-  set(cam_SRC
-    ${cam_SRC}
+  list(APPEND cam_SRC
     ${phd_src_dir}/cam_LEParallelWebcam.cpp
     ${phd_src_dir}/cam_LEParallelWebcam.h
     ${phd_src_dir}/cam_LESerialWebcam.cpp
@@ -245,19 +251,16 @@ if(WIN32)
     ${phd_src_dir}/cam_atik16.cpp
     ${phd_src_dir}/cam_atik16.h
 
-    ${phd_src_dir}/cameras/ArtemisHSCAPI.h
-    ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
+    ${PHD_PROJECT_ROOT_DIR}/cameras/ArtemisHSCAPI.h
+    ${PHD_PROJECT_ROOT_DIR}/cameras/ArtemisHSCAPI.cpp
   )
 elseif(UNIX AND (NOT APPLE))
-  set(cam_SRC
-      ${cam_SRC}
+  list(APPEND cam_SRC
       ${phd_src_dir}/cam_qhy5.h
       ${phd_src_dir}/cam_qhy5.cpp
      )
 elseif(APPLE)
-  set(cam_SRC
-      ${cam_SRC}
-  )
+  # nothing else to add for Mac
 endif()
 
 source_group(Cameras FILES ${cam_SRC})
@@ -334,9 +337,6 @@ set(guiding_SRC
 )
 source_group(Guiding FILES ${guiding_SRC})
 
-
-
-# it would ease if files are organised in an alphabetical order
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
   ${phd_src_dir}/about_dialog.h
@@ -448,8 +448,6 @@ set(phd2_SRC
   ${phd_src_dir}/rotator_indi.cpp
   ${phd_src_dir}/rotator_indi.h
 
-  ###
-
   ${phd_src_dir}/runinbg.cpp
   ${phd_src_dir}/runinbg.h
 
@@ -493,9 +491,7 @@ set(phd2_SRC
 )
 
 if (WIN32)
-  set(phd2_SRC
-      ${phd2_SRC}
-
+  list(APPEND phd2_SRC
       # windows-only sources
       ${phd_src_dir}/parallelports.h
       ${phd_src_dir}/parallelport.h
@@ -506,7 +502,7 @@ if (WIN32)
 
       ${phd_src_dir}/comdispatch.h
       ${phd_src_dir}/comdispatch.cpp
-     )
+  )
 endif()
 source_group(src FILES ${phd2_SRC})
 
@@ -522,15 +518,14 @@ foreach(current_locale IN LISTS all_locales)
     get_filename_component(message_file_ext ${current_file} EXT)
     if(("${message_file_ext}" STREQUAL ".mo") OR ("${message_file_ext}" STREQUAL ".zip"))
       # message(STATUS "Harhar ${message_file_ext} / ${current_file}")
-      set(phd2_SRC ${phd2_SRC} ${current_file})
+      list(APPEND phd2_SRC ${current_file})
     endif()
   endforeach()
 
 endforeach() # for all locales
 
-
-MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
-  IF(MSVC)
+macro(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
+  if(MSVC)
     GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
     SET(PrecompiledBinary "\$(IntDir)/${PrecompiledBasename}.pch")
     SET(Sources ${${SourcesVar}})
@@ -544,23 +539,22 @@ MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar
 
     # Add precompiled header to SourcesVar
     LIST(APPEND ${SourcesVar} ${PrecompiledSource})
-  ENDIF()
-ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
+  endif()
+endmacro(ADD_MSVC_PRECOMPILED_HEADER)
 
 ## #########################
 ## OSX
 if(APPLE)
 
   # bundle definitions
-  # please edit the copyrights
   set(MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
   set(MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
   set(MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2020 openphdguiding.org" )
+  set(MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2010-2025 openphdguiding.org" )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
   set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set(MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2020 openphdguiding.org" )
+  set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2025 openphdguiding.org" )
 
   # main target
   add_executable(
@@ -572,17 +566,17 @@ if(APPLE)
     ${phd2_SRC}
 
     # resources of the bundle
-    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
+    ${PHD_PROJECT_ROOT_DIR}/icons/${MACOSX_BUNDLE_ICON_FILE}
 
     # extra frameworks
     ${phd2_OSX_FRAMEWORKS}
 
-    ${phd_src_dir}/run_phd2_macos
+    ${PHD_PROJECT_ROOT_DIR}/run_phd2_macos
   )
   set_target_properties(
     phd2
     PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/MacOSXBundleInfo.plist.in
+    MACOSX_BUNDLE_INFO_PLIST ${PHD_PROJECT_ROOT_DIR}/MacOSXBundleInfo.plist.in
     OUTPUT_NAME PHD2  # upper case on OSX
   )
   target_include_directories(
@@ -591,13 +585,13 @@ if(APPLE)
   )
 
   set_source_files_properties(
-    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
+    ${PHD_PROJECT_ROOT_DIR}/icons/${MACOSX_BUNDLE_ICON_FILE}
       PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
-    ${phd_src_dir}/run_phd2_macos
+    ${PHD_PROJECT_ROOT_DIR}/run_phd2_macos
     PROPERTIES
       MACOSX_PACKAGE_LOCATION MacOS
   )
@@ -718,6 +712,20 @@ if(APPLE)
     )
   endif()
 
+  if(playerone)
+    set_source_files_properties(${playerone} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      COMMAND install_name_tool -change libPlayerOneCamera.3.dylib
+                   @executable_path/../Frameworks/libPlayerOneCamera.dylib $<TARGET_FILE:phd2>
+      COMMAND install_name_tool -change @rpath/libusb-1.0.0.dylib
+                   @executable_path/../Frameworks/libusb_openphd.dylib
+                   $<TARGET_FILE_DIR:phd2>/../Frameworks/libPlayerOneCamera.dylib
+      COMMENT "Updating dylib path for libPlayerOneCamera.dylib"
+    )
+  endif()
+
   add_custom_command(
     TARGET phd2
     POST_BUILD
@@ -736,10 +744,10 @@ elseif(WIN32)
     ${phd2_SRC}
   )
 
-  ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
+  ADD_MSVC_PRECOMPILED_HEADER("phd.h" "src/precompiled_header.cpp" phd2_WIN_SRC)
 
   # resource file, some VC do not like the options provided by the precompiled headers
-  set(phd2_WIN_SRC ${phd2_WIN_SRC} ${phd_src_dir}/phd.rc)
+  list(APPEND phd2_WIN_SRC ${PHD_PROJECT_ROOT_DIR}/phd.rc)
   source_group(src FILES precompiled_header.cpp)
 
   link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
@@ -747,7 +755,7 @@ elseif(WIN32)
     phd2
     WIN32
     ${phd2_WIN_SRC}
-    )
+  )
 
   set_target_properties(
     phd2
@@ -755,27 +763,66 @@ elseif(WIN32)
       OUTPUT_NAME phd2  # lower case on Win32
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
       LINK_FLAGS_DEBUG "/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib"
-    )
+  )
 
   target_include_directories(phd2 PRIVATE "C:/Program Files (x86)/Visual Leak Detector/include")
 
-  # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
-  #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
+  # copy DLL files into the output directory
 
-  copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
+  set(_copyfiles_dbg ${PHD_COPY_EXTERNAL_ALL} ${PHD_COPY_EXTERNAL_DBG})
+  set(_copyfiles_rel ${PHD_COPY_EXTERNAL_ALL} ${PHD_COPY_EXTERNAL_REL})
+  foreach(_file IN LISTS _copyfiles_dbg _copyfiles_rel)
+    if(NOT EXISTS ${_file})
+      message(FATAL_ERROR "Dependency ${_file} does not exist")
+    endif()
+  endforeach()
+  foreach(_config dbg rel)
+    set(_realpaths_${_config})
+    foreach(_file ${_copyfiles_${_config}})
+      get_filename_component(_realpath ${_file} REALPATH)
+      list(APPEND _realpaths_${_config} ${_realpath})
+    endforeach()
+    list(REMOVE_DUPLICATES _realpaths_${_config})
+  endforeach()
+  unset(_file)
+  unset(_config)
+
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+      $<$<CONFIG:Debug>:copy_if_different>
+      $<$<NOT:$<CONFIG:Debug>>:true>
+      ${_realpaths_dbg}
+      $<TARGET_FILE_DIR:phd2>/.
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "$<$<CONFIG:Debug>:Copy debug libs to output folder>"
+  )
+  add_custom_command(
+    TARGET phd2
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+      $<$<CONFIG:Release>:copy_if_different>
+      $<$<NOT:$<CONFIG:Release>>:true>
+      ${_realpaths_rel}
+      $<TARGET_FILE_DIR:phd2>/.
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "$<$<CONFIG:Release>:Copy release libs to output folder>"
+  )
+  unset(_realpaths_dbg)
+  unset(_realpaths_rel)
 
 ## #########################
 ## Unix
 elseif(UNIX)
 
-  # should be linux there
   add_executable(
-   phd2
-   ${scopes_SRC}
-   ${cam_SRC}
-   ${guiding_SRC}
-   ${phd2_SRC}
-   )
+    phd2
+    ${scopes_SRC}
+    ${cam_SRC}
+    ${guiding_SRC}
+    ${phd2_SRC}
+  )
 
   find_package( OpenCV REQUIRED )
 
@@ -785,7 +832,7 @@ elseif(UNIX)
     phd2
     PROPERTIES
       OUTPUT_NAME phd2.bin
-    )
+  )
 
 else()
   message(FATAL_ERROR "Unsupported platform")
@@ -815,8 +862,6 @@ endforeach()
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
-
-
 
 ################################################################
 #
@@ -934,7 +979,6 @@ if(WIN32)
   endforeach() # for all locales
 endif()
 
-
 ## Linux bundling of documentation + translation
 if(UNIX AND NOT APPLE)
 
@@ -976,7 +1020,6 @@ if(UNIX AND NOT APPLE)
     endforeach()
   endforeach()
 endif()
-
 
 ################################################################
 #

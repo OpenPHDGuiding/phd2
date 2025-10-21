@@ -16,8 +16,8 @@
     #pragma interface "vcap_v4l.h"
 #endif
 
-#include "wx/defs.h"
-#include "wx/timer.h"
+#include <wx/defs.h>
+#include <wx/timer.h>
 
 class wxTimerEvent;
 class wxScrollWinEvent;
@@ -226,7 +226,7 @@ protected:
     void print_video_mbuf();
 
 private:
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
     DECLARE_DYNAMIC_CLASS(wxVideoCaptureWindowV4L)
 };
 

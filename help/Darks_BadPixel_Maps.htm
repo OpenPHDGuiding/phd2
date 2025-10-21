@@ -2,16 +2,45 @@
 <html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Darks_BadPixel_Maps</title></head>
 <body><h2>Dark Frames and Bad-pixel Maps</h2><br><h3>Introduction</h3>Cameras
 used for guiding are typically not temperature-regulated and may
-produce&nbsp;images that appear quite&nbsp;noisy. &nbsp;As a result, guide
+produce&nbsp;images that appear quite&nbsp;noisy. This is particularly
+true of older CCD-based guide cameras.&nbsp; As a result, guide
 exposures frequently show obvious&nbsp;defects in the form of &nbsp;hot
-(or "warm") pixels or regions with spurious brightness levels. &nbsp;If
+(or "warm") pixels or regions with spurious brightness levels.
+&nbsp;For convenience, we refer to these areas of sensor noise as "hot
+pixels" but they may be larger than 1 pixel in size and have arbitrary
+brightness levels.&nbsp; If
 there are too many of these defects, PHD2 may have trouble identifying
-and selecting&nbsp;guide stars. &nbsp;Even after guiding has begun, a
-spurious hot pixel close to the guide star can disrupt the calculations
-needed for smooth guiding and may cause the software to "jump" between
+and selecting&nbsp;guide stars. &nbsp;This is especially true when sky
+conditions are poor and there are few or even zero actual guide stars
+available. The "MinHFD" and "MaxHFD" settings provide the best defense
+against mistaking&nbsp;sensor noise for stars, but a dark library or
+bad-pixel map provides an extra level of protection.&nbsp; Even after
+guiding has begun, a
+spurious hot pixel close to the guide star can disrupt the calculation
+of the guide star position and may cause the guiding&nbsp; to "jump"
+between
 the real star and the hot pixel. &nbsp;These sorts of problems can be
-mitigated by using either of two approaches in PHD2: dark frames and
-bad pixel maps. &nbsp;All functions related to dark frames and bad-pixel maps are located under the top-level 'Darks' menu.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark Frames</h3>PHD2 will
+mitigated by using either of two approaches in PHD2: dark frames or
+bad pixel maps. &nbsp;All functions related to dark frames and
+bad-pixel maps are located under the top-level 'Darks' menu.<br><br>Since
+the dark libraries and bad pixel maps rely on raw ADU values returned
+by the camera driver, they are&nbsp;implicitly dependent on camera
+settings that affect these ADU levels. &nbsp;These include the camera
+bit-depth and the camera gain. &nbsp;Bit-depth is the term used to
+indicate whether the driver returns image data in 8-bit or 16-bit
+format. &nbsp;Even though some camera electronics may use 10, 12, or
+14-bit values internally, the image data will be scaled and delivered
+to PHD2 as 16-bit data. Many cameras operate in only one bit-depth
+mode, in which case you don't need to think about it. &nbsp;But some
+guide cameras support either mode and you will need to&nbsp;choose or
+at least be aware of which mode is active before building a dark
+library or a bad-pixel map. &nbsp;If you subsequently change bit-depth
+settings, you will need to repeat the process of building them.
+&nbsp;The camera gain setting is a bit different in that it&nbsp;scales
+the ADU levels in an arbitrary way. &nbsp;Small changes in gain are
+unlikely to have much effect on the dark library/bad-pix map data but
+large changes will invalidate them. &nbsp;For this reason, we
+discourage people from making frequent adjustments to the camera gain.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark Frames</h3>PHD2 will
 build and use a&nbsp;library of dark frames that match the range of
 exposures you use for guiding. &nbsp;Once the library is built, it will
 be saved automatically and will be available for use across multiple

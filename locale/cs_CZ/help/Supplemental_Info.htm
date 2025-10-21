@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Doplňující informace</title>
+</head>
+<body>
+<h2>Doplňující informace</h2>
+
+<h3><a name="Common_mount_problems"></a>Běžné problémy s montáží</h3>
+<p>Existuje několik běžných mechanických problémů, které mohou ovlivnit výkon navádění:</p>
+
+<h4><a name="Dec_backlash"></a>Vůle v deklinaci</h4>
+<p>Vůle (backlash) je mezera v převodech, která způsobuje zpoždění, když se směr pohybu obrátí. Když montáž změní směr v deklinaci, převody se musí nejprve „zabrat", než se osa začne skutečně pohybovat. Toto zpoždění může trvat od zlomků sekundy až po několik sekund v závislosti na montáži. PHD2 může měřit vůli v deklinaci pomocí Asistenta navádění a může ji kompenzovat pomocí adaptivní kompenzace vůle.</p>
+
+<h4>Periodická chyba</h4>
+<p>Periodická chyba (PE) je systematická chyba v rychlosti sledování montáže způsobená nedokonalostmi v převodech. Projevuje se jako sinusová vlna v grafu navádění RA s periodou odpovídající jedné otáčce červového kola. Mnoho montáží má vestavěnou korekci periodické chyby (PEC), která může tuto chybu výrazně snížit.</p>
+
+<h4>Tření a stiction</h4>
+<p>Tření v osách montáže může způsobit, že montáž nereaguje na malé naváděcí příkazy. Stiction (statické tření) je obzvláště problematické, protože způsobuje, že montáž „přeskočí", když se konečně začne pohybovat. Vyšší rychlosti navádění (0,7x–1,0x siderická) mohou pomoci překonat tření.</p>
+
+<h4>Flexe</h4>
+<p>Flexe je ohýbání nebo pohyb různých částí sestavy dalekohledu v důsledku gravitace, když se montáž pohybuje po obloze. Může ovlivnit jak hlavní dalekohled, tak naváděcí dalekohled. Flexe se projevuje jako pomalý drift v grafu navádění, který se mění s polohou dalekohledu.</p>
+
+<h3><a name="Astronomical_seeing"></a>Astronomický seeing</h3>
+<p>Seeing je termín používaný k popisu stability atmosféry. Špatný seeing způsobuje, že hvězdy „tančí" na senzoru kamery kvůli turbulenci v atmosféře. To vytváří vysokofrekvenční pohyby, které nelze korigovat naváděním. Pokus o korekci těchto pohybů se nazývá „honění seeingu" a obvykle vede ke špatným výsledkům. Správné nastavení min-move a použití delších expozic (2-4 sekundy) může pomoci vyfiltrovat efekty seeingu.</p>
+
+<h3><a name="Dithering_Ops"></a>Operace ditheringu</h3>
+<p>Dithering je technika, při které se mezi expozicemi mírně posune poloha dalekohledu. To pomáhá odstranit vzory fixního šumu a vadné pixely z konečných snímků. PHD2 podporuje dithering prostřednictvím svého serverového rozhraní, které používají snímací aplikace. Dithering lze nastavit na náhodný nebo spirálový režim a lze jej omezit pouze na osu RA.</p>
+
+<h3><a name="Managing_Equipment_Profiles"></a>Správa profilů vybavení</h3>
+<p>Profily vybavení v PHD2 ukládají všechna nastavení specifická pro konkrétní konfiguraci vybavení. To zahrnuje:</p>
+<ul>
+<li>Připojení kamery, montáže a dalších zařízení</li>
+<li>Naváděcí parametry a nastavení algoritmů</li>
+<li>Kalibrační data</li>
+<li>Výsledky Asistenta navádění</li>
+</ul>
+
+<p>Profily jsou uloženy v konfigurační složce PHD2 a zůstávají zachovány i po aktualizaci softwaru. Můžete vytvořit více profilů pro různé konfigurace vybavení (např. různé naváděcí dalekohledy, různé kamery, různé montáže).</p>
+
+<h3><a name="AO_Devices"></a>Použití AO (Adaptive Optics)</h3>
+<p>Zařízení adaptivní optiky (AO) používá rychle se pohybující tip/tilt prvek k provádění velmi rychlých malých korekcí. AO zařízení může provádět korekce mnohem rychleji než montáž, typicky s frekvencí 10 Hz nebo vyšší. Když se průvodní hvězda posune mimo rozsah korekce AO, PHD2 pošle „bump" příkaz montáži, aby ji přesunula zpět. Použití AO vyžaduje pečlivé nastavení a kalibraci.</p>
+
+<h3><a name="Ask_for_coordinates_aux_mount"></a>Ask for coordinates</h3>
+<p>Funkce „Ask for coordinates" je jednoduchá alternativa k připojení aux montáže pro uživatele, kteří nemohou použít ASCOM nebo INDI. Když je tato funkce povolena, PHD2 vás vyzve k zadání souřadnic dalekohledu (RA, Dec a strana pilíře) v kritických okamžicích, jako je kalibrace nebo překlopení poledníku. To umožňuje PHD2 správně upravit kalibraci i bez automatického připojení k montáži.</p>
+
+<h3><a name="Software_Update"></a>Aktualizace softwaru</h3>
+<p>PHD2 může automaticky kontrolovat dostupnost aktualizací při spuštění. Můžete si vybrat, zda chcete kontrolovat pouze hlavní vydání nebo také vývojové buildy. Vývojové buildy obsahují nejnovější funkce a opravy chyb, ale mohou být méně stabilní než hlavní vydání. Aktualizace softwaru je důležitá pro získání nejnovějších funkcí, oprav chyb a vylepšení výkonu.</p>
+
+<h3><a name="Declination-Uni-directional_guiding"></a>Jednosměrné navádění v deklinaci</h3>
+<p>Jednosměrné navádění v deklinaci je technika používaná k vyhnuti se problémům s vůlí v deklinaci. Místo posílání příkazů v obou směrech (sever a jih) PHD2 posílá příkazy pouze v jednom směru. To eliminuje zpoždění způsobené vůlí, ale vyžaduje, aby polární zarovnání bylo mírně rozladěné, aby byl drift v preferovaném směru. Jednosměrné navádění lze nastavit v dialogu Pokročilá nastavení na kartě Algorithms výběrem „North" nebo „South" pro režim navádění Dec.</p>
+
+</body>
+</html>

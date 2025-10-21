@@ -84,7 +84,7 @@ fi
 
 V=$(perl -ne '
  /^\s*#\s*define\s+PHDVERSION[^"]+"([^"]*)/ && do { $v = $1; next LINE };
- /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' phd.h)
+ /^\s*#\s*define\s+PHDSUBVER[^"]+"([^"]*)/ && do { $s = $1; print "$v$s"; exit }' src/phd.h)
 
 [[ $V ]] || {
     echo "could not get version from phd.h!" >&2
@@ -109,6 +109,9 @@ done < <(
 )
 make "${translation_targets[@]}"
 cores=$(sysctl -n hw.logicalcpu)
+# indi must be explicitly built first as we removed the indi build
+# dependency from phd2 as it was slowing down incremental development
+make -j$cores indi
 make -j$cores
 
 check_library_dependencies

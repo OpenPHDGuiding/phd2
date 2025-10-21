@@ -18,7 +18,7 @@
 #include <windows.h>    // MSW headers
 #include <windowsx.h>   // for GlobalAllocPtr to set audio parameters
 #include <vfw.h>        // Video For Windows 1.1
-#include "wx/timer.h"
+#include <wx/timer.h>
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "vcap_vfw.h"
@@ -479,10 +479,10 @@ protected:
 
 private:
     void Init();
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
     DECLARE_DYNAMIC_CLASS(wxVideoCaptureWindowVFW)
 };
 
-#include "wx/msw/winundef.h"
+#include <wx/msw/winundef.h>
 
 #endif //__WX_VCAP_VFW_H__

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Vizualizační nástroje</title>
+</head>
+<body>
+<h2>Nástroje pro monitorování</h2>
+<p><span style="font-style: italic;">PHD2</span> poskytuje četné nástroje pro monitorování a zobrazení, které vám pomohou vidět, jak váš naváděč funguje. Všechny tyto nástroje jsou přístupné v rozbalovací nabídce „Zobrazit" a jsou popsány níže.</p>
+<ul>
+<li><a href="#Overlays">Překrytí</a></li>
+<li><a href="#Graphical_Display">Grafické zobrazení</a></li>
+<li><a href="#Stats_Display">Zobrazení statistik</a></li>
+<li><a href="#Star_Profile_and_Target_Displays">Profil hvězdy a zobrazení cíle</a></li>
+<li><a href="#Adaptive_Optics_AO_Graph">Graf AO</a></li>
+<li><a href="#DockableMoveable_Graphical_Windows">Dokovatelná okna</a></li>
+</ul>
+
+<h3><a name="Overlays"></a>Překrytí</h3>
+<p>Nejjednodušší zobrazovací nástroje jsou mřížková překrytí překrývající hlavní okno zobrazení naváděče. Ty jsou poměrně přímočaré a zahrnují následující možnosti:</p>
+<ul>
+<li>Vlasový Zaměřovač</li>
+<li>Hustá Mříž</li>
+<li>Hrubá Mříž</li>
+<li>Mříž RA/Dec - zobrazuje, jak jsou osy dalekohledu zarovnány vzhledem k osám senzoru kamery. Toto je vizuální potvrzení, že není potřeba ani výhoda snažit se zarovnat osy kamery s RA a Dec.</li>
+<li>Spektrografická štěrbina/poloha štěrbiny - pro uživatele spektroskopie toto překryje grafiku spektrografické štěrbiny na hlavní okno zobrazení. Velikost, polohu a úhel grafiky lze upravit tak, aby odpovídaly optické konfiguraci.</li>
+<li>Žádné Zobrazení</li>
+</ul>
+<p>Můžete jednoduše kliknout na různé možnosti překrytí v nabídce „Zobrazit" a vybrat si tu, která vám vyhovuje.</p>
+
+<h3><a name="Graphical_Display"></a>Grafické zobrazení</h3>
+<p>Okno grafického zobrazení je jedním z výkonnějších nástrojů pro posuzování výkonu navádění a pravděpodobně se naučíte na něj spoléhat. Typický příklad je uveden níže:</p>
+<img style="width: 1101px; height: 281px;" alt="" src="Guider_Graph.png"><br><br>
+
+<p>Hlavní část okna zobrazuje podrobné posuny průvodní hvězdy pro každou naváděcí expozici, vykreslené zleva doprava. Normálně jedna čára zobrazuje posuny v rektascenzi, zatímco druhá čára zobrazuje posuny v deklinaci. Můžete však použít tlačítko „Nastavení" vlevo od grafu k přepnutí na osy kamery (X/Y), pokud dáváte přednost (nedoporučuje se). Můžete také použít tlačítko „Nastavení" k přepnutí mezi zobrazovacími jednotkami obloukových sekund vs. pixelů kamery nebo ke změně barev dvou čar grafu.</p>
+
+<p>Rozsah svislé osy je řízen druhým tlačítkem shora, označeným y:+/-4" v tomto příkladu. Rozsah vodorovné osy – počet vykreslovaných naváděcích expozic – je řízen nejvyšším tlačítkem, označeným x:50 v tomto příkladu. Toto měřítko také řídí velikost vzorku použitou pro výpočet <a name="statistics"></a>statistik, které vidíte v levé dolní části okna grafu. Tyto hodnoty ukazují střední kvadratickou odchylku (RMS nebo standardní odchylku) pohybů v každé ose spolu s celkem pro obě osy. Toto jsou vaše nejlepší odhady výkonu navádění, protože je lze přímo porovnat s velikostmi hvězd a podmínkami seeingu.</p>
+
+<p>Hodnota „<a name="RA_Osc"></a>RA Osc" ukazuje pravděpodobnost, že aktuální pohyb RA je v opačném směru než poslední pohyb RA. Toto je přenesená statistika z původního softwaru PHD a její užitečnost je omezená. Pokud konzistentně běží nad 0,5, můžete honit seeing kvůli hodnotě Min-Move, která je příliš nízká.</p>
+
+<p>Existují dvě další zaškrtávací políčka vlevo, která vám mohou pomoci vyhodnotit výkon naváděče. Kliknutím na políčko „<a name="Corrections"></a>Corrections" se zobrazí překrytí ukazující, kdy jsou naváděcí příkazy skutečně odesílány montáži, spolu s jejich směrem a velikostí. V tomto příkladu jsou zobrazeny jako svislé červené a zelené čáry objevující se v nepravidelných intervalech podél vodorovné osy. To vám ukazuje, jak „zaneprázdněné" je navádění – za optimálních podmínek byste měli očekávat, že uvidíte prodloužené intervaly, kdy nejsou v deklinaci odesílány žádné naváděcí příkazy.</p>
+
+<p>Další zaškrtávací políčko, označené „<a name="Trendlines"></a>Trendlines", překryje trendové čáry v obou osách, aby ukázalo, zda existuje konzistentní celkový drift v poloze hvězdy. To je primárně užitečné pro drift zarovnání, kde se trendová čára deklinace používá rozsáhle. Ale trendová čára RA může ukázat, zda vaše montáž sleduje systematicky pomalu nebo rychle (nebo vidí účinky flexe) a může pomoci, pokud se pokoušíte nastavit vlastní rychlosti sledování.</p>
+
+<p>Doporučený způsob, jak se dívat na výkon navádění, je používat jednotky obloukových sekund spíše než pixelů. To vám umožní přímo porovnat výkon navádění s velikostmi hvězd a podmínkami seeingu na vašem místě.</p>
+
+<h3><a name="Stats_Display"></a>Zobrazení statistik</h3>
+<p>Okno zobrazení statistik poskytuje podrobný přehled aktuálního stavu navádění a výkonu. Zobrazuje informace o průvodní hvězdě, naváděcích příkazech, kalibraci a dalších parametrech systému.</p>
+
+<h3><a name="Star_Profile_and_Target_Displays"></a>Profil hvězdy a zobrazení cíle</h3>
+<p>Nástroj profilu hvězdy zobrazuje detailní informace o vybrané průvodní hvězdě, včetně její velikosti, jasu a tvaru. To je užitečné pro posouzení kvality zaostření a výběr vhodné průvodní hvězdy.</p>
+
+<h3><a name="Adaptive_Optics_AO_Graph"></a>Graf AO</h3>
+<p>Pokud používáte zařízení adaptivní optiky (AO), graf AO zobrazuje pohyby tip/tilt prvku a „bump" příkazy odeslané montáži.</p>
+
+<h3><a name="DockableMoveable_Graphical_Windows"></a>Dokovatelná okna</h3>
+<p>Grafická okna v PHD2 lze dokovat nebo přesunout jako samostatná okna podle vašich preferencí. To vám umožňuje přizpůsobit rozložení podle vašich potřeb a velikosti obrazovky.</p>
+
+</body>
+</html>

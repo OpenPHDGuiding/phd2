@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Základní používání PHD2</title></head>
+<body>
+<h2>Jak používat navádění ve <span style="font-style: italic;">PHD2</span></h2>
+Existuje pět základních kroků, jak spustit navádění.
+<ol type="1">
+<li>Otevřete dialog „Připojit zařízení" kliknutím na ikonu USB a vyberte profil, který jste si připravili pomocí průvodce novým profilem. Poté připojte kameru a montáž.</li>
+<li>Vyberte dobu expozice z rozbalovacího seznamu.</li>
+<li>Stiskněte tlačítko pro smyčku, prohlédněte si dostupné hvězdy a podle potřeby doostřete. Montáží popojeďte nebo upravte dobu expozice tak, aby byly vhodné hvězdy viditelné spolehlivě.</li>
+<li>Klikněte na ikonu „Auto-výběr hvězdy", aby PHD2 vybralo nejlepší průvodní hvězdu.</li>
+<li>Stiskněte tlačítko <span style="font-style: italic;">PHD2</span> Navádění.</li>
+</ol>
+Podrobnosti ke každému kroku najdete v následujících kapitolách.<br>
+<ul>
+<li><a href="#Equipment_Connection">Připojení vybavení</a></li>
+<li><a href="#Exposure_Time_and_Star_Selection">Doba expozice a výběr hvězdy</a></li>
+<li><a href="#Automatic_Calibration">Kalibrace</a></li>
+<li><a href="#Guiding">Navádění</a></li>
+</ul>
+<br>
+<h3><a name="Equipment_Connection"></a>Připojení vybavení</h3>
+Aby mohlo navádění začít, musí se <span style="font-style: italic;">PHD2</span> nejdříve spojit s hardwarem: s naváděcí kamerou, montáží a případně také pomocnou montáží („aux"), zařízením adaptivní optiky (AO) či rotátorem. Po kliknutí na ikonu USB se zobrazí dialog podobný tomuto (konkrétní zařízení se mohou lišit). Jednotlivé volby jsou popsány níže.<br><br>
+<img style="width: 586px; height: 377px;" alt="" src="GearDialog_Basic.png"><br><br>
+
+<h4><a name="Equipment_Profile"></a>Profily vybavení</h4>
+V horní části dialogu „Připojit zařízení" se nachází ovládací prvky pro správu profilů. Všechny naváděcí volby v <span style="font-style: italic;">PHD2</span> – výchozí i vaše vlastní – se ukládají do profilu vybavení. Patří sem i kalibrace a poslední tři protokoly Asistenta navádění. Jediné významné údaje, které se neukládají do profilu, jsou knihovny temných snímků a mapy vadných pixelů – ty zůstávají v souborovém systému. Přesto jsou temné knihovny i mapy vadných pixelů s profily logicky svázány. Pokud používáte vždy stejnou naváděcí kameru a naváděcí dalekohled, vystačíte si s jedním profilem. V praxi ale můžete mít několik konfigurací – například off-axis navádění pro dlouhé ohnisko a zvlášť naváděcí dalekohled s kamerou pro kratší ohnisko. Nastavení navádění pro tyto varianty budou rozdílná, proto je vhodné vytvořit oddělené profily.<br><br>
+
+Jakmile máte profily připravené – třeba jen výchozí – stačí kliknout na „Vše připojit" a můžete pokračovat. Pokud už profil máte a chcete se připojit stejně jako minule, podržte na hlavní obrazovce při kliknutí na tlačítko USB klávesu &lt;Shift&gt; – <span style="font-style: italic;">PHD2</span> se automaticky znovu spojí se všemi zařízeními.<br><br>
+
+<h4><a name="New_profile_wizard"></a>Průvodce novým profilem</h4>
+Nejjednodušší způsob vytvoření nového profilu je použít průvodce („Wizard"), který je pro nové uživatele naprosto zásadní. Průvodce vás provede sérií oken, vysvětlí jednotlivá nastavení a pomůže rozhodnout, jak je nastavit. Současně vypočítá výchozí parametry algoritmů, které budou pro vaši sestavu pravděpodobně fungovat dobře.<br><br>
+
+<h3><a name="Exposure_Time_and_Star_Selection"></a>Doba expozice a výběr hvězdy</h3>
+<p>Průvodní hvězdy se vybírají během aktivní „smyčky". Nejlepší přístup je nechat PHD2 <a href="Tools.htm#Auto-Select_Star">automaticky vybrat</a> průvodní hvězdy kliknutím na ikonu „Auto-výběr hvězdy" v hlavním okně. Téměř ve všech případech odvede lepší práci než ruční výběr, protože bere v úvahu řadu faktorů – například absenci saturace, kvalifikaci jako „skutečné" hvězdy, blízkost k jiným hvězdám a k okraji pole atd. Použití funkce „Auto-výběr" je také jediný způsob, jak využít multihvězdné navádění.</p>
+
+<p>Pokud funkci auto-výběru nepoužijete, můžete vybrat kandidáta na průvodní hvězdu kliknutím na ni, ale výsledkem bude použití pouze této jediné hvězdy pro navádění. Po dokončení se kolem hvězdy objeví zelený rámeček. Pokud vyberete příliš jasnou (saturovanou) hvězdu, stavový řádek zobrazí červený štítek „SAT" a měli byste zvolit slabší hvězdu.</p>
+
+<p>Volba doby expozice závisí zcela na vašem vybavení, podmínkách oblohy a dostupných hvězdách. Doba expozice, kterou zvolíte, má několik důsledků:</p>
+<ol>
+<li>Ovlivňuje sílu signálu (jas) vybrané hvězdy – jasnější hvězda se lépe odliší od pozadí a obecně poskytne lepší výsledky navádění, pokud není saturovaná.</li>
+<li>Určuje také frekvenci, s jakou jsou naváděcí příkazy posílány montáži – naváděcí příkazy nelze posílat častěji než jednou za každý expoziční cyklus.</li>
+<li>Má silný vliv na citlivost naváděcích algoritmů na podmínky seeingu. Jak se doba expozice zvyšuje až na 2-4 sekundy, efekty seeingu se vyhlazují.</li>
+</ol>
+
+<p>Jako výchozí bod zkuste používat doby expozice v rozmezí jedné až tří sekund. Pokud chcete zrušit výběr hvězdy bez výběru jiné, můžete provést shift-klik kdekoli v okně zobrazení obrazu.</p>
+
+<h3><a name="Multi-star_Guiding"></a>Multihvězdné navádění</h3>
+<p>Většina naváděcích konfigurací může těžit z navádění na více hvězd místo pouze jedné. To vede k použití váženého průměru centroidní polohy více hvězd místo pouze centroidu jedné hvězdy. Multihvězdné navádění je povoleno pomocí zaškrtávacího políčka na kartě <a href="Advanced_settings.htm#Guiding_Tab">Guiding</a> dialogu Pokročilá nastavení – které je ve výchozím stavu „zaškrtnuté". Když je tato možnost povolena, funkce <a href="Tools.htm#Auto-Select_Star">Auto-výběr</a> identifikuje až 12 hvězd v zorném poli, které mají adekvátní velikosti a hodnoty SNR.</p>
+
+<p><span style="font-weight: bold;">Poznámka: pokud nepoužijete funkci auto-výběru a místo toho zvolíte průvodní hvězdu ručně, multihvězdné navádění bude neaktivní.</span></p>
+
+<h3><a name="Automatic_Calibration"></a>Automatická kalibrace</h3>
+<h4>Konvenční montáže</h4>
+<p>Dvě věci musí být změřeny <span style="font-style: italic;">PHD2</span> jako součást kalibrace:</p>
+<ol>
+<li>Úhlová orientace senzoru kamery vzhledem k osám rektascenze a deklinace montáže a oblohy</li>
+<li>Délka naváděcího impulsu potřebného k pohybu dalekohledu o konkrétní vzdálenost</li>
+</ol>
+
+<p><span style="font-style: italic;">PHD2</span> zpracovává tato měření automaticky odesíláním naváděcích impulsů montáži a sledováním, jak daleko a jakým směrem se hvězda pohybuje mezi snímky z naváděcí kamery. Tento proces začíná poté, co jste vybrali hvězdu a poté klikli na tlačítko ikony PHD2/Navádění. Přes původní umístění vaší průvodní hvězdy se objeví žluté zaměřovací kříže a PHD2 začne pohybovat montáží v různých směrech, sledujíc, jak se hvězda pohybuje v závislosti na tom, jaké příkazy pohybu byly poslány montáži.</p>
+
+<p>Ačkoli PHD2 pohybuje průvodní hvězdou ve všech čtyřech směrech, pouze západní a severní pohyby se skutečně používají k výpočtu naváděcích rychlostí a úhlů kamery. Východní a jižní pohyby se používají pouze k obnovení hvězdy přibližně na její počáteční pozici. Před zahájením severních pohybů uvidíte sekvenci impulsů, které mají vyčistit vůli. PHD2 přistupuje k vyčištění této vůle pouze mírně, sleduje jasný vzor pohybu v jednom směru bez obrácení.</p>
+
+<p>Ve většině případů se kalibrace dokončí automaticky bez jakéhokoli zásahu uživatele, zejména pokud používáte Kalibračního asistenta. Pokud se montáž dostatečně nepohne v západním nebo severním směru, dostanete upozornění, že kalibrace <span style="font-weight: bold;">selhala</span>.</p>
+
+<p><span style="font-weight: bold;">Pokud narazíte na potíže s dokončením kalibrace, měli byste okamžitě zkusit znovu pomocí</span> <a href="Tools.htm#Calibration_Assistant">Kalibračního asistenta</a>.</p>
+
+<h3><a name="Guiding"></a>Navádění</h3>
+<p>Jakmile navádění začalo, diagnostické zprávy se zobrazí ve stavovém řádku, aby ukázaly, jaké naváděcí příkazy jsou posílány montáži. <span style="font-style: italic;">PHD2</span> bude pokračovat v navádění, dokud nekliknete na ikonu „Stop". Chcete-li obnovit navádění, jednoduše znovu spusťte smyčku expozic, automaticky vyberte hvězdy a klikněte na tlačítko „Navádění". Nebudete muset opakovat kalibraci, abyste obnovili navádění.</p>
+
+<p>V některých případech může <span style="font-style: italic;">PHD2</span> <span style="font-weight: bold;"><a name="lost-star_events"></a>ztratit průvodní hvězdu</span> a budete upozorněni zvukovým signálem a blikajícími oranžovými zaměřovacími kříži. Existuje několik důvodů, proč k tomu může dojít:</p>
+<ol>
+<li>Něco může zakrývat hvězdu – mraky, střecha observatoře, strom atd.</li>
+<li>Hvězda se mohla náhle přesunout ze sledovacího obdélníku, protože se něco posunulo v infrastruktuře montáže/kamery/kabeláže – zachycení kabelů může toto způsobit</li>
+<li>Hvězda mohla „zeslábnout" z nějakého jiného důvodu, možná proto, že je příliš slabá, kamera není dobře zaostřená nebo velikost a jas hvězdy kolísá nad a pod prahovými hodnotami přijatelnosti.</li>
+<li>Jas hvězdy může kolísat natolik, že spustí funkci kontroly hmotnosti hvězdy. Pokud se to stává často, měla by být funkce zakázána (Pokročilá nastavení/karta Navádění)</li>
+</ol>
+
+<p>Je důležité pochopit, že <span style="font-style: italic;">PHD2</span> <span style="font-weight: bold;">nebude</span> začínat pohybovat dalekohledem ve snaze znovu najít průvodní hvězdu. Bude jednoduše pokračovat v pořizování expozic a hledat průvodní hvězdu, která se znovu objeví v mezích aktuálního sledovacího obdélníku.</p>
+
+<p>Pokud používáte <a name="German_equatorial_mount"></a>německou rovníkovou montáž (GEM), obvykle budete muset provést „<a name="meridian_flip"></a>překlopení poledníku" přibližně v době, kdy váš snímací cíl překročí poledník. To znamená, že vy (nebo vaše snímací aplikace) přesunete dalekohled na opačnou stranu pilíře a poté obnovíte snímkování. Tím se zneplatní původní kalibrace, typicky proto, že směry deklinace jsou nyní obrácené. Pokud používáte rozhraní ASCOM (nebo „aux") montáže, vaše kalibrace bude automaticky upravena a můžete jednoduše obnovit navádění (za předpokladu, že jste také neotočili kameru nebo fokusér).</p>
+
+</body>
+</html>
