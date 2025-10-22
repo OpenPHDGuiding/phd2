@@ -72,7 +72,6 @@ struct ToupCam
 
     ToupCam() : m_h(nullptr), m_buffer(nullptr), m_tmpbuf(nullptr), m_started(false), m_cond(m_lock) { }
 
-
     ~ToupCam()
     {
         ::free(m_buffer);
@@ -95,9 +94,9 @@ struct ToupCam
         }
     }
 
-    static void __stdcall CamEventCb(unsigned int event, void* arg)
+    static void __stdcall CamEventCb(unsigned int event, void *arg)
     {
-        ToupCam* cam = static_cast<ToupCam*>(arg);
+        ToupCam *cam = static_cast<ToupCam *>(arg);
 
         switch (event)
         {
@@ -137,7 +136,7 @@ struct ToupCam
         m_started = true;
     }
 
-    bool _PullImage(void* buf, wxSize* sz)
+    bool _PullImage(void *buf, wxSize *sz)
     {
         HRESULT hr;
         unsigned int width, height;
@@ -151,7 +150,7 @@ struct ToupCam
         return false;
     }
 
-    bool PullImage(void* buf, wxSize* sz)
+    bool PullImage(void *buf, wxSize *sz)
     {
         if (m_curBin == 1 || !SoftwareBinning())
             return _PullImage(buf, sz);
@@ -168,7 +167,7 @@ struct ToupCam
         return true;
     }
 
-    bool GetOption(unsigned int option, int* val)
+    bool GetOption(unsigned int option, int *val)
     {
         HRESULT hr;
         if (SUCCEEDED(hr = Toupcam_get_Option(m_h, option, val)))
@@ -268,12 +267,12 @@ public:
     bool ST4HasNonGuiMove() override;
     bool ST4PulseGuideScope(int direction, int duration) override;
     void ShowPropertyDialog() override;
-    bool GetDevicePixelSize(double* devPixelSize) override;
+    bool GetDevicePixelSize(double *devPixelSize) override;
     int GetDefaultCameraGain() override;
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;
-    bool GetCoolerStatus(bool* on, double* setpoint, double* power, double* temperature) override;
-    bool GetSensorTemperature(double* temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
 
     static int GetCameraMaxSpeed(const wxString& camId);
     void SetSelectedCamId(const wxString& camId) { m_selectedCamId = camId; }
@@ -366,7 +365,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     if (camId == DEFAULT_CAMERA_ID)
         camId = ti[0].id;
 
-    const ToupcamDeviceV2* info = nullptr;
+    const ToupcamDeviceV2 *info = nullptr;
     for (unsigned int i = 0; i < numCameras; i++)
     {
         if (camId == ti[i].id)
@@ -545,7 +544,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Option(TOUPCAM_OPTION_BLACKLEVEL, %d) failed\n", blackLevel));
     }
 
-
     if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpoEnable(0) failed with status 0x%x\n", hr));
 
@@ -721,7 +719,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     // Debug.Write("TOUPTEK: capture: image ready\n");
 
-    void* buf;
+    void *buf;
     wxSize sz;
 
     if (useSubframe || m_cam.m_bpp == 8)
@@ -750,10 +748,10 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
             unsigned short *dst = img.ImageData + subframe.GetTop() * FrameSize.GetWidth() + subframe.GetLeft();
             for (int y = 0; y < subframe.height; y++)
             {
-                unsigned short* d = dst;
+                unsigned short *d = dst;
                 src += xofs;
                 for (int x = 0; x < subframe.width; x++)
-                    *d++ = (unsigned short)*src++;
+                    *d++ = (unsigned short) *src++;
                 src += dxr;
                 dst += FrameSize.GetWidth();
             }
@@ -775,7 +773,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
     {
         if (m_cam.m_bpp == 8)
         {
-            const char* src = static_cast<char*>(m_cam.m_buffer);
+            const char *src = static_cast<char *>(m_cam.m_buffer);
             for (unsigned int i = 0; i < img.NPixels; i++)
                 img.ImageData[i] = *src++;
         }
@@ -855,20 +853,20 @@ bool CameraToupTek::ST4PulseGuideScope(int direction, int duration)
 
 struct ToupTekCameraDlg : public wxDialog
 {
-    wxRadioButton* m_bpp8;
-    wxRadioButton* m_bpp16;
-    wxRadioButton* m_cgLCG; // LCG£¨0£©
-    wxRadioButton* m_cgHCG; // HCG£¨1£©
-    wxRadioButton* m_cgHDR; // HDR£¨2£©
+    wxRadioButton *m_bpp8;
+    wxRadioButton *m_bpp16;
+    wxRadioButton *m_cgLCG; // LCG£¨0£©
+    wxRadioButton *m_cgHCG; // HCG£¨1£©
+    wxRadioButton *m_cgHDR; // HDR£¨2£©
 
-    wxSlider* m_speedSlider;
-    wxStaticText* m_speedValueText;
+    wxSlider *m_speedSlider;
+    wxStaticText *m_speedValueText;
     int m_maxSpeed;
 
-    wxSlider* m_blackLevelSlider;
-    wxStaticText* m_blackLevelValueText;
-    wxStaticText* m_blackLevelRangeText;
-    wxStaticBoxSizer* sbSizerBlackLevel;
+    wxSlider *m_blackLevelSlider;
+    wxStaticText *m_blackLevelValueText;
+    wxStaticText *m_blackLevelRangeText;
+    wxStaticBoxSizer *sbSizerBlackLevel;
     int m_blackLevelMin;
     int m_blackLevelMax;
 
@@ -881,7 +879,7 @@ struct ToupTekCameraDlg : public wxDialog
     void UpdateBlackLevelTitle()
     {
         wxString title = wxString::Format(_("Black Level (Range: %d-%d)"), m_blackLevelMin, m_blackLevelMax);
-        static_cast<wxStaticBox*>(sbSizerBlackLevel->GetStaticBox())->SetLabel(title);
+        static_cast<wxStaticBox *>(sbSizerBlackLevel->GetStaticBox())->SetLabel(title);
     }
 };
 
@@ -897,8 +895,8 @@ ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_
 
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer* bSizer12 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer* sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
+    wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Mode")), wxHORIZONTAL);
 
     m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
@@ -946,14 +944,13 @@ ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_
     blackLevelCtrlSizer->Add(m_blackLevelValueText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     blackLevelCtrlSizer->Add(m_blackLevelSlider, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-
     sbSizerBlackLevel->Add(blackLevelCtrlSizer, 1, wxEXPAND, 5);
     bSizer12->Add(sbSizerBlackLevel, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
     wxButton *sdbSizer2Cancel = new wxButton(this, wxID_CANCEL);
-	
+
     sdbSizer2->AddButton(sdbSizer2OK);
     sdbSizer2->AddButton(sdbSizer2Cancel);
     sdbSizer2->Realize();
@@ -1079,7 +1076,7 @@ wxByte CameraToupTek::BitsPerPixel()
     return m_cam.m_bpp;
 }
 
-bool CameraToupTek::GetDevicePixelSize(double* devPixelSize)
+bool CameraToupTek::GetDevicePixelSize(double *devPixelSize)
 {
     *devPixelSize = m_cam.m_devicePixelSize;
     return false;
@@ -1108,7 +1105,7 @@ bool CameraToupTek::SetCoolerSetpoint(double temperature)
     return m_cam.SetOption(TOUPCAM_OPTION_TECTARGET, val) ? false : true;
 }
 
-bool CameraToupTek::GetCoolerStatus(bool* on, double* setpoint, double* power, double* temperature)
+bool CameraToupTek::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
     bool err = false;
     int onval, targ, vcur, vmax;
@@ -1137,7 +1134,7 @@ bool CameraToupTek::GetCoolerStatus(bool* on, double* setpoint, double* power, d
     return err;
 }
 
-bool CameraToupTek::GetSensorTemperature(double* temperature)
+bool CameraToupTek::GetSensorTemperature(double *temperature)
 {
     HRESULT hr;
     short val;
@@ -1152,7 +1149,7 @@ bool CameraToupTek::GetSensorTemperature(double* temperature)
     return false;
 }
 
-GuideCamera* ToupTekCameraFactory::MakeToupTekCamera()
+GuideCamera *ToupTekCameraFactory::MakeToupTekCamera()
 {
     return new CameraToupTek();
 }
