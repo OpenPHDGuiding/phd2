@@ -520,6 +520,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     // framerate
     int speedLevel = pConfig->Profile.GetInt("/camera/ToupTek/frameRateLevel", 0);
     int maxSpeed = info->model->maxspeed;
+    // get reasonable speed value
     speedLevel = speedLevel > maxSpeed ? maxSpeed : speedLevel < 0 ? 0 : speedLevel;
     if (SUCCEEDED(Toupcam_put_Speed(m_cam.m_h, speedLevel)))
     {
