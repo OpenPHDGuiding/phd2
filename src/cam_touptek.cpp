@@ -874,7 +874,8 @@ struct ToupTekCameraDlg : public wxDialog
     }
 };
 
-ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
+ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId)
+    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
 {
     m_maxSpeed = CameraToupTek::GetCameraMaxSpeed(camId);
     if (m_maxSpeed <= 0)
