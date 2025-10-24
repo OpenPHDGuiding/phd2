@@ -242,6 +242,10 @@ struct ToupCam
 class CameraToupTek : public GuideCamera
 {
     ToupCam m_cam;
+    int m_maxCameraSpeed;
+    wxString m_selectedCamId;
+    int GetBlackLevelMin() const { return 0; }
+    int GetBlackLevelMax() const { return (m_cam.m_bpp == 8) ? 31 : 7936; }
 
 public:
     CameraToupTek();
@@ -264,6 +268,14 @@ public:
     bool SetCoolerSetpoint(double temperature) override;
     bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
     bool GetSensorTemperature(double *temperature) override;
+
+    static int GetCameraMaxSpeed(const wxString& camId);
+    void SetSelectedCamId(const wxString& camId) { m_selectedCamId = camId; }
+    bool SelectCamera(const wxString& camId);
+
+    int GetBlackLevelMin(wxByte bpp) const { return 0; }
+    // bpp 16,black level max 31 * 256
+    int GetBlackLevelMax(wxByte bpp) const { return (bpp == 8) ? 31 : 7936; }
 };
 
 CameraToupTek::CameraToupTek()
