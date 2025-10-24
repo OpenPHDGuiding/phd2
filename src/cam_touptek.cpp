@@ -245,6 +245,7 @@ class CameraToupTek : public GuideCamera
     int m_maxCameraSpeed;
     wxString m_selectedCamId;
     int GetBlackLevelMin() const { return 0; }
+    // 16 bpp black level value default 31 * 256
     int GetBlackLevelMax() const { return (m_cam.m_bpp == 8) ? 31 : 7936; }
 
 public:
@@ -853,8 +854,8 @@ struct ToupTekCameraDlg : public wxDialog
     wxRadioButton *m_cgHCG;
     wxRadioButton *m_cgHDR;
 
-    wxSlider *m_speedSlider; 
-    wxStaticText *m_speedValueText; 
+    wxSlider *m_speedSlider;
+    wxStaticText *m_speedValueText;
     int m_maxSpeed;
 
     wxSlider *m_blackLevelSlider;
@@ -877,7 +878,8 @@ struct ToupTekCameraDlg : public wxDialog
     }
 };
 
-ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId) : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
+ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId)
+    : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
 {
     m_maxSpeed = CameraToupTek::GetCameraMaxSpeed(camId);
     if (m_maxSpeed <= 0)
@@ -894,7 +896,7 @@ ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId) : wxDialog(wxGetApp().
 
     m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
-    m_bpp8->Bind(wxEVT_RADIOBUTTON, &ToupTekCameraDlg::OnBppChanged, this); 
+    m_bpp8->Bind(wxEVT_RADIOBUTTON, &ToupTekCameraDlg::OnBppChanged, this);
     m_bpp16->Bind(wxEVT_RADIOBUTTON, &ToupTekCameraDlg::OnBppChanged, this);
     sbSizer3->Add(m_bpp8, 0, wxALL, 5);
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
@@ -921,7 +923,7 @@ ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId) : wxDialog(wxGetApp().
 
     sbSizerSpeed->Add(m_speedValueText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     sbSizerSpeed->Add(m_speedSlider, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    
+
     bSizer12->Add(sbSizerSpeed, 1, wxEXPAND, 5);
 
     // black level
@@ -937,7 +939,6 @@ ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId) : wxDialog(wxGetApp().
 
     blackLevelCtrlSizer->Add(m_blackLevelValueText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     blackLevelCtrlSizer->Add(m_blackLevelSlider, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    
 
     sbSizerBlackLevel->Add(blackLevelCtrlSizer, 1, wxEXPAND, 5);
     bSizer12->Add(sbSizerBlackLevel, 1, wxEXPAND, 5);
