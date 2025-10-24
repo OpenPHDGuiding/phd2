@@ -293,9 +293,36 @@ CameraToupTek::CameraToupTek()
     int value = pConfig->Profile.GetInt("/camera/ToupTek/bpp", 8);
     m_cam.m_bpp = value == 8 ? 8 : 16;
     MaxBinning = 4;
+    m_maxCameraSpeed = 0;
 }
 
 CameraToupTek::~CameraToupTek() { }
+
+int CameraToupTek::GetCameraMaxSpeed(const wxString& camId)
+{
+    ToupcamDeviceV2 ti[TOUPCAM_MAX];
+    unsigned int numCameras = Toupcam_EnumV2(ti);
+
+    for (unsigned int i = 0; i < numCameras; i++)
+    {
+        if (camId == ti[i].id)
+        {
+            return ti[i].model->maxspeed;
+        }
+    }
+    // not find return 0
+    return 0;
+}
+
+bool CameraToupTek::SelectCamera(const wxString& camId)
+{
+    // save camId
+    m_selectedCamId = camId;
+    // get maxspeed
+    m_maxCameraSpeed = GetCameraMaxSpeed(camId);
+    Debug.Write(wxString::Format("TOUPTEK: selected camera %s, max speed = %d\n", camId, m_maxCameraSpeed));
+    return true;
+}
 
 bool CameraToupTek::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
@@ -308,6 +335,10 @@ bool CameraToupTek::EnumCameras(wxArrayString& names, wxArrayString& ids)
         Debug.Write(wxString::Format("TOUPTEK: cam %u: %s,%s\n", i + 1, ti[i].id, ti[i].displayname));
         names.Add(ti[i].displayname);
         ids.Add(ti[i].id);
+    }
+    if (numCameras > 0)
+    {
+        SelectCamera(ids[0]);
     }
 
     return false;
@@ -475,10 +506,42 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
 
+    // set Conversion Gain
+    int cgValue = pConfig->Profile.GetInt("/camera/ToupTek/conversionGain", 0);
+    if (SUCCEEDED(Toupcam_put_Option(m_cam.m_h, TOUPCAM_OPTION_CG, cgValue)))
+    {
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Option(TOUPCAM_OPTION_CG, %d) successful\n", cgValue));
+    }
+    // framerate
+    int speedLevel = pConfig->Profile.GetInt("/camera/ToupTek/frameRateLevel", 0);
+    int maxSpeed = info->model->maxspeed;
+    speedLevel = speedLevel > maxSpeed ? maxSpeed : speedLevel < 0 ? 0 : speedLevel;
+    if (SUCCEEDED(Toupcam_put_Speed(m_cam.m_h, speedLevel)))
+    {
+        Debug.Write(wxString::Format("TOUPTEK: set frame rate level to %d (max: %d)\n", speedLevel, m_maxCameraSpeed));
+    }
+    else
+    {
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Speed(%d) failed\n", speedLevel));
+    }
+    // black level
+    int blackLevel = pConfig->Profile.GetInt("/camera/ToupTek/blackLevel", 0);
+    int blMin = GetBlackLevelMin();
+    int blMax = GetBlackLevelMax();
+    blackLevel = blackLevel > blMax ? blMax : blackLevel < blMin ? blMin : blackLevel;
+    if (SUCCEEDED(Toupcam_put_Option(m_cam.m_h, TOUPCAM_OPTION_BLACKLEVEL, blackLevel)))
+    {
+        Debug.Write(wxString::Format("TOUPTEK: set black level to %d (range: %d-%d)\n", blackLevel, blMin, blMax));
+    }
+    else
+    {
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_Option(TOUPCAM_OPTION_BLACKLEVEL, %d) failed\n", blackLevel));
+    }
+
     if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpoEnable(0) failed with status 0x%x\n", hr));
 
-    unsigned short speed;
+    /*unsigned short speed;
     if (SUCCEEDED(hr = Toupcam_get_Speed(m_cam.m_h, &speed)))
     {
         Debug.Write(wxString::Format("TOUPTEK: speed = %hu, max = %u\n", speed, info->model->maxspeed));
@@ -490,7 +553,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         }
     }
     else
-        Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_Speed failed with status 0x%x\n", hr));
+        Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_Speed failed with status 0x%x\n", hr));*/
 
     unsigned int fourcc, bpp;
     if (SUCCEEDED(hr = Toupcam_get_RawFormat(m_cam.m_h, &fourcc, &bpp)))
@@ -786,11 +849,44 @@ struct ToupTekCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
-    ToupTekCameraDlg();
+    wxRadioButton *m_cgLCG;
+    wxRadioButton *m_cgHCG;
+    wxRadioButton *m_cgHDR;
+
+    wxSlider *m_speedSlider; 
+    wxStaticText *m_speedValueText; 
+    int m_maxSpeed;
+
+    wxSlider *m_blackLevelSlider;
+    wxStaticText *m_blackLevelValueText;
+    wxStaticText *m_blackLevelRangeText;
+    wxStaticBoxSizer *sbSizerBlackLevel;
+    int m_blackLevelMin;
+    int m_blackLevelMax;
+
+    ToupTekCameraDlg(const wxString& camId);
+    void OnSpeedSliderChanged(wxCommandEvent& event);
+
+    void OnBlackLevelSliderChanged(wxCommandEvent& event);
+    void OnBppChanged(wxCommandEvent& event);
+
+    void UpdateBlackLevelTitle()
+    {
+        wxString title = wxString::Format(_("Black Level (Range: %d-%d)"), m_blackLevelMin, m_blackLevelMax);
+        static_cast<wxStaticBox *>(sbSizerBlackLevel->GetStaticBox())->SetLabel(title);
+    }
 };
 
-ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
+ToupTekCameraDlg::ToupTekCameraDlg(const wxString& camId) : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
 {
+    m_maxSpeed = CameraToupTek::GetCameraMaxSpeed(camId);
+    if (m_maxSpeed <= 0)
+        m_maxSpeed = 0;
+
+    // default blacklevel use bpp 8
+    m_blackLevelMin = 0;
+    m_blackLevelMax = 31;
+
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
@@ -798,9 +894,53 @@ ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_
 
     m_bpp8 = new wxRadioButton(this, wxID_ANY, _("8-bit"));
     m_bpp16 = new wxRadioButton(this, wxID_ANY, _("16-bit"));
+    m_bpp8->Bind(wxEVT_RADIOBUTTON, &ToupTekCameraDlg::OnBppChanged, this); 
+    m_bpp16->Bind(wxEVT_RADIOBUTTON, &ToupTekCameraDlg::OnBppChanged, this);
     sbSizer3->Add(m_bpp8, 0, wxALL, 5);
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    // conversion Gain
+    wxStaticBoxSizer *sbSizerCG = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Conversion Gain")), wxHORIZONTAL);
+    m_cgLCG = new wxRadioButton(this, wxID_ANY, _("LCG"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP); // default LCG mode
+    m_cgHCG = new wxRadioButton(this, wxID_ANY, _("HCG"));
+    m_cgHDR = new wxRadioButton(this, wxID_ANY, _("HDR"));
+
+    sbSizerCG->Add(m_cgLCG, 0, wxALL, 5);
+    sbSizerCG->Add(m_cgHCG, 0, wxALL, 5);
+    sbSizerCG->Add(m_cgHDR, 0, wxALL, 5);
+    bSizer12->Add(sbSizerCG, 1, wxEXPAND, 5);
+
+    // frameRate
+    wxStaticBoxSizer *sbSizerSpeed = new wxStaticBoxSizer(
+        new wxStaticBox(this, wxID_ANY, _("Frame Rate Level (0-") + wxString::Format("%d)", m_maxSpeed) + _(")")),
+        wxHORIZONTAL);
+    m_speedSlider = new wxSlider(this, wxID_ANY, 0, 0, m_maxSpeed, wxDefaultPosition, wxSize(200, -1));
+    m_speedValueText = new wxStaticText(this, wxID_ANY, _("Current: 0"));
+    m_speedSlider->Bind(wxEVT_SLIDER, &ToupTekCameraDlg::OnSpeedSliderChanged, this);
+
+    sbSizerSpeed->Add(m_speedValueText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sbSizerSpeed->Add(m_speedSlider, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    
+    bSizer12->Add(sbSizerSpeed, 1, wxEXPAND, 5);
+
+    // black level
+    wxString blackLevelTitle = wxString::Format(_("Black Level (Range: %d-%d)"), m_blackLevelMin, m_blackLevelMax);
+    sbSizerBlackLevel = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, blackLevelTitle), wxVERTICAL);
+
+    wxBoxSizer *blackLevelCtrlSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    m_blackLevelSlider = new wxSlider(this, wxID_ANY, 0, m_blackLevelMin, m_blackLevelMax, wxDefaultPosition, wxSize(200, -1));
+
+    m_blackLevelValueText = new wxStaticText(this, wxID_ANY, _("Current: 0"));
+    m_blackLevelSlider->Bind(wxEVT_SLIDER, &ToupTekCameraDlg::OnBlackLevelSliderChanged, this);
+
+    blackLevelCtrlSizer->Add(m_blackLevelValueText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    blackLevelCtrlSizer->Add(m_blackLevelSlider, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    
+
+    sbSizerBlackLevel->Add(blackLevelCtrlSizer, 1, wxEXPAND, 5);
+    bSizer12->Add(sbSizerBlackLevel, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -817,18 +957,107 @@ ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_
     Centre(wxBOTH);
 }
 
+void ToupTekCameraDlg::OnSpeedSliderChanged(wxCommandEvent& event)
+{
+    int currentSpeed = m_speedSlider->GetValue();
+    m_speedValueText->SetLabel(_("Current: ") + wxString::Format("%d", currentSpeed));
+}
+
+void ToupTekCameraDlg::OnBlackLevelSliderChanged(wxCommandEvent& event)
+{
+    int currentValue = m_blackLevelSlider->GetValue();
+    m_blackLevelValueText->SetLabel(_("Current: ") + wxString::Format("%d", currentValue));
+}
+
+void ToupTekCameraDlg::OnBppChanged(wxCommandEvent& event)
+{
+    int currentValue = m_blackLevelSlider->GetValue();
+
+    if (m_bpp8->GetValue())
+    {
+        m_blackLevelMin = 0;
+        m_blackLevelMax = 31;
+    }
+    else
+    {
+        m_blackLevelMin = 0;
+        m_blackLevelMax = 7936;
+    }
+
+    UpdateBlackLevelTitle();
+
+    m_blackLevelSlider->SetRange(m_blackLevelMin, m_blackLevelMax);
+    int newValue = currentValue;
+    if (newValue < m_blackLevelMin)
+        newValue = m_blackLevelMin;
+    if (newValue > m_blackLevelMax)
+        newValue = m_blackLevelMax;
+    m_blackLevelSlider->SetValue(newValue);
+    m_blackLevelValueText->SetLabel(_("Current: ") + wxString::Format("%d", newValue));
+}
+
 void CameraToupTek::ShowPropertyDialog()
 {
-    ToupTekCameraDlg dlg;
+    ToupTekCameraDlg dlg(m_selectedCamId);
     int value = pConfig->Profile.GetInt("/camera/ToupTek/bpp", m_cam.m_bpp);
     if (value == 8)
         dlg.m_bpp8->SetValue(true);
     else
         dlg.m_bpp16->SetValue(true);
+
+    // update blacklevel range
+    dlg.OnBppChanged(wxCommandEvent());
+
+    // conversion gain
+    int cgValue = pConfig->Profile.GetInt("/camera/ToupTek/conversionGain", 0);
+    switch (cgValue)
+    {
+    case 0:
+        dlg.m_cgLCG->SetValue(true);
+        break; // LCG
+    case 1:
+        dlg.m_cgHCG->SetValue(true);
+        break; // HCG
+    case 2:
+        dlg.m_cgHDR->SetValue(true);
+        break; // HDR
+    default:
+        dlg.m_cgLCG->SetValue(true);
+        break; // error value default LCG
+    }
+
+    // frameRate
+    int speedValue = pConfig->Profile.GetInt("/camera/ToupTek/frameRateLevel", 0);
+    speedValue = speedValue > m_maxCameraSpeed ? m_maxCameraSpeed : speedValue < 0 ? 0 : speedValue;
+    dlg.m_speedSlider->SetValue(speedValue);
+    dlg.m_speedValueText->SetLabel(_("Current: ") + wxString::Format("%d", speedValue));
+
+    // black level
+    // int blackLevel = pConfig->Profile.GetInt("/camera/ToupTek/blackLevel", 0);
+    int blackLevel = 0;
+    int blMin = GetBlackLevelMin(value);
+    int blMax = GetBlackLevelMax(value);
+    blackLevel = blackLevel > blMax ? blMax : blackLevel < blMin ? blMin : blackLevel;
+    dlg.m_blackLevelSlider->SetValue(blackLevel);
+    dlg.m_blackLevelValueText->SetLabel(_("Current: ") + wxString::Format("%d", blackLevel));
+
     if (dlg.ShowModal() == wxID_OK)
     {
         m_cam.m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
         pConfig->Profile.SetInt("/camera/ToupTek/bpp", m_cam.m_bpp);
+
+        int newCgValue = 0;
+        if (dlg.m_cgHCG->GetValue())
+            newCgValue = 1;
+        else if (dlg.m_cgHDR->GetValue())
+            newCgValue = 2;
+        pConfig->Profile.SetInt("/camera/ToupTek/conversionGain", newCgValue);
+
+        int newSpeedValue = dlg.m_speedSlider->GetValue();
+        pConfig->Profile.SetInt("/camera/ToupTek/frameRateLevel", newSpeedValue);
+
+        int newBlackLevel = dlg.m_blackLevelSlider->GetValue();
+        pConfig->Profile.SetInt("/camera/ToupTek/blackLevel", newBlackLevel);
     }
 }
 
