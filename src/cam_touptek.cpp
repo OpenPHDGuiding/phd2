@@ -464,17 +464,10 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
 
     // check camera Conversion Gain
-    int cgSupported;
-    if (m_cam.GetOption(TOUPCAM_OPTION_CG, &cgSupported))
+    bool supportsCG = (info->model->flag & TOUPCAM_FLAG_CG) != 0;
+    if (supportsCG)
     {
-        // camera support Conversion Gain, set mode HCG
         m_cam.SetOption(TOUPCAM_OPTION_CG, 1);
-        Debug.Write("TOUPTEK: Camera supports Conversion Gain, set to HCG (1)\n");
-    }
-    else
-    {
-        // unsupported Conversion Gain,default
-        Debug.Write("TOUPTEK: Camera does not support Conversion Gain, skipping setting\n");
     }
 
     if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
@@ -793,7 +786,6 @@ struct ToupTekCameraDlg : public wxDialog
 
 ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_ANY, _("ToupTek Camera Properties"))
 {
-
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
     wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
