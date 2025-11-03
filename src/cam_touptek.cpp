@@ -463,6 +463,13 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.SetOption(TOUPCAM_OPTION_DFC, 0);
     m_cam.SetOption(TOUPCAM_OPTION_SHARPENING, 0);
 
+    // check camera Conversion Gain
+    bool supportsCG = (info->model->flag & TOUPCAM_FLAG_CG) != 0;
+    if (supportsCG)
+    {
+        m_cam.SetOption(TOUPCAM_OPTION_CG, 1);
+    }
+
     if (FAILED(hr = Toupcam_put_AutoExpoEnable(m_cam.m_h, 0)))
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_put_AutoExpoEnable(0) failed with status 0x%x\n", hr));
 
