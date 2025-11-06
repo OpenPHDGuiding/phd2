@@ -1595,7 +1595,7 @@ void Guider::EnableLockPosShift(bool enable)
         {
             m_userMultiStarMode = GetMultiStarMode();
             SetMultiStarMode(false);
-            Debug.Write ("Multi-star mode disabled for comet tracking\n");
+            Debug.Write("Multi-star mode disabled for comet tracking\n");
             m_lockPosition.BeginShift();
         }
         else
