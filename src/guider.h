@@ -166,6 +166,7 @@ class Guider : public wxWindow
     double m_minStarHFD;
     double m_minAFStarSNR;
     double m_maxStarHFD;
+    bool m_userMultiStarMode;
     unsigned int m_autoSelDownsample; // downsample factor for star auto-selection, 0=Auto
 
 protected:
