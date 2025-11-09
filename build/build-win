@@ -42,10 +42,12 @@ case "$arch" in
     x86)
         cmake_arch=Win32
         installer_arch=
+        build_dir=tmp
         ;;
     x64)
         cmake_arch=x64
         installer_arch=-x64
+        build_dir=tmp64
         ;;
     *) usage ;;
 esac
@@ -97,8 +99,8 @@ if [[ $VCPKG_ROOT ]]; then
     vcpkg_args+=(-DVCPKG_ROOT=$VCPKG_ROOT)
 fi
 
-mkdir -p tmp
-cd tmp
+mkdir -p "$build_dir"
+cd "$build_dir"
 
 cat >run_cmake.bat <<EOF
 "$CMAKE_W" -Wno-dev -A "$cmake_arch" "${vcpkg_args[@]}" ..
