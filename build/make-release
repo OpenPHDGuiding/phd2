@@ -86,6 +86,7 @@ setup_worktree () {
     if [[ ! -f ChangeLog-dev ]]; then
         die "ChangeLog-dev is missing"
     fi
+    validate-changelog ChangeLog-dev
     echo "-------- ChangeLog-dev --------"
     cat ChangeLog-dev
     cp ChangeLog-dev "$worktree"/
@@ -94,6 +95,7 @@ setup_worktree () {
         if [[ ! -f ChangeLog-full ]]; then
             die "ChangeLog-full is missing"
         fi
+        validate-changelog ChangeLog-full
         echo "-------- ChangeLog-full --------"
         cat ChangeLog-full
         cp ChangeLog-full "$worktree"/
@@ -301,6 +303,24 @@ build_release_artifacts () {
     echo "----"
 }
 
+create_github_release () (
+    # generate a simple markdown bullet list from ChangeLog-dev
+    TMP=$(mktemp).md
+    trap "rm -f '$TMP'" EXIT
+    while IFS= read -r line; do
+        echo " - $line"
+    done < ChangeLog-dev >"$TMP"
+    tag=v${rev}
+    if jq -e --arg tag "$tag" 'any(.[]; .tagName == $tag)' < <(gh release list --json tagName) >/dev/null; then
+        op=edit
+    else
+        op=create
+    fi
+    if [[ $op == create ]]; then
+        gh release "$op" "v${rev}" -F "$TMP"
+    fi
+)
+
 make_wp_release_pages () (
     echo "adding dev release web page"
     scp ChangeLog-dev "${WWW_HOST}:/tmp/phd2changelog-dev"
@@ -326,6 +346,18 @@ deploy_release_to_website () (
     rsync -a tmp/release/ "$WWW_HOST:$WWW_DIR"/
     make_wp_release_pages
     ssh $WWW_HOST "./bin/phd2_generate_static_site"
+)
+
+validate-changelog () (
+    file=$1
+    shift
+    while IFS= read -r line; do
+        re='^\s*$'
+        if [[ $line =~ $re ]]; then
+            echo >&2 "$file: must not have any blank lines"
+            exit 1
+        fi
+    done < "$file"
 )
 
 # === main ===
@@ -368,6 +400,7 @@ worktree=$(realpath ../phd2-build-"$rev")
 setup_worktree
 do_release_prep
 build_release_artifacts
+create_github_release
 deploy_release_to_website
 
 complete=1
