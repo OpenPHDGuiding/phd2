@@ -30,3 +30,10 @@ include /usr/share/dpkg/default.mk
 override_dh_auto_configure:
 	dh_auto_configure --  -DUSE_SYSTEM_LIBINDI=1 -DUSE_SYSTEM_GTEST=1 -DUSE_SYSTEM_LIBUSB=1 -DOPENSOURCE_ONLY=1
 
+
+
+# Tell dh_shlibdeps where to find proprietary camera libraries
+# Needed when building with OPENSOURCE_ONLY=0 (bundled binary-only libraries in /usr/lib/phd2/)
+# Harmless when OPENSOURCE_ONLY=1 (directory won't exist)
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(CURDIR)/debian/phd2/usr/lib/phd2
