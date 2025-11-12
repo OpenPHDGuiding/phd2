@@ -500,7 +500,7 @@ else()
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
-    GIT_TAG cce992ebced4d73ee6d482cb894c5c897bb059b7  # v2.1.5
+    GIT_TAG 6aa360543313c9e00819148da9df15647ffa7996  # v2.1.6
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
