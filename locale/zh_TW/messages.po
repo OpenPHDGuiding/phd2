@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-07 10:40-0500\n"
-"PO-Revision-Date: 2024-04-12 13:48+0800\n"
+"PO-Revision-Date: 2025-11-13 11:45+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -43,7 +43,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: about_dialog.cpp:47 myframe.cpp:563
@@ -752,6 +752,8 @@ msgid ""
 "imbalance in Dec or physical resistance to movement because of cables or "
 "over-tight gear mesh."
 msgstr ""
+"相機感測器上測得的赤經與赤緯位移關係不符合預期比例（即cos(dec）。此現象可能源"
+"於赤緯軸存在顯著重量失衡，或因纜線纏繞、齒輪咬合過緊等物理阻力導致轉動受阻。"
 
 #: calibration_assistant.cpp:1259
 msgid ""
@@ -1000,7 +1002,7 @@ msgstr ""
 msgid ""
 "Details for this calibration result are no longer available. The calibration "
 "has probably been replaced."
-msgstr ""
+msgstr "此校準結果的資料已不可用。該校準可能已被替換。"
 
 #: calreview_dialog.cpp:664
 msgid "Explanation"
@@ -1219,6 +1221,7 @@ msgid ""
 "Discard this many frames when capturing starts. Useful for preventing "
 "initial under-exposed frames interfering with automatic star selection."
 msgstr ""
+"開始擷取時捨棄此數量的幀。此功能有助於防止初期曝光不足的幀干擾自動星點選取。"
 
 #: cam_altair.cpp:332
 msgid "No Altair cameras detected"
@@ -1669,7 +1672,7 @@ msgstr "找不到 Firewire / IEEE1394 相機"
 
 #: cam_firewire_OSX.cpp:113
 msgid "Select Firewire camera"
-msgstr ""
+msgstr "選擇 Firewaire 相機"
 
 #: cam_firewire_OSX.cpp:113 cam_sbig.cpp:205
 msgid "Camera name"
@@ -1895,11 +1898,11 @@ msgstr "未知"
 
 #: cam_ogma.cpp:312
 msgid "No OGMA cameras detected"
-msgstr ""
+msgstr "未偵測到 OGMA 相機"
 
 #: cam_ogma.cpp:332
 msgid "Selected OGMA camera not found."
-msgstr ""
+msgstr "沒找到所選的 OGMA 相機。"
 
 #: cam_ogma.cpp:337 cam_touptek.cpp:338
 msgid "Camera does not support software trigger"
@@ -1907,11 +1910,11 @@ msgstr "相機不支援軟體觸發"
 
 #: cam_ogma.cpp:343
 msgid "Failed to open OGMA camera."
-msgstr ""
+msgstr "無法開啟 OGMA 相機。"
 
 #: cam_ogma.cpp:366
 msgid "Failed to get camera resolution for OGMA camera."
-msgstr ""
+msgstr "無法取得 OGMA 相機解析度。"
 
 #: cam_ogma.cpp:374 cam_ogma.cpp:387 cam_touptek.cpp:375 cam_touptek.cpp:388
 msgid "Failed to initialize camera binning."
@@ -1935,7 +1938,7 @@ msgstr "無法拍攝: 無法由相機取得影像"
 
 #: cam_ogma.cpp:779
 msgid "Ogma Camera Properties"
-msgstr ""
+msgstr "OGMA 相機屬性"
 
 #: cam_openssag.cpp:111 cam_qhy5.cpp:114
 msgid "Could not initialize USB library"
@@ -1981,7 +1984,7 @@ msgstr "無法開始曝光"
 
 #: cam_playerone.cpp:149
 msgid "Player One Camera Properties"
-msgstr ""
+msgstr "Player One 相機屬性"
 
 #: cam_playerone.cpp:220 cam_zwo.cpp:221
 #, c-format
@@ -1990,24 +1993,24 @@ msgstr "無法載入 DLL %s"
 
 #: cam_playerone.cpp:314
 msgid "No Player One cameras detected."
-msgstr ""
+msgstr "未偵測到 Player One 相機。"
 
 #: cam_playerone.cpp:345
 #, c-format
 msgid "Player One camera #%d not found"
-msgstr ""
+msgstr "找不到 #%d Player One 相機"
 
 #: cam_playerone.cpp:408 cam_playerone.cpp:481
 msgid "Failed to get camera properties for Player One Camera."
-msgstr ""
+msgstr "無法取得 Player One 相機的相機屬性。"
 
 #: cam_playerone.cpp:414
 msgid "Failed to open Player One Camera."
-msgstr ""
+msgstr "無法開啟 Player One 相機。"
 
 #: cam_playerone.cpp:421
 msgid "Failed to initialize Player One Camera."
-msgstr ""
+msgstr "無法初始化 Player One 相機。"
 
 #: cam_playerone.cpp:873 cam_playerone.cpp:905 cam_playerone.cpp:913
 #: cam_svb.cpp:769 cam_sxv.cpp:920 cam_zwo.cpp:899 cam_zwo.cpp:930
@@ -2021,7 +2024,7 @@ msgstr "無相機"
 
 #: cam_qhy.cpp:339
 msgid "Camera Options"
-msgstr ""
+msgstr "相機選項"
 
 #: cam_qhy.cpp:344
 msgid ""
@@ -2029,30 +2032,32 @@ msgid ""
 "percentage of the camera's maximum possible gain level in Advanced Settings "
 "> Camera > Camera gain. Knowing the gain assists in setting the offset value."
 msgstr ""
+"相機目前實際運作的增益值。在「進階設定」>「相機」>「相機增益」中以相機最大可"
+"能增益的百分比形式來設定此增益值，請參照設定篇移值中增益輔助。"
 
 #: cam_qhy.cpp:351
 msgid "Offset"
-msgstr ""
+msgstr "偏移"
 
 #: cam_qhy.cpp:356
 msgid "USB Traffic"
-msgstr ""
+msgstr "USB 流量"
 
 #: cam_qhy.cpp:360
 msgid "Amplifier noise reduction"
-msgstr ""
+msgstr "放大器雜訊抑制"
 
 #: cam_qhy.cpp:363
 msgid "Row noise reduction"
-msgstr ""
+msgstr "ROW 雜訊抑制"
 
 #: cam_qhy.cpp:366
 msgid "High speed mode"
-msgstr ""
+msgstr "高速模式"
 
 #: cam_qhy.cpp:369
 msgid "High gain mode"
-msgstr ""
+msgstr "高增益模式"
 
 #: cam_qhy.cpp:371
 msgid ""
@@ -2060,10 +2065,12 @@ msgid ""
 "gain mode. This usually means lower noise and a shallower pixel well than "
 "the equivalent gain value in low conversion gain mode"
 msgstr ""
+"將 QHY5III178 或 QHY178 設定為讓感測器運作在高轉換增益模式。這通常意味著與低"
+"轉換增益模式下的等效增益值相較, 有著較低雜訊及較淺的像素阱"
 
 #: cam_qhy.cpp:481
 msgid "Camera must be reconnected to set the new mode"
-msgstr ""
+msgstr "設定新的運作模式相機必須要重連"
 
 #: cam_qhy.cpp:585
 msgid "Failed to initialize QHY SDK"
@@ -2095,7 +2102,7 @@ msgstr "無法取得相機晶片資訊"
 
 #: cam_qhy.cpp:755
 msgid "Failed to set bit mode"
-msgstr ""
+msgstr "設定位元模式失敗"
 
 #: cam_qhy.cpp:823
 msgid "Failed to get camera bin info"
@@ -2111,31 +2118,31 @@ msgstr "無法設定增益範圍"
 
 #: cam_qhy.cpp:1029
 msgid "Failed to set camera offset"
-msgstr ""
+msgstr "設定相機偏移量失敗"
 
 #: cam_qhy.cpp:1038
 msgid "Failed to set camera USB traffic"
-msgstr ""
+msgstr "設定相機 USB 流量失敗"
 
 #: cam_qhy.cpp:1047
 msgid "Failed to set camera amp noise reduction"
-msgstr ""
+msgstr "設定相機擴大器雜訊抑制失敗"
 
 #: cam_qhy.cpp:1056
 msgid "Failed to set camera row noise reduction"
-msgstr ""
+msgstr "設定相機ROW雜訊抑制失敗"
 
 #: cam_qhy.cpp:1065
 msgid "Failed to set camera speed mode"
-msgstr ""
+msgstr "設定相機速度模式失敗"
 
 #: cam_qhy.cpp:1074
 msgid "Failed to set camera high gain mode"
-msgstr ""
+msgstr "設定相機高增益模式失敗"
 
 #: cam_qhy.cpp:1085
 msgid "Failed to set camera exposure length"
-msgstr ""
+msgstr "設定相機曝光時間長度失敗"
 
 #: cam_qhy.cpp:1092
 msgid "QHY exposure failed"
@@ -2346,7 +2353,7 @@ msgstr "無法取得 ToupTek 相機解析度資訊。"
 
 #: cam_touptek.cpp:627
 msgid "Capture failed: the camera reported an error"
-msgstr ""
+msgstr "拍攝失敗：相機回報有錯誤發生"
 
 #: cam_touptek.cpp:787
 msgid "ToupTek Camera Properties"
@@ -2409,7 +2416,7 @@ msgstr "無法開啟 ZWO ASI 相機."
 
 #: cam_zwo.cpp:426
 msgid "Failed to initialize ZWO ASI Camera."
-msgstr ""
+msgstr "啟用ZWO ASI 相機失敗。"
 
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
@@ -2753,7 +2760,7 @@ msgstr ""
 #: darks_dialog.cpp:211
 msgid ""
 "Be sure camera bit-depth is already set to desired value (8-bit or 16-bit)"
-msgstr ""
+msgstr "請確保相機位元深度已設定為所需值（8 位元或 16 位元）。"
 
 #: darks_dialog.cpp:222
 msgid "Reset all parameters to application defaults"
@@ -2834,7 +2841,7 @@ msgstr "暗場影像完成"
 
 #: debuglog.cpp:116
 msgid "PHD2_DebugLog_"
-msgstr ""
+msgstr "PHD2_DebugLog_"
 
 #: debuglog.cpp:120
 #, c-format
@@ -4827,14 +4834,14 @@ msgstr "s"
 #: guiding_assistant.cpp:1377
 #, c-format
 msgid "Use exposure times in the range of %.1fs to %.1fs"
-msgstr ""
+msgstr "使用 %.1fs 至 %.1fs 範圍的曝光時間"
 
 #: guiding_assistant.cpp:1379
 #, c-format
 msgid ""
 "Use exposure times from %.1fs to %0.1fs and variable delay feature to "
 "control guide cadence"
-msgstr ""
+msgstr "使用 %.1fs 到 %0.1fs 的曝光時間和可變延遲功能來控制引導頻率"
 
 #: guiding_assistant.cpp:1387
 msgid "Try binning your guide camera"
@@ -4944,7 +4951,7 @@ msgstr "角秒/秒"
 
 #: guidinglog.cpp:271
 msgid "PHD2_GuideLog_"
-msgstr ""
+msgstr "PHD2_GuideLog_"
 
 #: image_math.cpp:1229
 msgid ""
@@ -5492,7 +5499,7 @@ msgstr "飄移法極軸校準"
 
 #: myframe.cpp:501
 msgid "Align by analyzing star drift near the celestial equator (Accurate)"
-msgstr ""
+msgstr "透過分析天球赤道附近的恆星漂移進行校準（精確）"
 
 #: myframe.cpp:502
 msgid "&Polar Drift Align"
@@ -5500,7 +5507,7 @@ msgstr "極點飄移對極軸"
 
 #: myframe.cpp:503
 msgid "Align by analyzing star drift near the celestial pole (Simple)"
-msgstr ""
+msgstr "透過分析天極附近的恆星漂移進行校準（簡單）"
 
 #: myframe.cpp:504
 msgid "&Static Polar Align"
@@ -5968,6 +5975,7 @@ msgid ""
 "Binning or camera pixel size changed unexpectedly. You should use separate "
 "profiles for different image scales."
 msgstr ""
+"像素合併或相機像素尺寸意外改變。您應該為不同的影像比例使用不同的設定檔。"
 
 #: myframe.cpp:2873
 msgid "Global Settings"
@@ -5976,7 +5984,7 @@ msgstr "整體設定"
 #: myframe.cpp:2920
 #, c-format
 msgid "Enter a focal length in millimeters, between %.f and %.f"
-msgstr ""
+msgstr "輸入範圍介於%.f 和 %.f 之間的焦長值 (單位為毫米)"
 
 #: myframe.cpp:2970 myframe.cpp:3055
 msgid "System default"
@@ -7045,7 +7053,7 @@ msgstr "渦桿"
 
 #: profile_wizard.cpp:259
 msgid "Device Id:"
-msgstr ""
+msgstr "設備識別碼:"
 
 #: profile_wizard.cpp:273
 msgid ""
@@ -7083,6 +7091,9 @@ msgid ""
 "aperture x f-ratio).  Typical finder scopes have a focal length of about "
 "165mm. Recommended minimum is 100mm"
 msgstr ""
+"這是導星鏡的焦距－如果您使用的是離軸導星器或自適應光學設備，則為成像鏡的焦距"
+"（焦距 = 口徑 × 焦比）。典型的尋星鏡焦距約為 165 毫米。建議最小焦距為 100 毫"
+"米"
 
 #: profile_wizard.cpp:306
 msgid "Guide scope focal length (mm)"
@@ -7090,7 +7101,7 @@ msgstr "導星鏡焦長 (mm)"
 
 #: profile_wizard.cpp:307
 msgid "Focal length less than recommended minimum (100mm)"
-msgstr ""
+msgstr "焦距小於建議的最小值（100毫米）"
 
 #: profile_wizard.cpp:323 profile_wizard.cpp:1396
 #, c-format
@@ -7118,7 +7129,7 @@ msgstr "赤道儀導星速率 (n.n x 恆星時)"
 
 #: profile_wizard.cpp:345
 msgid "Mount has high-precision encoders on both axes"
-msgstr ""
+msgstr "赤道儀雙軸都有高精度編碼器"
 
 #: profile_wizard.cpp:346
 msgid ""
@@ -7442,6 +7453,8 @@ msgid ""
 "In the meantime, you can just enter the pixel-size manually along with the "
 "focal length and binning levels."
 msgstr ""
+"未發現該類型的相機，因此您可稍後處理此事。在此期間，您只需手動輸入像素尺寸、"
+"焦距及像素合併等級即可。"
 
 #: profile_wizard.cpp:930
 msgid ""
@@ -7449,6 +7462,8 @@ msgid ""
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
+"PHD2 無法連接到相機，因此您可能需要稍後處理此問題。在此期間，您只需手動輸入像"
+"素尺寸、焦距及像素合併等級即可。"
 
 #: profile_wizard.cpp:1190
 msgid "Ask"
@@ -7877,6 +7892,10 @@ msgid ""
 "and recalibrate.  Otherwise, check for cable snags, try re-doing your "
 "calibration, and check for problems with the mount mechanics."
 msgstr ""
+"PHD2 無法在赤緯方向進行充分校正。若赤道儀側邊位置與上次校準時不同，請檢查「進"
+"階對話框」導星分頁中的「反轉赤緯輸出選項」設定是否錯誤。若屬此狀況，請修正設"
+"定並重新校準。否則請檢查電纜是否纏繞，嘗試重新執行校準程序，並檢查赤道儀機械"
+"結構是否存在問題。"
 
 #: scope.cpp:671
 msgid ""
@@ -8003,6 +8022,9 @@ msgid ""
 "Check the guide cable and read the online Help for how to identify these "
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
+"警示：校準成功，但測得南向移動幅度微小或完全未測得，因此導星功能可能受損。此"
+"狀況通常由導引纜線故障或赤緯反向間隙過大所致。請檢查導引纜線，並參閱線上說明"
+"文件以了解如何識別此類問題（手動導引、赤緯反向間隙）。"
 
 #: scope.cpp:1650
 msgid ""
@@ -8158,6 +8180,8 @@ msgid ""
 "Default = 2500 ms. NOTE: this will be ignored if backlash compensation is "
 "enabled"
 msgstr ""
+"發送至赤緯方向的脈衝最長時長預設值 = 2500 毫秒，注意：若回差補償功能已啟用，"
+"此設定將被忽略"
 
 #: scope.cpp:2104
 msgid "Dec guide mode"
