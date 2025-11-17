@@ -321,31 +321,47 @@ create_github_release () (
     fi
 )
 
-make_wp_release_pages () (
-    echo "adding dev release web page"
-    scp ChangeLog-dev "${WWW_HOST}:/tmp/phd2changelog-dev"
-    ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' /tmp/phd2changelog-dev"
-
-    if is_full_release; then
-        echo "adding full release web page"
-        scp ChangeLog-full "${WWW_HOST}:/tmp/phd2changelog-full"
-        ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' -R /tmp/phd2changelog-full"
-    fi
-)
-
 deploy_release_to_website () (
-    # copy the build artifacts to the web server, create wordpress
-    # release pages in wordpress, and generate the static site from
-    # wordpress
+    # copy the build artifacts to the web server and generate and
+    # publish the static site
+
+    WWW_BUILD=$PWD/tmp/www
+    build-website "$WWW_BUILD"
 
     if [[ $dry_run ]]; then
         echo "dry run: skipping deployment"
         return
     fi
 
+    # copy to release content to old server.
+    # This is no longer necessary since we moved off of wordpress. We
+    # could sync directly to the hosted site.
     rsync -a tmp/release/ "$WWW_HOST:$WWW_DIR"/
-    make_wp_release_pages
-    ssh $WWW_HOST "./bin/phd2_generate_static_site"
+    rsync -a "$WWW_BUILD"/ "$WWW_HOST:$WWW_DIR"/
+    # let the old server sync to the hosted site
+    ssh $WWW_HOST "./bin/phd2-publish-site"
+)
+
+build-website () (
+    dest=$1
+    shift
+    WWW_SRC=$PWD/tmp/openphdquiding.org
+    rm -rf "$WWW_SRC"
+    git clone --depth=1 git@github.com:OpenPHDGuiding/openphdguiding.org.git "$WWW_SRC"
+    if grep -F -x -q "### $rev" "${WWW_SRC}"/docs/development-snapshots.md; then
+        echo "release $rev is already present in development-snapshots.md"
+    else
+        args=(-r "$rev" -d ChangeLog-dev)
+        if is_full_release; then
+            args+=(-f ChangeLog-full)
+        fi
+        "${WWW_SRC}"/bin/add-release "${args[@]}"
+        cd "$WWW_SRC"
+        git commit -m "add release $rev" .
+        git push
+    fi
+    cd "$WWW_SRC"
+    uv run mkdocs build -d "$dest"
 )
 
 validate-changelog () (
