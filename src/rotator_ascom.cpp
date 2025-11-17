@@ -75,19 +75,27 @@ wxArrayString RotatorAscom::EnumAscomRotators(void)
     {
         DispatchObj profile;
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
-            throw ERROR_INFO(
-                "ASCOM Rotator: could not instantiate ASCOM profile class ASCOM.Utilities.Profile. Is ASCOM installed?");
+        {
+            Debug.Write("ASCOM Rotator: ASCOM.Utilities.Profile not available, skipping ASCOM rotator enumeration\n");
+            return list;
+        }
 
         Variant res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Rotator"))
-            throw ERROR_INFO("ASCOM Rotator: could not query registered rotator devices: " + ExcepMsg(profile.Excep()));
+        {
+            Debug.Write("ASCOM Rotator: could not query registered rotator devices\n");
+            return list;
+        }
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
         Variant vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
-            throw ERROR_INFO("ASCOM Rotator: could not query registered rotators: " + ExcepMsg(ilist.Excep()));
+        {
+            Debug.Write("ASCOM Rotator: could not query registered rotators\n");
+            return list;
+        }
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;

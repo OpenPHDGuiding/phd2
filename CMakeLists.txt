@@ -178,6 +178,14 @@ set(cam_SRC
   ${phd_src_dir}/cam_firewire_OSX.cpp
   ${phd_src_dir}/cam_indi.cpp
   ${phd_src_dir}/cam_indi.h
+  ${phd_src_dir}/cam_alpaca.cpp
+  ${phd_src_dir}/cam_alpaca.h
+  ${phd_src_dir}/alpaca_client.cpp
+  ${phd_src_dir}/alpaca_client.h
+  ${phd_src_dir}/config_alpaca.cpp
+  ${phd_src_dir}/config_alpaca.h
+  ${phd_src_dir}/scope_alpaca.h
+  ${phd_src_dir}/scope_alpaca.cpp
   ${phd_src_dir}/cam_INovaPLC.cpp
   ${phd_src_dir}/cam_INovaPLC.h
   ${phd_src_dir}/cam_ioptron.cpp

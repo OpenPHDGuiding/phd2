@@ -1,9 +1,8 @@
 /*
- *  scopes.h
+ *  scope_alpaca.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created for Alpaca Server support
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,53 +31,16 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+#ifndef SCOPE_ALPACA_INCLUDED
+#define SCOPE_ALPACA_INCLUDED
 
-#if defined(__WINDOWS__)
+class Scope;
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_ASCOM
-# ifdef HAVE_SHOESTRING
-#  define GUIDE_GPUSB
-#  define GUIDE_GPINT
-# endif
-# define GUIDE_INDI
-# define GUIDE_ALPACA
+class AlpacaScopeFactory
+{
+public:
+    static Scope *MakeAlpacaScope();
+};
 
-#elif defined(__APPLE__)
+#endif
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_GPUSB
-# define GUIDE_GCUSBST4
-# define GUIDE_INDI
-# define GUIDE_EQUINOX
-// #define GUIDE_VOYAGER
-// #define GUIDE_NEB
-# define GUIDE_EQMAC
-
-#elif defined(__linux__) || defined(__FreeBSD__)
-
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_INDI
-
-#endif // WINDOWS/APPLE/LINUX
-
-#include "scope.h"
-#include "scope_oncamera.h"
-#include "scope_onstepguider.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
-#include "scope_indi.h"
-#include "scope_alpaca.h"
-#include "scope_manual_pointing.h"
-
-#endif /* SCOPES_H_INCLUDED */

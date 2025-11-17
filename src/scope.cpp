@@ -333,6 +333,14 @@ static wxString INDIMountName()
     return val.empty() ? _("INDI Mount") : wxString::Format(_("INDI Mount [%s]"), val);
 }
 
+static wxString AlpacaMountName()
+{
+    wxString host = pConfig->Profile.GetString("/alpaca/host", wxEmptyString);
+    long port = pConfig->Profile.GetLong("/alpaca/port", 6800);
+    long device = pConfig->Profile.GetLong("/alpaca/telescope_device", 0);
+    return host.empty() ? _("Alpaca Mount") : wxString::Format(_("Alpaca Mount [%s:%ld/%ld]"), host, port, device);
+}
+
 wxArrayString Scope::MountList()
 {
     wxArrayString ScopeList;
@@ -370,6 +378,9 @@ wxArrayString Scope::MountList()
 #ifdef GUIDE_INDI
     ScopeList.Add(INDIMountName());
 #endif
+#ifdef GUIDE_ALPACA
+    ScopeList.Add(AlpacaMountName());
+#endif
 
     ScopeList.Sort(&CompareNoCase);
 
@@ -390,6 +401,9 @@ wxArrayString Scope::AuxMountList()
 
 #ifdef GUIDE_INDI
     scopeList.Add(INDIMountName());
+#endif
+#ifdef GUIDE_ALPACA
+    scopeList.Add(AlpacaMountName());
 #endif
 
     scopeList.Add(ScopeManualPointing::GetDisplayName());
@@ -413,7 +427,7 @@ Scope *Scope::Factory(const wxString& choice)
         if (false) // so else ifs can follow
         {
         }
-        // do ASCOM and INDI first since they includes choices that could match stings below like Simulator
+        // do ASCOM, INDI, and Alpaca first since they includes choices that could match stings below like Simulator
 #ifdef GUIDE_ASCOM
         else if (choice.Contains(_T("ASCOM")))
             pReturn = new ScopeASCOM(choice);
@@ -421,6 +435,10 @@ Scope *Scope::Factory(const wxString& choice)
 #ifdef GUIDE_INDI
         else if (choice.Contains(_("INDI")))
             pReturn = INDIScopeFactory::MakeINDIScope();
+#endif
+#ifdef GUIDE_ALPACA
+        else if (choice.Contains(_("Alpaca")))
+            pReturn = AlpacaScopeFactory::MakeAlpacaScope();
 #endif
         else if (choice == _("None"))
             pReturn = nullptr;

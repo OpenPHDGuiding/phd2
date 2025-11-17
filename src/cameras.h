@@ -44,6 +44,7 @@
 
 #  define ASCOM_CAMERA
 #  define INDI_CAMERA
+#  define ALPACA_CAMERA
 #  define OPENCV_CAMERA
 #  define SIMULATOR
 
