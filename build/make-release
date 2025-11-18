@@ -15,12 +15,14 @@ SCRIPT_DIR=${BASH_SOURCE%/*}
 
 usage () {
     cat <<EOF
-Usage: build [-n] [-b BRANCH] -r rev
+Usage: build [-n] [-R] [-g] [-b BRANCH] -r rev
 
 Options:
  -n            dry-run mode: build but do not publish to website
  -b BRANCH     branch to build from [default: master]
  -r REV        release version number
+ -R            resume failed build
+ -g            enable debug logging
 EOF
 }
 
@@ -70,18 +72,21 @@ setup_worktree () {
     umask 022
     load_config
     # remove the existing worktree
-    while IFS= read -r line; do
-        if [[ $line == "worktree $worktree" ]]; then
-            git worktree remove --force "$worktree"
-        fi
-    done < <(git worktree list --porcelain)
-    git worktree add --force "$worktree" "$branch"
+    if [[ ! $is_resume ]]; then
+        while IFS= read -r line; do
+            if [[ $line == "worktree $worktree" ]]; then
+                git worktree remove --force "$worktree"
+            fi
+        done < <(git worktree list --porcelain)
+        git worktree add --force "$worktree" "$branch"
+    fi
     trap cleanup_worktree EXIT
 
     # copy the ChangeLog files into the worktree
     if [[ ! -f ChangeLog-dev ]]; then
         die "ChangeLog-dev is missing"
     fi
+    validate-changelog ChangeLog-dev
     echo "-------- ChangeLog-dev --------"
     cat ChangeLog-dev
     cp ChangeLog-dev "$worktree"/
@@ -90,6 +95,7 @@ setup_worktree () {
         if [[ ! -f ChangeLog-full ]]; then
             die "ChangeLog-full is missing"
         fi
+        validate-changelog ChangeLog-full
         echo "-------- ChangeLog-full --------"
         cat ChangeLog-full
         cp ChangeLog-full "$worktree"/
@@ -99,7 +105,7 @@ setup_worktree () {
     cd "$worktree"
     git pull -r -q origin
     (
-        mkdir tmp
+        mkdir -p tmp
         cd tmp
         cmake ..
     )
@@ -205,6 +211,7 @@ build_help () (
     mv tmp/man.tar.gz tmp/release/man-${rev}.tar.gz
     (
         cd tmp/release
+        rm -rf man-${rev}
         mkdir man-${rev}
         tar xfz man-${rev}.tar.gz -C man-${rev}
         ln -sfn man-${rev} man-dev
@@ -235,31 +242,37 @@ generate_release_version_files () (
 build_os_packages () (
     remote_worktree=phd2-build-$(date +%Y%m%d-%H%M%S)
     pids=()
-    (
-        echo "Building windows installer on $WIN_HOST"
-        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -b 'v${rev}' -w '$remote_worktree'" \
-            > tmp/build-logs/win.log 2>&1
-        win_installer=phd2-${rev}-installer.exe
-        echo "Windows build completed"
-        scp "$WIN_HOST:$WIN_DIR/../${remote_worktree}/tmp/${win_installer}" tmp/release/
-        ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -c -w '$remote_worktree'"
-    ) & pids+=($!)
-    (
-        echo "Building Mac installer on $MAC64_HOST"
-        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
-            > tmp/build-logs/mac64.log 2>&1
-        echo "mac64 build completed"
-        scp "$MAC64_HOST:$MAC64_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
-        ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -c -w '$remote_worktree'"
-    ) & pids+=($!)
-    (
-        echo "Building Mac Sonoma+ installer on $MAC64S_HOST"
-        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
-            > tmp/build-logs/mac64s.log 2>&1
-        echo "mac64s build completed"
-        scp "$MAC64S_HOST:$MAC64S_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
-        ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -c -w '$remote_worktree'"
-    ) & pids+=($!)
+    if [[ ! -f tmp/release/phd2-${rev}-installer.exe ]]; then
+        (
+            echo "Building windows installer on $WIN_HOST"
+            ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -b 'v${rev}' -w '$remote_worktree'" \
+                > tmp/build-logs/win.log 2>&1
+            win_installer=phd2-${rev}-installer.exe
+            echo "Windows build completed"
+            scp "$WIN_HOST:$WIN_DIR/../${remote_worktree}/tmp/${win_installer}" tmp/release/
+            ssh "$WIN_HOST" "'$WIN_DIR/build/build-win' -c -w '$remote_worktree'"
+        ) & pids+=($!)
+    fi
+    if [[ ! -f tmp/release/PHD2-${rev}-OSX-64.zip ]]; then
+        (
+            echo "Building Mac installer on $MAC64_HOST"
+            ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
+                > tmp/build-logs/mac64.log 2>&1
+            echo "mac64 build completed"
+            scp "$MAC64_HOST:$MAC64_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64.zip" tmp/release/
+            ssh "$MAC64_HOST" "'$MAC64_DIR/build/build-mac' -c -w '$remote_worktree'"
+        ) & pids+=($!)
+    fi
+    if [[ ! -f tmp/release/PHD2-${rev}-OSX-64-sonoma+.zip ]]; then
+        (
+            echo "Building Mac Sonoma+ installer on $MAC64S_HOST"
+            ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -b 'v${rev}' -w '$remote_worktree'" \
+                > tmp/build-logs/mac64s.log 2>&1
+            echo "mac64s build completed"
+            scp "$MAC64S_HOST:$MAC64S_DIR/../${remote_worktree}/tmp/PHD2-${rev}-OSX-64-sonoma+.zip" tmp/release/
+            ssh "$MAC64S_HOST" "'$MAC64S_DIR/build/build-mac' -c -w '$remote_worktree'"
+        ) & pids+=($!)
+    fi
     success=1
     for pid in ${pids[@]}; do
         wait $pid || success=
@@ -275,7 +288,9 @@ build_release_artifacts () {
     # staged for deployment. Per-OS installers are built on the worker
     # machines and then copied to the staging area.
 
-    rm -rf tmp/release
+    if [[ ! $is_resume ]]; then
+        rm -rf tmp/release
+    fi
     mkdir -p tmp/release
     mkdir -p tmp/build-logs
 
@@ -288,31 +303,77 @@ build_release_artifacts () {
     echo "----"
 }
 
-make_wp_release_pages () (
-    echo "adding dev release web page"
-    scp ChangeLog-dev "${WWW_HOST}:/tmp/phd2changelog-dev"
-    ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' /tmp/phd2changelog-dev"
-
-    if is_full_release; then
-        echo "adding full release web page"
-        scp ChangeLog-full "${WWW_HOST}:/tmp/phd2changelog-full"
-        ssh $WWW_HOST "./bin/phd2_add_release_page -r '$rev' -R /tmp/phd2changelog-full"
+create_github_release () (
+    # generate a simple markdown bullet list from ChangeLog-dev
+    TMP=$(mktemp).md
+    trap "rm -f '$TMP'" EXIT
+    while IFS= read -r line; do
+        echo " - $line"
+    done < ChangeLog-dev >"$TMP"
+    tag=v${rev}
+    if jq -e --arg tag "$tag" 'any(.[]; .tagName == $tag)' < <(gh release list --json tagName) >/dev/null; then
+        op=edit
+    else
+        op=create
+    fi
+    if [[ $op == create ]]; then
+        gh release "$op" "v${rev}" -F "$TMP"
     fi
 )
 
 deploy_release_to_website () (
-    # copy the build artifacts to the web server, create wordpress
-    # release pages in wordpress, and generate the static site from
-    # wordpress
+    # copy the build artifacts to the web server and generate and
+    # publish the static site
+
+    WWW_BUILD=$PWD/tmp/www
+    build-website "$WWW_BUILD"
 
     if [[ $dry_run ]]; then
         echo "dry run: skipping deployment"
         return
     fi
 
+    # copy to release content to old server.
+    # This is no longer necessary since we moved off of wordpress. We
+    # could sync directly to the hosted site.
     rsync -a tmp/release/ "$WWW_HOST:$WWW_DIR"/
-    make_wp_release_pages
-    ssh $WWW_HOST "./bin/phd2_generate_static_site"
+    rsync -a "$WWW_BUILD"/ "$WWW_HOST:$WWW_DIR"/
+    # let the old server sync to the hosted site
+    ssh $WWW_HOST "./bin/phd2-publish-site"
+)
+
+build-website () (
+    dest=$1
+    shift
+    WWW_SRC=$PWD/tmp/openphdquiding.org
+    rm -rf "$WWW_SRC"
+    git clone --depth=1 git@github.com:OpenPHDGuiding/openphdguiding.org.git "$WWW_SRC"
+    if grep -F -x -q "### $rev" "${WWW_SRC}"/docs/development-snapshots.md; then
+        echo "release $rev is already present in development-snapshots.md"
+    else
+        args=(-r "$rev" -d ChangeLog-dev)
+        if is_full_release; then
+            args+=(-f ChangeLog-full)
+        fi
+        "${WWW_SRC}"/bin/add-release "${args[@]}"
+        cd "$WWW_SRC"
+        git commit -m "add release $rev" .
+        git push
+    fi
+    cd "$WWW_SRC"
+    uv run mkdocs build -d "$dest"
+)
+
+validate-changelog () (
+    file=$1
+    shift
+    while IFS= read -r line; do
+        re='^\s*$'
+        if [[ $line =~ $re ]]; then
+            echo >&2 "$file: must not have any blank lines"
+            exit 1
+        fi
+    done < "$file"
 )
 
 # === main ===
@@ -327,13 +388,15 @@ dry_run=
 branch=master
 debug=
 rev=
+is_resume=
 
-while getopts 'b:gnr:' opt "$@"; do
+while getopts 'b:gnRr:' opt "$@"; do
     case $opt in
         b) branch=$OPTARG;;
         g) set -x; debug=1 ;;
         n) dry_run=1 ;;
         r) rev=$OPTARG;;
+        R) is_resume=1 ;;
         \?) usage >&2; exit 1;;
     esac
 done
@@ -353,6 +416,7 @@ worktree=$(realpath ../phd2-build-"$rev")
 setup_worktree
 do_release_prep
 build_release_artifacts
+create_github_release
 deploy_release_to_website
 
 complete=1
