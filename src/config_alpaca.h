@@ -46,7 +46,10 @@ class AlpacaConfig : public wxDialog
 {
     wxTextCtrl *host;
     wxTextCtrl *port;
-    wxTextCtrl *deviceNumber;
+    wxWindow *deviceNumber;  // wxComboBox for cameras, wxTextCtrl for telescopes
+    wxComboBox *serverList;
+    wxButton *discoverButton;
+    wxStaticText *discoverStatus;
 
 public:
     AlpacaConfig(wxWindow *parent, const wxString& title, AlpacaDevType devtype);
@@ -58,10 +61,21 @@ public:
 
     void SetSettings();
     void SaveSettings();
+    bool Show(bool show = true) override;
 
 private:
     AlpacaDevType m_devType;
     void OnOK(wxCommandEvent& evt);
+    void OnDiscover(wxCommandEvent& evt);
+    void OnServerSelected(wxCommandEvent& evt);
+    void QueryCameras(const wxString& host, long port);
+
+    enum
+    {
+        ID_DISCOVER = 1001,
+        ID_SERVER_LIST = 1002,
+        ID_CAMERA_LIST = 1003,
+    };
 
     wxDECLARE_EVENT_TABLE();
 };

@@ -39,57 +39,24 @@
 #include "scope.h"
 #include "config_alpaca.h"
 #include "alpaca_client.h"
-
-class ScopeAlpaca : public Scope
-{
-private:
-    AlpacaClient *m_client;
-    wxString m_host;
-    long m_port;
-    long m_deviceNumber;
-    bool m_canPulseGuide;
-
-    void ClearStatus();
-
-public:
-    ScopeAlpaca();
-    ~ScopeAlpaca();
-
-    bool Connect() override;
-    bool Disconnect() override;
-    bool HasSetupDialog() const override;
-    void SetupDialog() override;
-
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration) override;
-    bool HasNonGuiMove() override;
-
-    bool CanPulseGuide() override;
-    bool CanReportPosition() override;
-    bool CanSlew() override;
-    bool CanSlewAsync() override;
-    bool CanCheckSlewing() override;
-
-    double GetDeclinationRadians() override;
-    bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
-    bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
-    bool GetSiteLatLong(double *latitude, double *longitude) override;
-    bool SlewToCoordinates(double ra, double dec) override;
-    bool SlewToCoordinatesAsync(double ra, double dec) override;
-    void AbortSlew() override;
-    bool Slewing() override;
-    PierSide SideOfPier() override;
-};
+#include <wx/stopwatch.h>
 
 ScopeAlpaca::ScopeAlpaca()
 {
-    ClearStatus();
-    // load the values from the current profile
+    m_client = nullptr;
     m_host = pConfig->Profile.GetString("/alpaca/host", _T("localhost"));
     m_port = pConfig->Profile.GetLong("/alpaca/port", 6800);
     m_deviceNumber = pConfig->Profile.GetLong("/alpaca/telescope_device", 0);
     m_Name = wxString::Format("Alpaca Mount [%s:%ld/%ld]", m_host, m_port, m_deviceNumber);
-    m_client = nullptr;
+
+    // Initialize capability flags
+    m_canCheckPulseGuiding = false;
+    m_canGetCoordinates = false;
+    m_canGetGuideRates = false;
+    m_canSlew = false;
+    m_canSlewAsync = false;
     m_canPulseGuide = false;
+    m_canGetSiteLatLong = false;
 }
 
 ScopeAlpaca::~ScopeAlpaca()
@@ -98,85 +65,256 @@ ScopeAlpaca::~ScopeAlpaca()
     if (m_client)
     {
         delete m_client;
+        m_client = nullptr;
     }
-}
-
-void ScopeAlpaca::ClearStatus()
-{
-    m_canPulseGuide = false;
 }
 
 bool ScopeAlpaca::Connect()
 {
-    // If not configured open the setup dialog
-    if (m_host == _T("localhost") && m_port == 6800)
-    {
-        SetupDialog();
-    }
+    bool bError = false;
 
-    if (IsConnected())
+    try
     {
-        return true;  // Already connected
-    }
+        Debug.Write("Alpaca Mount: Connecting\n");
 
-    Debug.Write(wxString::Format("Alpaca Mount connecting to %s:%ld device %ld\n", m_host, m_port, m_deviceNumber));
-
-    if (!m_client)
-    {
-        m_client = new AlpacaClient(m_host, m_port, m_deviceNumber);
-    }
-
-    // Check if device is connected
-    wxString endpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
-    bool connected = false;
-    long errorCode = 0;
-    if (!m_client->GetBool(endpoint, &connected, &errorCode))
-    {
-        Debug.Write(wxString::Format("Alpaca Mount: Failed to check connection status, HTTP %ld\n", errorCode));
-        return false;  // Error
-    }
-
-    if (!connected)
-    {
-        // Try to connect
-        wxString connectEndpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
-        wxString params = "Connected=true";
-        JsonParser parser;
-        if (!m_client->Put(connectEndpoint, params, parser, &errorCode))
+        if (IsConnected())
         {
-            Debug.Write(wxString::Format("Alpaca Mount: Failed to connect device, HTTP %ld\n", errorCode));
-            return false;  // Error
+            wxMessageBox("Scope already connected", _("Error"));
+            throw ERROR_INFO("Alpaca Mount: Connected - Already Connected");
         }
+
+        // If not configured open the setup dialog
+        if (m_host == _T("localhost") && m_port == 6800 && m_deviceNumber == 0)
+        {
+            SetupDialog();
+            // Reload values after dialog
+            m_host = pConfig->Profile.GetString("/alpaca/host", _T("localhost"));
+            m_port = pConfig->Profile.GetLong("/alpaca/port", 6800);
+            m_deviceNumber = pConfig->Profile.GetLong("/alpaca/telescope_device", 0);
+        }
+
+        if (!m_client)
+        {
+            m_client = new AlpacaClient(m_host, m_port, m_deviceNumber);
+        }
+
+        // Check if device is connected
+        wxString endpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
+        bool connected = false;
+        long errorCode = 0;
+        if (!m_client->GetBool(endpoint, &connected, &errorCode))
+        {
+            wxMessageBox(_T("Alpaca driver problem -- cannot check connection status"), _("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("Alpaca Mount: Could not check connection status, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        if (!connected)
+        {
+            // Try to connect
+            wxString connectEndpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
+            wxString params = "Connected=true";
+            JsonParser parser;
+            if (!m_client->Put(connectEndpoint, params, parser, &errorCode))
+            {
+                wxMessageBox(_T("Alpaca driver problem -- cannot connect device"), _("Error"), wxOK | wxICON_ERROR);
+                throw ERROR_INFO("Alpaca Mount: Could not connect device, HTTP " + wxString::Format("%ld", errorCode));
+            }
+        }
+
+        // Check capabilities - mirror ASCOM approach
+
+        // Check if we can check pulse guiding status
+        m_canCheckPulseGuiding = true;
+        endpoint = wxString::Format("telescope/%ld/ispulseguiding", m_deviceNumber);
+        bool dummyBool = false;
+        if (!m_client->GetBool(endpoint, &dummyBool, &errorCode))
+        {
+            m_canCheckPulseGuiding = false;
+            Debug.Write("Alpaca Mount: cannot check IsPulseGuiding\n");
+        }
+
+        // Check if we can get coordinates
+        m_canGetCoordinates = true;
+        endpoint = wxString::Format("telescope/%ld/declination", m_deviceNumber);
+        double dummyDouble = 0.0;
+        if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+        {
+            Debug.Write("Alpaca Mount: cannot get declination\n");
+            m_canGetCoordinates = false;
+        }
+        else
+        {
+            endpoint = wxString::Format("telescope/%ld/rightascension", m_deviceNumber);
+            if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+            {
+                Debug.Write("Alpaca Mount: cannot get rightascension\n");
+                m_canGetCoordinates = false;
+            }
+            else
+            {
+                endpoint = wxString::Format("telescope/%ld/siderealtime", m_deviceNumber);
+                if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+                {
+                    Debug.Write("Alpaca Mount: cannot get siderealtime\n");
+                    m_canGetCoordinates = false;
+                }
+            }
+        }
+
+        // Check if we can get site latitude/longitude
+        m_canGetSiteLatLong = true;
+        endpoint = wxString::Format("telescope/%ld/sitelatitude", m_deviceNumber);
+        if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+        {
+            Debug.Write("Alpaca Mount: cannot get sitelatitude\n");
+            m_canGetSiteLatLong = false;
+        }
+        else
+        {
+            endpoint = wxString::Format("telescope/%ld/sitelongitude", m_deviceNumber);
+            if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+            {
+                Debug.Write("Alpaca Mount: cannot get sitelongitude\n");
+                m_canGetSiteLatLong = false;
+            }
+        }
+
+        // Check if we can slew
+        m_canSlew = true;
+        endpoint = wxString::Format("telescope/%ld/canslew", m_deviceNumber);
+        if (!m_client->GetBool(endpoint, &dummyBool, &errorCode))
+        {
+            m_canSlew = false;
+            Debug.Write("Alpaca Mount: cannot get canslew\n");
+        }
+        else if (!dummyBool)
+        {
+            m_canSlew = false;
+            Debug.Write("Alpaca Mount: reports CanSlew = false\n");
+        }
+        else
+        {
+            // Check for async slewing
+            endpoint = wxString::Format("telescope/%ld/canslewasync", m_deviceNumber);
+            if (m_client->GetBool(endpoint, &dummyBool, &errorCode) && dummyBool)
+            {
+                m_canSlewAsync = true;
+                Debug.Write("Alpaca Mount: CanSlewAsync is true\n");
+            }
+            else
+            {
+                m_canSlewAsync = false;
+                Debug.Write("Alpaca Mount: CanSlewAsync is false\n");
+            }
+        }
+
+        // Check if we can get guide rates
+        m_canGetGuideRates = true;
+        endpoint = wxString::Format("telescope/%ld/guideratedeclination", m_deviceNumber);
+        if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+        {
+            Debug.Write("Alpaca Mount: cannot get guideratedeclination\n");
+            m_canGetGuideRates = false;
+        }
+        else
+        {
+            endpoint = wxString::Format("telescope/%ld/guideraterightascension", m_deviceNumber);
+            if (!m_client->GetDouble(endpoint, &dummyDouble, &errorCode))
+            {
+                Debug.Write("Alpaca Mount: cannot get guideraterightascension\n");
+                m_canGetGuideRates = false;
+            }
+        }
+
+        // Check if we can pulse guide
+        m_canPulseGuide = true;
+        endpoint = wxString::Format("telescope/%ld/canpulseguide", m_deviceNumber);
+        if (!m_client->GetBool(endpoint, &dummyBool, &errorCode) || !dummyBool)
+        {
+            Debug.Write("Alpaca Mount: connecting to scope that does not support PulseGuide\n");
+            m_canPulseGuide = false;
+        }
+
+        // Get the scope name
+        endpoint = wxString::Format("telescope/%ld/name", m_deviceNumber);
+        wxString name;
+        JsonParser parser;
+        if (m_client->Get(endpoint, parser, &errorCode))
+        {
+            const json_value *root = parser.Root();
+            if (root && root->type == JSON_OBJECT)
+            {
+                json_for_each(n, root)
+                {
+                    if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_STRING)
+                    {
+                        name = wxString(n->string_value, wxConvUTF8);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!name.IsEmpty())
+        {
+            m_Name = wxString::Format("Alpaca Mount [%s:%ld/%ld] - %s", m_host, m_port, m_deviceNumber, name);
+        }
+        else
+        {
+            m_Name = wxString::Format("Alpaca Mount [%s:%ld/%ld]", m_host, m_port, m_deviceNumber);
+        }
+
+        Debug.Write(wxString::Format("Scope reports its name as %s\n", m_Name));
+
+        Debug.Write(wxString::Format("%s connected\n", Name()));
+
+        Scope::Connect();
+
+        Debug.Write("Alpaca Mount: Connect success\n");
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
     }
 
-    // Check if pulse guiding is supported
-    // We'll assume it's supported if we can successfully call the pulseguide endpoint
-    m_canPulseGuide = true;
-
-    // Connection state is managed by the base Mount class
-    Scope::Connect();
-    Debug.Write("Alpaca Mount connected\n");
-    return true;  // Success
+    return bError;
 }
 
 bool ScopeAlpaca::Disconnect()
 {
-    if (!IsConnected() || !m_client)
+    bool bError = false;
+
+    try
     {
-        return false;
+        Debug.Write("Alpaca Mount: Disconnecting\n");
+
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: attempt to disconnect when not connected");
+        }
+
+        if (m_client)
+        {
+            // Disconnect the device
+            wxString endpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
+            wxString params = "Connected=false";
+            long errorCode = 0;
+            m_client->Put(endpoint, params, JsonParser(), &errorCode);
+            // Don't fail if disconnect fails - device might already be disconnected
+        }
+
+        Debug.Write("Alpaca Mount: Disconnected Successfully\n");
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
     }
 
-    Debug.Write("Alpaca Mount disconnecting\n");
-
-    // Disconnect the device
-    wxString endpoint = wxString::Format("telescope/%ld/connected", m_deviceNumber);
-    wxString params = "Connected=false";
-    long errorCode = 0;
-    m_client->Put(endpoint, params, JsonParser(), &errorCode);
-
-    ClearStatus();
     Scope::Disconnect();
-    return false;
+
+    return bError;
 }
 
 bool ScopeAlpaca::HasSetupDialog() const
@@ -216,51 +354,267 @@ void ScopeAlpaca::SetupDialog()
     }
 }
 
+static wxString PulseGuideFailedAlertEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
+    // to be per-profile
+    return wxString::Format("/Confirm/%d/PulseGuideFailedAlertEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressPulseGuideFailedAlert(intptr_t)
+{
+    pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
+}
+
+static wxString SlewWarningEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting
+    // to be per-profile
+    return wxString::Format("/Confirm/%d/SlewWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressSlewAlert(intptr_t)
+{
+    // If the user doesn't want to see these, we shouldn't be checking for the condition
+    TheScope()->EnableStopGuidingWhenSlewing(false);
+}
+
+#define CheckSlewing(result)                                                                                            \
+    do                                                                                                                   \
+    {                                                                                                                    \
+        if (IsStopGuidingWhenSlewingEnabled() && Slewing())                                                             \
+        {                                                                                                               \
+            *(result) = MOVE_ERROR_SLEWING;                                                                             \
+            throw ERROR_INFO("attempt to guide while slewing");                                                         \
+        }                                                                                                               \
+    } while (0)
+
 Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int duration)
 {
-    if (!IsConnected() || !m_client)
+    MOVE_RESULT result = MOVE_OK;
+
+    try
     {
-        return MOVE_ERROR;
+        Debug.Write(wxString::Format("Guiding  Dir = %d, Dur = %d\n", direction, duration));
+
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: attempt to guide when not connected");
+        }
+
+        if (!m_canPulseGuide)
+        {
+            // Could happen if move command is issued on the Aux mount or CanPulseGuide property got changed on the fly
+            pFrame->Alert(_("Alpaca driver does not support PulseGuide. Check your Alpaca driver settings."));
+            throw ERROR_INFO("Alpaca Mount: guide command issued but PulseGuide not supported");
+        }
+
+        // First, check to see if already moving
+        CheckSlewing(&result);
+
+        if (IsGuiding())
+        {
+            Debug.Write("Entered PulseGuideScope while moving\n");
+            int i;
+            for (i = 0; i < 20; i++)
+            {
+                wxMilliSleep(50);
+
+                CheckSlewing(&result);
+
+                if (!IsGuiding())
+                    break;
+
+                Debug.Write("Still moving\n");
+            }
+            if (i == 20)
+            {
+                Debug.Write("Still moving after 1s - aborting\n");
+                throw ERROR_INFO("Alpaca Mount: scope is still moving after 1 second");
+            }
+            else
+            {
+                Debug.Write("Movement stopped - continuing\n");
+            }
+        }
+
+        // Do the move - Alpaca pulseguide is asynchronous
+        int alpacaDirection = -1;
+        switch (direction)
+        {
+        case NORTH:
+            alpacaDirection = 0;
+            break;
+        case SOUTH:
+            alpacaDirection = 1;
+            break;
+        case EAST:
+            alpacaDirection = 2;
+            break;
+        case WEST:
+            alpacaDirection = 3;
+            break;
+        default:
+            Debug.Write("Alpaca Mount: Invalid guide direction\n");
+            throw ERROR_INFO("Alpaca Mount: Invalid guide direction");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/pulseguide", m_deviceNumber);
+        wxString params = wxString::Format("Direction=%d&Duration=%d", alpacaDirection, duration);
+
+        long errorCode = 0;
+        if (!m_client->PutAction(endpoint, "PulseGuide", params, &errorCode))
+        {
+            Debug.Write(wxString::Format("pulseguide: HTTP %ld\n", errorCode));
+
+            // Make sure nothing got by us and the mount can really handle pulse guide
+            wxString canPulseEndpoint = wxString::Format("telescope/%ld/canpulseguide", m_deviceNumber);
+            bool canPulse = false;
+            if (m_client->GetBool(canPulseEndpoint, &canPulse, &errorCode) && !canPulse)
+            {
+                Debug.Write("Tried to guide mount that has no PulseGuide support\n");
+                // This will trigger a nice alert the next time through Guide
+                m_canPulseGuide = false;
+            }
+            throw ERROR_INFO("Alpaca Mount: pulseguide command failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        wxStopWatch swatch;
+
+        // Alpaca pulseguide is asynchronous, so we need to wait for it to complete
+        // Wait at least the duration, then check if still guiding
+        if (swatch.Time() < (long) duration)
+        {
+            unsigned long rem = (unsigned long) ((long) duration - swatch.Time());
+
+            Debug.Write(wxString::Format("PulseGuide returned control before completion, sleep %lu\n", rem + 10));
+
+            if (WorkerThread::MilliSleep(rem + 10))
+                throw ERROR_INFO("Alpaca Mount: thread terminate requested");
+        }
+
+        if (IsGuiding())
+        {
+            Debug.Write("scope still moving after pulse duration time elapsed\n");
+
+            // try waiting a little longer. If scope does not stop moving after 1 second, bail out with an error
+            enum
+            {
+                GRACE_PERIOD_MS = 1000,
+                TIMEOUT_MS = GRACE_PERIOD_MS + 1000,
+            };
+
+            bool timeoutExceeded = false;
+
+            while (true)
+            {
+                ::wxMilliSleep(20);
+
+                if (WorkerThread::InterruptRequested())
+                    throw ERROR_INFO("Alpaca Mount: thread interrupt requested");
+
+                CheckSlewing(&result);
+
+                if (!IsGuiding())
+                {
+                    Debug.Write(wxString::Format("scope move finished after %ld + %ld ms\n", (long) duration,
+                                                 swatch.Time() - (long) duration));
+                    break;
+                }
+
+                long now = swatch.Time();
+
+                if (now > duration + TIMEOUT_MS)
+                {
+                    timeoutExceeded = true;
+                    break;
+                }
+            }
+
+            if (timeoutExceeded && IsGuiding())
+            {
+                throw ERROR_INFO("timeout exceeded waiting for guiding pulse to complete");
+            }
+        }
+    }
+    catch (const wxString& msg)
+    {
+        POSSIBLY_UNUSED(msg);
+
+        if (result == MOVE_OK)
+        {
+            result = MOVE_ERROR;
+
+            if (!WorkerThread::InterruptRequested())
+            {
+                pFrame->SuppressibleAlert(PulseGuideFailedAlertEnabledKey(),
+                                          _("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
+                                          SuppressPulseGuideFailedAlert, 0);
+            }
+        }
     }
 
-    // Alpaca pulseguide API: PUT /api/v1/telescope/{device_number}/pulseguide
-    // Parameters: Direction (0=North, 1=South, 2=East, 3=West), Duration (milliseconds)
-
-    int alpacaDirection = -1;
-    switch (direction)
+    if (result == MOVE_ERROR_SLEWING)
     {
-    case NORTH:
-        alpacaDirection = 0;
-        break;
-    case SOUTH:
-        alpacaDirection = 1;
-        break;
-    case EAST:
-        alpacaDirection = 2;
-        break;
-    case WEST:
-        alpacaDirection = 3;
-        break;
-    default:
-        Debug.Write("Alpaca Mount: Invalid guide direction\n");
-        return MOVE_ERROR;
+        pFrame->SuppressibleAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."), SuppressSlewAlert,
+                                  0);
     }
 
-    wxString endpoint = wxString::Format("telescope/%ld/pulseguide", m_deviceNumber);
-    wxString params = wxString::Format("Direction=%d&Duration=%d", alpacaDirection, duration);
+    return result;
+}
 
+bool ScopeAlpaca::IsGuiding()
+{
+    bool bReturn = true;
+
+    try
+    {
+        if (!m_canCheckPulseGuiding)
+        {
+            // Assume all is good - best we can do as this is really a fail-safe check.  If we can't call this property (lame
+            // driver) guides will have to enforce the wait.  But, enough don't support this that we can't throw an error.
+            throw ERROR_INFO("Alpaca Mount: IsGuiding - !m_canCheckPulseGuiding");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/ispulseguiding", m_deviceNumber);
+        bool isGuiding = false;
+        long errorCode = 0;
+        if (!m_client->GetBool(endpoint, &isGuiding, &errorCode))
+        {
+            pFrame->Alert(_("Alpaca driver failed checking IsPulseGuiding. See the debug log for more information."));
+            throw ERROR_INFO("Alpaca Mount: IsGuiding - IsPulseGuiding failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        bReturn = isGuiding;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bReturn = false;
+    }
+
+    Debug.Write(wxString::Format("IsGuiding returns %d\n", bReturn));
+
+    return bReturn;
+}
+
+bool ScopeAlpaca::IsSlewing()
+{
+    wxString endpoint = wxString::Format("telescope/%ld/slewing", m_deviceNumber);
+    bool slewing = false;
     long errorCode = 0;
-    if (!m_client->PutAction(endpoint, "PulseGuide", params, &errorCode))
+    if (!m_client->GetBool(endpoint, &slewing, &errorCode))
     {
-        Debug.Write(wxString::Format("Alpaca Mount: PulseGuide failed, HTTP %ld\n", errorCode));
-        return MOVE_ERROR;
+        Debug.Write(wxString::Format("ScopeAlpaca::IsSlewing failed: HTTP %ld\n", errorCode));
+        pFrame->Alert(_("Alpaca driver failed checking for slewing, see the debug log for more information."));
+        return false;
     }
 
-    // Wait for the pulse to complete
-    // Alpaca pulseguide is synchronous, so we just wait for the duration
-    wxMilliSleep(duration + 100); // Add small buffer
+    bool result = slewing;
 
-    return MOVE_OK;
+    Debug.Write(wxString::Format("IsSlewing returns %d\n", result));
+
+    return result;
 }
 
 bool ScopeAlpaca::HasNonGuiMove()
@@ -268,151 +622,347 @@ bool ScopeAlpaca::HasNonGuiMove()
     return true;
 }
 
-bool ScopeAlpaca::CanPulseGuide()
-{
-    return m_canPulseGuide && IsConnected();
-}
-
-bool ScopeAlpaca::CanReportPosition()
-{
-    return IsConnected();
-}
-
-bool ScopeAlpaca::CanSlew()
-{
-    return IsConnected();
-}
-
-bool ScopeAlpaca::CanSlewAsync()
-{
-    return false; // Alpaca doesn't explicitly support async slewing in the standard
-}
-
 bool ScopeAlpaca::CanCheckSlewing()
 {
-    return IsConnected();
+    return true;
 }
 
+bool ScopeAlpaca::Slewing()
+{
+    bool bReturn = true;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: Cannot check Slewing when not connected to mount");
+        }
+
+        bReturn = IsSlewing();
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bReturn = false;
+    }
+
+    return bReturn;
+}
+
+// return the declination in radians, or UNKNOWN_DECLINATION
 double ScopeAlpaca::GetDeclinationRadians()
 {
-    if (!IsConnected() || !m_client)
+    double dReturn = UNKNOWN_DECLINATION;
+
+    try
     {
-        return 0.0;
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get Declination when not connected to mount");
+        }
+
+        if (!m_canGetCoordinates)
+        {
+            throw THROW_INFO("!m_canGetCoordinates");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/declination", m_deviceNumber);
+        double decDegrees = 0.0;
+        long errorCode = 0;
+        if (!m_client->GetDouble(endpoint, &decDegrees, &errorCode))
+        {
+            throw ERROR_INFO("GetDeclinationRadians() fails, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        dReturn = radians(decDegrees);
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        m_canGetCoordinates = false;
     }
 
-    wxString endpoint = wxString::Format("telescope/%ld/declination", m_deviceNumber);
-    double dec = 0.0;
-    long errorCode = 0;
-    if (m_client->GetDouble(endpoint, &dec, &errorCode))
-    {
-        return dec * M_PI / 180.0; // Convert from degrees to radians
-    }
+    Debug.Write(wxString::Format("ScopeAlpaca::GetDeclinationRadians() returns %s\n", DeclinationStr(dReturn)));
 
-    return 0.0;
+    return dReturn;
 }
 
+// Return RA and Dec guide rates in native ASCOM units, degrees/sec.
+// Convention is to return true on an error
 bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
-    // Alpaca doesn't have a direct guide rate property
-    // Return default values
-    if (pRAGuideRate)
+    bool bError = false;
+
+    try
     {
-        *pRAGuideRate = 0.5; // Default guide rate in arcsec/sec
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get guide rates when not connected");
+        }
+
+        if (!m_canGetGuideRates)
+        {
+            throw THROW_INFO("Alpaca Mount: not capable of getting guide rates");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/guideratedeclination", m_deviceNumber);
+        double decRate = 0.0;
+        long errorCode = 0;
+        if (!m_client->GetDouble(endpoint, &decRate, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: GuideRateDec() failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        *pDecGuideRate = decRate;
+
+        endpoint = wxString::Format("telescope/%ld/guideraterightascension", m_deviceNumber);
+        double raRate = 0.0;
+        if (!m_client->GetDouble(endpoint, &raRate, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: GuideRateRA() failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        *pRAGuideRate = raRate;
+
+        if (!ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
+        {
+            if (!m_bogusGuideRatesFlagged)
+            {
+                pFrame->Alert(_("The mount's Alpaca driver is reporting invalid guide speeds. Some guiding functions including "
+                                "PPEC will be impaired. Contact the Alpaca driver provider or mount vendor for support."),
+                              0, wxEmptyString, 0, 0, true);
+                m_bogusGuideRatesFlagged = true;
+            }
+            throw THROW_INFO("Alpaca Mount: mount reporting invalid guide speeds");
+        }
     }
-    if (pDecGuideRate)
+    catch (const wxString& Msg)
     {
-        *pDecGuideRate = 0.5;
+        bError = true;
+        POSSIBLY_UNUSED(Msg);
     }
-    return true;
+
+    Debug.Write(wxString::Format("ScopeAlpaca::GetGuideRates returns %u %.3f %.3f a-s/sec\n", bError,
+                                 bError ? 0.0 : *pDecGuideRate * 3600., bError ? 0.0 : *pRAGuideRate * 3600.));
+
+    return bError;
 }
 
 bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
-    if (!IsConnected() || !m_client)
-    {
-        return true;
-    }
+    bool bError = false;
 
-    if (ra)
+    try
     {
-        wxString raEndpoint = wxString::Format("telescope/%ld/rightascension", m_deviceNumber);
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get coordinates when not connected");
+        }
+
+        if (!m_canGetCoordinates)
+        {
+            throw THROW_INFO("Alpaca Mount: not capable of getting coordinates");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/rightascension", m_deviceNumber);
         double raHours = 0.0;
         long errorCode = 0;
-        if (m_client->GetDouble(raEndpoint, &raHours, &errorCode))
+        if (!m_client->GetDouble(endpoint, &raHours, &errorCode))
         {
-            *ra = raHours * 15.0 * M_PI / 180.0; // Convert hours to radians
+            throw ERROR_INFO("Alpaca Mount: get right ascension failed, HTTP " + wxString::Format("%ld", errorCode));
         }
-        else
-        {
-            return true;
-        }
-    }
 
-    if (dec)
-    {
-        wxString decEndpoint = wxString::Format("telescope/%ld/declination", m_deviceNumber);
+        endpoint = wxString::Format("telescope/%ld/declination", m_deviceNumber);
         double decDegrees = 0.0;
-        long errorCode = 0;
-        if (m_client->GetDouble(decEndpoint, &decDegrees, &errorCode))
+        if (!m_client->GetDouble(endpoint, &decDegrees, &errorCode))
         {
-            *dec = decDegrees * M_PI / 180.0; // Convert degrees to radians
+            throw ERROR_INFO("Alpaca Mount: get declination failed, HTTP " + wxString::Format("%ld", errorCode));
         }
-        else
-        {
-            return true;
-        }
-    }
 
-    if (siderealTime)
+        endpoint = wxString::Format("telescope/%ld/siderealtime", m_deviceNumber);
+        double stHours = 0.0;
+        if (!m_client->GetDouble(endpoint, &stHours, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: get sidereal time failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        if (ra)
+            *ra = raHours * 15.0 * M_PI / 180.0; // Convert hours to radians
+        if (dec)
+            *dec = radians(decDegrees);
+        if (siderealTime)
+            *siderealTime = stHours; // Sidereal time in hours
+    }
+    catch (const wxString& Msg)
     {
-        // Alpaca doesn't have a direct sidereal time property
-        // We could calculate it from the site location and time, but for now return 0
-        *siderealTime = 0.0;
+        bError = true;
+        POSSIBLY_UNUSED(Msg);
     }
 
-    return false;
+    return bError;
 }
 
 bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 {
-    if (!IsConnected() || !m_client)
-    {
+    if (!m_canGetSiteLatLong)
         return true;
+
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get site latitude/longitude when not connected");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/sitelatitude", m_deviceNumber);
+        double lat = 0.0;
+        long errorCode = 0;
+        if (!m_client->GetDouble(endpoint, &lat, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: get site latitude failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        endpoint = wxString::Format("telescope/%ld/sitelongitude", m_deviceNumber);
+        double lon = 0.0;
+        if (!m_client->GetDouble(endpoint, &lon, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: get site longitude failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+
+        *latitude = lat;
+        *longitude = lon;
+    }
+    catch (const wxString& Msg)
+    {
+        bError = true;
+        POSSIBLY_UNUSED(Msg);
     }
 
-    // Alpaca doesn't have direct site location properties in the standard
-    // Return false to indicate not available
-    return false;
+    return bError;
+}
+
+bool ScopeAlpaca::CanSlew()
+{
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get CanSlew property when not connected to mount");
+        }
+
+        return m_canSlew;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        return false;
+    }
+}
+
+bool ScopeAlpaca::CanSlewAsync()
+{
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get CanSlewAsync property when not connected to mount");
+        }
+
+        return m_canSlewAsync;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        return false;
+    }
+}
+
+bool ScopeAlpaca::CanReportPosition()
+{
+    return true;
+}
+
+bool ScopeAlpaca::CanPulseGuide()
+{
+    return m_canPulseGuide;
 }
 
 bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
 {
-    if (!IsConnected() || !m_client)
+    bool bError = false;
+
+    try
     {
-        return true;
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot slew when not connected");
+        }
+
+        if (!m_canSlew)
+        {
+            throw THROW_INFO("Alpaca Mount: not capable of slewing");
+        }
+
+        // Convert radians to hours/degrees
+        double raHours = ra * 180.0 / M_PI / 15.0;
+        double decDegrees = dec * 180.0 / M_PI;
+
+        wxString endpoint = wxString::Format("telescope/%ld/slewtocoordinates", m_deviceNumber);
+        wxString params = wxString::Format("RightAscension=%.6f&Declination=%.6f", raHours, decDegrees);
+
+        long errorCode = 0;
+        if (!m_client->PutAction(endpoint, "SlewToCoordinates", params, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: slew to coordinates failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
     }
 
-    // Convert radians to hours/degrees
-    double raHours = ra * 180.0 / M_PI / 15.0;
-    double decDegrees = dec * 180.0 / M_PI;
-
-    wxString endpoint = wxString::Format("telescope/%ld/slewtocoordinates", m_deviceNumber);
-    wxString params = wxString::Format("RightAscension=%.6f&Declination=%.6f", raHours, decDegrees);
-
-    long errorCode = 0;
-    if (!m_client->PutAction(endpoint, "SlewToCoordinates", params, &errorCode))
-    {
-        Debug.Write(wxString::Format("Alpaca Mount: SlewToCoordinates failed, HTTP %ld\n", errorCode));
-        return true;
-    }
-
-    return false;
+    return bError;
 }
 
 bool ScopeAlpaca::SlewToCoordinatesAsync(double ra, double dec)
 {
-    // Alpaca doesn't explicitly support async slewing
-    return SlewToCoordinates(ra, dec);
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot slew when not connected");
+        }
+
+        if (!m_canSlewAsync)
+        {
+            throw THROW_INFO("Alpaca Mount: not capable of async slewing");
+        }
+
+        // Convert radians to hours/degrees
+        double raHours = ra * 180.0 / M_PI / 15.0;
+        double decDegrees = dec * 180.0 / M_PI;
+
+        wxString endpoint = wxString::Format("telescope/%ld/slewtocoordinatesasync", m_deviceNumber);
+        wxString params = wxString::Format("RightAscension=%.6f&Declination=%.6f", raHours, decDegrees);
+
+        long errorCode = 0;
+        if (!m_client->PutAction(endpoint, "SlewToCoordinatesAsync", params, &errorCode))
+        {
+            throw ERROR_INFO("Alpaca Mount: async slew to coordinates failed, HTTP " + wxString::Format("%ld", errorCode));
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
 }
 
 void ScopeAlpaca::AbortSlew()
@@ -422,38 +972,55 @@ void ScopeAlpaca::AbortSlew()
         return;
     }
 
+    Debug.Write("ScopeAlpaca: AbortSlew\n");
     wxString endpoint = wxString::Format("telescope/%ld/abortslew", m_deviceNumber);
     long errorCode = 0;
-    m_client->PutAction(endpoint, "AbortSlew", "", &errorCode);
-}
-
-bool ScopeAlpaca::Slewing()
-{
-    if (!IsConnected() || !m_client)
+    if (!m_client->PutAction(endpoint, "AbortSlew", "", &errorCode))
     {
-        return false;
+        pFrame->Alert(_("Alpaca driver failed calling AbortSlew, see the debug log for more information."));
     }
-
-    wxString endpoint = wxString::Format("telescope/%ld/slewing", m_deviceNumber);
-    bool slewing = false;
-    long errorCode = 0;
-    if (m_client->GetBool(endpoint, &slewing, &errorCode))
-    {
-        return slewing;
-    }
-
-    return false;
 }
 
 PierSide ScopeAlpaca::SideOfPier()
 {
-    if (!IsConnected() || !m_client)
+    PierSide pierSide = PIER_SIDE_UNKNOWN;
+
+    try
     {
-        return PIER_SIDE_UNKNOWN;
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Alpaca Mount: cannot get side of pier when not connected");
+        }
+
+        wxString endpoint = wxString::Format("telescope/%ld/sideofpier", m_deviceNumber);
+        int sideOfPier = -1;
+        long errorCode = 0;
+        if (!m_client->GetInt(endpoint, &sideOfPier, &errorCode))
+        {
+            throw THROW_INFO("Alpaca Mount: not capable of getting side of pier");
+        }
+
+        switch (sideOfPier)
+        {
+        case 0:
+            pierSide = PIER_SIDE_EAST;
+            break;
+        case 1:
+            pierSide = PIER_SIDE_WEST;
+            break;
+        default:
+            pierSide = PIER_SIDE_UNKNOWN;
+            break;
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
     }
 
-    // Alpaca doesn't have a direct pier side property in the standard
-    return PIER_SIDE_UNKNOWN;
+    Debug.Write(wxString::Format("ScopeAlpaca::SideOfPier() returns %d\n", pierSide));
+
+    return pierSide;
 }
 
 Scope *AlpacaScopeFactory::MakeAlpacaScope()
@@ -462,4 +1029,3 @@ Scope *AlpacaScopeFactory::MakeAlpacaScope()
 }
 
 #endif // GUIDE_ALPACA
-

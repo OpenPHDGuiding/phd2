@@ -1,5 +1,5 @@
 /*
- *  scope_alpaca.h
+ *  alpaca_discovery.h
  *  PHD Guiding
  *
  *  Created for Alpaca Server support
@@ -31,70 +31,39 @@
  *
  */
 
-#ifndef SCOPE_ALPACA_INCLUDED
-#define SCOPE_ALPACA_INCLUDED
+#ifndef ALPACA_DISCOVERY_H
+#define ALPACA_DISCOVERY_H
 
-#ifdef GUIDE_ALPACA
+#include "phd.h"
+#include <wx/arrstr.h>
 
-#include "alpaca_client.h"
-
-class ScopeAlpaca : public Scope
+struct AlpacaServerInfo
 {
-private:
-    AlpacaClient *m_client;
-    wxString m_host;
-    long m_port;
-    long m_deviceNumber;
-
-    // Capability flags
-    bool m_canCheckPulseGuiding;
-    bool m_canGetCoordinates;
-    bool m_canGetGuideRates;
-    bool m_canSlew;
-    bool m_canSlewAsync;
-    bool m_canPulseGuide;
-    bool m_canGetSiteLatLong;
-
-    // Private helper functions
-    bool IsGuiding();
-    bool IsSlewing();
-
-public:
-    ScopeAlpaca();
-    virtual ~ScopeAlpaca();
-
-    bool Connect() override;
-    bool Disconnect() override;
-
-    bool HasSetupDialog() const override;
-    void SetupDialog() override;
-
-    bool HasNonGuiMove() override;
-
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
-
-    double GetDeclinationRadians() override;
-    bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
-    bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
-    bool GetSiteLatLong(double *latitude, double *longitude) override;
-    bool CanSlew() override;
-    bool CanSlewAsync() override;
-    bool CanReportPosition() override;
-    bool CanPulseGuide() override;
-    bool SlewToCoordinates(double ra, double dec) override;
-    bool SlewToCoordinatesAsync(double ra, double dec) override;
-    void AbortSlew() override;
-    bool CanCheckSlewing() override;
-    bool Slewing() override;
-    PierSide SideOfPier() override;
+    wxString host;
+    long port;
+    
+    AlpacaServerInfo() : port(0) {}
+    AlpacaServerInfo(const wxString& h, long p) : host(h), port(p) {}
+    
+    wxString ToString() const
+    {
+        return wxString::Format("%s:%ld", host, port);
+    }
 };
 
-class AlpacaScopeFactory
+class AlpacaDiscovery
 {
 public:
-    static Scope *MakeAlpacaScope();
+    // Discover Alpaca servers on the local network
+    // Returns a list of discovered servers (host:port format)
+    static wxArrayString DiscoverServers(int numQueries = 2, int timeoutSeconds = 2);
+    
+    // Discover servers and return detailed info
+    static void DiscoverServers(wxArrayString& serverList, int numQueries = 2, int timeoutSeconds = 2);
+    
+    // Parse a server string (host:port) into components
+    static bool ParseServerString(const wxString& serverStr, wxString& host, long& port);
 };
 
-#endif // GUIDE_ALPACA
-#endif // SCOPE_ALPACA_INCLUDED
+#endif // ALPACA_DISCOVERY_H
 

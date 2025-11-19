@@ -134,12 +134,6 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
     curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, nullptr);
     curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1L);
     
-    // Set proper headers for GET request
-    struct curl_slist *headers = nullptr;
-    headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
-
     wxString url = BuildRequestUrl(endpoint);
     if (!endpoint.Contains("?"))
     {
@@ -151,26 +145,33 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
 
     CURLcode res = curl_easy_perform(m_curl);
     
-    // Clean up headers
-    if (headers)
-    {
-        curl_slist_free_all(headers);
-        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, nullptr);
-    }
+    std::string responseStr = m_response.str();
     
+    // For curl error 18 (partial file), we might still have received a complete JSON response
+    // Check if we got any data and try to parse it
     if (res != CURLE_OK)
     {
         const char *curlError = curl_easy_strerror(res);
         // Get more detailed error info if available
         const char *urlStr = nullptr;
         curl_easy_getinfo(m_curl, CURLINFO_EFFECTIVE_URL, &urlStr);
-        Debug.Write(wxString::Format("AlpacaClient GET failed: %s (curl error %d) for URL: %s\n", 
-                                     curlError, res, urlStr ? urlStr : "unknown"));
-        if (errorCode)
+        
+        // For error 18 (partial file), check if we got a response that might still be valid
+        if (res == CURLE_PARTIAL_FILE && !responseStr.empty())
         {
-            *errorCode = 0; // No HTTP response received
+            Debug.Write(wxString::Format("AlpacaClient GET: Partial file error but received %ld bytes, attempting to parse\n", responseStr.length()));
+            // Continue processing - we'll check HTTP code and try to parse
         }
-        return false;
+        else
+        {
+            Debug.Write(wxString::Format("AlpacaClient GET failed: %s (curl error %d) for URL: %s\n", 
+                                         curlError, res, urlStr ? urlStr : "unknown"));
+            if (errorCode)
+            {
+                *errorCode = 0; // No HTTP response received
+            }
+            return false;
+        }
     }
 
     long httpCode = 0;
@@ -186,8 +187,8 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
     {
         *errorCode = httpCode;
     }
-
-    std::string responseStr = m_response.str();
+    
+    // responseStr was already extracted above
     
     // Get additional curl info for debugging
     double contentLength = 0;

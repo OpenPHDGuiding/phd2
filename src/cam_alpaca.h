@@ -34,7 +34,56 @@
 #ifndef CAM_ALPACA_INCLUDED
 #define CAM_ALPACA_INCLUDED
 
-class GuideCamera;
+#ifdef ALPACA_CAMERA
+
+#include "alpaca_client.h"
+
+class CameraAlpaca : public GuideCamera
+{
+private:
+    AlpacaClient *m_client;
+    wxString m_host;
+    long m_port;
+    long m_deviceNumber;
+    wxSize m_maxSize;
+    wxRect m_roi;
+    bool m_swapAxes;
+    wxByte m_bitsPerPixel;
+    wxByte m_curBin;
+    double m_driverPixelSize;
+    int m_driverVersion;
+
+    // Capability flags
+    bool m_canAbortExposure;
+    bool m_canStopExposure;
+    bool m_canSetCoolerTemperature;
+    bool m_canGetCoolerPower;
+
+    void ClearStatus();
+    void CameraSetup();
+    bool AbortExposure();
+
+public:
+    bool Color;
+
+    CameraAlpaca();
+    ~CameraAlpaca();
+
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *pixSize) override;
+    void ShowPropertyDialog() override;
+
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
+    bool ST4HasNonGuiMove() override;
+};
 
 class AlpacaCameraFactory
 {
@@ -42,5 +91,5 @@ public:
     static GuideCamera *MakeAlpacaCamera();
 };
 
+#endif // ALPACA_CAMERA
 #endif // CAM_ALPACA_INCLUDED
-

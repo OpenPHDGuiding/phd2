@@ -182,6 +182,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_alpaca.h
   ${phd_src_dir}/alpaca_client.cpp
   ${phd_src_dir}/alpaca_client.h
+  ${phd_src_dir}/alpaca_discovery.cpp
+  ${phd_src_dir}/alpaca_discovery.h
   ${phd_src_dir}/config_alpaca.cpp
   ${phd_src_dir}/config_alpaca.h
   ${phd_src_dir}/scope_alpaca.h
@@ -870,6 +872,10 @@ endforeach()
 target_link_libraries(phd2
                       MPIIS_GP GPGuider # GP Guider
                       ${PHD_LINK_EXTERNAL})
+
+if(WIN32)
+  target_link_libraries(phd2 iphlpapi)
+endif()
 
 ################################################################
 #
