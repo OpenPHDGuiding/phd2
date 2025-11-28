@@ -748,7 +748,7 @@ bool GuideCamera::SetBinning(int binning)
 
 bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning)
 {
-    LimitFrame = ConstrainLimitFrame(roi);
+    LimitFrame = roi;
     LimitFrameBinning = binning;
 
     pConfig->Profile.SetRect("/camera/LimitFrame", LimitFrame);

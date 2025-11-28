@@ -220,13 +220,6 @@ public:
     bool SetCameraGain(int cameraGain);
     virtual int GetDefaultCameraGain();
 
-    // hook method allowing child classes to apply constraints to a requested frame
-    // limit ROI.  For example, some cameras have constraints on the alignment of a ROI,
-    // or a constraint on the number of pixels transferred. The method should return a
-    // ROI as close as possible to the requested ROI but meeting whatever constraints
-    // the camera may have.  The base class implementation just returns requestedRoi.
-    virtual wxRect ConstrainLimitFrame(const wxRect& requestedRoi);
-
     virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
 
 protected:
@@ -282,11 +275,6 @@ inline unsigned short GuideCamera::GetSaturationADU() const
 inline int GuideCamera::GetCameraGain() const
 {
     return GuideCameraGain;
-}
-
-inline wxRect GuideCamera::ConstrainLimitFrame(const wxRect& requestedRoi)
-{
-    return requestedRoi;
 }
 
 #endif /* CAMERA_H_INCLUDED */
