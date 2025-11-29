@@ -139,7 +139,6 @@ public:
     bool UseSubframes;
     bool HasCooler;
     wxRect LimitFrame; // limit full frames to this region of interest (ROI). An empty rect for no limit.
-    wxByte LimitFrameBinning; // binning value associated with the LimitFrame
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage *CurrentDarkFrame;
@@ -187,6 +186,7 @@ public:
     void GetBinningOpts(wxArrayString *opts);
     bool SetBinning(int binning);
     bool SetLimitFrame(const wxRect& roi, int binning);
+    void LoadLimitFrame(int binning);
 
     virtual void ShowPropertyDialog() { return; }
     bool SetCameraPixelSize(double pixel_size);

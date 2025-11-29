@@ -666,10 +666,8 @@ bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
         return err;
     if (camera->HasFrameLimiting)
     {
-        wxRect roi = pConfig->Profile.GetRect("/camera/LimitFrame");
-        int binning = pConfig->Profile.GetInt("/camera/LimitFrameBinning", 1);
-        binning = wxMax(binning, 1);
-        err = camera->SetLimitFrame(roi, binning);
+        // restore the saved limit frame (if any)
+        camera->LoadLimitFrame(camera->Binning);
     }
     return err;
 }
@@ -736,11 +734,10 @@ bool GuideCamera::SetBinning(int binning)
     pConfig->Profile.SetInt("/camera/binning", binning);
 
     // if a Limit Frame ROI is in use, adjust it for the new binning
-    if (HasFrameLimiting && !LimitFrame.IsEmpty() && binning != LimitFrameBinning)
+    if (HasFrameLimiting)
     {
-        wxRect newLimitFrame(LimitFrame.x * LimitFrameBinning / binning, LimitFrame.y * LimitFrameBinning / binning,
-                             LimitFrame.width * LimitFrameBinning / binning, LimitFrame.height * LimitFrameBinning / binning);
-        SetLimitFrame(newLimitFrame, binning);
+        // restore the saved limit frame for this binning (if any)
+        LoadLimitFrame(Binning);
     }
 
     return false;
@@ -748,16 +745,32 @@ bool GuideCamera::SetBinning(int binning)
 
 bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning)
 {
-    LimitFrame = roi;
-    LimitFrameBinning = binning;
+    // Construct and store limit frames for all available binning values. This allows
+    // allows accurate binning switching without rounding errors when switching from a
+    // higher binning to a lower binning.  For example, if we have a limit frame
+    // coordinate value of 101 at bin 1, after switching to bin 2 the coordinate will be
+    // 50; and switching back to bin 1 we can recover the inital value of
+    // 101.
+    for (int new_bin = 1; new_bin <= MaxBinning; new_bin++)
+    {
+        wxRect const limit_frame(roi.x * binning / new_bin, roi.y * binning / new_bin, roi.width * binning / new_bin,
+                                 roi.height * binning / new_bin);
+        wxString const key = wxString::Format("/camera/LimitFrameBin%d", new_bin);
+        pConfig->Profile.SetRect(key, limit_frame);
+    }
 
-    pConfig->Profile.SetRect("/camera/LimitFrame", LimitFrame);
-    pConfig->Profile.SetInt("/camera/LimitFrameBinning", LimitFrameBinning);
+    // load the limit frame for the requested binning
+    LoadLimitFrame(binning);
 
+    return false; // no error
+}
+
+void GuideCamera::LoadLimitFrame(int binning)
+{
+    wxString const key = wxString::Format("/camera/LimitFrameBin%d", binning);
+    LimitFrame = pConfig->Profile.GetRect(key);
     Debug.Write(wxString::Format("camera: updated LimitFrame => (%d,%d),(%dx%d)\n", LimitFrame.x, LimitFrame.y,
                                  LimitFrame.width, LimitFrame.height));
-
-    return false;
 }
 
 void GuideCamera::SetTimeoutMs(int ms)
