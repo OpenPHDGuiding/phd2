@@ -79,7 +79,7 @@ public:
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void ShowPropertyDialog() override;
-    const wxSize& DarkFrameSize() override { return m_darkFrameSize; }
+    wxSize DarkFrameSize() override { return m_darkFrameSize; }
 
     bool HasNonGuiCapture() override { return true; }
     bool ST4HasNonGuiMove() override { return true; }
