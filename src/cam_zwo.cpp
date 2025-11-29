@@ -757,12 +757,14 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         binning_change = true;
     }
 
+    wxRect const limit_frame = LimitFrame;
+
     // always update the frame size in case the limit frame or binning changed
     wxSize const binned_frame_size(BinnedFrameSize(Binning));
-    if (LimitFrame.IsEmpty())
+    if (limit_frame.IsEmpty())
         FrameSize = binned_frame_size;
     else
-        FrameSize = LimitFrame.GetSize();
+        FrameSize = limit_frame.GetSize();
 
     if (img.Init(FrameSize))
     {
@@ -784,21 +786,21 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         //  moving the sub-frame or resizing it is somewhat costly (stopCapture / startCapture)
 
         wxRect subframeRawCoords = subframe; // subframe in raw camera coordinates
-        subframeRawCoords.Offset(LimitFrame.GetPosition());
+        subframeRawCoords.Offset(limit_frame.GetPosition());
 
         frame = constrain_roi(subframeRawCoords);
 
         subframePos = subframeRawCoords.GetLeftTop() - frame.GetLeftTop();
     }
-    else if (LimitFrame.IsEmpty())
+    else if (limit_frame.IsEmpty())
     {
         frame = wxRect(FrameSize);
     }
     else
     {
-        // expand the LimitFrame to meet camera ROI requirements
-        frame = constrain_roi(LimitFrame.Intersect(wxRect(binned_frame_size)));
-        limitFramePos = LimitFrame.GetLeftTop() - frame.GetLeftTop();
+        // expand the limit_frame to meet camera ROI requirements
+        frame = constrain_roi(limit_frame.Intersect(wxRect(binned_frame_size)));
+        limitFramePos = limit_frame.GetLeftTop() - frame.GetLeftTop();
     }
 
     long exposureUS = duration * 1000;
@@ -847,7 +849,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     int poll = wxMin(duration, 100);
 
-    bool const camera_data_straight_to_img = m_bpp == 16 && !useSubframe && LimitFrame.IsEmpty();
+    bool const camera_data_straight_to_img = m_bpp == 16 && !useSubframe && limit_frame.IsEmpty();
     unsigned char *const buffer = camera_data_straight_to_img ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
 
     if (m_mode == CM_VIDEO)
@@ -978,7 +980,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         else
             copy_rect_16bit(img, buffer, subframe, subframePos, frame);
     }
-    else if (LimitFrame.IsEmpty())
+    else if (limit_frame.IsEmpty())
     {
         if (m_bpp == 8)
         {
@@ -993,7 +995,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     }
     else // LimitFrame
     {
-        wxRect destFrame(FrameSize); // aka LimitFrame.Size() and img.Size
+        wxRect destFrame(FrameSize); // aka limit_frame.Size() and img.Size
         if (m_bpp == 8)
             copy_rect_8bit(img, buffer, destFrame, limitFramePos, frame);
         else
