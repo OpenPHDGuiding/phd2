@@ -98,10 +98,11 @@ enum CaptureOptionBits
 {
     CAPTURE_SUBTRACT_DARK = 1 << 0,
     CAPTURE_RECON = 1 << 1, // debayer and/or deinterlace as required
+    CAPTURE_IGNORE_FRAME_LIMIT = 1 << 2,
 
     CAPTURE_LIGHT = CAPTURE_SUBTRACT_DARK | CAPTURE_RECON,
-    CAPTURE_DARK = 0,
-    CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK,
+    CAPTURE_DARK = CAPTURE_IGNORE_FRAME_LIMIT,
+    CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK | CAPTURE_IGNORE_FRAME_LIMIT,
 };
 
 class GuideCamera : public wxMessageBoxProxy, public OnboardST4
