@@ -743,8 +743,14 @@ bool GuideCamera::SetBinning(int binning)
     return false;
 }
 
-bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning)
+bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning, wxString *errorMessage)
 {
+    if (pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        *errorMessage = "Cannot set the frame limit ROI while calibrating or guiding.";
+        return true;
+    }
+
     // Construct and store limit frames for all available binning values. This allows
     // accurate binning switching without rounding errors when switching from a higher
     // binning to a lower binning.  For example, if we have a limit frame coordinate
