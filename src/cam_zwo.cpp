@@ -90,6 +90,7 @@ public:
     bool ST4HasNonGuiMove() override { return true; }
     wxByte BitsPerPixel() override;
     bool GetDevicePixelSize(double *devPixelSize) override;
+    wxSize DarkFrameSize() override;
     int GetDefaultCameraGain() override;
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;
@@ -612,6 +613,11 @@ bool Camera_ZWO::GetDevicePixelSize(double *devPixelSize)
     return false;
 }
 
+wxSize Camera_ZWO::DarkFrameSize()
+{
+    return BinnedFrameSize(Binning);
+}
+
 int Camera_ZWO::GetDefaultCameraGain()
 {
     return m_defaultGainPct;
@@ -757,7 +763,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         binning_change = true;
     }
 
-    wxRect const limit_frame = LimitFrame;
+    wxRect const limit_frame = options & CAPTURE_IGNORE_FRAME_LIMIT ? wxRect() : LimitFrame;
 
     // always update the frame size in case the limit frame or binning changed
     wxSize const binned_frame_size(BinnedFrameSize(Binning));

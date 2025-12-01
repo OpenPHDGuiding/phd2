@@ -494,6 +494,10 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FrameSize != pCamera->DarkFrameSize())
     {
+        if (!pCamera->LimitFrame.IsEmpty())
+            // If a limited ROI is in effect, the camera's frame size may not match the
+            // full frame size
+            return;
         pFrame->SuppressibleAlert(RawModeWarningKey(),
                                   _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "
                                     "different size from ordinary guide frames for this camera."),
