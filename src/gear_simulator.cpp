@@ -1308,7 +1308,7 @@ CameraSimulator::CameraSimulator()
     HasGainControl = true;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    MaxBinning = 3;
+    MaxHwBinning = 3;
     HasCooler = true;
 }
 

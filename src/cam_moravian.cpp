@@ -668,10 +668,10 @@ bool MoravianCamera::Connect(const wxString& camId)
     int maxbinx = m_cam.IntParam(gipMaxBinningX);
     int maxbiny = m_cam.IntParam(gipMaxBinningY);
 
-    MaxBinning = std::min(maxbinx, maxbiny);
+    MaxHwBinning = std::min(maxbinx, maxbiny);
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     m_maxSize = m_cam.ChipSize();
 
