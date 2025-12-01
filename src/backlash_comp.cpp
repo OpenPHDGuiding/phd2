@@ -1169,7 +1169,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 Debug.Write(
                     wxString::Format("BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location %0.2f\n",
                                      decDelta, currMountLocation.Y));
-                tol = TRIAL_TOLERANCE_AS / pFrame->GetCameraPixelScale(); // tolerance in units of px
+                auto pixelScale = pFrame->GetCameraPixelScale();
+                tol = TRIAL_TOLERANCE_AS / pixelScale; // tolerance in units of px
                 if (fabs(decDelta) > tol) // decDelta = (current - markerPoint)
                 {
                     double pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y); // How far we moved with the test pulse
@@ -1188,7 +1189,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 }
                 else
                     Debug.Write(wxString::Format("BLT: Nominal backlash pulse resulted in final delta of %0.1f a-s\n",
-                                                 fabs(decDelta) * pFrame->GetCameraPixelScale()));
+                                                 fabs(decDelta) * pixelScale));
             }
 
             m_bltState = BLT_STATE_RESTORE;
