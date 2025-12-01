@@ -95,7 +95,6 @@ public:
     bool SetCoolerSetpoint(double temperature) override;
     bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
     bool GetSensorTemperature(double *temperature) override;
-    wxRect ConstrainLimitFrame(const wxRect& requestedRoi) override;
 
 private:
     void StopCapture();
@@ -702,13 +701,6 @@ inline static wxRect constrain_roi(const wxRect& requestedRoi)
     return roi;
 }
 
-wxRect Camera_ZWO::ConstrainLimitFrame(const wxRect& requestedRoi)
-{
-    // First ensure that the requested ROI is within the full camera frame (binned),
-    // then apply the transfer size constraint.
-    return constrain_roi(requestedRoi.Intersect(wxRect(BinnedFrameSize(Binning))));
-}
-
 static void flush_buffered_image(int cameraId, void *buf, size_t size)
 {
     enum
@@ -728,6 +720,34 @@ static void flush_buffered_image(int cameraId, void *buf, size_t size)
     }
 }
 
+inline static void copy_rect_8bit(usImage& img, const unsigned char *buffer, const wxRect& subframe, const wxPoint& subframePos,
+                                  const wxRect& frame)
+{
+    // copy bytes from source buffer to target usImage
+    int const image_width = img.Size.GetWidth();
+    for (int y = 0; y < subframe.height; y++)
+    {
+        const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
+        unsigned short *dst = img.ImageData + (y + subframe.y) * image_width + subframe.x;
+        for (int x = 0; x < subframe.width; x++)
+            *dst++ = *src++;
+    }
+}
+
+inline static void copy_rect_16bit(usImage& img, const unsigned char *buffer, const wxRect& subframe,
+                                   const wxPoint& subframePos, const wxRect& frame)
+{
+    // copy shorts from source buffer to target usImage
+    int const image_width = img.Size.GetWidth();
+    for (int y = 0; y < subframe.height; y++)
+    {
+        const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
+        unsigned short *dst = img.ImageData + (y + subframe.y) * image_width + subframe.x;
+        for (int x = 0; x < subframe.width; x++)
+            *dst++ = *src++;
+    }
+}
+
 bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool binning_change = false;
@@ -738,8 +758,9 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     }
 
     // always update the frame size in case the limit frame or binning changed
+    wxSize const binned_frame_size(BinnedFrameSize(Binning));
     if (LimitFrame.IsEmpty())
-        FrameSize = BinnedFrameSize(Binning);
+        FrameSize = binned_frame_size;
     else
         FrameSize = LimitFrame.GetSize();
 
@@ -751,6 +772,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     wxRect frame;
     wxPoint subframePos; // position of subframe within frame
+    wxPoint limitFramePos; // position of LimitFrame-limited frame within frame
 
     bool useSubframe = UseSubframes;
 
@@ -768,12 +790,15 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
         subframePos = subframeRawCoords.GetLeftTop() - frame.GetLeftTop();
     }
+    else if (LimitFrame.IsEmpty())
+    {
+        frame = wxRect(FrameSize);
+    }
     else
     {
-        if (LimitFrame.IsEmpty())
-            frame = wxRect(FrameSize);
-        else
-            frame = LimitFrame;
+        // expand the LimitFrame to meet camera ROI requirements
+        frame = constrain_roi(LimitFrame.Intersect(wxRect(binned_frame_size)));
+        limitFramePos = LimitFrame.GetLeftTop() - frame.GetLeftTop();
     }
 
     long exposureUS = duration * 1000;
@@ -822,7 +847,8 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     int poll = wxMin(duration, 100);
 
-    unsigned char *const buffer = m_bpp == 16 && !useSubframe ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
+    bool const camera_data_straight_to_img = m_bpp == 16 && !useSubframe && LimitFrame.IsEmpty();
+    unsigned char *const buffer = camera_data_straight_to_img ? (unsigned char *) img.ImageData : (unsigned char *) m_buffer;
 
     if (m_mode == CM_VIDEO)
     {
@@ -948,27 +974,11 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         img.Clear();
 
         if (m_bpp == 8)
-        {
-            for (int y = 0; y < subframe.height; y++)
-            {
-                const unsigned char *src = buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
-                for (int x = 0; x < subframe.width; x++)
-                    *dst++ = *src++;
-            }
-        }
+            copy_rect_8bit(img, buffer, subframe, subframePos, frame);
         else
-        {
-            for (int y = 0; y < subframe.height; y++)
-            {
-                const unsigned short *src = (unsigned short *) buffer + (y + subframePos.y) * frame.width + subframePos.x;
-                unsigned short *dst = img.ImageData + (y + subframe.y) * FrameSize.GetWidth() + subframe.x;
-                for (int x = 0; x < subframe.width; x++)
-                    *dst++ = *src++;
-            }
-        }
+            copy_rect_16bit(img, buffer, subframe, subframePos, frame);
     }
-    else
+    else if (LimitFrame.IsEmpty())
     {
         if (m_bpp == 8)
         {
@@ -977,8 +987,17 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         }
         else
         {
-            // 16-bit mode and no subframe: data is already in img.ImageData
+            // 16-bit mode and no subframe and no LimitFrame: data is already in
+            // img.ImageData
         }
+    }
+    else // LimitFrame
+    {
+        wxRect destFrame(FrameSize); // aka LimitFrame.Size() and img.Size
+        if (m_bpp == 8)
+            copy_rect_8bit(img, buffer, destFrame, limitFramePos, frame);
+        else
+            copy_rect_16bit(img, buffer, destFrame, limitFramePos, frame);
     }
 
     if (options & CAPTURE_SUBTRACT_DARK)
