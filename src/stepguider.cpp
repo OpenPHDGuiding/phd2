@@ -510,7 +510,7 @@ void StepGuider::SetCalibration(const Calibration& cal)
     Mount::SetCalibration(cal);
 }
 
-void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
+void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning)
 {
     m_calibrationDetails = calDetails;
 

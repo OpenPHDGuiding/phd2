@@ -1088,7 +1088,7 @@ void Scope::SetCalibration(const Calibration& cal)
     Mount::SetCalibration(cal);
 }
 
-void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
+void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning)
 {
     m_calibrationDetails = calDetails;
 
