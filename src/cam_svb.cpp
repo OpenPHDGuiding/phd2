@@ -409,10 +409,10 @@ bool SVBCamera::Connect(const wxString& camId)
         if (props.SupportedBins[i] > maxBin)
             maxBin = props.SupportedBins[i];
     }
-    MaxBinning = maxBin;
+    MaxHwBinning = maxBin;
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     m_maxSize.x = props.MaxWidth;
     m_maxSize.y = props.MaxHeight;
