@@ -997,14 +997,16 @@ void Scope::CheckCalibrationDuration(int currDuration)
     CalibrationDetails calDetails;
     LoadCalibrationDetails(&calDetails);
 
-    bool binningChange = pCamera->Binning != calDetails.origBinning;
+    int binning = pCamera->Binning;
+    bool binningChange = binning != calDetails.origBinning;
 
     // if binning changed, may need to update the calibration distance
     if (binningChange)
     {
         int prevDistance = GetCalibrationDistance();
-        int newDistance =
-            CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        auto focalLength = pFrame->GetFocalLength();
+        auto pixelSize = pCamera->GetCameraPixelSize();
+        int newDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
 
         if (newDistance != prevDistance)
         {
@@ -1032,9 +1034,11 @@ void Scope::CheckCalibrationDuration(int currDuration)
     if (!refineStepSize)
         return;
 
+    auto focalLength = pFrame->GetFocalLength();
+    auto pixelSize = pCamera->GetCameraPixelSize();
     int rslt;
-    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning, currSpdX,
-                                          CalstepDialog::DEFAULT_STEPS, 0.0, GetCalibrationDistance(), 0, &rslt);
+    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, currSpdX, CalstepDialog::DEFAULT_STEPS, 0.0,
+                                          GetCalibrationDistance(), 0, &rslt);
 
     wxString why = binningChange ? " binning " : " mount guide speed ";
     Debug.Write(wxString::Format("CalDuration adjusted at start of calibration from %d to %d because of %s change\n",
@@ -1756,7 +1760,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             SetCalibration(cal);
             m_calibrationDetails.raStepCount = m_raSteps;
             m_calibrationDetails.decStepCount = m_decSteps;
-            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
+            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, m_calibration.binning);
             if (SANITY_CHECKING_ACTIVE)
                 SanityCheckCalibration(m_prevCalibration, m_prevCalibrationDetails); // method gets "new" info itself
             pFrame->StatusMsg(_("Calibration complete"));

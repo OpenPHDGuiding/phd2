@@ -2830,10 +2830,14 @@ wxString MyFrame::GetDefaultFileDir()
 
 double MyFrame::GetCameraPixelScale() const
 {
-    if (!pCamera || pCamera->GetCameraPixelSize() == 0.0 || m_focalLength == 0)
+    if (!pCamera)
+        return 1.0;
+    auto pixelSize = pCamera->GetCameraPixelSize();
+    if (pixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return GetPixelScale(pCamera->GetCameraPixelSize(), m_focalLength, pCamera->Binning);
+    int binning = pCamera->Binning;
+    return GetPixelScale(pixelSize, m_focalLength, binning);
 }
 
 wxString MyFrame::PixelScaleSummary() const
@@ -2851,7 +2855,8 @@ wxString MyFrame::PixelScaleSummary() const
     else
         focalLengthStr = wxString::Format("%d mm", m_focalLength);
 
-    return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s", scaleStr, pCamera->Binning, focalLengthStr);
+    int binning = pCamera->Binning;
+    return wxString::Format("Pixel scale = %s, Binning = %d, Focal length = %s", scaleStr, binning, focalLengthStr);
 }
 
 bool MyFrame::GetBeepForLostStar()

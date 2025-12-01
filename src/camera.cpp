@@ -663,7 +663,8 @@ bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
     if (camera->HasFrameLimiting)
     {
         // restore the saved limit frame (if any)
-        camera->LoadLimitFrame(camera->Binning);
+        int binning = camera->Binning;
+        camera->LoadLimitFrame(binning);
     }
     return err;
 }
@@ -733,7 +734,7 @@ bool GuideCamera::SetBinning(int binning)
     if (HasFrameLimiting)
     {
         // restore the saved limit frame for this binning (if any)
-        LoadLimitFrame(Binning);
+        LoadLimitFrame(binning);
     }
 
     return false;
