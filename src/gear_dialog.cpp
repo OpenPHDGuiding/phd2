@@ -1100,7 +1100,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
 
         Debug.Write(wxString::Format("Connecting to camera [%s] id = [%s]\n", newCam, cameraId));
 
-        int profileBinning = m_pCamera->Binning;
+        int profileBinning = m_pCamera->GetBinning();
         if (GuideCamera::ConnectCamera(m_pCamera, cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");
