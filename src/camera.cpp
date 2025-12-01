@@ -663,7 +663,7 @@ bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
     if (camera->HasFrameLimiting)
     {
         // restore the saved limit frame (if any)
-        int binning = camera->Binning;
+        auto binning = camera->GetBinning();
         camera->LoadLimitFrame(binning);
     }
     return err;
@@ -1064,7 +1064,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
 
     if (m_binning)
     {
-        int idx = m_pCamera->Binning - 1;
+        int idx = m_pCamera->GetBinning() - 1;
         m_binning->Select(idx);
         m_prevBinning = idx + 1;
         // don't allow binning change when calibrating or guiding
@@ -1172,7 +1172,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
 
     if (m_binning)
     {
-        int oldBin = m_pCamera->Binning;
+        int oldBin = m_pCamera->GetBinning();
         int newBin = m_binning->GetSelection() + 1;
         if (oldBin != newBin)
             pFrame->pAdvancedDialog->FlagImageScaleChange();
@@ -1449,7 +1449,7 @@ bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int c
 {
     img.InitImgStartTime();
     img.LimitFrame = camera->LimitFrame;
-    img.Binning = camera->Binning;
+    img.Binning = camera->GetBinning();
     img.BitsPerPixel = camera->BitsPerPixel();
     img.Gain = camera->GuideCameraGain;
     img.ImgExpDur = duration;

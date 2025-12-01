@@ -180,6 +180,7 @@ public:
 
     static void GetBinningOpts(int maxBin, wxArrayString *opts);
     void GetBinningOpts(wxArrayString *opts);
+    int GetBinning() const;
     bool SetBinning(int binning);
     bool SetLimitFrame(const wxRect& roi, int binning, wxString *errorMessage);
     void LoadLimitFrame(int binning);
@@ -246,6 +247,12 @@ inline int GuideCamera::GetTimeoutMs() const
 inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
 {
     GetBinningOpts(MaxHwBinning, opts);
+}
+
+// get the combined binning level -- hardware and software binning
+inline int GuideCamera::GetBinning() const
+{
+    return Binning;
 }
 
 inline double GuideCamera::GetCameraPixelSize() const

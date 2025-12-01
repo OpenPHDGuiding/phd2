@@ -426,7 +426,7 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
 
     this->duration = duration;
 
-    prev_binning = pCamera->Binning;
+    prev_binning = pCamera->GetBinning();
     error = pCamera->SetBinning(binning);
     if (error)
         return false;
@@ -473,7 +473,7 @@ void SingleExposure::Complete(bool succeeded, const wxString& errorMsgArg)
 
     EvtServer.NotifySingleFrameComplete(succeeded, errorMsg, *this);
 
-    if (pCamera->Binning != prev_binning)
+    if (pCamera->GetBinning() != prev_binning)
         pCamera->SetBinning(prev_binning);
     if (pCamera->GuideCameraGain != prev_gain)
         pCamera->SetCameraGain(prev_gain);
