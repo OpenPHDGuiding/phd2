@@ -2049,10 +2049,14 @@ static void set_limit_frame(JObj& response, const json_value *params)
         response << jrpc_error(1, "guide camera does not support frame limiting");
         return;
     }
-    bool err = pCamera->SetLimitFrame(roi, 1);
+
+    VERIFY_GUIDER(response);
+
+    wxString errorMessage;
+    bool err = pCamera->SetLimitFrame(roi, 1, &errorMessage);
 
     if (err)
-        response << jrpc_error(1, "could not set ROI. See Debug Log for more info.");
+        response << jrpc_error(1, errorMessage);
     else
         response << jrpc_result(0);
 }
