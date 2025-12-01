@@ -2137,6 +2137,8 @@ static void guide_pulse(JObj& response, const json_value *params)
         return;
     }
 
+    VERIFY_GUIDER(response);
+
     if (pFrame->pGuider->IsCalibratingOrGuiding() || m->IsBusy())
     {
         response << jrpc_error(1, "cannot issue guide pulse while calibrating or guiding");
