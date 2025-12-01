@@ -186,7 +186,7 @@ public:
     static void GetBinningOpts(int maxBin, wxArrayString *opts);
     void GetBinningOpts(wxArrayString *opts);
     bool SetBinning(int binning);
-    bool SetLimitFrame(const wxRect& roi);
+    bool SetLimitFrame(const wxRect& roi, int binning);
 
     virtual void ShowPropertyDialog() { return; }
     bool SetCameraPixelSize(double pixel_size);

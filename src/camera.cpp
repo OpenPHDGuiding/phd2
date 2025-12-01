@@ -667,7 +667,9 @@ bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
     if (camera->HasFrameLimiting)
     {
         wxRect roi = pConfig->Profile.GetRect("/camera/LimitFrame");
-        err = camera->SetLimitFrame(roi);
+        int binning = pConfig->Profile.GetInt("/camera/LimitFrameBinning", 1);
+        binning = wxMax(binning, 1);
+        err = camera->SetLimitFrame(roi, binning);
     }
     return err;
 }
@@ -736,17 +738,18 @@ bool GuideCamera::SetBinning(int binning)
     // if a Limit Frame ROI is in use, adjust it for the new binning
     if (HasFrameLimiting && !LimitFrame.IsEmpty() && binning != LimitFrameBinning)
     {
-        SetLimitFrame(wxRect(LimitFrame.x * binning / LimitFrameBinning, LimitFrame.y * binning / LimitFrameBinning,
-                             LimitFrame.width * binning / LimitFrameBinning, LimitFrame.height * binning / LimitFrameBinning));
+        wxRect newLimitFrame(LimitFrame.x * LimitFrameBinning / binning, LimitFrame.y * LimitFrameBinning / binning,
+                             LimitFrame.width * LimitFrameBinning / binning, LimitFrame.height * LimitFrameBinning / binning);
+        SetLimitFrame(newLimitFrame, binning);
     }
 
     return false;
 }
 
-bool GuideCamera::SetLimitFrame(const wxRect& roi)
+bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning)
 {
     LimitFrame = ConstrainLimitFrame(roi);
-    LimitFrameBinning = Binning;
+    LimitFrameBinning = binning;
 
     pConfig->Profile.SetRect("/camera/LimitFrame", LimitFrame);
     pConfig->Profile.SetInt("/camera/LimitFrameBinning", LimitFrameBinning);

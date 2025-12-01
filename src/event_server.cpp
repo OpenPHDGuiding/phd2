@@ -2049,7 +2049,7 @@ static void set_limit_frame(JObj& response, const json_value *params)
         response << jrpc_error(1, "guide camera does not support frame limiting");
         return;
     }
-    bool err = pCamera->SetLimitFrame(roi);
+    bool err = pCamera->SetLimitFrame(roi, 1);
 
     if (err)
         response << jrpc_error(1, "could not set ROI. See Debug Log for more info.");
