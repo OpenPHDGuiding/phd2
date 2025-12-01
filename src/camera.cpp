@@ -746,11 +746,10 @@ bool GuideCamera::SetBinning(int binning)
 bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning)
 {
     // Construct and store limit frames for all available binning values. This allows
-    // allows accurate binning switching without rounding errors when switching from a
-    // higher binning to a lower binning.  For example, if we have a limit frame
-    // coordinate value of 101 at bin 1, after switching to bin 2 the coordinate will be
-    // 50; and switching back to bin 1 we can recover the inital value of
-    // 101.
+    // accurate binning switching without rounding errors when switching from a higher
+    // binning to a lower binning.  For example, if we have a limit frame coordinate
+    // value of 101 at bin 1, after switching to bin 2 the coordinate will be 50; and
+    // switching back to bin 1 we can recover the inital value of 101.
     for (int new_bin = 1; new_bin <= MaxBinning; new_bin++)
     {
         wxRect const limit_frame(roi.x * binning / new_bin, roi.y * binning / new_bin, roi.width * binning / new_bin,
