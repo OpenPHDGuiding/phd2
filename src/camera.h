@@ -208,7 +208,7 @@ public:
     void SubtractDark(usImage& img);
     void GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
-    virtual const wxSize& DarkFrameSize() { return FrameSize; }
+    virtual wxSize DarkFrameSize() { return FrameSize; }
 
     static double GetProfilePixelSize();
 
