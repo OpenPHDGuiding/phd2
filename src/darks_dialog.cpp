@@ -515,7 +515,7 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         Debug.Write(wxString::Format("Capture dark frame %d/%d exp=%d\n", j, frameCount, expTime));
         CaptureParams captureParams;
         captureParams.duration = expTime;
-        captureParams.hwBinning = pCamera->Binning;
+        captureParams.hwBinning = pCamera->HwBinning;
         captureParams.bpp = pCamera->BitsPerPixel();
         captureParams.gain = pCamera->GuideCameraGain;
         captureParams.captureOptions = CAPTURE_DARK;
