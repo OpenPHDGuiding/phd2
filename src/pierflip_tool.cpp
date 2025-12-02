@@ -35,7 +35,7 @@
 #include "phd.h"
 #include "pierflip_tool.h"
 
-enum State
+enum PierFlipState
 {
     ST_INTRO,
     ST_SLEW_1,
@@ -57,7 +57,7 @@ struct PierFlipCalToolWin : public wxFrame
     wxTimer m_timer;
     wxStatusBar *m_status;
 
-    State m_state;
+    PierFlipState m_state;
     bool m_calibration_started;
     Calibration m_firstCal;
     bool m_result;
@@ -67,7 +67,7 @@ struct PierFlipCalToolWin : public wxFrame
     void OnNextClick(wxCommandEvent& event);
     void DoOnTimer();
     void OnTimer(wxTimerEvent& event);
-    void SetState(State state);
+    void SetState(PierFlipState state);
     void OnGuidingStateUpdated();
 
     PierFlipCalToolWin();
@@ -222,7 +222,7 @@ static void SetBg(wxTextCtrl *ctrl, Color c)
         ctrl->Refresh();
 }
 
-void PierFlipCalToolWin::SetState(State state)
+void PierFlipCalToolWin::SetState(PierFlipState state)
 {
     Debug.Write(wxString::Format("PFT: set state %d\n", state));
 
