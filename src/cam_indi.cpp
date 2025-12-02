@@ -377,17 +377,17 @@ void CameraINDI::updateProperty(INDI::Property property)
             m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
             m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
             // defer defining FrameSize since it is not simply derivable from max size and binning
-            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
             m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
         }
         else if (nvp == binning_prop)
         {
             MaxHwBinning = wxMin(binning_x->max, binning_y->max);
             m_curBinning = wxMin(binning_x->value, binning_y->value);
-            if (Binning > MaxHwBinning)
-                Binning = MaxHwBinning;
+            if (HwBinning > MaxHwBinning)
+                HwBinning = MaxHwBinning;
             // defer defining FrameSize since it is not simply derivable from max size and binning
-            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
         }
         else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
         {
@@ -976,11 +976,11 @@ bool CameraINDI::StackStream(CapturedFrame *cf)
 
 void CameraINDI::SendBinning()
 {
-    binning_x->value = Binning;
-    binning_y->value = Binning;
-    Debug.Write(wxString::Format("INDI Camera: send binning %u\n", Binning));
+    binning_x->value = HwBinning;
+    binning_y->value = HwBinning;
+    Debug.Write(wxString::Format("INDI Camera: send binning %u\n", HwBinning));
     sendNewNumber(binning_prop);
-    m_curBinning = Binning;
+    m_curBinning = HwBinning;
 }
 
 bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
@@ -996,11 +996,11 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
     // we can set the exposure time directly in the camera
     if (expose_prop && !INDICameraForceVideo)
     {
-        if (binning_prop && Binning != m_curBinning)
+        if (binning_prop && HwBinning != m_curBinning)
         {
             SendBinning();
             takeSubframe = false; // subframe may be out of bounds now
-            if (Binning == 1)
+            if (HwBinning == 1)
                 FrameSize.Set(m_maxSize.x, m_maxSize.y);
             else
                 FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
@@ -1032,17 +1032,17 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
                 // the max size divided by the binning may be larger than
                 // the actual frame, but setting a larger size should
                 // request the full binned frame which we want
-                sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+                sz.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
             }
             subframe = wxRect(sz);
         }
 
         if (frame_prop && subframe != m_roi)
         {
-            frame_x->value = subframe.x * Binning;
-            frame_y->value = subframe.y * Binning;
-            frame_width->value = subframe.width * Binning;
-            frame_height->value = subframe.height * Binning;
+            frame_x->value = subframe.x * HwBinning;
+            frame_y->value = subframe.y * HwBinning;
+            frame_width->value = subframe.width * HwBinning;
+            frame_height->value = subframe.height * HwBinning;
             sendNewNumber(frame_prop);
             m_roi = subframe;
         }
@@ -1155,7 +1155,7 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
 
         first_frame = false;
 
-        if (binning_prop && Binning != m_curBinning)
+        if (binning_prop && HwBinning != m_curBinning)
         {
             SendBinning();
         }
@@ -1163,7 +1163,7 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
         // for video streaming we do not get the frame size so we have to
         // derive it from the full frame size and the binning
 
-        FrameSize.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        FrameSize.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
 
         if (img.Init(FrameSize))
         {

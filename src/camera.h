@@ -144,7 +144,7 @@ public:
     bool HasSubframes;
     bool HasFrameLimiting;
     wxByte MaxHwBinning; // max hardware binning level
-    wxByte Binning;
+    wxByte HwBinning;
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;
@@ -262,7 +262,7 @@ inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
 // get the combined binning level -- hardware and software binning
 inline int GuideCamera::GetBinning() const
 {
-    return Binning;
+    return HwBinning;
 }
 
 inline double GuideCamera::GetCameraPixelSize() const

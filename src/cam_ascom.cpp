@@ -681,9 +681,9 @@ bool CameraASCOM::Connect(const wxString& camId)
         maxBinY = vRes.iVal;
     MaxHwBinning = wxMin(maxBinX, maxBinY);
     Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxHwBinning));
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
-    m_curBin = Binning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
+    m_curBin = HwBinning;
 
     HasCooler = false;
     if (driver.GetProp(&vRes, L"CoolerOn"))
@@ -772,7 +772,7 @@ bool CameraASCOM::Connect(const wxString& camId)
 
     // Program some defaults -- full size and binning
     ExcepInfo excep;
-    if (ASCOM_SetBin(driver.IDisp(), Binning, &excep))
+    if (ASCOM_SetBin(driver.IDisp(), HwBinning, &excep))
     {
         // only make this error fatal if the camera supports binning > 1
         if (MaxHwBinning > 1)
@@ -782,7 +782,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     }
 
     // defer defining FrameSize since it is not simply derivable from max size and binning
-    // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
     FrameSize = UNDEFINED_FRAME_SIZE;
     m_roi = wxRect(); // reset ROI state in case we're reconnecting
 
@@ -992,11 +992,11 @@ bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
     }
 
     bool binning_changed = false;
-    if (Binning != m_curBin)
+    if (HwBinning != m_curBin)
     {
         binning_changed = true;
         takeSubframe = false; // subframe may be out of bounds now
-        if (Binning == 1)
+        if (HwBinning == 1)
             FrameSize.Set(m_maxSize.x, m_maxSize.y);
         else
             FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
@@ -1023,7 +1023,7 @@ bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
             // the max size divided by the binning may be larger than
             // the actual frame, but setting a larger size should
             // request the full binned frame which we want
-            sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            sz.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
         }
         roi = wxRect(sz);
     }
@@ -1034,12 +1034,12 @@ bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (binning_changed)
     {
-        if (ASCOM_SetBin(cam.IDisp(), Binning, &excep))
+        if (ASCOM_SetBin(cam.IDisp(), HwBinning, &excep))
         {
             pFrame->Alert(_("The ASCOM camera failed to set binning. See the debug log for more information."));
             return true;
         }
-        m_curBin = Binning;
+        m_curBin = HwBinning;
     }
 
     if (roi != m_roi)
