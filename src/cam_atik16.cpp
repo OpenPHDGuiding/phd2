@@ -409,7 +409,7 @@ bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
     // Do quick L recon to remove bayer array
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && Color && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

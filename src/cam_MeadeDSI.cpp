@@ -247,7 +247,7 @@ bool CameraDSI::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_RECON)
     {
-        if (MeadeCam->IsColor)
+        if (MeadeCam->IsColor && captureParams.CombinedBinning() == 1)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
             SquarePixels(img, 8.6, 8.3);
