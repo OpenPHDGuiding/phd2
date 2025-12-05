@@ -186,6 +186,10 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 # include "cam_indi.h"
 #endif
 
+#if defined(ALPACA_CAMERA)
+# include "cam_alpaca.h"
+#endif
+
 #if defined(SBIGROTATOR_CAMERA)
 # include "cam_sbigrotator.h"
 #endif
@@ -247,6 +251,14 @@ static wxString INDICamName()
 {
     wxString indicam = pConfig->Profile.GetString("/indi/INDIcam", wxEmptyString);
     return indicam.empty() ? _T("INDI Camera") : wxString::Format("INDI Camera [%s]", indicam);
+}
+
+static wxString AlpacaCamName()
+{
+    wxString host = pConfig->Profile.GetString("/alpaca/host", wxEmptyString);
+    long port = pConfig->Profile.GetLong("/alpaca/port", 6800);
+    long device = pConfig->Profile.GetLong("/alpaca/camera_device", 0);
+    return host.empty() ? _T("Alpaca Camera") : wxString::Format("Alpaca Camera [%s:%ld/%ld]", host, port, device);
 }
 
 wxArrayString GuideCamera::GuideCameraList()
@@ -370,6 +382,9 @@ wxArrayString GuideCamera::GuideCameraList()
 #if defined(INDI_CAMERA)
     CameraList.Add(INDICamName());
 #endif
+#if defined(ALPACA_CAMERA)
+    CameraList.Add(AlpacaCamName());
+#endif
 #if defined(V4L_CAMERA)
     if (true == Camera_VIDEODEVICE.ProbeDevices())
     {
@@ -406,7 +421,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         {
         }
 
-        // Check ASCOM and INDI first since those choices may match match other choices below (like Simulator)
+        // Check ASCOM, INDI, and Alpaca first since those choices may match match other choices below (like Simulator)
 #if defined(ASCOM_CAMERA)
         else if (choice.Contains(_T("ASCOM")))
         {
@@ -417,6 +432,12 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         else if (choice.Contains(_T("INDI")))
         {
             pReturn = INDICameraFactory::MakeINDICamera();
+        }
+#endif
+#if defined(ALPACA_CAMERA)
+        else if (choice.Contains(_T("Alpaca")))
+        {
+            pReturn = AlpacaCameraFactory::MakeAlpacaCamera();
         }
 #endif
 #if defined(IOPTRON_CAMERA)
