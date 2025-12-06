@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Uvod">
+		<param name="Local" value="Introduction.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Hlavni obrazovka">
+		<param name="Local" value="MainScreen.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Zakladni pouziti">
+		<param name="Local" value="Basic_use.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Pripojeni zarizeni">
+			<param name="Local" value="Basic_use.htm#Equipment_Connection">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Vyber kamery">
+				<param name="Local" value="Basic_use.htm#Camera_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Vyber montaze">
+				<param name="Local" value="Basic_use.htm#Mount_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Pomocne montaze">
+				<param name="Local" value="Basic_use.htm#Aux_mount_selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Vyhody ASCOM">
+				<param name="Local" value="Basic_use.htm#ASCOM_Benefits">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="AO zarizeni">
+				<param name="Local" value="Basic_use.htm#AO_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Rotatory">
+				<param name="Local" value="Basic_use.htm#Rotator_Selection">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Profily zarizeni">
+				<param name="Local" value="Basic_use.htm#Equipment_Profile">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Pruvodce novym profilem">
+				<param name="Local" value="Basic_use.htm#New_profile_wizard">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Expozicni cas a vyber hvezdy">
+			<param name="Local" value="Basic_use.htm#Exposure_Time_and_Star_Selection">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Kalibrace">
+			<param name="Local" value="Basic_use.htm#Automatic_Calibration">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Navadeni">
+			<param name="Local" value="Basic_use.htm#Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Temne snimky a mapy vadnych pixelu">
+			<param name="Local" value="Darks_BadPixel_Maps.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Nastroje monitorovani">
+		<param name="Local" value="Visualization.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Prekryti">
+			<param name="Local" value="Visualization.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Graf vykonu navadeni">
+			<param name="Local" value="Visualization.htm#Graphical_Display">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Zobrazeni profilu hvezdy">
+			<param name="Local" value="Visualization.htm#Star_Profile_and_Target_Displays">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Cilove zobrazeni">
+			<param name="Local" value="Visualization.htm#Star_Profile_and_Target_Displays">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Graf AO">
+			<param name="Local" value="Visualization.htm#Adaptive_Optics_AO_Graph">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Dokovatalna okna">
+			<param name="Local" value="Visualization.htm#DockableMoveable_Graphical_Windows">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Pokrocila nastaveni">
+		<param name="Local" value="Advanced_settings.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Globalni parametry">
+			<param name="Local" value="Advanced_settings.htm#Global_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Parametry navadeni">
+			<param name="Local" value="Advanced_settings.htm#Guiding_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Parametry kamery">
+			<param name="Local" value="Advanced_settings.htm#Camera_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Algoritmy">
+			<param name="Local" value="Advanced_settings.htm#Algorithms_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Parametry AO">
+			<param name="Local" value="Advanced_settings.htm#Other_Devices_Tab">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Parametry rotatoru">
+			<param name="Local" value="Advanced_settings.htm#Other_Devices_Tab">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Algoritmy navadeni">
+		<param name="Local" value="Guide_algorithms.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Nastroje a utility">
+		<param name="Local" value="Tools.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Rucni ovladani montaze">
+			<param name="Local" value="Tools.htm#Manual_Guide">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Automaticky vyber hvezdy">
+			<param name="Local" value="Tools.htm#Auto-Select_Star">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Detaily kalibrace">
+			<param name="Local" value="Tools.htm#Calibration_Details">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Server">
+			<param name="Local" value="Tools.htm#PHD2_Server">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Nastroje pro polarni zarovnani">
+			<param name="Local" value="Tools.htm#Polar_alignment_tools">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Uzamcene pozice">
+			<param name="Local" value="Tools.htm#Lock_Positions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Sledovani komet">
+			<param name="Local" value="Tools.htm#Comet_Tracking">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Asistent kalibrace">
+			<param name="Local" value="Tools.htm#Calibration_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Asistent navadeni">
+			<param name="Local" value="Tools.htm#Guiding_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Nastroj Star-cross Test">
+			<param name="Local" value="Tools.htm#Star_cross_tool">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Nastroj kalibrace po meridianu">
+			<param name="Local" value="Tools.htm#pierflip_cal_tool">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Reseni problemu a analyza">
+		<param name="Local" value="Trouble_shooting.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Obecne reseni problemu">
+			<param name="Local" value="Trouble_shooting.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Velke odchylky pruvodniho hvezdy">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Guide_star_deflections">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Casove limity kamery">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Camera_Timeouts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Problemy s kalibraci">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Mount_Control">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Mereni chovani montaze">
+			<param name="Local" value="Trouble_shooting.htm#Measuring_Mount_Behavior">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ztracene hvezdy">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Lost_stars">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Upozorneni">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Alerts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Problemy se zobrazovacim oknem">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Display_Window">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Horke pixely a automaticky vyber hvezdy">
+			<param name="Local" value="Trouble_shooting.htm#Problems-Hot_Pixels">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Obnoveni zakladniho navadeni">
+			<param name="Local" value="Trouble_shooting.htm#Problems-Restore_Guiding_Parameters">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Spatny vykon navadeni">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Poor_Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Pouziti log souboru">
+			<param name="Local" value="Trouble_shooting.htm#Log_analysis">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Hlaseni problemu">
+			<param name="Local" value="Trouble_shooting.htm#Problem_Reporting">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Doplnujici informace">
+		<param name="Local" value="Supplemental_Info.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Astronomicky seeing">
+			<param name="Local" value="Supplemental_Info.htm#Astronomical_seeing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Pouziti binningu">
+			<param name="Local" value="Supplemental_Info.htm#Binning_usage">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Operace ditheringu">
+			<param name="Local" value="Supplemental_Info.htm#Dithering_Ops">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Bezne problemy montazi">
+			<param name="Local" value="Supplemental_Info.htm#Common_mount_problems">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Jednosmerne navadeni v deklinaci">
+			<param name="Local" value="Supplemental_Info.htm#Declination-Uni-directional_guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Vysoce presne montaze">
+			<param name="Local" value="Supplemental_Info.htm#Variable_delay_guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Diferencialni flexe">
+			<param name="Local" value="Supplemental_Info.htm#Differential_flexure">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Navadeni adaptivni optikou">
+			<param name="Local" value="Supplemental_Info.htm#AO_Devices">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Logovani">
+			<param name="Local" value="Supplemental_Info.htm#Logging_and_Debug_Output">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Automaticke nahravani logu">
+			<param name="Local" value="Supplemental_Info.htm#Logging-Automatic_Upload">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Profily zarizeni">
+			<param name="Local" value="Supplemental_info.htm#Managing_Equipment_Profiles">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Pomocna montaz - dotaz na souradnice">
+			<param name="Local" value="Supplemental_Info.htm#Ask_for_coordinates_aux_mount">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ovladani simulatoru">
+			<param name="Local" value="Supplemental_info.htm#Advanced_Settings_for_the_Simulators">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Vice instanci PHD2">
+			<param name="Local" value="Supplemental_Info.htm#Multiple_Executions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Klavesove zkratky">
+			<param name="Local" value="Supplemental_Info.htm#Keyboard_Shortcuts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Aktualizace software">
+			<param name="Local" value="Supplemental_info.htm#Software_Update">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Navody">
+		<param name="Local" value="Tutorials.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Drift zarovnani">
+			<param name="Local" value="Tutorials.htm#Drift_Align">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Staticke polarni zarovnani">
+			<param name="Local" value="Tutorials.htm#Static_polar_alignment">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Polarni drift zarovnani">
+			<param name="Local" value="Tutorials.htm#Polar_Drift_Align">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Slovnik">
+		<param name="Local" value="Glossary.html">
+		</OBJECT>
+</UL>
+</BODY></HTML>

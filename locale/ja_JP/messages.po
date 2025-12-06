@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-11 15:12-0500\n"
+"POT-Creation-Date: 2025-11-07 10:40-0500\n"
 "PO-Revision-Date: 2015-08-27 22:56+0900\n"
 "Last-Translator: Watanabe Toshihito (渡部 俊仁)\n"
 "Language-Team: Japanese\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.4\n"
 
-#: about_dialog.cpp:47 myframe.cpp:566
+#: about_dialog.cpp:47 myframe.cpp:563
 #, c-format
 msgid "About %s"
 msgstr ""
@@ -27,8 +27,8 @@ msgstr "全体"
 msgid "Camera"
 msgstr "カメラ"
 
-#: advanced_dialog.cpp:102 advanced_dialog.cpp:181 myframe.cpp:1692
-#: myframe.cpp:2246 scope_manual_pointing.cpp:70
+#: advanced_dialog.cpp:102 advanced_dialog.cpp:181 myframe.cpp:1704
+#: myframe.cpp:2260 scope_manual_pointing.cpp:70
 msgid "Guiding"
 msgstr "ガイド"
 
@@ -40,12 +40,12 @@ msgstr "アルゴリズム"
 msgid "Other Devices"
 msgstr "その他デバイス"
 
-#: advanced_dialog.cpp:120 myframe.cpp:477 myframe.cpp:1002
+#: advanced_dialog.cpp:120 myframe.cpp:474 myframe.cpp:999
 msgid "Advanced Settings"
 msgstr "詳細設定"
 
-#: advanced_dialog.cpp:223 guiding_assistant.cpp:514 myframe.cpp:1265
-#: profile_wizard.cpp:361
+#: advanced_dialog.cpp:223 guiding_assistant.cpp:514 myframe.cpp:1262
+#: profile_wizard.cpp:376
 msgid "Help"
 msgstr ""
 
@@ -125,7 +125,7 @@ msgstr "AO"
 msgid "Rotator"
 msgstr "ローテータ"
 
-#: aui_controls.cpp:746 calibration_assistant.cpp:916
+#: aui_controls.cpp:746 calibration_assistant.cpp:917
 msgid ", "
 msgstr ""
 
@@ -270,10 +270,10 @@ msgid "Measurement halted"
 msgstr ""
 
 #: calibration_assistant.cpp:152 calstep_dialog.cpp:200
-#: camcal_import_dialog.cpp:46 camera.cpp:914 cam_qhy.cpp:289
+#: camcal_import_dialog.cpp:46 camera.cpp:952 cam_qhy.cpp:289
 #: configdialog.cpp:62 configdialog.cpp:237 darks_dialog.cpp:52
 #: gear_simulator.cpp:1773 guide_algorithm_gaussian_process.cpp:189
-#: myframe.cpp:3159 Refine_DefMap.cpp:62 starcross_test.cpp:51
+#: myframe.cpp:3173 Refine_DefMap.cpp:62 starcross_test.cpp:51
 msgid ": "
 msgstr ": "
 
@@ -295,33 +295,33 @@ msgid "Calibration Location"
 msgstr "キャリブレーション位置"
 
 #: calibration_assistant.cpp:189 calibration_assistant.cpp:212
-#: calibration_assistant.cpp:1079
+#: calibration_assistant.cpp:1080
 msgid "Pointing"
 msgstr "スコープの向き"
 
 #: calibration_assistant.cpp:190 calibration_assistant.cpp:213
-#: calibration_assistant.cpp:1080 calreview_dialog.cpp:305
+#: calibration_assistant.cpp:1081 calreview_dialog.cpp:305
 #: calreview_dialog.cpp:349 gear_simulator.cpp:2021 mount.cpp:88
 #: testguide.cpp:164
 msgid "West"
 msgstr "West"
 
 #: calibration_assistant.cpp:191 calibration_assistant.cpp:216
-#: calibration_assistant.cpp:1083 calreview_dialog.cpp:304
+#: calibration_assistant.cpp:1084 calreview_dialog.cpp:304
 #: calreview_dialog.cpp:348 gear_simulator.cpp:2021 mount.cpp:86
 #: testguide.cpp:164
 msgid "East"
 msgstr "East"
 
 #: calibration_assistant.cpp:195 calibration_assistant.cpp:206
-#: calibration_assistant.cpp:1073 calreview_dialog.cpp:137
+#: calibration_assistant.cpp:1074 calreview_dialog.cpp:137
 #: calreview_dialog.cpp:142 calreview_dialog.cpp:388 mount.cpp:224
 #: pierflip_tool.cpp:96 statswindow.cpp:105
 msgid "Declination"
 msgstr "赤緯"
 
 #: calibration_assistant.cpp:196 calibration_assistant.cpp:210
-#: calibration_assistant.cpp:1077
+#: calibration_assistant.cpp:1078
 msgid "Meridian offset (degrees)"
 msgstr "子午線オフセット（度）"
 
@@ -341,7 +341,7 @@ msgstr ""
 "中心子午線からの目標のオフセット(度単位)、「位置」ボタンに基づいて東または西"
 "(15度未満を推奨)"
 
-#: calibration_assistant.cpp:214 calibration_assistant.cpp:1081
+#: calibration_assistant.cpp:214 calibration_assistant.cpp:1082
 msgid "Scope on the east side of pier, pointing west"
 msgstr "架台の東側で西を向いた望遠鏡"
 
@@ -384,7 +384,7 @@ msgid ""
 msgstr ""
 "「キャリブレーション位置」フィールドを復元して、推奨される位置を表示します。"
 
-#: calibration_assistant.cpp:247 calibration_assistant.cpp:690
+#: calibration_assistant.cpp:247 calibration_assistant.cpp:691
 #: drift_tool.cpp:207 drift_tool.cpp:560
 msgid "Slew"
 msgstr "旋回"
@@ -409,10 +409,10 @@ msgstr ""
 "キャリブレーションを開始します、キャリブレーションアシスタント画面は、結果を"
 "監視し評価するために開いたままになります"
 
-#: calibration_assistant.cpp:254 calibration_assistant.cpp:1112
-#: calibration_assistant.cpp:1165 camcal_import_dialog.cpp:128
+#: calibration_assistant.cpp:254 calibration_assistant.cpp:1113
+#: calibration_assistant.cpp:1166 camcal_import_dialog.cpp:128
 #: darks_dialog.cpp:228 darks_dialog.cpp:380 gear_simulator.cpp:1970
-#: guiding_assistant.cpp:120 phdupdate.cpp:791 profile_wizard.cpp:1386
+#: guiding_assistant.cpp:120 phdupdate.cpp:791 profile_wizard.cpp:1508
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -434,7 +434,7 @@ msgid ""
 "'good'"
 msgstr "キャリブレーション結果が良好でない場合、追加情報を表示する"
 
-#: calibration_assistant.cpp:330
+#: calibration_assistant.cpp:331
 msgid ""
 "Your mount guide speed is too slow for effective calibration and guiding. "
 "Use the hand-controller or mount driver to increase the guide speed to at "
@@ -446,7 +446,7 @@ msgstr ""
 "倍以上に上げます。次に、「再計算」ボタンをクリックして、PHD2が正しいキャリブ"
 "レーションステップサイズを計算できるようにします。"
 
-#: calibration_assistant.cpp:334
+#: calibration_assistant.cpp:335
 msgid ""
 "Your mount guide speed is below the minimum recommended value of 0.5x "
 "sidereal. Use the hand-controller or mount driver to increase the guide "
@@ -458,7 +458,7 @@ msgstr ""
 "ます。 次に、「再計算」ボタンをクリックして、PHD2が正しいキャリブレーションス"
 "テップサイズを計算できるようにします。"
 
-#: calibration_assistant.cpp:349
+#: calibration_assistant.cpp:350
 msgid ""
 "Your current calibration parameters can be adjusted for more accurate "
 "results. Click the 'Recalc' button to restore them to the default values."
@@ -466,25 +466,25 @@ msgstr ""
 "現在のキャリブレーションパラメータは、より正確な結果を得るために調整すること"
 "ができます。「再計算」ボタンをクリックすると既定の値に戻せます。"
 
-#: calibration_assistant.cpp:389
+#: calibration_assistant.cpp:390
 msgid "Calibration failed or was cancelled"
 msgstr "キャリブレーションが失敗したか、キャンセルされました"
 
-#: calibration_assistant.cpp:434 calibration_assistant.cpp:566
-#: calibration_assistant.cpp:583 calibration_assistant.cpp:637
+#: calibration_assistant.cpp:435 calibration_assistant.cpp:567
+#: calibration_assistant.cpp:584 calibration_assistant.cpp:638
 msgid "Mount can't report its pointing position"
 msgstr "マウントはその指している位置を報告できません"
 
-#: calibration_assistant.cpp:450 calibration_assistant.cpp:647
-#: calibration_assistant.cpp:1013
+#: calibration_assistant.cpp:451 calibration_assistant.cpp:648
+#: calibration_assistant.cpp:1014
 msgid "MERIDIAN FLIP!"
 msgstr "子午線反転！"
 
-#: calibration_assistant.cpp:455
+#: calibration_assistant.cpp:456
 msgid "WATCH SCOPE DURING SLEWING TO INSURE SAFETY"
 msgstr "安全を確保するために旋回中はスコープを監視してください"
 
-#: calibration_assistant.cpp:538
+#: calibration_assistant.cpp:539
 msgid ""
 "Use the 'slew' button to move the scope to within 20 degrees of Dec = 0 or "
 "as close to that as your site will allow."
@@ -492,7 +492,7 @@ msgstr ""
 "「旋回」ボタンを使用して、スコープを赤緯 = 0 から 20 度以内、またはあなたの場"
 "所で許容される限りそれに近い値に移動します。"
 
-#: calibration_assistant.cpp:541
+#: calibration_assistant.cpp:542
 msgid ""
 "Slew the scope to within 20 degrees of Dec = 0 or as close to that as your "
 "site will allow."
@@ -500,13 +500,13 @@ msgstr ""
 "スコープを 赤緯 = 0 から 20 度以内、またはあなたの場所で許容される限りそれに"
 "近い角度に調整します。"
 
-#: calibration_assistant.cpp:544
+#: calibration_assistant.cpp:545
 msgid "Calibration is likely to fail this close to the pole."
 msgstr ""
 "キャリブレーションは、このようにポールに近いところで失敗する可能性が高いで"
 "す。"
 
-#: calibration_assistant.cpp:548
+#: calibration_assistant.cpp:549
 msgid ""
 "If you calibrate within 30 degrees of the pole, you will need to recalibrate "
 "when you slew to a different target."
@@ -514,18 +514,18 @@ msgstr ""
 "極点から30度以内で調整した場合、異なる目標に旋回したときに再調整が必要になり"
 "ます。"
 
-#: calibration_assistant.cpp:554
+#: calibration_assistant.cpp:555
 msgid ""
 "Calibration will be more accurate with the scope pointing closer to the "
 "celestial equator."
 msgstr ""
 "スコープを天の赤道に近づけると、キャリブレーションはより正確になります。"
 
-#: calibration_assistant.cpp:564
+#: calibration_assistant.cpp:565
 msgid "Mount is not connected"
 msgstr "マウントが接続されていません"
 
-#: calibration_assistant.cpp:654
+#: calibration_assistant.cpp:655
 msgid ""
 "Adjust 'Calibration Location' values if needed for your site, then click "
 "'Slew'"
@@ -533,46 +533,46 @@ msgstr ""
 "必要であれば、「キャリブレーションが行われている位置」の値を調整し、「旋回」"
 "をクリックします"
 
-#: calibration_assistant.cpp:656
+#: calibration_assistant.cpp:657
 #, c-format
 msgid "Manually move the telescope to a Dec location near %d"
 msgstr "スコープを手動で赤緯の近くの位置に移動します %d"
 
-#: calibration_assistant.cpp:690 drift_tool.cpp:560
+#: calibration_assistant.cpp:691 drift_tool.cpp:560
 msgid "Slewing..."
 msgstr "旋回..."
 
-#: calibration_assistant.cpp:699 calibration_assistant.cpp:752
+#: calibration_assistant.cpp:700 calibration_assistant.cpp:753
 msgid "Slew failed! Make sure scope is tracking at sidereal rate"
 msgstr "旋回に失敗しました！スコープが恒星数で追跡していることを確認します"
 
-#: calibration_assistant.cpp:708
+#: calibration_assistant.cpp:709
 msgid "Slew was cancelled"
 msgstr "旋回を中止しました"
 
-#: calibration_assistant.cpp:729 calibration_assistant.cpp:743
+#: calibration_assistant.cpp:730 calibration_assistant.cpp:744
 msgid "Pausing..."
 msgstr "一時停止..."
 
-#: calibration_assistant.cpp:746 calibration_assistant.cpp:794
+#: calibration_assistant.cpp:747 calibration_assistant.cpp:795
 msgid ""
 "Wait for tracking to stabilize, then click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
 msgstr ""
 
-#: calibration_assistant.cpp:788
+#: calibration_assistant.cpp:789
 msgid "Initial slew to approximate position"
 msgstr "おおよその位置までの初期旋回"
 
-#: calibration_assistant.cpp:791
+#: calibration_assistant.cpp:792
 msgid "Final slew north to pre-clear Dec backlash"
 msgstr "赤緯のバックラッシュを事前にクリアするため、北へ最終旋回する。"
 
-#: calibration_assistant.cpp:799
+#: calibration_assistant.cpp:800
 msgid "Slewing to calibration location"
 msgstr "キャリブレーション位置への旋回"
 
-#: calibration_assistant.cpp:801
+#: calibration_assistant.cpp:802
 msgid ""
 "Wait for tracking to stabilize, then Click 'Calibrate' to start calibration "
 "or 'Cancel' to exit"
@@ -580,39 +580,39 @@ msgstr ""
 "追尾が安定するまで待ち、「調整」をクリックして調整を開始するか、「キャンセ"
 "ル」をクリックして終了します。"
 
-#: calibration_assistant.cpp:881
+#: calibration_assistant.cpp:882
 msgid "Steps"
 msgstr "手順"
 
-#: calibration_assistant.cpp:889 calibration_assistant.cpp:1254
+#: calibration_assistant.cpp:890 calibration_assistant.cpp:1255
 msgid "Orthogonality"
 msgstr "直交性"
 
-#: calibration_assistant.cpp:898 comet_tool.cpp:141
+#: calibration_assistant.cpp:899 comet_tool.cpp:141
 msgid "Rates"
 msgstr "レート"
 
-#: calibration_assistant.cpp:907
+#: calibration_assistant.cpp:908
 msgid "Sky location (Dec comp disabled)"
 msgstr "空の位置 (赤緯補正は無効)"
 
-#: calibration_assistant.cpp:912
+#: calibration_assistant.cpp:913
 msgid "Sky location"
 msgstr "空の位置"
 
-#: calibration_assistant.cpp:916
+#: calibration_assistant.cpp:917
 #, c-format
 msgid "(%s)"
 msgstr "(%s)"
 
-#: calibration_assistant.cpp:922
+#: calibration_assistant.cpp:923
 msgid ""
 "Calibration result was good, guiding is active using the new calibration"
 msgstr ""
 "キャリブレーションの結果は良好で、新しいキャリブレーションを使用してガイドが"
 "アクティブになります"
 
-#: calibration_assistant.cpp:928
+#: calibration_assistant.cpp:929
 msgid ""
 "Calibration result was acceptable, guiding is active using the new "
 "calibration"
@@ -620,7 +620,7 @@ msgstr ""
 "キャリブレーション結果は問題なく、新しいキャリブレーションを使用してガイドが"
 "実行中"
 
-#: calibration_assistant.cpp:935
+#: calibration_assistant.cpp:936
 msgid ""
 "Calibration result was poor, consider re-doing it while following all "
 "recommendations"
@@ -628,48 +628,48 @@ msgstr ""
 "キャリブレーション結果が悪かったので、すべての推奨事項に従って再調整を検討し"
 "てください"
 
-#: calibration_assistant.cpp:942
+#: calibration_assistant.cpp:943
 msgid "Calibration failed - probably because the mount didn't move at all"
 msgstr ""
 "キャリブレーションに失敗しました、おそらくマウントがまったく動かなかったこと"
 "が原因です"
 
-#: calibration_assistant.cpp:964
+#: calibration_assistant.cpp:965
 msgid "Scope isn't reporting current position"
 msgstr "スコープが現在の位置を報告していません"
 
-#: calibration_assistant.cpp:975
+#: calibration_assistant.cpp:976
 msgid "Slew the scope closer to Dec = 0"
 msgstr "スコープを赤緯 = 0に近づけて旋回させる"
 
-#: calibration_assistant.cpp:982
+#: calibration_assistant.cpp:983
 msgid "Pre-clearing backlash"
 msgstr "クリア前のバックラッシュ"
 
-#: calibration_assistant.cpp:991
+#: calibration_assistant.cpp:992
 msgid "Waiting for calibration to complete"
 msgstr "キャリブレーションの完了待ち"
 
-#: calibration_assistant.cpp:997
+#: calibration_assistant.cpp:998
 msgid "Calibration could not start - suspend any imaging automation apps"
 msgstr ""
 "キャリブレーションを開始できませんでした、画像自動化アプリを一時停止します"
 
-#: calibration_assistant.cpp:1063
+#: calibration_assistant.cpp:1064
 msgid "Save Customized Calibration Position"
 msgstr "カスタマイズしたキャリブレーション位置を保存"
 
-#: calibration_assistant.cpp:1067
+#: calibration_assistant.cpp:1068
 msgid "Target Position"
 msgstr "目標位置"
 
-#: calibration_assistant.cpp:1072
+#: calibration_assistant.cpp:1073
 msgid ""
 "Target declination for slew, as close to Dec = 0 as possible for your "
 "location"
 msgstr "あなたの場所の赤緯 = 0 にできるだけ近い、旋回の目標赤緯"
 
-#: calibration_assistant.cpp:1076
+#: calibration_assistant.cpp:1077
 msgid ""
 "Target offset from central meridian, in degrees; east or west based on "
 "'Pointing' buttons"
@@ -677,11 +677,11 @@ msgstr ""
 "中心子午線からの目標のオフセット (度単位)。「スコープの向き」ボタンに基づいて"
 "東または西"
 
-#: calibration_assistant.cpp:1084
+#: calibration_assistant.cpp:1085
 msgid "Scope on the west side of pier, pointing east"
 msgstr "架台の西側で東を向いているスコープ"
 
-#: calibration_assistant.cpp:1097
+#: calibration_assistant.cpp:1098
 msgid ""
 "Check this if calibration can only be done on a particular side of the "
 "meridian because of nearby obstructions"
@@ -689,15 +689,15 @@ msgstr ""
 "近くに障害物があるため、子午線の特定の側でしかキャリブレーションできない場合"
 "は、これをチェックします。"
 
-#: calibration_assistant.cpp:1099 calibration_assistant.cpp:1147
+#: calibration_assistant.cpp:1100 calibration_assistant.cpp:1148
 msgid "Western sky only"
 msgstr "西の空のみ"
 
-#: calibration_assistant.cpp:1101 calibration_assistant.cpp:1151
+#: calibration_assistant.cpp:1102 calibration_assistant.cpp:1152
 msgid "Eastern sky only"
 msgstr "東の空のみ"
 
-#: calibration_assistant.cpp:1105
+#: calibration_assistant.cpp:1106
 msgid ""
 "If your site location requires a unique sky position for calibration, you "
 "can specify it here."
@@ -705,23 +705,23 @@ msgstr ""
 "あなたの場所でキャリブレーションに固有の空の位置が必要な場合は、ここで指定で"
 "きます。"
 
-#: calibration_assistant.cpp:1110 calibration_assistant.cpp:1295
+#: calibration_assistant.cpp:1111 calibration_assistant.cpp:1296
 msgid "Ok"
 msgstr ""
 
-#: calibration_assistant.cpp:1155
+#: calibration_assistant.cpp:1156
 msgid "Calibration Parameters Check"
 msgstr "キャリブレーションパラメーターの確認"
 
-#: calibration_assistant.cpp:1163
+#: calibration_assistant.cpp:1164
 msgid "Recalc"
 msgstr "再計算"
 
-#: calibration_assistant.cpp:1214
+#: calibration_assistant.cpp:1215
 msgid "Explanation of Results"
 msgstr "結果の説明"
 
-#: calibration_assistant.cpp:1221
+#: calibration_assistant.cpp:1222
 msgid ""
 "Assuming you have followed all the recommendations of the Calibration "
 "Assistant, the information below can help you identify any remaining "
@@ -730,11 +730,11 @@ msgstr ""
 "キャリブレーションアシスタントの推奨事項にすべて従ったと仮定した場合、以下の"
 "情報は残っている問題を特定するのに役立ちます。"
 
-#: calibration_assistant.cpp:1226
+#: calibration_assistant.cpp:1227
 msgid "Too Few Steps"
 msgstr "手順が少なすぎる"
 
-#: calibration_assistant.cpp:1230
+#: calibration_assistant.cpp:1231
 msgid ""
 "Calibration was completed with fewer than the desired number of steps.  This "
 "is usually caused by changes to binning, focal length, or mount guide speed "
@@ -746,22 +746,19 @@ msgstr ""
 "ド速度を変更したことが原因で発生します。ウィザードを実行して、正しい調整パラ"
 "メータを復元してください。"
 
-#: calibration_assistant.cpp:1240
+#: calibration_assistant.cpp:1241
 msgid "Unexpected Rates"
 msgstr "予想外のレート"
 
-#: calibration_assistant.cpp:1243
+#: calibration_assistant.cpp:1244
 msgid ""
 "Measured RA and Dec movements on the camera sensor aren't related by the "
-"expected ratio (cos(dec)).  This can be caused by sustantial weight "
+"expected ratio (cos(dec)).  This can be caused by substantial weight "
 "imbalance in Dec or physical resistance to movement because of cables or "
 "over-tight gear mesh."
 msgstr ""
-"カメラセンサーで測定された赤経と赤緯の動きは、予想される比率 (cos(dec)) とは"
-"関係ありません。これは、赤緯の大幅な重量バランスの崩れ、またはケーブルやギア"
-"の噛み合いがきつすぎることによる動きに対する物理的な抵抗が原因です。"
 
-#: calibration_assistant.cpp:1258
+#: calibration_assistant.cpp:1259
 msgid ""
 "The mount is wandering off-target on one axis while PHD2 is measuring "
 "movement on the other axis. This can be caused by large periodic error in RA "
@@ -773,11 +770,11 @@ msgstr ""
 "によって引き起こされる可能性があります。 直交性誤差が非常に大きい場合は、マウ"
 "ントが正しくガイドされていない可能性があります。"
 
-#: calibration_assistant.cpp:1268
+#: calibration_assistant.cpp:1269
 msgid "Sky Location"
 msgstr "空の位置"
 
-#: calibration_assistant.cpp:1272
+#: calibration_assistant.cpp:1273
 msgid ""
 "Calibration wasn't done with Dec in the range of -20 to +20.  Outside that "
 "range, measurement errors may degrade the calibration accuracy. If Dec is "
@@ -788,11 +785,11 @@ msgstr ""
 "は、測定誤差によりキャリブレーションの精度が低下する可能性があります。赤緯"
 "が-60～+60の範囲外の場合、赤緯補正が正しく機能しません。"
 
-#: calibration_assistant.cpp:1282
+#: calibration_assistant.cpp:1283
 msgid "Not Enough Movement"
 msgstr "ガイド星の動きが足りない"
 
-#: calibration_assistant.cpp:1285
+#: calibration_assistant.cpp:1286
 msgid ""
 "If you saw an alert saying the guide star did not move enough, the mount may "
 "not be receiving or handling guide commands. If you are using an ST-4 guide "
@@ -841,7 +838,7 @@ msgstr "赤緯ステップ:"
 msgid "Camera angle:"
 msgstr "カメラ角度:"
 
-#: calreview_dialog.cpp:212 calreview_dialog.cpp:699
+#: calreview_dialog.cpp:212 calreview_dialog.cpp:700
 msgid "Orthogonality error:"
 msgstr "直交性エラー:"
 
@@ -858,7 +855,7 @@ msgstr "px/秒"
 msgid "a-s/px"
 msgstr "秒角/px"
 
-#: calreview_dialog.cpp:238 calreview_dialog.cpp:730
+#: calreview_dialog.cpp:238 calreview_dialog.cpp:731
 msgid "RA rate:"
 msgstr "赤経レート:"
 
@@ -1011,69 +1008,75 @@ msgstr ""
 "は通常、いずれかの軸のキャリブレーションの1つが正しくないことを 意味し、ガイ"
 "ドが不十分になる可能性があります。"
 
-#: calreview_dialog.cpp:663
+#: calreview_dialog.cpp:626
+msgid ""
+"Details for this calibration result are no longer available. The calibration "
+"has probably been replaced."
+msgstr ""
+
+#: calreview_dialog.cpp:664
 msgid "Explanation"
 msgstr "説明"
 
-#: calreview_dialog.cpp:677
+#: calreview_dialog.cpp:678
 msgid "Details"
 msgstr "詳細"
 
-#: calreview_dialog.cpp:686
+#: calreview_dialog.cpp:687
 msgid "Steps, RA:"
 msgstr "赤経ステップ:"
 
-#: calreview_dialog.cpp:688
+#: calreview_dialog.cpp:689
 msgid "Steps, Dec:"
 msgstr "赤緯ステップ:"
 
-#: calreview_dialog.cpp:701
+#: calreview_dialog.cpp:702
 msgid "Previous orthogonality error:"
 msgstr "前回の直交性エラー:"
 
-#: calreview_dialog.cpp:713
+#: calreview_dialog.cpp:714
 msgid "This declination rate:"
 msgstr "この赤緯レート:"
 
-#: calreview_dialog.cpp:717 calreview_dialog.cpp:733 calreview_dialog.cpp:738
+#: calreview_dialog.cpp:718 calreview_dialog.cpp:734 calreview_dialog.cpp:739
 #, c-format
 msgid ""
 "%0.3f a-s/sec\n"
 "%0.3f px/sec"
 msgstr ""
 
-#: calreview_dialog.cpp:720
+#: calreview_dialog.cpp:721
 msgid "Previous declination rate:"
 msgstr "前回の赤緯レート:"
 
-#: calreview_dialog.cpp:722
+#: calreview_dialog.cpp:723
 #, c-format
 msgid ""
 "\n"
 "%0.3f px/sec"
 msgstr ""
 
-#: calreview_dialog.cpp:734
+#: calreview_dialog.cpp:735
 msgid "Declination rate:"
 msgstr "赤緯レート:"
 
-#: calreview_dialog.cpp:754
+#: calreview_dialog.cpp:755
 msgid "Don't show calibration alerts of this type"
 msgstr "このタイプのキャリブレーション警報を示さない"
 
-#: calreview_dialog.cpp:764
+#: calreview_dialog.cpp:765
 msgid "Accept calibration"
 msgstr "キャリブレーション有効"
 
-#: calreview_dialog.cpp:765
+#: calreview_dialog.cpp:766
 msgid "Accept the calibration as being valid and continue guiding"
 msgstr "キャリブレーションが正確であるとみなし、ガイドを続けます。"
 
-#: calreview_dialog.cpp:767
+#: calreview_dialog.cpp:768
 msgid "Discard calibration"
 msgstr "キャリブレーション破棄"
 
-#: calreview_dialog.cpp:769
+#: calreview_dialog.cpp:770
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
@@ -1081,11 +1084,11 @@ msgstr ""
 "ガイドを停止して、直近のキャリブレーションを破棄します。次にガイドを開始する"
 "際、キャリブレーションはやり直されます。"
 
-#: calreview_dialog.cpp:771
+#: calreview_dialog.cpp:772
 msgid "Restore old calibration"
 msgstr "旧キャリブレーションの読込"
 
-#: calreview_dialog.cpp:772
+#: calreview_dialog.cpp:773
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
@@ -1093,7 +1096,7 @@ msgstr ""
 "ガイドを停止し、直近のキャリブレーションを破棄します。そして以前の（良好な）"
 "キャリブレーションを読込みます。"
 
-#: calreview_dialog.cpp:813
+#: calreview_dialog.cpp:814
 msgid "Previous calibration restored"
 msgstr "過去のキャリブレーションの読込"
 
@@ -1178,7 +1181,7 @@ msgstr "キャリブレーション赤緯, 度"
 msgid "Approximate declination where you will do calibration"
 msgstr "キャリブレーションを行う空の位置の、おおよその赤緯"
 
-#: calstep_dialog.cpp:169 camera.cpp:920 darks_dialog.cpp:220
+#: calstep_dialog.cpp:169 camera.cpp:958 darks_dialog.cpp:220
 #: gear_simulator.cpp:1963 mount.cpp:281 mount.cpp:334 Refine_DefMap.cpp:181
 #: starcross_test.cpp:146 testguide.cpp:105
 msgid "Reset"
@@ -1227,7 +1230,7 @@ msgstr ""
 
 #: cam_altair.cpp:201
 msgid ""
-"Discard this many frames whan capturing starts. Useful for preventing "
+"Discard this many frames when capturing starts. Useful for preventing "
 "initial under-exposed frames interfering with automatic star selection."
 msgstr ""
 
@@ -1355,16 +1358,16 @@ msgstr "ダークライブラリをもつプロファイルを選んでくださ
 
 #: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:98
 #: camcal_import_dialog.cpp:166 camcal_import_dialog.cpp:170
-#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:255
-#: camera.cpp:425 gear_dialog.cpp:459 gear_dialog.cpp:463 gear_dialog.cpp:467
+#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:256
+#: camera.cpp:426 gear_dialog.cpp:459 gear_dialog.cpp:463 gear_dialog.cpp:467
 #: gear_dialog.cpp:471 gear_dialog.cpp:475 gear_dialog.cpp:712
 #: gear_dialog.cpp:1128 gear_dialog.cpp:1895 gear_dialog.cpp:1896
 #: gear_dialog.cpp:1897 log_uploader.cpp:190 mount.cpp:165 mount.cpp:190
-#: mount.cpp:887 myframe.cpp:3016 profile_wizard.cpp:379 profile_wizard.cpp:380
-#: profile_wizard.cpp:381 profile_wizard.cpp:623 profile_wizard.cpp:628
-#: profile_wizard.cpp:656 profile_wizard.cpp:833 profile_wizard.cpp:1006
-#: profile_wizard.cpp:1021 profile_wizard.cpp:1053 profile_wizard.cpp:1058
-#: profile_wizard.cpp:1084 profile_wizard.cpp:1098 rotator.cpp:56
+#: mount.cpp:887 myframe.cpp:3030 profile_wizard.cpp:394 profile_wizard.cpp:395
+#: profile_wizard.cpp:396 profile_wizard.cpp:638 profile_wizard.cpp:643
+#: profile_wizard.cpp:671 profile_wizard.cpp:860 profile_wizard.cpp:1109
+#: profile_wizard.cpp:1124 profile_wizard.cpp:1159 profile_wizard.cpp:1164
+#: profile_wizard.cpp:1190 profile_wizard.cpp:1204 rotator.cpp:56
 #: rotator.cpp:101 scope.cpp:340 scope.cpp:382 scope.cpp:425
 #: statswindow.cpp:267 stepguider.cpp:104 stepguider.cpp:125
 msgid "None"
@@ -1415,37 +1418,37 @@ msgstr ""
 msgid "Dark library could not be imported because of errors in file/copy"
 msgstr "ファイルコピーでエラーが発生したためダークライブラリが読み込めません。"
 
-#: camera.cpp:620
+#: camera.cpp:621
 msgid "Select your camera"
 msgstr "カメラの選択"
 
-#: camera.cpp:817
+#: camera.cpp:855
 msgid "Camera Settings"
 msgstr "カメラ設定"
 
-#: camera.cpp:831
+#: camera.cpp:869
 msgid "General Properties"
 msgstr "一般的プロパティ"
 
-#: camera.cpp:844
+#: camera.cpp:882
 msgid "Camera-Specific Properties"
 msgstr "カメラ固有のプロパティ"
 
-#: camera.cpp:867
+#: camera.cpp:905
 msgid "No camera specified"
 msgstr ""
 
-#: camera.cpp:877
+#: camera.cpp:915
 msgid ""
 "Camera is not connected.  Property controls may change if you connect to it "
 "first."
 msgstr ""
 
-#: camera.cpp:902
+#: camera.cpp:940
 msgid "Use Subframes"
 msgstr "サブフレーム使用"
 
-#: camera.cpp:904
+#: camera.cpp:942
 msgid ""
 "Check to only download subframes (ROIs). Sub-frame size is equal to search "
 "region size."
@@ -1453,7 +1456,7 @@ msgstr ""
 "サブフレーム（ROI）のみをダウンロードする場合は、チェックを入れてください。サ"
 "ブフレームの大きさは、検索領域の大きさと同じです。"
 
-#: camera.cpp:908
+#: camera.cpp:946
 msgid ""
 "Guide camera un-binned pixel size in microns. Used with the guide telescope "
 "focal length to display guiding error in arc-seconds."
@@ -1461,15 +1464,15 @@ msgstr ""
 "ガイドカメラのビニングされていないピクセルサイズ (ミクロン単位)。 ガイド鏡の"
 "焦点距離とともに使用して、アーク秒単位でガイドエラーを表示します。"
 
-#: camera.cpp:910
+#: camera.cpp:948
 msgid "Pixel size"
 msgstr "ピクセルサイズ"
 
-#: camera.cpp:914
+#: camera.cpp:952
 msgid "Camera gain"
 msgstr "カメラゲイン"
 
-#: camera.cpp:917
+#: camera.cpp:955
 #, no-c-format
 msgid ""
 "Camera gain, default = 95%, lower if you experience noise or wish to guide "
@@ -1478,52 +1481,52 @@ msgstr ""
 "既定値 = 95%。ノイズが発生したり、非常に明るい星をガイドしたい場合は、もっと"
 "低くしてください。すべてのカメラで使用できるわけではありません。"
 
-#: camera.cpp:921
+#: camera.cpp:959
 msgid ""
 "Reset gain to camera's default value (disabled when camera is not connected)"
 msgstr "ゲインをカメラの初期値に戻す（カメラが接続されていない場合は無効）"
 
-#: camera.cpp:936
+#: camera.cpp:974
 msgid "Binning"
 msgstr "ビニング"
 
-#: camera.cpp:936
+#: camera.cpp:974
 msgid "Camera pixel binning"
 msgstr "カメラのピクセルビニング"
 
-#: camera.cpp:942
+#: camera.cpp:980
 msgid "Delay"
 msgstr "遅延"
 
-#: camera.cpp:942
+#: camera.cpp:980
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
 msgstr "LE 読込遅延(ms)、フレーム落ちがあれば調整"
 
-#: camera.cpp:957 cam_LESerialWebcam.cpp:300
+#: camera.cpp:995 cam_LESerialWebcam.cpp:300
 msgid "LE Port"
 msgstr "LEポート"
 
-#: camera.cpp:957
+#: camera.cpp:995
 msgid "Port number for long-exposure control"
 msgstr "長時間露出コントロール用のポート番号"
 
-#: camera.cpp:962
+#: camera.cpp:1000
 msgid "Cooler On"
 msgstr "カメラ冷却のオン／オフ"
 
-#: camera.cpp:963
+#: camera.cpp:1001
 msgid "Turn camera cooler on or off"
 msgstr "カメラ冷却のオン/オフ"
 
-#: camera.cpp:966
+#: camera.cpp:1004
 msgid "Set Temperature"
 msgstr "設定温度"
 
-#: camera.cpp:966
+#: camera.cpp:1004
 msgid "Cooler setpoint temperature"
 msgstr "クーラー設定温度"
 
-#: camera.cpp:975
+#: camera.cpp:1013
 msgid ""
 "ADU level to determine saturation - 65535 for most 16-bit cameras, or 255 "
 "for 8-bit cameras."
@@ -1531,20 +1534,20 @@ msgstr ""
 "彩度を決定するADUレベル - 多くの16ビットカメラでは 65535、8ビットカメラでは"
 "255。"
 
-#: camera.cpp:976
+#: camera.cpp:1014
 msgid "Saturation by Max-ADU value:"
 msgstr "ADU値最大による飽和状態:"
 
-#: camera.cpp:977
+#: camera.cpp:1015
 msgid ""
 "Identify star saturation based on camera maximum-ADU value (recommended)"
 msgstr "カメラの最大ADU値から星の飽和状態を特定する（推奨）"
 
-#: camera.cpp:983
+#: camera.cpp:1021
 msgid "Saturation via star-profile"
 msgstr "スタープロファイルによる飽和状態"
 
-#: camera.cpp:984
+#: camera.cpp:1022
 msgid ""
 "Identify star saturation based on flat-topped profile, regardless of "
 "brightness"
@@ -1552,7 +1555,7 @@ msgstr ""
 "明るさに関係なく、フラットトッププロファイルから星の飽和状態を特定することが"
 "可能"
 
-#: camera.cpp:995
+#: camera.cpp:1033
 msgid ""
 "Disconnect nonresponsive          \n"
 "camera after (seconds)"
@@ -1560,7 +1563,7 @@ msgstr ""
 "応答しないカメラを切断する     \n"
 "タイムアウト値(秒)"
 
-#: camera.cpp:996
+#: camera.cpp:1034
 #, c-format
 msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
@@ -1569,20 +1572,20 @@ msgstr ""
 "この時間応答がない場合、カメラは切断されます。既定値である%d秒はほとんどのカ"
 "メラに適しています。"
 
-#: camera.cpp:1339
+#: camera.cpp:1377
 msgid "unspecified"
 msgstr ""
 
-#: camera.cpp:1341
+#: camera.cpp:1379
 #, c-format
 msgid "%0.1f um"
 msgstr ""
 
-#: camera.cpp:1479
+#: camera.cpp:1517
 msgid "Memory allocation error during capture"
 msgstr "キャプチャ中にメモリ割当てエラー"
 
-#: camera.cpp:1488
+#: camera.cpp:1526
 #, c-format
 msgid ""
 "After %.1f sec the camera has not completed a %.1f sec exposure, so it has "
@@ -1590,18 +1593,18 @@ msgid ""
 "section of Help."
 msgstr ""
 
-#: camera.cpp:1492
+#: camera.cpp:1530
 msgid ""
 "The camera has not completed an exposure in at least 15 seconds, so it has "
 "been disconnected to prevent other problems. Refer to Trouble-shooting "
 "section of Help."
 msgstr ""
 
-#: camera.cpp:1513
+#: camera.cpp:1551
 msgid "PHD will make several attempts to re-connect the camera."
 msgstr ""
 
-#: camera.cpp:1519
+#: camera.cpp:1557
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1679,6 +1682,14 @@ msgstr ""
 #: cam_firewire_OSX.cpp:99
 msgid "No Firewire / IEEE1394 camera found"
 msgstr ""
+
+#: cam_firewire_OSX.cpp:113
+msgid "Select Firewire camera"
+msgstr ""
+
+#: cam_firewire_OSX.cpp:113 cam_sbig.cpp:205
+msgid "Camera name"
+msgstr "カメラ名"
 
 #: cam_firewire_OSX.cpp:153
 msgid "Cannot find a suitable monochrome video mode"
@@ -1792,10 +1803,10 @@ msgstr "ゲインの設定エラー"
 #: cam_ioptron.cpp:102 cam_ioptron.cpp:109 cam_ioptron.cpp:144
 #: cam_LESerialWebcam.cpp:315 cam_playerone.cpp:283 cam_qhy5.cpp:114
 #: cam_qhy5.cpp:121 cam_sbig.cpp:327 cam_sbig.cpp:338 cam_sbig.cpp:373
-#: cam_skyraider.cpp:141 cam_skyraider.cpp:150 cam_svb.cpp:194 cam_wdm.cpp:177
+#: cam_skyraider.cpp:140 cam_skyraider.cpp:149 cam_svb.cpp:194 cam_wdm.cpp:177
 #: cam_wdm.cpp:186 cam_wdm.cpp:226 cam_wdm.cpp:303 cam_wdm.cpp:326
 #: cam_wdm.cpp:333 cam_wdm.cpp:341 cam_wdm.cpp:356 cam_wdm.cpp:364
-#: cam_zwo.cpp:286 gear_dialog.cpp:1422 gear_dialog.cpp:2141
+#: cam_zwo.cpp:288 gear_dialog.cpp:1422 gear_dialog.cpp:2141
 #: gear_dialog.cpp:2150 gear_dialog.cpp:2157 gear_dialog.cpp:2204
 #: gear_dialog.cpp:2210 scope_ascom.cpp:190 scope_ascom.cpp:215
 #: scope_ascom.cpp:222 scope_ascom.cpp:231 scope_ascom.cpp:247
@@ -1854,7 +1865,7 @@ msgstr ""
 msgid "No Moravian cameras detected."
 msgstr ""
 
-#: cam_moravian.cpp:204 cam_playerone.cpp:385 cam_svb.cpp:253 cam_zwo.cpp:388
+#: cam_moravian.cpp:204 cam_playerone.cpp:385 cam_svb.cpp:253 cam_zwo.cpp:390
 #, c-format
 msgid "Camera %s not found"
 msgstr ""
@@ -1864,17 +1875,17 @@ msgid "Moravian Camera Properties"
 msgstr ""
 
 #: cam_moravian.cpp:413 cam_ogma.cpp:784 cam_playerone.cpp:154 cam_qhy.cpp:324
-#: cam_svb.cpp:128 cam_touptek.cpp:785 cam_zwo.cpp:148
+#: cam_svb.cpp:128 cam_touptek.cpp:792 cam_zwo.cpp:150
 msgid "Camera Mode"
 msgstr ""
 
 #: cam_moravian.cpp:417 cam_ogma.cpp:786 cam_playerone.cpp:156 cam_qhy.cpp:326
-#: cam_svb.cpp:130 cam_svb.cpp:354 cam_touptek.cpp:787 cam_zwo.cpp:150
+#: cam_svb.cpp:130 cam_svb.cpp:354 cam_touptek.cpp:794 cam_zwo.cpp:152
 msgid "8-bit"
 msgstr ""
 
 #: cam_moravian.cpp:420 cam_ogma.cpp:787 cam_playerone.cpp:157 cam_qhy.cpp:327
-#: cam_svb.cpp:131 cam_svb.cpp:354 cam_touptek.cpp:788 cam_zwo.cpp:151
+#: cam_svb.cpp:131 cam_svb.cpp:354 cam_touptek.cpp:795 cam_zwo.cpp:153
 msgid "16-bit"
 msgstr ""
 
@@ -1922,19 +1933,19 @@ msgstr ""
 msgid "Failed to initialize camera binning."
 msgstr ""
 
-#: cam_ogma.cpp:610 cam_touptek.cpp:611
+#: cam_ogma.cpp:610 cam_touptek.cpp:618
 msgid "Capture failed: the camera disconnected"
 msgstr ""
 
-#: cam_ogma.cpp:614 cam_touptek.cpp:615
+#: cam_ogma.cpp:614 cam_touptek.cpp:622
 msgid "Capture failed: the camera reported a timeout"
 msgstr ""
 
-#: cam_ogma.cpp:619 cam_touptek.cpp:620
+#: cam_ogma.cpp:619
 msgid "Capture failed: the camera repoted an error"
 msgstr ""
 
-#: cam_ogma.cpp:650 cam_touptek.cpp:651
+#: cam_ogma.cpp:650 cam_touptek.cpp:658
 msgid "Capture failed, unable to pull image data from camera"
 msgstr ""
 
@@ -1988,7 +1999,7 @@ msgstr "露出開始できません。"
 msgid "Player One Camera Properties"
 msgstr ""
 
-#: cam_playerone.cpp:220 cam_zwo.cpp:219
+#: cam_playerone.cpp:220 cam_zwo.cpp:221
 #, c-format
 msgid "Could not load DLL %s"
 msgstr "DLL %s を読み込めません。"
@@ -2011,12 +2022,12 @@ msgid "Failed to open Player One Camera."
 msgstr ""
 
 #: cam_playerone.cpp:421
-msgid "Failed to initizlize Player One Camera."
+msgid "Failed to initialize Player One Camera."
 msgstr ""
 
 #: cam_playerone.cpp:873 cam_playerone.cpp:905 cam_playerone.cpp:913
-#: cam_svb.cpp:769 cam_sxv.cpp:920 cam_zwo.cpp:872 cam_zwo.cpp:903
-#: cam_zwo.cpp:911
+#: cam_svb.cpp:769 cam_sxv.cpp:920 cam_zwo.cpp:899 cam_zwo.cpp:930
+#: cam_zwo.cpp:938
 msgid "Lost connection to camera"
 msgstr ""
 
@@ -2166,10 +2177,6 @@ msgstr "インターフェース"
 msgid "Select USB camera"
 msgstr "USBカメラの選択"
 
-#: cam_sbig.cpp:205
-msgid "Camera name"
-msgstr "カメラ名"
-
 #: cam_sbig.cpp:215
 msgid "IP address"
 msgstr "IPアドレス"
@@ -2239,11 +2246,11 @@ msgstr "赤緯角度の選択"
 msgid "Dec Angle"
 msgstr "赤緯角度"
 
-#: cam_skyraider.cpp:141
+#: cam_skyraider.cpp:140
 msgid "Failed to open SkyRaider Camera."
 msgstr ""
 
-#: cam_skyraider.cpp:150
+#: cam_skyraider.cpp:149
 msgid "Failed to get camera resolution for SkyRaider Camera."
 msgstr ""
 
@@ -2350,7 +2357,11 @@ msgstr ""
 msgid "Failed to get camera resolution for ToupTek camera."
 msgstr ""
 
-#: cam_touptek.cpp:780
+#: cam_touptek.cpp:627
+msgid "Capture failed: the camera reported an error"
+msgstr ""
+
+#: cam_touptek.cpp:787
 msgid "ToupTek Camera Properties"
 msgstr ""
 
@@ -2379,11 +2390,11 @@ msgstr "カメラモード"
 msgid "%d x %d mode activated"
 msgstr ""
 
-#: cam_zwo.cpp:143
+#: cam_zwo.cpp:145
 msgid "ZWO Camera Properties"
 msgstr ""
 
-#: cam_zwo.cpp:222
+#: cam_zwo.cpp:224
 msgid ""
 "The ASI camera library requires the Microsoft Visual C++ 2008 "
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
@@ -2393,25 +2404,25 @@ msgstr ""
 "パッケージ(x86)が http://www.microsoft.com/en-us/soft.com/en-us/から入手可能"
 "です。"
 
-#: cam_zwo.cpp:317
+#: cam_zwo.cpp:319
 msgid "No ZWO cameras detected."
 msgstr ""
 
-#: cam_zwo.cpp:348
+#: cam_zwo.cpp:350
 #, c-format
 msgid "ZWO camera #%d not found"
 msgstr ""
 
-#: cam_zwo.cpp:411 cam_zwo.cpp:490
+#: cam_zwo.cpp:413 cam_zwo.cpp:492
 msgid "Failed to get camera properties for ZWO ASI Camera."
 msgstr "ZWO ASIカメラのプロパティ取得に失敗"
 
-#: cam_zwo.cpp:417
+#: cam_zwo.cpp:419
 msgid "Failed to open ZWO ASI Camera."
 msgstr "ZWO ASIカメラのオープンに失敗"
 
-#: cam_zwo.cpp:424
-msgid "Failed to initizlize ZWO ASI Camera."
+#: cam_zwo.cpp:426
+msgid "Failed to initialize ZWO ASI Camera."
 msgstr ""
 
 #: comdispatch.cpp:48
@@ -2435,7 +2446,7 @@ msgstr "彗星追尾 - 追尾開始"
 msgid "Comet Tracking - Active"
 msgstr "彗星追尾 - 追尾中"
 
-#: comet_tool.cpp:88 comet_tool.cpp:204 guider_multistar.cpp:1392
+#: comet_tool.cpp:88 comet_tool.cpp:204 guider_multistar.cpp:1394
 #: scope.cpp:2037
 msgid "Enable"
 msgstr "有効化"
@@ -2596,7 +2607,7 @@ msgstr ""
 msgid "Other options"
 msgstr ""
 
-#: config_indi.cpp:150 indi_gui.cpp:814 scope.cpp:422
+#: config_indi.cpp:150 indi_gui.cpp:829 scope.cpp:422
 msgid "INDI"
 msgstr ""
 
@@ -2841,7 +2852,11 @@ msgstr "%.1f 秒ダーク失敗"
 msgid "Dark frames complete"
 msgstr "ダークフレーム完了"
 
-#: debuglog.cpp:118
+#: debuglog.cpp:116
+msgid "PHD2_DebugLog_"
+msgstr ""
+
+#: debuglog.cpp:120
 #, c-format
 msgid "unable to open file %s"
 msgstr ""
@@ -2998,7 +3013,7 @@ msgstr "旋回中..."
 msgid "Coordinates saved."
 msgstr "座標保存"
 
-#: drift_tool.cpp:824 eegg.cpp:281 myframe_events.cpp:768
+#: drift_tool.cpp:824 eegg.cpp:281 myframe_events.cpp:838
 #: polardrift_toolwin.cpp:58 staticpa_toolwin.cpp:103
 msgid "Please connect a camera first."
 msgstr ""
@@ -3025,7 +3040,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "利用可能なキャリブレーションデータがありません。"
 
-#: eegg.cpp:71 eegg.cpp:286 myframe_events.cpp:1092 myframe_events.cpp:1109
+#: eegg.cpp:71 eegg.cpp:286 myframe_events.cpp:1162 myframe_events.cpp:1179
 msgid "Please connect a mount first."
 msgstr "先にマウントと接続して下さい。"
 
@@ -3251,7 +3266,7 @@ msgstr "全て接続断"
 msgid "Disconnect all equipment"
 msgstr "全ての機器を接続断"
 
-#: gear_dialog.cpp:361 myframe.cpp:1260 polardrift_toolwin.cpp:208
+#: gear_dialog.cpp:361 myframe.cpp:1257 polardrift_toolwin.cpp:208
 #: staticpa_toolwin.cpp:420
 msgid "Close"
 msgstr "クローズ"
@@ -3449,7 +3464,7 @@ msgstr ""
 msgid "Could not create profile %s from profile %s"
 msgstr "プロファイル %s からプロファイル %sを作成できません。"
 
-#: gear_dialog.cpp:2157 profile_wizard.cpp:946
+#: gear_dialog.cpp:2157 profile_wizard.cpp:987
 #, c-format
 msgid "Could not create profile %s"
 msgstr "プロファイル %sを作成できません。"
@@ -3688,7 +3703,7 @@ msgid "Seeing"
 msgstr "シーイング"
 
 #: gear_simulator.cpp:1950
-#, fuzzy, c-format
+#, fuzzy
 msgid "% cloud opacity"
 msgstr "雲量 (%)"
 
@@ -3850,7 +3865,7 @@ msgstr ""
 msgid "Dither"
 msgstr "ディザー"
 
-#: graph-stepguider.cpp:87 myframe.cpp:319 myframe.cpp:385
+#: graph-stepguider.cpp:87 myframe.cpp:319 myframe.cpp:382
 msgid "AO Position"
 msgstr "AO位置"
 
@@ -4249,103 +4264,103 @@ msgstr ""
 msgid "XFac"
 msgstr ""
 
-#: guider.cpp:580
+#: guider.cpp:581
 msgid "E"
 msgstr ""
 
-#: guider.cpp:601
+#: guider.cpp:602
 msgid "N"
 msgstr ""
 
-#: guider.cpp:718
+#: guider.cpp:719
 msgid "PAUSED"
 msgstr ""
 
-#: guider.cpp:723
+#: guider.cpp:724
 msgid "Guide output DISABLED"
 msgstr "ガイド出力OFF"
 
-#: guider.cpp:1165
+#: guider.cpp:1166
 msgid "Calibration manually stopped"
 msgstr "キャリブレーション手動停止"
 
-#: guider.cpp:1220
+#: guider.cpp:1221
 msgid ""
 "Do you want to automatically restore this calibration whenever the profile "
 "is used?"
 msgstr ""
 "プロファイルを使用するたびに、このキャリブレーションを自動的に復元しますか？"
 
-#: guider.cpp:1293
+#: guider.cpp:1294
 msgid "Stopped Guiding"
 msgstr "ガイド停止"
 
-#: guider.cpp:1305
+#: guider.cpp:1306
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr "許容範囲外へのロック位置の移動。ロック位置を移動できません。"
 
-#: guider.cpp:1341
+#: guider.cpp:1342
 msgid "star lost"
 msgstr "ガイド星を見失いました"
 
-#: guider.cpp:1394 myframe.cpp:1916
+#: guider.cpp:1395 myframe.cpp:1930
 msgid "Paused"
 msgstr "一時停止"
 
-#: guider.cpp:1394 myframe.cpp:1916
+#: guider.cpp:1395 myframe.cpp:1930
 msgid "/full"
 msgstr ""
 
-#: guider.cpp:1394 myframe.cpp:1916
+#: guider.cpp:1395 myframe.cpp:1930
 msgid "/looping"
 msgstr ""
 
-#: guider.cpp:1411
+#: guider.cpp:1412
 msgid "Static PA rotation failed"
 msgstr ""
 
-#: guider.cpp:1417
+#: guider.cpp:1418
 msgid "Polar Drift PA drift failed"
 msgstr ""
 
-#: guider.cpp:1427
+#: guider.cpp:1428
 msgid "AO calibration failed"
 msgstr ""
 
-#: guider.cpp:1427 guider.cpp:1460
+#: guider.cpp:1428 guider.cpp:1461
 msgid "calibration failed"
 msgstr ""
 
-#: guider.cpp:1694
+#: guider.cpp:1703
 msgid "Guider Settings"
 msgstr "ガイダー設定"
 
-#: guider.cpp:1703
+#: guider.cpp:1712
 msgid "Guide star tracking"
 msgstr "ガイド星追跡"
 
-#: guider.cpp:1704 log_uploader.cpp:702
+#: guider.cpp:1713 log_uploader.cpp:702
 msgid "Calibration"
 msgstr "キャリブレーション"
 
-#: guider.cpp:1705
+#: guider.cpp:1714
 msgid "Shared Parameters"
 msgstr "共有ガイドパラメータ"
 
-#: guider.cpp:1750
+#: guider.cpp:1759
 msgid "Always scale images"
 msgstr "画像を常に拡大縮小する"
 
-#: guider.cpp:1751
+#: guider.cpp:1760
 msgid "Always scale images to fill window"
 msgstr "常にウィンドウいっぱいに画像サイズを調整する"
 
-#: guider.cpp:1754
+#: guider.cpp:1763
 msgid "Fast recenter after calibration or dither"
 msgstr "キャリブレーションやディザー後に素早く中央に戻す"
 
-#: guider.cpp:1756
+#: guider.cpp:1765
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -4355,91 +4370,91 @@ msgstr ""
 "キャリブレーション やディザリングをスピードアップします。\n"
 "古くて遅い方法を使う場合はチェックを外します。"
 
-#: guider.cpp:1880
+#: guider.cpp:1889
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "本当にブックマークをすべて削除しますか？"
 
-#: guider_multistar.cpp:401 guider_multistar.cpp:932
+#: guider_multistar.cpp:403 guider_multistar.cpp:934
 msgid "No star selected"
 msgstr "ガイド星が選択されていません"
 
-#: guider_multistar.cpp:406
+#: guider_multistar.cpp:408
 msgid "Star lost - low SNR"
 msgstr "星を見失いました - 低S/N比"
 
-#: guider_multistar.cpp:408
+#: guider_multistar.cpp:410
 msgid "Star lost - low mass"
 msgstr "星を見失いました - 明るさ不足"
 
-#: guider_multistar.cpp:410
+#: guider_multistar.cpp:412
 msgid "Star lost - low HFD"
 msgstr "星を見失いました - 星識別のHFD低"
 
-#: guider_multistar.cpp:412
+#: guider_multistar.cpp:414
 msgid "Star too near edge"
 msgstr "ガイド星が端に近すぎる"
 
-#: guider_multistar.cpp:414
+#: guider_multistar.cpp:416
 msgid "Star lost - mass changed"
 msgstr "星を見失いました - 明るさの変動"
 
-#: guider_multistar.cpp:416 guider_multistar.cpp:1149
+#: guider_multistar.cpp:418 guider_multistar.cpp:1151
 msgid "No star found"
 msgstr "星が見当たりません"
 
-#: guider_multistar.cpp:422
+#: guider_multistar.cpp:424
 #, c-format
 msgid "m=%.0f SNR=%.1f"
 msgstr ""
 
-#: guider_multistar.cpp:425
+#: guider_multistar.cpp:427
 msgid "Saturated"
 msgstr "飽和状態"
 
-#: guider_multistar.cpp:435
+#: guider_multistar.cpp:437
 #, c-format
 msgid "Exp=%0.1f s"
 msgstr ""
 
-#: guider_multistar.cpp:437
+#: guider_multistar.cpp:439
 #, c-format
 msgid "Exp=%d ms"
 msgstr ""
 
-#: guider_multistar.cpp:510
+#: guider_multistar.cpp:512
 #, c-format
 msgid "Auto-selected star at (%.1f, %.1f)"
 msgstr "自動選択された星 (%.1f, %.1f)"
 
-#: guider_multistar.cpp:976
+#: guider_multistar.cpp:978
 #, c-format
 msgid "Mass: %.f vs %.f"
 msgstr ""
 
-#: guider_multistar.cpp:1014
+#: guider_multistar.cpp:1016
 msgid "Recovering"
 msgstr ""
 
-#: guider_multistar.cpp:1161
+#: guider_multistar.cpp:1163
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "ガイド星の選択 (%.1f, %.1f)"
 
-#: guider_multistar.cpp:1387
+#: guider_multistar.cpp:1389
 msgid "Search region (pixels)"
 msgstr "追尾検索区域(ピクセル)"
 
-#: guider_multistar.cpp:1388
+#: guider_multistar.cpp:1390
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr "星を見つけるのに何ピクセル（上／下／左／右）検索するか。 既定値 = 15"
 
-#: guider_multistar.cpp:1391
+#: guider_multistar.cpp:1393
 msgid "Star Mass Detection"
 msgstr "ガイド星の明るさ・サイズ検出"
 
-#: guider_multistar.cpp:1394
+#: guider_multistar.cpp:1396
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the setting for "
@@ -4449,11 +4464,11 @@ msgstr ""
 "量が「許容範囲」の設定値より大きく変化した場合、PHDはフレームをスキップしま"
 "す。"
 
-#: guider_multistar.cpp:1407
+#: guider_multistar.cpp:1409
 msgid "Tolerance"
 msgstr "許容値"
 
-#: guider_multistar.cpp:1408
+#: guider_multistar.cpp:1410
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -4464,15 +4479,15 @@ msgstr ""
 "きい値ほど星像の明るさ変化に対して鈍感になります。有効な範囲は10-100で、既定"
 "値は50です。 星像の明るさ検知が無効の場合、この設定は無視されます。"
 
-#: guider_multistar.cpp:1414
+#: guider_multistar.cpp:1416
 msgid "65535"
 msgstr ""
 
-#: guider_multistar.cpp:1421
+#: guider_multistar.cpp:1423
 msgid "Minimum star HFD (pixels)"
 msgstr "(HFD)最小 半光束直径 (ピクセル)"
 
-#: guider_multistar.cpp:1422
+#: guider_multistar.cpp:1424
 msgid ""
 "The minimum star HFD (size) that will be used for identifying a guide star. "
 "This setting can be used to prevent PHD2 from guiding on a hot pixel. Use "
@@ -4485,11 +4500,11 @@ msgstr ""
 "ファイルツールを使用してホットピクセルのHFDを測定し、min HFDしきい値を少し高"
 "く設定します。HFDがこのレベルを下回ると、そのホットピクセルは無視されます。"
 
-#: guider_multistar.cpp:1431
+#: guider_multistar.cpp:1433
 msgid "Maximum star HFD (pixels)"
 msgstr ""
 
-#: guider_multistar.cpp:1432
+#: guider_multistar.cpp:1434
 msgid ""
 "The maximum star HFD that will be used for identifying a guide star. This "
 "setting can be used to prevent PHD2 from choosing a large clump of sensor "
@@ -4497,15 +4512,15 @@ msgid ""
 "stars."
 msgstr ""
 
-#: guider_multistar.cpp:1436 myframe.cpp:904 myframe.cpp:975 scope.cpp:265
+#: guider_multistar.cpp:1438 myframe.cpp:901 myframe.cpp:972 scope.cpp:265
 msgid "Auto"
 msgstr "自動"
 
-#: guider_multistar.cpp:1440
+#: guider_multistar.cpp:1442
 msgid "Auto-selection frame downsample"
 msgstr "ガイド星自動選択で恒星認識"
 
-#: guider_multistar.cpp:1441
+#: guider_multistar.cpp:1443
 msgid ""
 "Downsampling factor for star auto-selection camera frames. Choose a value "
 "greater than 1 if star auto-selection is failing to recognize misshapen "
@@ -4514,27 +4529,27 @@ msgstr ""
 "星空自動選択カメラフレームのダウンサンプリング係数。 星の自動選択が変形したガ"
 "イド星を認識できない場合は、1 より大きい値を選択してください。"
 
-#: guider_multistar.cpp:1444
+#: guider_multistar.cpp:1446
 msgid "Beep on lost star"
 msgstr "ビープ音を鳴らす"
 
-#: guider_multistar.cpp:1445
+#: guider_multistar.cpp:1447
 msgid "Issue an audible alarm any time the guide star is lost"
 msgstr "ガイド星が失われた時に音声アラームを発する"
 
-#: guider_multistar.cpp:1447
+#: guider_multistar.cpp:1449
 msgid "Use multiple stars"
 msgstr "ガイドに複数の星を使用"
 
-#: guider_multistar.cpp:1448
+#: guider_multistar.cpp:1450
 msgid "Use multiple guide stars if they are available"
 msgstr "複数のガイド星がある場合はそれを使う"
 
-#: guider_multistar.cpp:1458
+#: guider_multistar.cpp:1460
 msgid "Minimum star SNR for AutoFind"
 msgstr "最小S/N比の指定"
 
-#: guider_multistar.cpp:1459
+#: guider_multistar.cpp:1461
 msgid ""
 "The minimum star SNR that will be used for auto-selecting guide stars. This "
 "setting can be used to discourage PHD2 from choosing a guide star you know "
@@ -4826,8 +4841,8 @@ msgstr ""
 msgid "Apply"
 msgstr "適用"
 
-#: guiding_assistant.cpp:1336 guiding_assistant.cpp:1986 myframe.cpp:3099
-#: myframe.cpp:3111
+#: guiding_assistant.cpp:1336 guiding_assistant.cpp:1986 myframe.cpp:3113
+#: myframe.cpp:3125
 msgid " "
 msgstr ""
 
@@ -4959,6 +4974,10 @@ msgstr "秒角/分"
 msgid "arc-sec/sec"
 msgstr "秒角/秒"
 
+#: guidinglog.cpp:271
+msgid "PHD2_GuideLog_"
+msgstr ""
+
 #: image_math.cpp:1229
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
@@ -4967,15 +4986,15 @@ msgstr ""
 "不良ピクセルマップがこのプロファイルのカメラと一致しません。 - 置き換えが必要"
 "です。"
 
-#: indi_gui.cpp:457 indi_gui.cpp:488 nudge_lock.cpp:187 nudge_lock.cpp:194
+#: indi_gui.cpp:466 indi_gui.cpp:497 nudge_lock.cpp:187 nudge_lock.cpp:194
 msgid "Set"
 msgstr "セット"
 
-#: indi_gui.cpp:814
+#: indi_gui.cpp:829
 msgid "Loading INDI properties..."
 msgstr ""
 
-#: indi_gui.cpp:847
+#: indi_gui.cpp:862
 msgid "INDI Options"
 msgstr "INDIオプション"
 
@@ -5056,12 +5075,12 @@ msgstr "ガイドアシスタント"
 msgid "Recent uploads"
 msgstr "最近のアップロード"
 
-#: log_uploader.cpp:728 profile_wizard.cpp:358
+#: log_uploader.cpp:728 profile_wizard.cpp:373
 msgid "< Back"
 msgstr "< 戻る"
 
-#: log_uploader.cpp:731 log_uploader.cpp:1381 profile_wizard.cpp:363
-#: profile_wizard.cpp:803 profile_wizard.cpp:819
+#: log_uploader.cpp:731 log_uploader.cpp:1381 profile_wizard.cpp:378
+#: profile_wizard.cpp:826 profile_wizard.cpp:844
 msgid "Next >"
 msgstr "次へ >"
 
@@ -5314,530 +5333,530 @@ msgstr "ローテータ位置が変化。再キャリブレーションが必要
 msgid "Calibration was too far from equator, recalibration is needed."
 msgstr ""
 
-#: myframe.cpp:313 myframe.cpp:383
+#: myframe.cpp:313 myframe.cpp:380
 msgid "History"
 msgstr "履歴"
 
-#: myframe.cpp:316 myframe.cpp:384
+#: myframe.cpp:316 myframe.cpp:381
 msgid "Guide Stats"
 msgstr "ガイド統計"
 
-#: myframe.cpp:322 myframe.cpp:386
+#: myframe.cpp:322 myframe.cpp:383
 msgid "Star Profile"
 msgstr "星のプロファイル"
 
-#: myframe.cpp:325 myframe.cpp:387 target.cpp:52
+#: myframe.cpp:325 myframe.cpp:384 target.cpp:52
 msgid "Target"
 msgstr "ターゲット"
 
-#: myframe.cpp:466
+#: myframe.cpp:463
 msgid "&Save Image..."
 msgstr "&画像を保存..."
 
-#: myframe.cpp:466
+#: myframe.cpp:463
 msgid "Save current image"
 msgstr "現在の画像を保存"
 
-#: myframe.cpp:467
+#: myframe.cpp:464
 msgid "E&xit\tAlt-X"
 msgstr "&終了\tAlt-X"
 
-#: myframe.cpp:467
+#: myframe.cpp:464
 msgid "Quit this program"
 msgstr "プログラム終了"
 
-#: myframe.cpp:470
+#: myframe.cpp:467
 msgid "&Connect Equipment\tCtrl-C"
 msgstr "&機器接続\tCtrl-C"
 
-#: myframe.cpp:470
+#: myframe.cpp:467
 msgid "Connect or disconnect equipment"
 msgstr "機器の接続 / 切断"
 
-#: myframe.cpp:471
+#: myframe.cpp:468
 msgid "&Loop Exposures\tCtrl-L"
 msgstr "&露出ループ\tCtrl-L"
 
-#: myframe.cpp:471
+#: myframe.cpp:468
 msgid "Begin looping exposures"
 msgstr "露出ループの開始"
 
-#: myframe.cpp:473
+#: myframe.cpp:470
 msgid "&Guide\tCtrl-G"
 msgstr "&ガイド\tCtrl-G"
 
-#: myframe.cpp:473
+#: myframe.cpp:470
 msgid "Begin guiding"
 msgstr "ガイドの開始"
 
-#: myframe.cpp:475
+#: myframe.cpp:472
 msgid "&Stop\tCtrl-S"
 msgstr "&停止\tCtrl-S"
 
-#: myframe.cpp:475 myframe.cpp:997
+#: myframe.cpp:472 myframe.cpp:994
 msgid "Stop looping and guiding"
 msgstr "露出ループとガイドの停止"
 
-#: myframe.cpp:477
+#: myframe.cpp:474
 msgid "&Advanced Settings\tCtrl-A"
 msgstr "&詳細設定\tCtrl-A"
 
-#: myframe.cpp:478
+#: myframe.cpp:475
 msgid "&Camera Settings"
 msgstr "&カメラ設定"
 
-#: myframe.cpp:478 myframe.cpp:1003
+#: myframe.cpp:475 myframe.cpp:1000
 msgid "Camera settings"
 msgstr "カメラ設定"
 
-#: myframe.cpp:482
+#: myframe.cpp:479
 msgid "&Manual Guide"
 msgstr "&手動ガイド"
 
-#: myframe.cpp:482
+#: myframe.cpp:479
 msgid "Manual / test guide dialog"
 msgstr "手動ガイドのダイアログ表示"
 
-#: myframe.cpp:483
+#: myframe.cpp:480
 msgid "&Auto-select Star\tAlt-S"
 msgstr "&ガイド星の自動選択\tAlt-S"
 
-#: myframe.cpp:483
+#: myframe.cpp:480
 msgid "Automatically select star"
 msgstr "ガイド星の自動選択"
 
-#: myframe.cpp:484 myframe_events.cpp:984 myframe_events.cpp:991
+#: myframe.cpp:481 myframe_events.cpp:1054 myframe_events.cpp:1061
 msgid "Calibration Assistant..."
 msgstr "キャリブレーションアシスタント..."
 
-#: myframe.cpp:484
+#: myframe.cpp:481
 msgid "Slew to a preferred calibration position"
 msgstr "好ましいキャリブレーション位置に旋回する"
 
-#: myframe.cpp:485
+#: myframe.cpp:482
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "&キャリブレーションデータの参照\tAlt-C"
 
-#: myframe.cpp:486
+#: myframe.cpp:483
 msgid "Review calibration data from last successful calibration"
 msgstr "直近に成功したキャリブレーションデータの参照"
 
-#: myframe.cpp:489
+#: myframe.cpp:486
 msgid "Restore Calibration Data..."
 msgstr "キャリブレーションデータの再読込..."
 
-#: myframe.cpp:490
+#: myframe.cpp:487
 msgid "Restore calibration data from last successful calibration"
 msgstr "直近に成功したキャリブレーションデータを再読込"
 
-#: myframe.cpp:491
+#: myframe.cpp:488
 msgid "Enter Calibration Data..."
 msgstr "キャリブレーションデータの入力..."
 
-#: myframe.cpp:491
+#: myframe.cpp:488
 msgid "Manually enter the calibration data"
 msgstr "キャリブレーションデータを手動で入力"
 
-#: myframe.cpp:492
+#: myframe.cpp:489
 msgid "Flip Calibration Now"
 msgstr "今すぐキャリブレーションを切替え"
 
-#: myframe.cpp:492
+#: myframe.cpp:489
 msgid "Flip the calibration data now"
 msgstr "今すぐキャリブレーションデータを切替え"
 
-#: myframe.cpp:493
+#: myframe.cpp:490
 msgid "Clear Calibration Data..."
 msgstr "キャリブレーションデータクリア..."
 
-#: myframe.cpp:493
+#: myframe.cpp:490
 msgid "Clear calibration data currently in use"
 msgstr "使用中のキャリブレーションデータクリア"
 
-#: myframe.cpp:494
+#: myframe.cpp:491
 msgid "Modify Calibration"
 msgstr "キャリブレーションデータの操作"
 
-#: myframe.cpp:497
+#: myframe.cpp:494
 msgid "Adjust &Lock Position"
 msgstr "ロック位置の調整"
 
-#: myframe.cpp:497
+#: myframe.cpp:494
 msgid "Adjust the lock position"
 msgstr "ロック位置の調整"
 
-#: myframe.cpp:498
+#: myframe.cpp:495
 msgid "&Comet Tracking"
 msgstr "&彗星追尾"
 
-#: myframe.cpp:498
+#: myframe.cpp:495
 msgid "Run the Comet Tracking tool"
 msgstr "彗星追尾ツールの実行"
 
-#: myframe.cpp:499 myframe_events.cpp:1109 starcross_test.cpp:75
+#: myframe.cpp:496 myframe_events.cpp:1179 starcross_test.cpp:75
 msgid "Star-Cross Test"
 msgstr "スタークロステスト"
 
-#: myframe.cpp:499
+#: myframe.cpp:496
 msgid "Run a star-cross test for mount diagnostics"
 msgstr "マウント診断用のスタークロステストを実行"
 
-#: myframe.cpp:500
+#: myframe.cpp:497
 msgid "Calibrate meridian flip"
 msgstr "子午線反転の調整"
 
-#: myframe.cpp:501
+#: myframe.cpp:498
 msgid "Automatically determine the correct meridian flip settings"
 msgstr "正しい子午線反転設定を自動的に決定"
 
-#: myframe.cpp:502
+#: myframe.cpp:499
 msgid "&Guiding Assistant"
 msgstr "&ガイドアシスタント"
 
-#: myframe.cpp:502
+#: myframe.cpp:499
 msgid "Run the Guiding Assistant"
 msgstr "ガイドアシスタント起動"
 
-#: myframe.cpp:503
+#: myframe.cpp:500
 msgid "&Drift Align"
 msgstr "&ドリフトアライメント"
 
-#: myframe.cpp:504
-msgid "Align by analysing star drift near the celestial equator (Accurate)"
-msgstr "天の赤道付近の星の移動を解析してアライメントする (正確)"
+#: myframe.cpp:501
+msgid "Align by analyzing star drift near the celestial equator (Accurate)"
+msgstr ""
 
-#: myframe.cpp:505
+#: myframe.cpp:502
 msgid "&Polar Drift Align"
 msgstr "&ポーラドリフトアライメント"
 
-#: myframe.cpp:506
-msgid "Align by analysing star drift near the celestial pole (Simple)"
-msgstr "天の北極付近の星の移動を解析してアライメントする（簡易）"
+#: myframe.cpp:503
+msgid "Align by analyzing star drift near the celestial pole (Simple)"
+msgstr ""
 
-#: myframe.cpp:507
+#: myframe.cpp:504
 msgid "&Static Polar Align"
 msgstr "&静的ポーラアライメント（SPA）"
 
-#: myframe.cpp:508
+#: myframe.cpp:505
 msgid "Align by measuring the RA axis offset from the celestial pole (Fast)"
 msgstr "天極からの赤経軸オフセットを測定してアライメントする (速く)"
 
-#: myframe.cpp:510
+#: myframe.cpp:507
 msgid "Enable Server"
 msgstr "サーバを有効化"
 
-#: myframe.cpp:510
+#: myframe.cpp:507
 msgid "Enable PHD2 server capability"
 msgstr "PHD2サーバ機能を有効化"
 
-#: myframe.cpp:511 nudge_lock.cpp:163
+#: myframe.cpp:508 nudge_lock.cpp:163
 msgid "Sticky Lock Position"
 msgstr "ロック位置保持"
 
-#: myframe.cpp:512
+#: myframe.cpp:509
 msgid "Keep the same lock position when guiding starts"
 msgstr "ガイドがスタートするまでロック位置を保持する"
 
-#: myframe.cpp:515
+#: myframe.cpp:512
 msgid "Display Toolbar"
 msgstr "ツールバー表示"
 
-#: myframe.cpp:515
+#: myframe.cpp:512
 msgid "Enable / disable tool bar"
 msgstr "ツールバーの表示／非表示"
 
-#: myframe.cpp:516
+#: myframe.cpp:513
 msgid "Display &Graph"
 msgstr "&グラフ表示"
 
-#: myframe.cpp:516
+#: myframe.cpp:513
 msgid "Enable / disable graph"
 msgstr "グラフの表示／非表示"
 
-#: myframe.cpp:517
+#: myframe.cpp:514
 msgid "Display &Stats"
 msgstr "&統計情報表示"
 
-#: myframe.cpp:517
+#: myframe.cpp:514
 msgid "Enable / disable guide stats"
 msgstr "ガイド統計の表示／非表示"
 
-#: myframe.cpp:518
+#: myframe.cpp:515
 msgid "Display &AO Graph"
 msgstr "&AOグラフ表示"
 
-#: myframe.cpp:518
+#: myframe.cpp:515
 msgid "Enable / disable AO graph"
 msgstr "AOグラフの表示／非表示"
 
-#: myframe.cpp:519
+#: myframe.cpp:516
 msgid "Display &Target"
 msgstr "&ターゲット表示"
 
-#: myframe.cpp:519
+#: myframe.cpp:516
 msgid "Enable / disable target"
 msgstr "ターゲットの表示／非表示"
 
-#: myframe.cpp:520
+#: myframe.cpp:517
 msgid "Display Star &Profile"
 msgstr "&ガイド星プロファイル表示"
 
-#: myframe.cpp:520
+#: myframe.cpp:517
 msgid "Enable / disable star profile view"
 msgstr "ガイド星プロファイルの表示／非表示"
 
-#: myframe.cpp:522
+#: myframe.cpp:519
 msgid "&No Overlay"
 msgstr "&オーバーレイ表示なし"
 
-#: myframe.cpp:522
+#: myframe.cpp:519
 msgid "No additional crosshairs"
 msgstr "十字線を加えない"
 
-#: myframe.cpp:523
+#: myframe.cpp:520
 msgid "&Bullseye"
 msgstr "&標的眼(Bullseye)"
 
-#: myframe.cpp:523
+#: myframe.cpp:520
 msgid "Centered bullseye overlay"
 msgstr "標的眼（Bullseye）を中央にオーバーレイ"
 
-#: myframe.cpp:524
+#: myframe.cpp:521
 msgid "&Fine Grid"
 msgstr "&細かい格子"
 
-#: myframe.cpp:524 myframe.cpp:525
+#: myframe.cpp:521 myframe.cpp:522
 msgid "Grid overlay"
 msgstr "格子をオーバーレイ"
 
-#: myframe.cpp:525
+#: myframe.cpp:522
 msgid "&Coarse Grid"
 msgstr "&粗い格子"
 
-#: myframe.cpp:526
+#: myframe.cpp:523
 msgid "&RA/Dec"
 msgstr "&赤経(RA)/赤緯(Dec)"
 
-#: myframe.cpp:526
+#: myframe.cpp:523
 msgid "RA and Dec overlay"
 msgstr "赤経(RA)/赤緯(Dec)をオーバーレイ"
 
-#: myframe.cpp:527
+#: myframe.cpp:524
 msgid "Spectrograph S&lit"
 msgstr "分光器用スリット"
 
-#: myframe.cpp:527
+#: myframe.cpp:524
 msgid "Spectrograph slit overlay"
 msgstr "分光器スリットオーバーレイ"
 
-#: myframe.cpp:529
+#: myframe.cpp:526
 msgid "Slit Position..."
 msgstr "スリット位置..."
 
-#: myframe.cpp:531
+#: myframe.cpp:528
 msgid "Restore Window Positions"
 msgstr "ウィンドウ位置/サイズの初期化"
 
-#: myframe.cpp:532
+#: myframe.cpp:529
 msgid "Restore all windows to their default/docked positions"
 msgstr "全てのウィンドウをデフォルトの結合状態に戻します。"
 
-#: myframe.cpp:535
+#: myframe.cpp:532
 msgid "Dark &Library..."
 msgstr "ダーク &ライブラリ..."
 
-#: myframe.cpp:535
+#: myframe.cpp:532
 msgid "Build a dark library for this profile"
 msgstr "プロファイル毎にダークライブラリを構築"
 
-#: myframe.cpp:536
+#: myframe.cpp:533
 msgid "Bad-pixel &Map..."
 msgstr "不良ピクセル &マップ..."
 
-#: myframe.cpp:537
+#: myframe.cpp:534
 msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "不良ピクセルマップの作成と修正パラメーターの調整"
 
-#: myframe.cpp:538
+#: myframe.cpp:535
 msgid "Import From Profile..."
 msgstr "プロファイルから読込..."
 
-#: myframe.cpp:539
+#: myframe.cpp:536
 msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr "異なるプロファイルの既存ダークライブラリ/不良ピクセルマップの読込"
 
-#: myframe.cpp:542
+#: myframe.cpp:539
 msgid "Use &Dark Library"
 msgstr "ダークライブラリを使う"
 
-#: myframe.cpp:542
+#: myframe.cpp:539
 msgid "Use the the dark library for this profile"
 msgstr "プロファイル毎のダークライブラリを使います"
 
-#: myframe.cpp:544
+#: myframe.cpp:541
 msgid "Use &Bad-pixel Map"
 msgstr "不良ピクセルマップを使う"
 
-#: myframe.cpp:544
+#: myframe.cpp:541
 msgid "Use the bad-pixel map for this profile"
 msgstr "プロファイル毎の不良ピクセルマップを使います"
 
-#: myframe.cpp:549
+#: myframe.cpp:546
 msgid "&Save settings"
 msgstr "&設定の保存"
 
-#: myframe.cpp:549
+#: myframe.cpp:546
 msgid "Save current camera settings"
 msgstr "現在のカメラ設定保存"
 
-#: myframe.cpp:550
+#: myframe.cpp:547
 msgid "&Restore settings"
 msgstr "&設定の読込み"
 
-#: myframe.cpp:550
+#: myframe.cpp:547
 msgid "Restore camera settings"
 msgstr "カメラ設定を読込み"
 
-#: myframe.cpp:555
+#: myframe.cpp:552
 msgid "Show &Bookmarks\tb"
 msgstr "ブックマークの表示\tb"
 
-#: myframe.cpp:555
+#: myframe.cpp:552
 msgid "Hide or show bookmarks"
 msgstr "ブックマークの表示/非表示"
 
-#: myframe.cpp:558
+#: myframe.cpp:555
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "ロック位置のブックマーク\tShift-B"
 
-#: myframe.cpp:559
+#: myframe.cpp:556
 msgid "Set a bookmark at the current lock position"
 msgstr "現在のロック位置をブックマークする"
 
-#: myframe.cpp:561
+#: myframe.cpp:558
 msgid "Bookmark &Star Pos"
 msgstr "星の位置をブックマーク"
 
-#: myframe.cpp:562
+#: myframe.cpp:559
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "現在選択している星の位置をブックマークする"
 
-#: myframe.cpp:563
+#: myframe.cpp:560
 msgid "&Delete all\tCtrl-B"
 msgstr "全て削除\tCtrl-B"
 
-#: myframe.cpp:563
+#: myframe.cpp:560
 msgid "Remove all bookmarks"
 msgstr "全てのブックマークを解除"
 
-#: myframe.cpp:566
+#: myframe.cpp:563
 msgid "&About..."
 msgstr "&このソフトについて..."
 
-#: myframe.cpp:567
+#: myframe.cpp:564
 msgid "&Check for updates"
 msgstr "&アップデートの確認"
 
-#: myframe.cpp:567
+#: myframe.cpp:564
 msgid "Check for PHD2 software updates"
 msgstr "PHD2ソフトウェアのアップデートの確認"
 
-#: myframe.cpp:568
+#: myframe.cpp:565
 msgid "Online Support"
 msgstr "オンラインサポート"
 
-#: myframe.cpp:568
+#: myframe.cpp:565
 msgid "Ask for help in the PHD2 Forum"
 msgstr "PHD2フォーラムで助けを求める"
 
-#: myframe.cpp:569
+#: myframe.cpp:566
 msgid "Open Log Folder"
 msgstr "ログフォルダを開く"
 
-#: myframe.cpp:569
+#: myframe.cpp:566
 msgid "Open the log folder"
 msgstr "ログフォルダを開く"
 
-#: myframe.cpp:570
+#: myframe.cpp:567
 msgid "Upload Log Files..."
 msgstr "ログファイルのアップロード..."
 
-#: myframe.cpp:570
+#: myframe.cpp:567
 msgid "Upload log files for review"
 msgstr "ログファイルをアップロードして確認"
 
-#: myframe.cpp:571
+#: myframe.cpp:568
 msgid "&Contents...\tF1"
 msgstr "ユーザーガイド...\tF1"
 
-#: myframe.cpp:571
+#: myframe.cpp:568
 msgid "Full help"
 msgstr "全ヘルプ"
 
-#: myframe.cpp:572
+#: myframe.cpp:569
 msgid "&Impatient Instructions"
 msgstr "&簡単な機能紹介"
 
-#: myframe.cpp:572
+#: myframe.cpp:569
 msgid "Quick instructions for the impatient"
 msgstr "気短な人のための手短な説明"
 
-#: myframe.cpp:575
+#: myframe.cpp:572
 msgid "&File"
 msgstr "&ファイル"
 
-#: myframe.cpp:576
+#: myframe.cpp:573
 msgid "&Guide"
 msgstr "&ガイド"
 
-#: myframe.cpp:585
+#: myframe.cpp:582
 msgid "&Tools"
 msgstr "&ツール"
 
-#: myframe.cpp:586
+#: myframe.cpp:583
 msgid "&View"
 msgstr "&表示"
 
-#: myframe.cpp:587
+#: myframe.cpp:584
 msgid "&Darks"
 msgstr "&ダーク"
 
-#: myframe.cpp:588
+#: myframe.cpp:585
 msgid "&Bookmarks"
 msgstr "&ブックマーク"
 
-#: myframe.cpp:589
+#: myframe.cpp:586
 msgid "&Help"
 msgstr "&ヘルプ"
 
-#: myframe.cpp:663 myframe.cpp:885 myframe.cpp:978
+#: myframe.cpp:660 myframe.cpp:882 myframe.cpp:975
 #, c-format
 msgid "Custom: %g s"
 msgstr "カスタム: %g s"
 
-#: myframe.cpp:785
+#: myframe.cpp:782
 #, c-format
 msgid "%g s"
 msgstr ""
 
-#: myframe.cpp:788
+#: myframe.cpp:785
 #, c-format
 msgid "%.*f s"
 msgstr ""
 
-#: myframe.cpp:979
+#: myframe.cpp:976
 msgid "Edit Custom..."
 msgstr "カスタムの編集..."
 
-#: myframe.cpp:983
+#: myframe.cpp:980
 msgid "Camera exposure duration"
 msgstr "カメラ露出時間"
 
-#: myframe.cpp:988
+#: myframe.cpp:985
 msgid "Screen gamma (brightness)"
 msgstr "スクリーン・ガンマ（明るさ）"
 
-#: myframe.cpp:991
+#: myframe.cpp:988
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
@@ -5845,89 +5864,89 @@ msgstr ""
 "機器と接続。[Shift]を押しながらクリックすると \n"
 "直近に接続していた機器と再接続します。"
 
-#: myframe.cpp:992
+#: myframe.cpp:989
 msgid "Begin looping exposures for frame and focus"
 msgstr "露出ループの開始（フレームとフォーカス確認）"
 
-#: myframe.cpp:994
+#: myframe.cpp:991
 msgid "Auto-select Star. Shift-click to de-select star."
 msgstr ""
 "星を自動選択する。[Shift]キーを押しながらクリックすると星の選択が解除できま"
 "す。"
 
-#: myframe.cpp:996
+#: myframe.cpp:993
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr "ガイド開始。[Shift]+マウス左クリックで強制キャリブレーション"
 
-#: myframe.cpp:999
+#: myframe.cpp:996
 msgid "Exposure duration"
 msgstr "露出時間"
 
-#: myframe.cpp:1000
+#: myframe.cpp:997
 msgid "Gamma"
 msgstr "ガンマ"
 
-#: myframe.cpp:1067
+#: myframe.cpp:1064
 #, c-format
 msgid "Could not find help file %s"
 msgstr ""
 
-#: myframe.cpp:1230
+#: myframe.cpp:1227
 msgid "Trouble-shooting and Analysis"
 msgstr ""
 
-#: myframe.cpp:1250
+#: myframe.cpp:1247
 msgid ""
 "Don't show\n"
 " again"
 msgstr ""
 
-#: myframe.cpp:1694 myframe.cpp:1961
+#: myframe.cpp:1706 myframe.cpp:1975
 msgid "Looping"
 msgstr "ループ"
 
-#: myframe.cpp:1814
+#: myframe.cpp:1828
 msgid "Capturing single exposure"
 msgstr ""
 
-#: myframe.cpp:1884
+#: myframe.cpp:1898
 msgid "Waiting for devices..."
 msgstr "デバイス待ち..."
 
-#: myframe.cpp:1930
+#: myframe.cpp:1944
 msgid "Resumed"
 msgstr "再開"
 
-#: myframe.cpp:1979
+#: myframe.cpp:1993
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
 msgstr ""
 
-#: myframe.cpp:2091
+#: myframe.cpp:2105
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dither by %.2f,%.2f"
 
-#: myframe.cpp:2139
+#: myframe.cpp:2153
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "キャプチャがアクティブのままですが本当に終了しますか?"
 
-#: myframe.cpp:2140
+#: myframe.cpp:2154
 msgid "Confirm Exit"
 msgstr "終了確認"
 
-#: myframe.cpp:2415
+#: myframe.cpp:2429
 #, c-format
 msgid "FITS file is not of an image: %s"
 msgstr ""
 
-#: myframe.cpp:2423 usImage.cpp:459
+#: myframe.cpp:2437 usImage.cpp:466
 #, c-format
 msgid "Unsupported type or read error loading FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2433
+#: myframe.cpp:2447
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
@@ -5935,78 +5954,78 @@ msgstr ""
 "既存のダークライブラリには、互換性のないフォーマットのフレームがあります。"
 "ダークライブラリを最初から再構築してください。"
 
-#: myframe.cpp:2445
+#: myframe.cpp:2459
 #, c-format
 msgid "Memory allocation error reading FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2452
+#: myframe.cpp:2466
 #, c-format
 msgid "Error reading data from %s"
 msgstr ""
 
-#: myframe.cpp:2484 usImage.cpp:510
+#: myframe.cpp:2498 usImage.cpp:517
 #, c-format
 msgid "Error opening FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2550
+#: myframe.cpp:2564
 msgid ""
 "Dark library does not match the camera in this profile. Check that you are "
 "connected to the camera you want to use for guiding."
 msgstr ""
 
-#: myframe.cpp:2597
+#: myframe.cpp:2611
 msgid ""
 "Dark library and bad-pixel maps don't match the current camera. Check that "
 "you are connected to the camera you want to use for guiding."
 msgstr ""
 
-#: myframe.cpp:2629
+#: myframe.cpp:2643
 msgid "You must connect a camera before loading dark frames"
 msgstr "ダークフレームを読込む前にカメラと接続する必要があります"
 
-#: myframe.cpp:2636
+#: myframe.cpp:2650
 msgid "Darks not loaded"
 msgstr "ダークが読込まれていません"
 
-#: myframe.cpp:2643
+#: myframe.cpp:2657
 msgid "Darks loaded"
 msgstr "ダーク読込み"
 
-#: myframe.cpp:2656
+#: myframe.cpp:2670
 #, c-format
 msgid "Error saving darks FITS file %s"
 msgstr ""
 
-#: myframe.cpp:2849
+#: myframe.cpp:2863
 msgid ""
 "Binning or camera pixel size changed unexpectedly. You should use separate "
 "profiles for different image scales."
 msgstr ""
 
-#: myframe.cpp:2859
+#: myframe.cpp:2873
 msgid "Global Settings"
 msgstr "全体設定"
 
-#: myframe.cpp:2906
+#: myframe.cpp:2920
 #, c-format
 msgid "Enter a focal length in millimeters, between %.f and %.f"
 msgstr ""
 
-#: myframe.cpp:2956 myframe.cpp:3041
+#: myframe.cpp:2970 myframe.cpp:3055
 msgid "System default"
 msgstr "システムデフォルト"
 
-#: myframe.cpp:2968
+#: myframe.cpp:2982
 msgid "Language-Name"
 msgstr "日本語"
 
-#: myframe.cpp:3009
+#: myframe.cpp:3023
 msgid "Reset Configuration"
 msgstr "設定リセット"
 
-#: myframe.cpp:3011
+#: myframe.cpp:3025
 msgid ""
 "Reset all configuration and program settings to fresh install status. This "
 "will require restarting PHD2"
@@ -6014,11 +6033,11 @@ msgstr ""
 "すべての設定とプログラム設定をリセットして、新規インストール状態にします。"
 "PHD2を再起動する必要があります。"
 
-#: myframe.cpp:3012
+#: myframe.cpp:3026
 msgid "Reset \"Don't Show Again\" messages"
 msgstr "「次回から表示しない」メッセージをリセットする"
 
-#: myframe.cpp:3014
+#: myframe.cpp:3028
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't show this "
 "again\"."
@@ -6026,27 +6045,27 @@ msgstr ""
 "「このページを表示しない」をチェックしたときに表示されなかったメッセージを 復"
 "元します。"
 
-#: myframe.cpp:3016
+#: myframe.cpp:3030
 msgid "2x2 mean"
 msgstr "2x2 平均値"
 
-#: myframe.cpp:3016
+#: myframe.cpp:3030
 msgid "3x3 median"
 msgstr "3x3 中央値"
 
-#: myframe.cpp:3022
+#: myframe.cpp:3036
 msgid "Noise Reduction"
 msgstr "ノイズ低減"
 
-#: myframe.cpp:3023
+#: myframe.cpp:3037
 msgid "Technique to reduce noise in images"
 msgstr "画像のノイズを低減する手法"
 
-#: myframe.cpp:3029
+#: myframe.cpp:3043
 msgid "Time Lapse (ms)"
 msgstr "間欠動作(ms)"
 
-#: myframe.cpp:3030
+#: myframe.cpp:3044
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -6056,11 +6075,11 @@ msgstr ""
 "露出時間の短さに対してガイドコマンドの送出頻度が低く待ち時間が発生する場合に"
 "有用。"
 
-#: myframe.cpp:3038
+#: myframe.cpp:3052
 msgid "Focal length (mm)"
 msgstr "焦点距離(mm)"
 
-#: myframe.cpp:3039
+#: myframe.cpp:3053
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -6068,73 +6087,73 @@ msgstr ""
 "ガイド鏡の焦点距離。ガイドエラーの量を秒角で表示するために、カメラのピクセル"
 "サイズとともに使用。"
 
-#: myframe.cpp:3044
+#: myframe.cpp:3058
 msgid "Language"
 msgstr "言語"
 
-#: myframe.cpp:3045
+#: myframe.cpp:3059
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s で使う言語。反映させるにはPHDを再起動する必要があります。"
 
-#: myframe.cpp:3050 phdupdate.cpp:941 phdupdate.cpp:947
+#: myframe.cpp:3064 phdupdate.cpp:941 phdupdate.cpp:947
 msgid "Software Update"
 msgstr "ソフトウェア更新"
 
-#: myframe.cpp:3051
+#: myframe.cpp:3065
 msgid "Automatically check for updates"
 msgstr "アップデートを自動的にチェック"
 
-#: myframe.cpp:3052
+#: myframe.cpp:3066
 msgid "Check for software updates when PHD2 starts (recommended)"
 msgstr "PHD2起動時にソフトウェアアップデートを確認する（推奨）"
 
-#: myframe.cpp:3054
+#: myframe.cpp:3068
 msgid "Only check for major releases"
 msgstr "主要なリリースのみチェック"
 
-#: myframe.cpp:3055
+#: myframe.cpp:3069
 msgid "Ignore minor (development) releases when checking for updates"
 msgstr "アップデートをチェックする際、開発リリースを除外する。"
 
-#: myframe.cpp:3062
+#: myframe.cpp:3076
 msgid "Log File Location"
 msgstr "ログファイルの場所"
 
-#: myframe.cpp:3065
+#: myframe.cpp:3079
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "ガイドおよびデバッグログ保存フォルダを指定します。"
 
-#: myframe.cpp:3066
+#: myframe.cpp:3080
 msgid "Browse..."
 msgstr "参照..."
 
-#: myframe.cpp:3079
+#: myframe.cpp:3093
 msgid "Enable diagnostic image logging"
 msgstr "診断画像ログの有効化"
 
-#: myframe.cpp:3080
+#: myframe.cpp:3094
 msgid "Save guider images based on options below"
 msgstr "以下のオプションに基づき、ガイダー画像を保存します。"
 
-#: myframe.cpp:3083
+#: myframe.cpp:3097
 msgid "Save Guider Images"
 msgstr "ガイダー画像の保存"
 
-#: myframe.cpp:3086
+#: myframe.cpp:3100
 msgid "For all lost-star frames"
 msgstr "全て失われた星のフレーム"
 
-#: myframe.cpp:3087
+#: myframe.cpp:3101
 msgid "Save guider image whenever a lost-star event occurs"
 msgstr "失われた星の発生時にガイダー画像を保存する"
 
-#: myframe.cpp:3089
+#: myframe.cpp:3103
 msgid "For all Auto-select Star frames"
 msgstr "全てのスターフレームの自動選択"
 
-#: myframe.cpp:3090
+#: myframe.cpp:3104
 msgid ""
 "Save guider image when a star auto-selection is made. Note: the image is "
 "always saved when star auto-selection fails, regardless of this setting."
@@ -6142,11 +6161,11 @@ msgstr ""
 "星の自動選択時にガイダー画像を保存する。注意：この設定 に関係なく、星の自動選"
 "択に失敗した場合は常に画像が保存されます。"
 
-#: myframe.cpp:3094
+#: myframe.cpp:3108
 msgid "When relative error exceeds"
 msgstr "相対誤差が次の値を超えた場合"
 
-#: myframe.cpp:3096
+#: myframe.cpp:3110
 msgid ""
 "Save guider images when the error for the current frame exceeds the average "
 "error by this factor. For example, if the average (RMS) error is 0.5 pixels, "
@@ -6156,18 +6175,18 @@ msgstr ""
 "ます。例えば、平均（RMS）誤差が0.5ピクセルで、現在のフレームの誤差が1.5ピクセ"
 "ルの場合、相対誤差は3"
 
-#: myframe.cpp:3102
+#: myframe.cpp:3116
 msgid ""
 "Relative error threshold. Relative error is the ratio between the current "
 "frame's error and the average error"
 msgstr ""
 "相対誤差のしきい値。相対誤差とは、現在のフレームの誤差 と平均誤差の比率です。"
 
-#: myframe.cpp:3107
+#: myframe.cpp:3121
 msgid "When absolute error exceeds (pixels)"
 msgstr "絶対誤差が次の値を超えた場合(pix)"
 
-#: myframe.cpp:3109
+#: myframe.cpp:3123
 msgid ""
 "Save guider images when the distance between the guide star and the lock "
 "position exceeds this many pixels"
@@ -6175,69 +6194,69 @@ msgstr ""
 "ガイド星とロック位置の間の距離がこのピクセル数を超えると、ガイダー画像を保存"
 "します"
 
-#: myframe.cpp:3113
+#: myframe.cpp:3127
 msgid "Absolute error threshold in pixels"
 msgstr "絶対誤差しきい値（ピクセル単位）"
 
-#: myframe.cpp:3118
+#: myframe.cpp:3132
 msgid "Until this count is reached"
 msgstr "このカウントに達するまで"
 
-#: myframe.cpp:3119
+#: myframe.cpp:3133
 msgid ""
 "Save each guider image until the specified number of images have been saved"
 msgstr "指定された枚数まで、各ガイダー画像を保存する"
 
-#: myframe.cpp:3122
+#: myframe.cpp:3136
 msgid "Number of images to save"
 msgstr "保存する画像枚数"
 
-#: myframe.cpp:3137
+#: myframe.cpp:3151
 msgid "Dither Settings"
 msgstr "ディザ設定"
 
-#: myframe.cpp:3138
+#: myframe.cpp:3152
 msgid "Random"
 msgstr "ランダム"
 
-#: myframe.cpp:3139
+#: myframe.cpp:3153
 msgid ""
 "Each dither command moves the lock position a random distance on each axis"
 msgstr "各ディザコマンドは、各軸のロック位置をランダムに移動させる"
 
-#: myframe.cpp:3140
+#: myframe.cpp:3154
 msgid "Spiral"
 msgstr "スパイラル"
 
-#: myframe.cpp:3141
+#: myframe.cpp:3155
 msgid "Each dither command moves the lock position along a spiral path"
 msgstr "各ディザコマンドは、スパイラル状のパスに沿ってロック位置を移動します。"
 
-#: myframe.cpp:3143
+#: myframe.cpp:3157
 msgid "Mode: "
 msgstr "モード : "
 
-#: myframe.cpp:3148
+#: myframe.cpp:3162
 msgid "RA only"
 msgstr "赤経のみ"
 
-#: myframe.cpp:3149
+#: myframe.cpp:3163
 msgid "Constrain dither to RA only"
 msgstr "ディザリングを赤経にのみ限定する"
 
-#: myframe.cpp:3155
+#: myframe.cpp:3169
 msgid "Scaling for dither commands. Default = 1.0 (0.1-100.0)"
 msgstr "ディザコマンドの調整、既定値 = 1.0 (0.1-100.0)"
 
-#: myframe.cpp:3159 testguide.cpp:126
+#: myframe.cpp:3173 testguide.cpp:126
 msgid "Scale"
 msgstr "スケール"
 
-#: myframe.cpp:3167 profile_wizard.cpp:346
+#: myframe.cpp:3181 profile_wizard.cpp:361
 msgid "Auto restore calibration"
 msgstr "自動的にキャリブレーションを読込"
 
-#: myframe.cpp:3170
+#: myframe.cpp:3184
 msgid ""
 "For this equipment profile, automatically restore data from last successful "
 "calibration after gear is connected."
@@ -6245,39 +6264,39 @@ msgstr ""
 "この機器プロファイルでは、機器を接続した後、最後に成功したキャリブレーション"
 "から自動的にデータを復元します。"
 
-#: myframe.cpp:3187 scope.cpp:2064
+#: myframe.cpp:3201 scope.cpp:2064
 msgid "Min"
 msgstr "最小"
 
-#: myframe.cpp:3187
+#: myframe.cpp:3201
 msgid "Auto exposure minimum duration"
 msgstr "自動露出の最小時間"
 
-#: myframe.cpp:3188 scope.cpp:2067
+#: myframe.cpp:3202 scope.cpp:2067
 msgid "Max"
 msgstr "最大"
 
-#: myframe.cpp:3188
+#: myframe.cpp:3202
 msgid "Auto exposure maximum duration"
 msgstr "自動露出の最大時間"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3204
 msgid "Target SNR"
 msgstr "ターゲットのS/N比"
 
-#: myframe.cpp:3190
+#: myframe.cpp:3204
 msgid "Auto exposure target SNR value"
 msgstr "自動露出における目標S/N比"
 
-#: myframe.cpp:3192
+#: myframe.cpp:3206
 msgid "Auto Exposure"
 msgstr "自動露出"
 
-#: myframe.cpp:3200
+#: myframe.cpp:3214
 msgid "Use Variable Exposure Delays"
 msgstr "可変露出遅延を使用"
 
-#: myframe.cpp:3202
+#: myframe.cpp:3216
 msgid ""
 "Use \"short\" delay for calibration, looping, dithering, GA, \"long\" delay "
 "for normal guiding"
@@ -6285,41 +6304,41 @@ msgstr ""
 "キャリブレーション、ループ、ディザリング、GA には「短い」遅延を使用し、通常の"
 "ガイドには「長い」遅延を使用します"
 
-#: myframe.cpp:3209
+#: myframe.cpp:3223
 msgid "Short delay (sec)"
 msgstr "短時間遅延(秒)"
 
-#: myframe.cpp:3210
+#: myframe.cpp:3224
 msgid "Short delay for calibration, looping, dithering, GA"
 msgstr "キャリブレーション、ループ、ディザリング、GA用の短時間遅延"
 
-#: myframe.cpp:3211
+#: myframe.cpp:3225
 msgid "Long delay (sec)"
 msgstr "長時間遅延(秒)"
 
-#: myframe.cpp:3212
+#: myframe.cpp:3226
 msgid "Long delay for normal guiding"
 msgstr "通常のガイドに長時間遅延"
 
-#: myframe.cpp:3214
+#: myframe.cpp:3228
 msgid "Variable Exposure Delay (High-precision encoder mounts)"
 msgstr "可変露出遅延（高精度エンコーダ搭載）"
 
-#: myframe.cpp:3306
+#: myframe.cpp:3320
 msgid ""
 "This will reset all PHD2 configuration values and restart the program.  Are "
 "you sure?"
 msgstr ""
 
-#: myframe.cpp:3307
+#: myframe.cpp:3321
 msgid "Confirmation"
 msgstr "確認"
 
-#: myframe.cpp:3340
+#: myframe.cpp:3354
 msgid "Restart PHD2"
 msgstr ""
 
-#: myframe.cpp:3341
+#: myframe.cpp:3355
 msgid ""
 "You must restart PHD2 for the language change to take effect.\n"
 "Would you like to restart PHD2 now?"
@@ -6380,7 +6399,7 @@ msgstr ""
 msgid "Instructions"
 msgstr "機能説明"
 
-#: myframe_events.cpp:195 profile_wizard.cpp:721
+#: myframe_events.cpp:195 profile_wizard.cpp:736
 msgid "Introduction"
 msgstr "導入"
 
@@ -6422,26 +6441,26 @@ msgstr "画像は %s で保存できませんでした。"
 msgid "%s saved"
 msgstr "%s 保存"
 
-#: myframe_events.cpp:382 myframe_events.cpp:641 myframe_events.cpp:744
+#: myframe_events.cpp:382 myframe_events.cpp:711 myframe_events.cpp:814
 msgid "Please connect to a camera first"
 msgstr "先にカメラと接続して下さい。"
 
-#: myframe_events.cpp:382 myframe_events.cpp:641 myframe_events.cpp:744
+#: myframe_events.cpp:382 myframe_events.cpp:711 myframe_events.cpp:814
 msgid "Info"
 msgstr "情報"
 
-#: myframe_events.cpp:410 myframe_events.cpp:481
+#: myframe_events.cpp:411 myframe_events.cpp:551
 msgid "Stopped."
 msgstr "停止"
 
-#: myframe_events.cpp:429
+#: myframe_events.cpp:498
 msgid ""
 "For refining the Bad-pixel Map PHD2 is now displaying raw camera data "
 "frames, which are a different size from ordinary guide frames for this "
 "camera."
 msgstr ""
 
-#: myframe_events.cpp:582
+#: myframe_events.cpp:652
 #, c-format
 msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and "
@@ -6449,42 +6468,42 @@ msgid ""
 "lower and try again."
 msgstr ""
 
-#: myframe_events.cpp:591
+#: myframe_events.cpp:661
 #, c-format
 msgid ""
 "The AO exceeded its travel limit stepping from (%d, %d) to (%d, %d) and has "
 "been re-centered. Try reducing the AO Travel setting to %d or lower."
 msgstr ""
 
-#: myframe_events.cpp:656
+#: myframe_events.cpp:726
 msgid "You must connect a camera before loading a dark library"
 msgstr "ダークライブラリを読み込む前にカメラと接続する必要があります。"
 
-#: myframe_events.cpp:683
+#: myframe_events.cpp:753
 msgid "Dark library unloaded"
 msgstr "ダークライブラリ破棄"
 
-#: myframe_events.cpp:699
+#: myframe_events.cpp:769
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr "不良ピクセルマップを読込む前にカメラと接続する必要があります。"
 
-#: myframe_events.cpp:714
+#: myframe_events.cpp:784
 msgid "Defect map loaded"
 msgstr "欠陥マップを読込みました"
 
-#: myframe_events.cpp:718
+#: myframe_events.cpp:788
 msgid "Defect map not loaded"
 msgstr "欠陥マップが読込まれていない"
 
-#: myframe_events.cpp:730
+#: myframe_events.cpp:800
 msgid "Bad-pixel map unloaded"
 msgstr "不良ピクセルマップのアンロード"
 
-#: myframe_events.cpp:878
+#: myframe_events.cpp:948
 msgid "Guider"
 msgstr ""
 
-#: myframe_events.cpp:965
+#: myframe_events.cpp:1035
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
@@ -6495,7 +6514,7 @@ msgstr ""
 "防ぎます。「ダーク」メニューからダークライブラリまたは不良ピクセル\n"
 "マップを構築します。"
 
-#: myframe_events.cpp:982
+#: myframe_events.cpp:1052
 msgid ""
 "Scope isn't pointing in recommended sky area for calibration - run the "
 "Calibration Assistant to improve results."
@@ -6503,11 +6522,11 @@ msgstr ""
 "スコープがキャリブレーションに推奨される空の領域を指していません - キャリブ"
 "レーションアシスタントを実行して結果を改善してください。"
 
-#: myframe_events.cpp:984 myframe_events.cpp:991
+#: myframe_events.cpp:1054 myframe_events.cpp:1061
 msgid "Calibrate here"
 msgstr "ここで調整する"
 
-#: myframe_events.cpp:987
+#: myframe_events.cpp:1057
 msgid ""
 "With the scope pointing this close to the pole, calibration can be degraded "
 "and may "
@@ -6515,7 +6534,7 @@ msgstr ""
 "このようにポールに近い位置にスコープを向けると、キャリブレーションが低下する"
 "可能性があり、場合によっては"
 
-#: myframe_events.cpp:988
+#: myframe_events.cpp:1058
 msgid ""
 "fail altogether.  Run the Calibration Assistant and follow the instructions "
 "to eliminate these risks, "
@@ -6523,40 +6542,40 @@ msgstr ""
 "完全に失敗する可能性があります。 キャリブレーションアシスタントを実行し、指示"
 "に従って、これらのリスクを排除してください、"
 
-#: myframe_events.cpp:990
+#: myframe_events.cpp:1060
 msgid ""
 "including slewing the scope as close as practical to the recommended "
 "position."
 msgstr "スコープを推奨位置にできるだけ近づけるなどしてください。"
 
-#: myframe_events.cpp:1038
+#: myframe_events.cpp:1108
 msgid "Are you sure you want to force recalibration?"
 msgstr ""
 
-#: myframe_events.cpp:1039
+#: myframe_events.cpp:1109
 msgid "Force Recalibration"
 msgstr "強制キャリブレーション"
 
-#: myframe_events.cpp:1092 testguide.cpp:158
+#: myframe_events.cpp:1162 testguide.cpp:158
 msgid "Manual Guide"
 msgstr "手動ガイド"
 
-#: myframe_events.cpp:1125 pierflip_tool.cpp:78
+#: myframe_events.cpp:1195 pierflip_tool.cpp:78
 msgid "Meridian Flip Calibration Tool"
 msgstr "子午線反転キャリブレーションツール"
 
-#: myframe_events.cpp:1184
+#: myframe_events.cpp:1254
 msgid ""
 "With your current setting for Dec guide mode, this version of PHD2 will "
 "dither in Declination. To restore the old behavior you can set the RA-only "
 "option in the Dither Settings of the Advanced Dialog."
 msgstr ""
 
-#: myframe_events.cpp:1187
+#: myframe_events.cpp:1257
 msgid "Set RA-only now"
 msgstr ""
 
-#: myframe_events.cpp:1207
+#: myframe_events.cpp:1277
 msgid ""
 "It looks like this is a first-time connection to your camera and mount. The "
 "Setup Wizard can help\n"
@@ -6569,15 +6588,15 @@ msgstr ""
 "基本的ガイドパラメータを設定するのを助けます。\n"
 "セットアップウィザードを使用しますか？"
 
-#: myframe_events.cpp:1210 profile_wizard.cpp:1382
+#: myframe_events.cpp:1280 profile_wizard.cpp:1504
 msgid "Yes"
 msgstr "はい"
 
-#: myframe_events.cpp:1210 profile_wizard.cpp:1384
+#: myframe_events.cpp:1280 profile_wizard.cpp:1506
 msgid "No"
 msgstr "いいえ"
 
-#: myframe_events.cpp:1210
+#: myframe_events.cpp:1280
 msgid "Setup Wizard Recommendation"
 msgstr "セットアップウィザード推奨"
 
@@ -6661,11 +6680,11 @@ msgstr "ロック位置を保存された値(%.2f,%.2f)にセットしますか�
 msgid "Restore saved Lock Pos"
 msgstr "保存されたロック位置の再読込み"
 
-#: parallelport_win32.cpp:67
+#: parallelport_win32.cpp:69
 msgid "Select Parallel Port"
 msgstr "パラレルポートの選択"
 
-#: parallelport_win32.cpp:74
+#: parallelport_win32.cpp:76
 msgid "Custom Port Address:"
 msgstr "カスタムポートアドレス:"
 
@@ -7049,28 +7068,32 @@ msgstr ""
 msgid "Angle: %.f deg"
 msgstr ""
 
-#: profile_wizard.cpp:171
+#: profile_wizard.cpp:182
 #, c-format
 msgid "%s:"
 msgstr ""
 
-#: profile_wizard.cpp:194
+#: profile_wizard.cpp:205
 msgid "New Profile Wizard"
 msgstr "新しいプロファイルのウィザード"
 
-#: profile_wizard.cpp:197
+#: profile_wizard.cpp:209
 msgid "New Profile Wizard - "
 msgstr "新しいプロファイルウィザード - "
 
-#: profile_wizard.cpp:230
+#: profile_wizard.cpp:242
 msgid "More Info"
 msgstr "詳細情報"
 
-#: profile_wizard.cpp:244
+#: profile_wizard.cpp:256
 msgid "Gear"
 msgstr "ギア"
 
-#: profile_wizard.cpp:258
+#: profile_wizard.cpp:259
+msgid "Device Id:"
+msgstr ""
+
+#: profile_wizard.cpp:273
 msgid ""
 "Get this value from your camera documentation or from an online source.  You "
 "can use the up/down control or type in a value directly. If the pixels "
@@ -7080,12 +7103,12 @@ msgstr ""
 "ダウンコントロールを使用するか、値を直接入力することができます。ピクセルが正"
 "方形でない場合は、X/Y寸法の大きい方を入力します。"
 
-#: profile_wizard.cpp:260
+#: profile_wizard.cpp:275
 #, c-format
 msgid "Guide camera un-binned pixel size (%s)"
 msgstr "ガイドカメラピクセルサイズ (%s)"
 
-#: profile_wizard.cpp:267
+#: profile_wizard.cpp:282
 msgid ""
 "If your camera supports binning (many do not), you can choose a binning "
 "value > 1.  With long focal length guide scopes and OAGs, binning can allow "
@@ -7097,11 +7120,11 @@ msgstr ""
 "よってより暗いガイド星を使用することができます。一般的な設定では、ビニングは1"
 "のままが良いでしょう。"
 
-#: profile_wizard.cpp:273
+#: profile_wizard.cpp:288
 msgid "Binning level"
 msgstr "ビニングレベル"
 
-#: profile_wizard.cpp:283
+#: profile_wizard.cpp:298
 msgid ""
 "This is the focal length of the guide scope - or the imaging scope if you "
 "are using an off-axis-guider or adaptive optics device (Focal length = "
@@ -7109,24 +7132,24 @@ msgid ""
 "165mm. Recommended minimum is 100mm"
 msgstr ""
 
-#: profile_wizard.cpp:291
+#: profile_wizard.cpp:306
 msgid "Guide scope focal length (mm)"
 msgstr "ガイド鏡の焦点距離(mm)"
 
-#: profile_wizard.cpp:292
+#: profile_wizard.cpp:307
 msgid "Focal length less than recommended minimum (100mm)"
 msgstr ""
 
-#: profile_wizard.cpp:308 profile_wizard.cpp:1274
+#: profile_wizard.cpp:323 profile_wizard.cpp:1396
 #, c-format
 msgid "Pixel scale: %8.2f\"/px"
 msgstr "ピクセルスケール: %8.2f”/px"
 
-#: profile_wizard.cpp:309
+#: profile_wizard.cpp:324
 msgid "The pixel scale of your guide configuration, arc-seconds per pixel"
 msgstr ""
 
-#: profile_wizard.cpp:322
+#: profile_wizard.cpp:337
 #, c-format
 msgid ""
 "The mount guide speed you will use for calibration and guiding, expressed as "
@@ -7135,26 +7158,26 @@ msgid ""
 "most cases"
 msgstr ""
 
-#: profile_wizard.cpp:328
+#: profile_wizard.cpp:343
 msgid "Mount guide speed (n.n x sidereal)"
 msgstr "マウントガイド速度 (n.n x 恒星時)"
 
-#: profile_wizard.cpp:330
+#: profile_wizard.cpp:345
 msgid "Mount has high-precision encoders on both axes"
 msgstr ""
 
-#: profile_wizard.cpp:331
+#: profile_wizard.cpp:346
 msgid ""
 "Mount has high-precision encoders on both axes with little or no Dec "
 "backlash (e.g. 10Micron, Astro-Physics AE, Planewave, iOptron EC2 or other "
 "high-end mounts"
 msgstr ""
 
-#: profile_wizard.cpp:343
+#: profile_wizard.cpp:358
 msgid "Build dark library"
 msgstr "ダークライブラリの構築"
 
-#: profile_wizard.cpp:345
+#: profile_wizard.cpp:360
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
@@ -7162,7 +7185,7 @@ msgstr ""
 "これをチェックすると、このプロファイルについてのダークライブラリ構築プロセス"
 "を自動的に開始します。"
 
-#: profile_wizard.cpp:348
+#: profile_wizard.cpp:363
 msgid ""
 "Check this to automatically re-use the last calibration when the profile is "
 "loaded. For this to work, the rotational orientation of the guide camera and "
@@ -7170,19 +7193,19 @@ msgid ""
 "between imaging sessions."
 msgstr ""
 
-#: profile_wizard.cpp:351
+#: profile_wizard.cpp:366
 msgid "Profile Name"
 msgstr "プロファイル名"
 
-#: profile_wizard.cpp:359
+#: profile_wizard.cpp:374
 msgid "Back up to the previous screen"
 msgstr "前画面に戻る"
 
-#: profile_wizard.cpp:364 profile_wizard.cpp:804 profile_wizard.cpp:820
+#: profile_wizard.cpp:379 profile_wizard.cpp:827 profile_wizard.cpp:845
 msgid "Move forward to next screen"
 msgstr "次画面に進む"
 
-#: profile_wizard.cpp:407
+#: profile_wizard.cpp:422
 msgid ""
 "This short sequence of steps will help you identify the equipment you want "
 "to use for guiding and will associate it with a profile name of your choice. "
@@ -7208,7 +7231,7 @@ msgstr ""
 "方」の項をご覧\n"
 "ください。"
 
-#: profile_wizard.cpp:417
+#: profile_wizard.cpp:432
 msgid ""
 "Select your guide camera from the list.  All cameras supported by PHD2 and "
 "all installed ASCOM cameras are shown. If your camera is not shown, it is "
@@ -7232,7 +7255,7 @@ msgstr ""
 "示され、カメラがビニングに対応している場合は、ビニングレベルを選択することが"
 "できます。"
 
-#: profile_wizard.cpp:427
+#: profile_wizard.cpp:442
 #, c-format
 msgid ""
 "Select your mount interface from the list.  This determines how PHD2 will "
@@ -7246,11 +7269,11 @@ msgid ""
 "immediately so PHD2 can read the guide speed for you."
 msgstr ""
 
-#: profile_wizard.cpp:440 profile_wizard.cpp:752
+#: profile_wizard.cpp:455 profile_wizard.cpp:771
 msgid "Simulator"
 msgstr ""
 
-#: profile_wizard.cpp:442
+#: profile_wizard.cpp:457
 msgid ""
 "The 'simulator' camera/mount interface doesn't provide pointing information, "
 "so PHD2 will not be able to automatically adjust guiding for side-of-pier "
@@ -7262,7 +7285,7 @@ msgstr ""
 "グ情報を提供する 「Auxマウント」接続を選択することで、これらの機能を有効にす"
 "ることができます。"
 
-#: profile_wizard.cpp:451
+#: profile_wizard.cpp:466
 msgid ""
 "The mount interface you chose in the previous step doesn't provide pointing "
 "information, so PHD2 will not be able to automatically adjust guiding for "
@@ -7277,7 +7300,7 @@ msgstr ""
 "利用できます。Auxマウントインターフェースは姿勢情報取得にだけ使われ\n"
 "ガイドコマンドは送りません。"
 
-#: profile_wizard.cpp:459
+#: profile_wizard.cpp:474
 msgid ""
 "If you have an adaptive optics (AO) device, you can select it here.  The AO "
 "device will be used for high speed, small guiding corrections, while the "
@@ -7289,7 +7312,7 @@ msgstr ""
 "修正に使われます。両方のインターフェースのキャリブレーションは、自動的に\n"
 "行われます。"
 
-#: profile_wizard.cpp:465
+#: profile_wizard.cpp:480
 msgid ""
 "If you have an ASCOM or INDI-compatible rotator device, you can select it "
 "here.  This will allow PHD2 to automatically adjust calibration when the "
@@ -7304,7 +7327,7 @@ msgstr ""
 "での\n"
 "再キャリブレーションが必要になります"
 
-#: profile_wizard.cpp:471
+#: profile_wizard.cpp:486
 msgid ""
 "Your profile is complete and ready to save.  Give it a name and, optionally, "
 "build a dark-frame library for it. This is strongly recommended for best "
@@ -7323,11 +7346,11 @@ msgstr ""
 "PHD2を初めて使用する場合や問題が発生した場合は、「ヘルプ」機能でサポートを\n"
 "受けてください。"
 
-#: profile_wizard.cpp:520
+#: profile_wizard.cpp:535
 msgid "Configuration Suggestion"
 msgstr "構成提案"
 
-#: profile_wizard.cpp:527
+#: profile_wizard.cpp:542
 msgid ""
 "This configuration doesn't provide PHD2 with any information about the "
 "scope's pointing position.  This means you will need to recalibrate\n"
@@ -7345,92 +7368,92 @@ msgstr ""
 "ウント接続を選択する必要があります。\n"
 "詳細については、「機器接続」のヘルプガイドを参照してください。"
 
-#: profile_wizard.cpp:536
+#: profile_wizard.cpp:551
 msgid ""
 "Please make sure the EQMOD ASCOM settings are configured for PHD2 according "
 "to this document: \n"
 msgstr ""
 
-#: profile_wizard.cpp:538
+#: profile_wizard.cpp:553
 msgid "Open EQMOD document..."
 msgstr ""
 
-#: profile_wizard.cpp:545
+#: profile_wizard.cpp:560
 msgid "Go Back"
 msgstr "戻る"
 
-#: profile_wizard.cpp:547
+#: profile_wizard.cpp:562
 msgid "Proceed"
 msgstr "続行"
 
-#: profile_wizard.cpp:549
+#: profile_wizard.cpp:564
 msgid "Don't Ask"
 msgstr "聞かないで"
 
-#: profile_wizard.cpp:625
+#: profile_wizard.cpp:640
 msgid ""
 "Please specify camera type, guider focal length, camera bit-depth, and guide "
 "camera pixel size"
 msgstr ""
 
-#: profile_wizard.cpp:651
+#: profile_wizard.cpp:666
 msgid "Please select a mount type to handle guider commands"
 msgstr "ガイドコマンドによる操作のために、マウントの種類を選択してください。"
 
-#: profile_wizard.cpp:682
+#: profile_wizard.cpp:697
 msgid "Please specify a name for the profile."
 msgstr "プロファイルの名前を指定してください。"
 
-#: profile_wizard.cpp:686
+#: profile_wizard.cpp:701
 msgid ""
 "There is already a profile with that name. Please choose a different name."
 msgstr "その名前のプロファイルはすでにあります。別の名前を付けてください。"
 
-#: profile_wizard.cpp:728
+#: profile_wizard.cpp:745
 msgid "Welcome to the PHD2 'first light' wizard"
 msgstr "PHD2「ファーストライト」ウィザードへようこそ"
 
-#: profile_wizard.cpp:733
+#: profile_wizard.cpp:750
 msgid "Choose a Guide Camera"
 msgstr "ガイドカメラ選択"
 
-#: profile_wizard.cpp:735
+#: profile_wizard.cpp:752
 msgid "Guide Camera:"
 msgstr "ガイドカメラ:"
 
-#: profile_wizard.cpp:747
+#: profile_wizard.cpp:766
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "setup"
 msgstr "ガイドカメラを選択し、ガイド設定の光学特性を指定します"
 
-#: profile_wizard.cpp:756
+#: profile_wizard.cpp:775
 msgid "On-camera"
 msgstr ""
 
-#: profile_wizard.cpp:762
+#: profile_wizard.cpp:781
 msgid "Choose a Mount Connection"
 msgstr "マウント接続の選択"
 
-#: profile_wizard.cpp:764
+#: profile_wizard.cpp:783
 msgid "Mount:"
 msgstr "マウント:"
 
-#: profile_wizard.cpp:772
+#: profile_wizard.cpp:791
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
 msgstr "マウント接続の選択 － ガイド信号をどのように送信するかを決定します。"
 
-#: profile_wizard.cpp:783
+#: profile_wizard.cpp:804
 msgid "Choose an Auxiliary Mount Connection (optional)"
 msgstr "補助マウント接続を選択（オプション）"
 
-#: profile_wizard.cpp:784
+#: profile_wizard.cpp:805
 msgid "Aux Mount:"
 msgstr "Auxマウント:"
 
-#: profile_wizard.cpp:788
+#: profile_wizard.cpp:809
 msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
@@ -7438,43 +7461,43 @@ msgstr ""
 "この接続方法ではマウントの姿勢情報が得られないので、「Auxマウント」接続を選ぶ"
 "こともできます。"
 
-#: profile_wizard.cpp:793
+#: profile_wizard.cpp:816
 msgid "Choose an Adaptive Optics Device (optional)"
 msgstr "補償光学装置（オプション）選択"
 
-#: profile_wizard.cpp:794
+#: profile_wizard.cpp:817
 msgid "AO:"
 msgstr "AO:"
 
-#: profile_wizard.cpp:798
+#: profile_wizard.cpp:821
 msgid "Specify your adaptive optics device if desired"
 msgstr "必要であれば、補償光学装置を指定します。"
 
-#: profile_wizard.cpp:809
+#: profile_wizard.cpp:834
 msgid "Choose a Rotator Device (optional)"
 msgstr "ローテーターデバイスを選択（オプション）"
 
-#: profile_wizard.cpp:810
+#: profile_wizard.cpp:835
 msgid "Rotator:"
 msgstr ""
 
-#: profile_wizard.cpp:814
+#: profile_wizard.cpp:839
 msgid "Specify your rotator device if desired"
 msgstr "必要に応じてローテーターデバイスを指定してください"
 
-#: profile_wizard.cpp:825
+#: profile_wizard.cpp:852
 msgid "Finish Creating Your New Profile"
 msgstr "新しいプロファイルの作成が完了"
 
-#: profile_wizard.cpp:828
+#: profile_wizard.cpp:855
 msgid "Finish"
 msgstr "完了"
 
-#: profile_wizard.cpp:829
+#: profile_wizard.cpp:856
 msgid "Finish creating the equipment profile"
 msgstr "機器プロファイルの作成が完了"
 
-#: profile_wizard.cpp:832
+#: profile_wizard.cpp:859
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
@@ -7482,26 +7505,30 @@ msgstr ""
 "プロファイル名を入力し、ダークライブラリ構築プロセス（オプション）を開始して"
 "ください。"
 
-#: profile_wizard.cpp:892
+#: profile_wizard.cpp:926
 msgid ""
-"PHD2 could not connect to the camera so you may want to deal with that "
+"No cameras of that type were found, so you may want to deal with that later. "
+"In the meantime, you can just enter the pixel-size manually along with the "
+"focal length and binning levels."
+msgstr ""
+
+#: profile_wizard.cpp:930
+msgid ""
+"PHD2 could not connect to the camera, so you may want to deal with that "
 "later. In the meantime, you can just enter the pixel-size manually along "
 "with the focal length and binning levels."
 msgstr ""
-"PHD2はカメラに接続できなかったため、後で対処することをお勧めします。それまで"
-"の間、焦点距離とビニングレベルとともに、ピクセルサイズを手動で入力すればよ"
-"い。"
 
-#: profile_wizard.cpp:1084
+#: profile_wizard.cpp:1190
 msgid "Ask"
 msgstr ""
 
-#: profile_wizard.cpp:1114
+#: profile_wizard.cpp:1220
 #, c-format
 msgid "Guide speed setting adjusted from %0.1f to %0.1fx"
 msgstr "ガイド速度設定を%0.1fから%0.1fxに調整"
 
-#: profile_wizard.cpp:1141
+#: profile_wizard.cpp:1263
 msgid ""
 "This camera driver doesn't report the pixel size, so you'll need to enter "
 "the value manually"
@@ -7509,11 +7536,11 @@ msgstr ""
 "このカメラドライバーはピクセルサイズを報告しないので、値を手動で入力する必要"
 "があります"
 
-#: profile_wizard.cpp:1192
+#: profile_wizard.cpp:1314
 msgid "Connecting to mount..."
 msgstr ""
 
-#: profile_wizard.cpp:1198
+#: profile_wizard.cpp:1320
 #, c-format
 msgid ""
 "PHD2 could not connect to the mount, so you'll probably want to deal with "
@@ -7522,7 +7549,7 @@ msgid ""
 "value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:1211
+#: profile_wizard.cpp:1333
 #, c-format
 msgid ""
 "Apparently, this mount driver doesn't report guide speeds.  If you know the "
@@ -7530,21 +7557,21 @@ msgid ""
 "just leave it at the default value of %0.1fx"
 msgstr ""
 
-#: profile_wizard.cpp:1288
+#: profile_wizard.cpp:1410
 msgid ""
 "Guide star identification works best when the pixel scale is above 0.5\"/px. "
 "Select binning level 2 to increase the pixel scale."
 msgstr ""
 
-#: profile_wizard.cpp:1295
+#: profile_wizard.cpp:1417
 msgid "Low pixel scale"
 msgstr ""
 
-#: profile_wizard.cpp:1335
+#: profile_wizard.cpp:1457
 msgid "Ask About Connection"
 msgstr ""
 
-#: profile_wizard.cpp:1348
+#: profile_wizard.cpp:1470
 msgid ""
 "Is the camera already connected to the PC?   If so, PHD2 can usually "
 "determine the camera pixel-size automatically.  If the camera isn't "
@@ -7557,11 +7584,11 @@ msgstr ""
 "カメラのマニュアルやオンラインの情報を使って自分で値を入力することができま"
 "す。"
 
-#: profile_wizard.cpp:1352
+#: profile_wizard.cpp:1474
 msgid "Camera Already Connected?"
 msgstr "カメラはすでに接続されていますか？"
 
-#: profile_wizard.cpp:1355
+#: profile_wizard.cpp:1477
 #, c-format
 msgid ""
 "Is the mount already connected and set up to communicate with PHD2?  If so, "
@@ -7570,11 +7597,11 @@ msgid ""
 "the setting at the default value of %0.1fx."
 msgstr ""
 
-#: profile_wizard.cpp:1360
+#: profile_wizard.cpp:1482
 msgid "Mount Already Connected?"
 msgstr "マウントはすでに接続されていますか？"
 
-#: profile_wizard.cpp:1363
+#: profile_wizard.cpp:1485
 #, c-format
 msgid ""
 "Is the aux-mount already connected and set up to communicate with PHD2?  If "
@@ -7589,7 +7616,7 @@ msgstr ""
 "のままにしておいてください。前ページのガイドスピードとマウントから読み取った"
 "値が一致しない場合は、マウントの値が使用されます。"
 
-#: profile_wizard.cpp:1370
+#: profile_wizard.cpp:1492
 msgid "Aux-mount Already Connected?"
 msgstr ""
 
@@ -8040,19 +8067,13 @@ msgstr "南へステップ %3d, 距離=%4.1f"
 
 #: scope.cpp:1643
 msgid ""
-"Advisory: Calibration succeessful but little or no south movement was "
+"Advisory: Calibration successful but little or no south movement was "
 "measured, so guiding will probably be impaired.\n"
 " This is usually caused by a faulty guide cable or very large Dec "
 "backlash. \n"
 "Check the guide cable and read the online Help for how to identify these "
 "types of problems (Manual Guide, Declination backlash)."
 msgstr ""
-"注意：キャリブレーションは成功しましたが、南への動きがほとんどまたは まったく"
-"測定されなかったため、ガイドが損なわれる可能性があります。\n"
-" これは通常、ガイドケーブルの不良または非常に大きな赤緯バックラッシュが 原因"
-"です。\n"
-"ガイドケーブルを確認し、オンラインヘルプを読んで、この種の問題 (マニュアルガ"
-"イド、赤緯のバックラッシュ) を特定する方法を確認してください。"
 
 #: scope.cpp:1650
 msgid ""
@@ -9135,20 +9156,20 @@ msgstr ""
 "ディザータイプとディザー倍率で決定される最大値の範囲内で、各軸ランダムにガイ"
 "ダーのロック位置が移動します。"
 
-#: usImage.cpp:435
+#: usImage.cpp:442
 msgid "File does not exist - cannot load "
 msgstr "ファイルが見つかりません - 読込みできません"
 
-#: usImage.cpp:446
+#: usImage.cpp:453
 msgid "FITS file is not of an image: "
 msgstr "FITSファイルが画像ではありません:"
 
-#: usImage.cpp:464
+#: usImage.cpp:471
 #, c-format
 msgid "Memory allocation error loading FITS file %s"
 msgstr ""
 
-#: usImage.cpp:470
+#: usImage.cpp:477
 #, c-format
 msgid "Error reading data from FITS file %s"
 msgstr ""
@@ -9176,6 +9197,46 @@ msgstr "カメラと接続中..."
 #: runinbg.h:109
 msgid "Connecting to Rotator..."
 msgstr "ローテータと接続中..."
+
+#~ msgid ""
+#~ "Measured RA and Dec movements on the camera sensor aren't related by the "
+#~ "expected ratio (cos(dec)).  This can be caused by sustantial weight "
+#~ "imbalance in Dec or physical resistance to movement because of cables or "
+#~ "over-tight gear mesh."
+#~ msgstr ""
+#~ "カメラセンサーで測定された赤経と赤緯の動きは、予想される比率 (cos(dec)) と"
+#~ "は関係ありません。これは、赤緯の大幅な重量バランスの崩れ、またはケーブルや"
+#~ "ギアの噛み合いがきつすぎることによる動きに対する物理的な抵抗が原因です。"
+
+#~ msgid "Align by analysing star drift near the celestial equator (Accurate)"
+#~ msgstr "天の赤道付近の星の移動を解析してアライメントする (正確)"
+
+#~ msgid "Align by analysing star drift near the celestial pole (Simple)"
+#~ msgstr "天の北極付近の星の移動を解析してアライメントする（簡易）"
+
+#~ msgid ""
+#~ "PHD2 could not connect to the camera so you may want to deal with that "
+#~ "later. In the meantime, you can just enter the pixel-size manually along "
+#~ "with the focal length and binning levels."
+#~ msgstr ""
+#~ "PHD2はカメラに接続できなかったため、後で対処することをお勧めします。それま"
+#~ "での間、焦点距離とビニングレベルとともに、ピクセルサイズを手動で入力すれば"
+#~ "よい。"
+
+#~ msgid ""
+#~ "Advisory: Calibration succeessful but little or no south movement was "
+#~ "measured, so guiding will probably be impaired.\n"
+#~ " This is usually caused by a faulty guide cable or very large Dec "
+#~ "backlash. \n"
+#~ "Check the guide cable and read the online Help for how to identify these "
+#~ "types of problems (Manual Guide, Declination backlash)."
+#~ msgstr ""
+#~ "注意：キャリブレーションは成功しましたが、南への動きがほとんどまたは まっ"
+#~ "たく測定されなかったため、ガイドが損なわれる可能性があります。\n"
+#~ " これは通常、ガイドケーブルの不良または非常に大きな赤緯バックラッシュが 原"
+#~ "因です。\n"
+#~ "ガイドケーブルを確認し、オンラインヘルプを読んで、この種の問題 (マニュアル"
+#~ "ガイド、赤緯のバックラッシュ) を特定する方法を確認してください。"
 
 #, c-format
 #~ msgid "Try to keep your exposure times in the range of %.1fs to %.1fs"

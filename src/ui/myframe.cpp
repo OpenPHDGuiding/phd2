@@ -2367,11 +2367,45 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!status)
                 fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
-            float exposure = (float) img->ImgExpDur / 1000.0f;
-            char *keyname = const_cast<char *>("EXPOSURE");
-            char *comment = const_cast<char *>("Exposure time in seconds");
             if (!status)
+            {
+                char *keyname = const_cast<char *>("EXPOSURE");
+                char *comment = const_cast<char *>("Exposure time in seconds");
+                float exposure = (float) img->ImgExpDur / 1000.0f;
                 fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("XBINNING");
+                char *comment = const_cast<char *>("Camera X Bin");
+                int binning = img->Binning;
+                fits_write_key(fptr, TINT, keyname, &binning, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("YBINNING");
+                char *comment = const_cast<char *>("Camera Y Bin");
+                int binning = img->Binning;
+                fits_write_key(fptr, TINT, keyname, &binning, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("SATURATE");
+                char *comment = const_cast<char *>("Data value at which saturation occurs");
+                int saturate = (1U << img->BitsPerPixel) - 1;
+                fits_write_key(fptr, TINT, keyname, &saturate, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("GAIN");
+                char *comment = const_cast<char *>("PHD Gain Value (0-100)");
+                int gain = img->Gain;
+                fits_write_key(fptr, TINT, keyname, &gain, comment, &status);
+            }
 
             if (!note.IsEmpty())
             {
@@ -2477,9 +2511,29 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 }
                 img->ImgExpDur = ROUNDF(exposure * 1000.0);
 
+                char binning_key[] = "XBINNING";
+                int binning = 1;
+                fits_read_key(fptr, TINT, binning_key, &binning, nullptr, &status);
+                img->Binning = wxMax(binning, 1);
+                status = 0;
+
+                char saturate_key[] = "SATURATE";
+                int saturate = 65535;
+                fits_read_key(fptr, TINT, saturate_key, &saturate, nullptr, &status);
+                img->BitsPerPixel = saturate >= 256 ? 16 : 8;
+                status = 0;
+
+                char gain_key[] = "GAIN";
+                int gain = 0;
+                fits_read_key(fptr, TINT, gain_key, &gain, nullptr, &status);
+                img->Gain = gain;
+                status = 0;
+
                 img->CalcStats();
 
-                Debug.Write(wxString::Format("loaded dark frame exposure = %d, med = %u\n", img->ImgExpDur, img->MedianADU));
+                Debug.Write(wxString::Format("loaded dark frame exposure = %d, med = %u, %dx%d bin %d, bpp = %d, gain = %d\n",
+                                             img->ImgExpDur, img->MedianADU, img->Size.x, img->Size.y, img->Binning,
+                                             img->BitsPerPixel, img->Gain));
 
                 camera->AddDark(img.release());
 

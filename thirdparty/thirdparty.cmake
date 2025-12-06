@@ -500,7 +500,7 @@ else()
   ExternalProject_Add(
     indi
     GIT_REPOSITORY https://github.com/indilib/indi.git
-    GIT_TAG cce992ebced4d73ee6d482cb894c5c897bb059b7  # v2.1.5
+    GIT_TAG 6aa360543313c9e00819148da9df15647ffa7996  # v2.1.6
     CMAKE_ARGS -Wno-dev
       -DINDI_BUILD_SERVER=OFF
       -DINDI_BUILD_DRIVERS=OFF
@@ -607,6 +607,7 @@ if(WIN32)
 endif()
 
 if (NOT OPENSOURCE_ONLY)
+  if(WIN32)  # OGMA support is Windows-only
   include(FetchContent)
   FetchContent_Declare(
     OGMAcamSDK
@@ -618,6 +619,7 @@ if (NOT OPENSOURCE_ONLY)
   if (WIN32)
     list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.lib)
     list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.dll)
+  endif()  # WIN32 - OGMA FetchContent
   endif()
 endif()
 
@@ -708,7 +710,13 @@ if(WIN32)
    add_definitions(-DHAVE_ALTAIR_CAMERA=1)
    include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/altair/include)
    list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/altaircam.dll)
-   list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/AltairCam_legacy.dll)
+   if(EXISTS ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/AltairCam_legacy.dll)
+     list(APPEND PHD_COPY_EXTERNAL_ALL ${PHD_PROJECT_ROOT_DIR}/cameras/altair/win/${WINDOWS_ARCH}/AltairCam_legacy.dll)
+   else()
+     if(WINDOWS_ARCH STREQUAL "x86")
+       message(FATAL_ERROR "Cannot find the Altair Legacy SDK")
+     endif()
+   endif()
   endif()
 
   # SBIGUDrv
@@ -1103,6 +1111,7 @@ if(UNIX AND NOT APPLE)
       list(APPEND PHD_LINK_EXTERNAL ${toupcam})
       list(APPEND PHD_INSTALL_LIBS ${toupcam})
 
+      if(DEFINED ogmacamsdk_SOURCE_DIR)  # OGMA SDK was fetched (Windows only)
       find_library(ogmacam
              NAMES ogmacam
              NO_DEFAULT_PATHS
@@ -1115,6 +1124,7 @@ if(UNIX AND NOT APPLE)
       add_definitions(-DHAVE_OGMA_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${ogmacam})
       list(APPEND PHD_INSTALL_LIBS ${ogmacam})
+      endif()  # OGMA SDK check
 
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK

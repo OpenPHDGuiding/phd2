@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Algoritmy navadeni">
+		<param name="Local" value="Guide_algorithms.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="AO zarizeni">
+		<param name="Local" value="Basic_use.htm#AO_Selection">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ASCOM">
+		<param name="Local" value="Basic_use.htm#ASCOM_Benefits">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Kalibrace">
+		<param name="Local" value="Basic_use.htm#Automatic_Calibration">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Kamera">
+		<param name="Local" value="Basic_use.htm#Camera_Selection">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Montaz">
+		<param name="Local" value="Basic_use.htm#Mount_Selection">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Navadeni">
+		<param name="Local" value="Basic_use.htm#Guiding">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Pokrocila nastaveni">
+		<param name="Local" value="Advanced_settings.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Profily zarizeni">
+		<param name="Local" value="Basic_use.htm#Equipment_Profile">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Rotator">
+		<param name="Local" value="Basic_use.htm#Rotator_Selection">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Reseni problemu">
+		<param name="Local" value="Trouble_shooting.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Temne snimky">
+		<param name="Local" value="Darks_BadPixel_Maps.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Nastroje">
+		<param name="Local" value="Tools.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Vizualizace">
+		<param name="Local" value="Visualization.htm">
+		</OBJECT>
+</UL>
+</BODY></HTML>

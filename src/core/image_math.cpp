@@ -646,6 +646,47 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
     return false;
 }
 
+bool IsLightFrameCompatibleWithDarkFrame(usImage& light, const usImage& dark)
+{
+    bool compatible;
+    const wxRect& limit_frame = light.LimitFrame;
+    if (limit_frame.IsEmpty())
+        compatible = light.Size == dark.Size;
+    else
+        // if the light is a LimitFrame-limited ROI, confirm that the limit frame is
+        // compatible with the dark
+        compatible = limit_frame.Intersect(wxRect(dark.Size)) == limit_frame;
+    if (!compatible)
+        Debug.Write(wxString::Format("dark subtraction incompatible: light: %dx%d dark: %dx%d LimitFrame: %d,%d+%dx%d",
+                                     light.Size.x, light.Size.y, dark.Size.x, dark.Size.y, limit_frame.x, limit_frame.y,
+                                     limit_frame.width, limit_frame.height));
+    return compatible;
+}
+
+static unsigned short median_value_in_roi(const usImage& dark, const wxRect& roi)
+{
+    int left = roi.GetLeft();
+    int width = roi.GetWidth();
+    int top = roi.GetTop();
+    int height = roi.GetHeight();
+
+    // compute the dark's median ADU within the subframe region
+    unsigned int pixcnt = width * height;
+    unsigned short *tmp = new unsigned short[pixcnt];
+    const unsigned short *src = dark.ImageData + left + top * dark.Size.x;
+    unsigned short *dst = tmp;
+    for (int y = 0; y < height; y++)
+    {
+        memcpy(dst, src, width * sizeof(unsigned short));
+        src += dark.Size.x;
+        dst += width;
+    }
+    std::nth_element(tmp, tmp + pixcnt / 2, tmp + pixcnt);
+    unsigned short median = tmp[pixcnt / 2];
+    delete[] tmp;
+    return median;
+}
+
 // Dark subtraction algorithm:
 //     Pedestal = max(median(dark_frame) - median(light_frame), 0) - handles overall gain/gradient differences
 //     Dark_corrected(i) = min(max(light(i) + pedestal - dark(i), 0), 65335)
@@ -653,40 +694,29 @@ bool Subtract(usImage& light, const usImage& dark)
 {
     if (!light.ImageData || !dark.ImageData)
         return true;
-    if (light.Size != dark.Size)
+    if (!IsLightFrameCompatibleWithDarkFrame(light, dark))
         return true;
 
-    unsigned int left, top, width, height;
+    const wxRect& limit_frame = light.LimitFrame;
     unsigned short median_light, median_dark;
     median_light = light.MedianADU; // median of frame or subframe
 
+    wxRect light_roi, dark_roi;
     if (!light.Subframe.IsEmpty())
     {
-        left = light.Subframe.GetLeft();
-        width = light.Subframe.GetWidth();
-        top = light.Subframe.GetTop();
-        height = light.Subframe.GetHeight();
-
-        // compute the dark's median ADU within the subframe region
-        unsigned int pixcnt = width * height;
-        unsigned short *tmp = new unsigned short[pixcnt];
-        const unsigned short *src = dark.ImageData + left + top * light.Size.GetWidth();
-        unsigned short *dst = tmp;
-        for (int y = 0; y < height; y++)
-        {
-            memcpy(dst, src, width * sizeof(unsigned short));
-            src += light.Size.GetWidth();
-            dst += width;
-        }
-        std::nth_element(tmp, tmp + pixcnt / 2, tmp + pixcnt);
-        median_dark = tmp[pixcnt / 2];
-        delete[] tmp;
+        dark_roi = light_roi = light.Subframe;
+        dark_roi.Offset(limit_frame.GetLeftTop());
+        median_dark = median_value_in_roi(dark, dark_roi);
+    }
+    else if (!limit_frame.IsEmpty())
+    {
+        dark_roi = limit_frame;
+        light_roi = wxRect(light.Size);
+        median_dark = median_value_in_roi(dark, limit_frame);
     }
     else
     {
-        left = top = 0;
-        width = light.Size.GetWidth();
-        height = light.Size.GetHeight();
+        dark_roi = light_roi = wxRect(light.Size);
         median_dark = dark.MedianADU; // use the pre-computed full frame median ADU
     }
 
@@ -696,9 +726,11 @@ bool Subtract(usImage& light, const usImage& dark)
         light.Pedestal = median_dark - median_light; // Needed for saturation detection in find-star
     }
 
-    unsigned short *pl0 = &light.Pixel(left, top);
-    const unsigned short *pd0 = &dark.Pixel(left, top);
-    for (unsigned int r = 0; r < height; r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
+    unsigned short *pl0 = &light.Pixel(light_roi.x, light_roi.y);
+    const unsigned short *pd0 = &dark.Pixel(dark_roi.x, dark_roi.y);
+    const unsigned int height = light_roi.height;
+    const unsigned int width = light_roi.width;
+    for (unsigned int r = 0; r < height; r++, pl0 += light.Size.GetWidth(), pd0 += dark.Size.GetWidth())
     {
         unsigned short *const endl = pl0 + width;
         unsigned short *pl;
@@ -1119,13 +1151,16 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
     if (!light.ImageData)
         return true;
 
+    const wxRect& limit_frame = light.LimitFrame;
+    wxPoint offset(limit_frame.GetLeftTop());
+
+    // Iterate over each defect and replace the light value with the median of the
+    // surrounding pixels
     if (!light.Subframe.IsEmpty())
     {
-        // Step over each defect and replace the light value
-        // with the median of the surrounding pixels
         for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            const wxPoint& pt = *it;
+            wxPoint pt(*it - offset);
             // Check to see if we are within the subframe before correcting the defect
             if (light.Subframe.Contains(pt))
             {
@@ -1139,8 +1174,8 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
         // with the median of the surrounding pixels
         for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            int const x = it->x;
-            int const y = it->y;
+            int const x = it->x - offset.x;
+            int const y = it->y - offset.y;
 
             if (x >= 0 && x < light.Size.GetWidth() && y >= 0 && y < light.Size.GetHeight())
             {

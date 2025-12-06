@@ -1,3 +1,21 @@
+phd2 (2.6.13dev8) unstable; urgency=low
+
+  * Comet tool: disable multi-star guiding when comet tracking is enabled
+  * Fix behavior when MultiStar guiding is enabled with guiding off
+  * Equipment Profile Wizard improved and updated
+  * Calibration Assistant improvements for encoder mounts and SB mounts
+  * Prevent multiple PHD2 instances from sharing the same log files
+  * Event Server: capture_single_frame method added
+  * Fix message when user asks for details in old, no longer relevant calibration alert
+  * ToupTek/OGMA cameras: display sensor temperature in stats window
+  * ToupTek cameras: update SDK library to version 59.29465.20250907
+  * ToupTek cameras: from ToupTek: enable camera's Conversion Gain mode when available
+  * ZWO ASI cameras: update SDK library to version 1.38
+  * INDI: Update INDI client to v2.1.5
+  * Updated Czech translation, added Czech help file
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sun, 09 Nov 2025 00:16:41 -0500
+
 phd2 (2.6.13dev7) unstable; urgency=low
 
   * Windows: add camera DLL missing from today's 2.6.13dev6 release.

@@ -37,6 +37,7 @@
 
 #include <gtest/gtest.h>
 #include <vector>
+#include <iomanip>
 #include <iostream>
 #include "gaussian_process_guider.h"
 
