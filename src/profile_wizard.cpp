@@ -711,7 +711,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
 
 static int RangeCheck(int thisval)
 {
-    return wxMin(wxMax(thisval, 0), (int) ProfileWizard::STATE_DONE);
+    return wxClip(thisval, 0, (int) ProfileWizard::STATE_DONE);
 }
 
 // State machine manager.  Layout and content of dialog panel will be changed here based on state.
