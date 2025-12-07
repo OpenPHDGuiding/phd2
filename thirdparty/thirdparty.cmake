@@ -607,7 +607,6 @@ if(WIN32)
 endif()
 
 if (NOT OPENSOURCE_ONLY)
-  if(WIN32)  # OGMA support is Windows-only
   include(FetchContent)
   FetchContent_Declare(
     OGMAcamSDK
@@ -619,7 +618,6 @@ if (NOT OPENSOURCE_ONLY)
   if (WIN32)
     list(APPEND PHD_LINK_EXTERNAL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.lib)
     list(APPEND PHD_COPY_EXTERNAL_ALL ${ogmacamsdk_SOURCE_DIR}/win/${WINDOWS_ARCH}/ogmacam.dll)
-  endif()  # WIN32 - OGMA FetchContent
   endif()
 endif()
 
@@ -1111,7 +1109,6 @@ if(UNIX AND NOT APPLE)
       list(APPEND PHD_LINK_EXTERNAL ${toupcam})
       list(APPEND PHD_INSTALL_LIBS ${toupcam})
 
-      if(DEFINED ogmacamsdk_SOURCE_DIR)  # OGMA SDK was fetched (Windows only)
       find_library(ogmacam
              NAMES ogmacam
              NO_DEFAULT_PATHS
@@ -1124,7 +1121,6 @@ if(UNIX AND NOT APPLE)
       add_definitions(-DHAVE_OGMA_CAMERA=1)
       list(APPEND PHD_LINK_EXTERNAL ${ogmacam})
       list(APPEND PHD_INSTALL_LIBS ${ogmacam})
-      endif()  # OGMA SDK check
 
       find_library(SVBCameraSDK
             NAMES SVBCameraSDK
