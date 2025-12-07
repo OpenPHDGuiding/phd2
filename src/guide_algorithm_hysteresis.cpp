@@ -132,7 +132,7 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_hysteresis = wxMin(wxMax(hysteresis, 0.0), MaxHysteresis);
+        m_hysteresis = wxClip(hysteresis, 0., MaxHysteresis);
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/hysteresis", m_hysteresis);

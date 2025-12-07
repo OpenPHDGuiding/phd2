@@ -224,7 +224,7 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
 static int GetConfigDiscardFrames()
 {
     int n = pConfig->Profile.GetInt("/camera/Altair/DiscardFrames", 0);
-    return wxMax(0, wxMin((int) AltairCamera::MAX_DISCARD_FRAMES, n));
+    return wxClip(n, 0, (int) AltairCamera::MAX_DISCARD_FRAMES);
 }
 
 AltairCamera::AltairCamera(AltairCamType type) : m_type(type), m_buffer(nullptr), m_capturing(false)
