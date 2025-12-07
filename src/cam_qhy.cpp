@@ -88,7 +88,6 @@ class Camera_QHY : public GuideCamera
     wxSize m_maxSize;
     unsigned short m_curBin;
     wxRect m_roi;
-    bool Color;
     wxByte m_bpp;
     bool m_settingsChanged;
     bool m_hasAmpnr;
@@ -218,7 +217,7 @@ Camera_QHY::Camera_QHY()
     HasCooler = false;
 
     RawBuffer = 0;
-    Color = false;
+    HasBayer = false;
     HasSubframes = true;
     m_camhandle = 0;
 
@@ -787,14 +786,14 @@ bool Camera_QHY::Connect(const wxString& camId)
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
 
-    Color = false;
+    HasBayer = false;
     switch ((BAYER_ID) bayer)
     {
     case BAYER_GB:
     case BAYER_GR:
     case BAYER_BG:
     case BAYER_RG:
-        Color = true;
+        HasBayer = true;
     }
 
     // check bin modes
@@ -1205,7 +1204,7 @@ bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && Color && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

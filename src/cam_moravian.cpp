@@ -335,7 +335,6 @@ class MoravianCamera : public GuideCamera
     bool m_canGuide;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
     int m_maxMoveMs;
 
@@ -658,8 +657,8 @@ bool MoravianCamera::Connect(const wxString& camId)
     bool rgb = m_cam.BoolParam(gbpRGB);
     bool cmy = m_cam.BoolParam(gbpCMY);
     bool cmyg = m_cam.BoolParam(gbpCMYG);
-    m_isColor = rgb || cmy || cmyg;
-    Debug.Write(wxString::Format("MVN: IsColorCam = %d  (rgb:%d cmy:%d cmyg:%d)\n", m_isColor, rgb, cmy, cmyg));
+    HasBayer = rgb || cmy || cmyg;
+    Debug.Write(wxString::Format("MVN: IsColorCam = %d  (rgb:%d cmy:%d cmyg:%d)\n", HasBayer, rgb, cmy, cmyg));
 
     int pxwidth = m_cam.IntParam(gipPixelW); // nm
     int pxheight = m_cam.IntParam(gipPixelD); // nm
@@ -921,7 +920,7 @@ bool MoravianCamera::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

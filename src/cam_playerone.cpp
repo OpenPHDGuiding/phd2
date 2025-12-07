@@ -69,7 +69,6 @@ class PlayerOneCamera : public GuideCamera
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
 
 public:
@@ -441,9 +440,9 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     m_cameraId = selected;
     Connected = true;
     Name = info.cameraModelName;
-    m_isColor = info.isColorCamera != POA_FALSE;
+    HasBayer = info.isColorCamera != POA_FALSE;
 
-    Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", m_isColor));
+    Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", HasBayer));
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.bins); i++)
@@ -962,7 +961,7 @@ bool PlayerOneCamera::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

@@ -68,8 +68,6 @@ class CameraASCOM : public GuideCamera
     double m_driverPixelSize;
 
 public:
-    bool Color;
-
     CameraASCOM(const wxString& choice);
     ~CameraASCOM();
 
@@ -431,7 +429,6 @@ CameraASCOM::CameraASCOM(const wxString& choice)
     HasGainControl = false;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
-    Color = false;
     DriverVersion = 1;
     m_bitsPerPixel = 0;
 }
@@ -653,7 +650,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (DriverVersion > 1 && // We can check the color sensor status of the cam
         driver.GetProp(&vRes, L"SensorType") && vRes.iVal > 1)
     {
-        Color = true;
+        HasBayer = true;
     }
 
     // Get pixel size in micons
@@ -1104,7 +1101,7 @@ bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && Color && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
