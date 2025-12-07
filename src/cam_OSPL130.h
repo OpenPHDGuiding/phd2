@@ -36,8 +36,6 @@
 
 class CameraOpticstarPL130 : public GuideCamera
 {
-    bool Color;
-
 public:
     CameraOpticstarPL130();
 

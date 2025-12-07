@@ -62,7 +62,6 @@ class SVBCamera : public GuideCamera
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
 
 public:
@@ -395,8 +394,8 @@ bool SVBCamera::Connect(const wxString& camId)
 
     Connected = true;
     Name = info.FriendlyName;
-    m_isColor = props.IsColorCam != SVB_FALSE;
-    Debug.Write(wxString::Format("SVB: IsColorCam = %d\n", m_isColor));
+    HasBayer = props.IsColorCam != SVB_FALSE;
+    Debug.Write(wxString::Format("SVB: IsColorCam = %d\n", HasBayer));
 
     HasShutter = false;
 
@@ -818,7 +817,7 @@ bool SVBCamera::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
