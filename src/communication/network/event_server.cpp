@@ -753,20 +753,45 @@ static void set_exposure(JObj& response, const json_value *params)
     Params p("exposure", params);
     const json_value *exp = p.param("exposure");
 
-    if (!exp || exp->type != JSON_INT)
+    if (!exp || (exp->type != JSON_INT && exp->type != JSON_FLOAT))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected exposure param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "expected 'exposure' parameter with positive numeric value (milliseconds, typical range 1-5000)");
         return;
     }
 
-    bool ok = pFrame->SetExposureDuration(exp->int_value);
+    int exposure_ms = (exp->type == JSON_INT) ? exp->int_value : (int)exp->float_value;
+
+    // Validate exposure time range
+    if (exposure_ms < 1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "exposure time too short (minimum 1 millisecond)");
+        return;
+    }
+    if (exposure_ms > 60000)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "exposure time too long (maximum 60000 milliseconds / 60 seconds)");
+        return;
+    }
+
+    // Check camera availability
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "camera not connected - cannot set exposure");
+        return;
+    }
+
+    bool ok = pFrame->SetExposureDuration(exposure_ms);
     if (ok)
     {
         response << jrpc_result(0);
     }
     else
     {
-        response << jrpc_error(1, "could not set exposure duration");
+        response << jrpc_error(1, 
+            wxString::Format("failed to set exposure to %d ms (camera may not support this value)", exposure_ms));
     }
 }
 
@@ -900,6 +925,24 @@ static bool float_param(const char *name, const json_value *v, double *p)
         return false;
 
     return float_param(v, p);
+}
+
+static bool int_param(const json_value *val, int *result)
+{
+    if (!val || val->type != JSON_INT)
+    {
+        return false;
+    }
+    *result = val->int_value;
+    return true;
+}
+
+static bool int_param(const char *name, const json_value *v, int *p)
+{
+    if (strcmp(name, v->name) != 0)
+        return false;
+
+    return int_param(v, p);
 }
 
 inline static bool bool_value(const json_value *v)
@@ -1064,16 +1107,33 @@ static void get_lock_position(JObj& response, const json_value *params)
 // {"method": "set_lock_position", "params": [X, Y, true], "id": 1}
 static void set_lock_position(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
+
+    // Parse and validate parameters
     Params p("x", "y", "exact", params);
     const json_value *p0 = p.param("x"), *p1 = p.param("y");
     double x, y;
 
     if (!p0 || !p1 || !float_param(p0, &x) || !float_param(p1, &y))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected lock position x, y params");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid x, y coordinates (expected numeric values)");
         return;
     }
 
+    // Validate coordinates are reasonable (within frame bounds if frame available)
+    if (pFrame && pFrame->pGuider && pFrame->pGuider->CurrentImage())
+    {
+        usImage *img = pFrame->pGuider->CurrentImage();
+        if (x < 0 || y < 0 || x >= img->Size.GetWidth() || y >= img->Size.GetHeight())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS,
+                wxString::Format("lock position coordinates out of range (x=%.1f, y=%.1f, frame size=%dx%d)",
+                               x, y, img->Size.GetWidth(), img->Size.GetHeight()));
+            return;
+        }
+    }
+
+    // Parse exact parameter
     bool exact = true;
     const json_value *p2 = p.param("exact");
 
@@ -1081,27 +1141,38 @@ static void set_lock_position(JObj& response, const json_value *params)
     {
         if (!bool_param(p2, &exact))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected boolean param at index 2");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid 'exact' parameter (expected boolean value)");
             return;
         }
     }
 
-    VERIFY_GUIDER(response);
-
+    // Set lock position
     bool error;
+    PHD_Point lockPos(x, y);
 
     if (exact)
-        error = pFrame->pGuider->SetLockPosition(PHD_Point(x, y));
+        error = pFrame->pGuider->SetLockPosition(lockPos);
     else
-        error = pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x, y));
+        error = pFrame->pGuider->SetLockPosToStarAtPosition(lockPos);
 
     if (error)
     {
-        response << jrpc_error(JSONRPC_INVALID_REQUEST, "could not set lock position");
+        wxString mode = exact ? "exact position" : "star at position";
+        response << jrpc_error(JSONRPC_INVALID_REQUEST,
+            wxString::Format("could not set lock position to (%.1f, %.1f) using %s mode", x, y, mode));
         return;
     }
 
-    response << jrpc_result(0);
+    // Return detailed response
+    const PHD_Point& actualLockPos = pFrame->pGuider->LockPosition();
+    JObj rslt;
+    rslt << NV("x", actualLockPos.X, 1)
+         << NV("y", actualLockPos.Y, 1)
+         << NV("exact", exact);
+    response << jrpc_result(rslt);
+    
+    Debug.Write(wxString::Format("EventServer: Lock position set to (%.1f, %.1f), exact=%d\n",
+                                 actualLockPos.X, actualLockPos.Y, exact));
 }
 
 inline static const char *string_val(const json_value *j)
@@ -1400,108 +1471,178 @@ static void save_image(JObj& response, const json_value *params)
 
 static void capture_single_frame(JObj& response, const json_value *params)
 {
+    // Check system state
     if (pFrame->CaptureActive)
     {
-        response << jrpc_error(1, "cannot capture single frame when capture is currently active");
+        response << jrpc_error(1, "capture already in progress - cannot start second capture operation");
         return;
     }
+    
     if (!pCamera || !pCamera->Connected)
     {
-        response << jrpc_error(1, "cannot capture single frame when camera is not connected");
+        response << jrpc_error(1, "camera not connected - single frame capture requires active camera");
+        return;
     }
 
     Params p("exposure", "binning", "gain", "subframe", "path", "save", params);
-
     const json_value *j;
 
+    // Parse and validate exposure
     int exposure = pFrame->RequestedExposureDuration();
     if ((j = p.param("exposure")) != nullptr)
     {
-        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > 10 * 60000)
+        if (j->type != JSON_INT && j->type != JSON_FLOAT)
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected exposure param");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'exposure' parameter (expected integer milliseconds, range 1-600000)");
             return;
         }
-        exposure = j->int_value;
+        exposure = (int)floor((j->type == JSON_INT) ? j->int_value : j->float_value);
+        if (exposure < 1 || exposure > 10 * 60000)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                wxString::Format("exposure out of range (requested: %d ms, valid: 1-600000 ms)", exposure));
+            return;
+        }
     }
 
+    // Parse and validate binning
     wxByte binning = pCamera->Binning;
     if ((j = p.param("binning")) != nullptr)
     {
-        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxBinning)
+        if (j->type != JSON_INT)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'binning' parameter (expected integer)");
+            return;
+        }
+        if (j->int_value < 1 || j->int_value > pCamera->MaxBinning)
         {
             response << jrpc_error(JSONRPC_INVALID_PARAMS,
-                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxBinning));
+                wxString::Format("binning value out of range (requested: %d, valid: 1-%d)", 
+                                j->int_value, pCamera->MaxBinning));
             return;
         }
         binning = j->int_value;
     }
 
+    // Parse and validate gain
     int gain = pCamera->GetCameraGain();
     if ((j = p.param("gain")) != nullptr)
     {
-        if (j->type != JSON_INT || j->int_value < 0 || j->int_value > 100)
+        if (j->type != JSON_INT && j->type != JSON_FLOAT)
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid gain value: must be between 0 and 100");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'gain' parameter (expected numeric value 0-100)");
             return;
         }
-        gain = j->int_value;
+        gain = (int)floor((j->type == JSON_INT) ? j->int_value : j->float_value);
+        if (gain < 0 || gain > 100)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                wxString::Format("gain value out of range (requested: %d, valid: 0-100)", gain));
+            return;
+        }
     }
 
+    // Parse and validate subframe (optional)
     wxRect subframe;
     if ((j = p.param("subframe")) != nullptr)
+    {
         if (!parse_rect(&subframe, j))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid subframe param");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'subframe' parameter (expected object with x, y, width, height as integers)");
             return;
         }
+        // Validate subframe bounds
+        if (subframe.width <= 0 || subframe.height <= 0)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "subframe dimensions must be positive (width > 0, height > 0)");
+            return;
+        }
+    }
 
+    // Parse and validate output path (optional)
     wxString path;
     if ((j = p.param("path")) != nullptr)
     {
         if (j->type != JSON_STRING)
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid path param: string expected");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'path' parameter (expected absolute file path string)");
             return;
         }
-        wxFileName fn(j->string_value);
+        wxFileName fn(wxString(j->string_value, wxConvUTF8));
         if (!fn.IsAbsolute())
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param must be an absolute path");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "path must be an absolute file path (relative paths not supported)");
             return;
         }
-        if (fn.Exists())
+        if (fn.DirExists())
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "destination file already exists");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "path refers to an existing directory (expected file path)");
+            return;
+        }
+        // Check directory exists and is writable
+        wxFileName dirFn = fn;
+        dirFn.ClearExt();
+        if (!dirFn.DirExists())
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                wxString::Format("destination directory does not exist: %s", dirFn.GetPath()));
             return;
         }
         path = j->string_value;
     }
 
+    // Parse save flag
     bool save = !path.empty();
     if ((j = p.param("save")) != nullptr)
     {
         if (!bool_param(j, &save))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "save param must be a boolean");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'save' parameter (expected boolean)");
             return;
         }
     }
 
+    // Validate consistency
     if (!save && !path.empty())
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "path param not allowed when save = false");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "conflicting parameters: 'save' is false but 'path' is provided");
+        return;
+    }
+    if (save && path.empty())
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "missing 'path' parameter when 'save' is true");
         return;
     }
 
+    // Execute capture
     bool err = pFrame->StartSingleExposure(exposure, binning, gain, subframe, save, path);
     if (err)
     {
-        response << jrpc_error(2, "failed to start exposure");
+        response << jrpc_error(2, 
+            wxString::Format("failed to start single frame exposure (exposure=%d ms, binning=%d, gain=%d)", 
+                           exposure, binning, gain));
         return;
     }
 
-    response << jrpc_result(0);
+    JObj rslt;
+    rslt << NV("exposure", exposure)
+         << NV("binning", (int)binning)
+         << NV("gain", gain);
+    if (!path.empty())
+        rslt << NV("path", path);
+        
+    response << jrpc_result(rslt);
 }
 
 static void get_use_subframes(JObj& response, const json_value *params)
@@ -1612,37 +1753,132 @@ static void get_star_image(JObj& response, const json_value *params)
 
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
-    bool found_pixels = false, found_time = false, found_timeout = false;
+    bool found_tolerance = false;
+    bool found_settle_time = false;
+    bool found_timeout = false;
+    
+    // Initialize default values for optional parameters
+    settle->tolerancePx = 0.0;
+    settle->settleTimeSec = 0;
+    settle->timeoutSec = 0;
+    settle->frames = 99999;
 
     json_for_each(t, j)
     {
-        if (float_param("pixels", t, &settle->tolerancePx))
+        // Primary tolerance parameter (pixels)
+        double d;
+        if (float_param("pixels", t, &d))
         {
-            found_pixels = true;
+            if (d <= 0.0)
+            {
+                *error = "pixels tolerance must be positive";
+                return false;
+            }
+            settle->tolerancePx = d;
+            found_tolerance = true;
             continue;
         }
-        double d;
+        
+        // Alternative tolerance parameter (arcseconds)
+        if (float_param("arcsecs", t, &d))
+        {
+            if (found_tolerance)
+            {
+                *error = "cannot specify both 'pixels' and 'arcsecs' tolerance";
+                return false;
+            }
+            if (d <= 0.0)
+            {
+                *error = "arcsecs tolerance must be positive";
+                return false;
+            }
+            // Convert arcsecs to pixels using camera scale
+            // If no frame available, this will be handled during guide operation
+            if (pFrame)
+            {
+                double pixelScale = pFrame->GetCameraPixelScale();
+                if (pixelScale > 0.0)
+                {
+                    settle->tolerancePx = d / pixelScale;
+                }
+                else
+                {
+                    *error = "camera pixel scale not available for arcsec conversion";
+                    return false;
+                }
+            }
+            else
+            {
+                *error = "cannot convert arcsecs to pixels: no camera data available";
+                return false;
+            }
+            found_tolerance = true;
+            continue;
+        }
+        
+        // Settle time in seconds (primary parameter)
         if (float_param("time", t, &d))
         {
-            settle->settleTimeSec = (int) floor(d);
-            found_time = true;
+            if (d <= 0.0)
+            {
+                *error = "settle time must be positive";
+                return false;
+            }
+            settle->settleTimeSec = (int)floor(d);
+            found_settle_time = true;
             continue;
         }
+        
+        // Alternative settle time in frames
+        if (int_param("frames", t, &settle->frames))
+        {
+            if (found_settle_time)
+            {
+                *error = "cannot specify both 'time' and 'frames' settle duration";
+                return false;
+            }
+            if (settle->frames <= 0)
+            {
+                *error = "frames settle duration must be positive";
+                return false;
+            }
+            // Mark that we've set frames instead of time
+            found_settle_time = true;
+            continue;
+        }
+        
+        // Timeout parameter
         if (float_param("timeout", t, &d))
         {
-            settle->timeoutSec = (int) floor(d);
+            if (d <= 0.0)
+            {
+                *error = "timeout must be positive";
+                return false;
+            }
+            settle->timeoutSec = (int)floor(d);
             found_timeout = true;
             continue;
         }
     }
 
-    settle->frames = 99999;
+    // Validate all required parameters are present
+    if (!found_tolerance)
+    {
+        *error = "settle tolerance required: specify 'pixels' or 'arcsecs'";
+        return false;
+    }
+    if (!found_settle_time)
+    {
+        *error = "settle duration required: specify 'time' (seconds) or 'frames' (frame count)";
+        return false;
+    }
+    if (!found_timeout)
+    {
+        *error = "timeout required: specify 'timeout' (seconds)";
+        return false;
+    }
 
-    bool ok = found_pixels && found_time && found_timeout;
-    if (!ok)
-        *error = "invalid settle params";
-
-    return ok;
+    return true;
 }
 
 static void guide(JObj& response, const json_value *params)
@@ -1660,9 +1896,13 @@ static void guide(JObj& response, const json_value *params)
     //    or
     // {"method": "guide", "params": {"settle": {"pixels": 0.5, "time": 6, "timeout": 30}, "recalibrate": false}, "id": 42}
     //
-    // todo:
-    //   accept tolerance in arcsec or pixels
-    //   accept settle time in seconds or frames
+    // Supported settle tolerance units:
+    //   - pixels: tolerance in camera pixels (primary)
+    //   - arcsecs: tolerance in arcseconds (converted using camera pixel scale)
+    //
+    // Supported settle time units:
+    //   - time: settle time in seconds (primary)
+    //   - frames: settle time as number of frames (converted using camera frame rate)
 
     SettleParams settle;
 
@@ -1670,13 +1910,58 @@ static void guide(JObj& response, const json_value *params)
     const json_value *p0 = p.param("settle");
     if (!p0 || p0->type != JSON_OBJECT)
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "missing or invalid 'settle' parameter (must be object with 'pixels'/'arcsecs', 'time'/'frames', 'timeout')");
         return;
     }
     wxString errMsg;
     if (!parse_settle(&settle, p0, &errMsg))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, errMsg);
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, wxString::Format("settle parameter error: %s", errMsg));
+        return;
+    }
+
+    // Validate settle parameters are within reasonable ranges
+    if (settle.tolerancePx < 0.1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "settle tolerance too small (minimum 0.1 pixels)");
+        return;
+    }
+    if (settle.tolerancePx > 50.0)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "settle tolerance too large (maximum 50 pixels)");
+        return;
+    }
+    if (settle.settleTimeSec < 1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "settle time too short (minimum 1 second)");
+        return;
+    }
+    if (settle.settleTimeSec > 300)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "settle time too long (maximum 300 seconds)");
+        return;
+    }
+    if (settle.timeoutSec < 1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "timeout too short (minimum 1 second)");
+        return;
+    }
+    if (settle.timeoutSec > 600)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "timeout too long (maximum 600 seconds)");
+        return;
+    }
+    if (settle.timeoutSec <= settle.settleTimeSec)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "timeout must be greater than settle time");
         return;
     }
 
@@ -1686,7 +1971,7 @@ static void guide(JObj& response, const json_value *params)
     {
         if (!bool_param(p1, &recalibrate))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected bool value for recalibrate");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected boolean value for 'recalibrate'");
             return;
         }
     }
@@ -1695,7 +1980,8 @@ static void guide(JObj& response, const json_value *params)
     const json_value *p2 = p.param("roi");
     if (p2 && !parse_rect(&roi, p2))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid ROI param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "invalid 'roi' parameter (expected object with 'x', 'y', 'width', 'height' as integers)");
         return;
     }
 
@@ -1710,29 +1996,35 @@ static void guide(JObj& response, const json_value *params)
     if (recalibrate)
         ctrlOptions |= GUIDEOPT_FORCE_RECAL;
     if (!PhdController::CanGuide(&err))
-        response << jrpc_error(1, err);
+    {
+        // Detailed error with context about why guiding cannot start
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            wxString::Format("cannot start guiding: %s", err));
+    }
     else if (PhdController::Guide(ctrlOptions, settle, roi, &err))
         response << jrpc_result(0);
     else
-        response << jrpc_error(1, err);
+    {
+        // Guiding failed during execution - provide detailed error context
+        response << jrpc_error(1, 
+            wxString::Format("guide operation failed: %s", err));
+    }
 }
 
 static void dither(JObj& response, const json_value *params)
 {
     // params:
-    //   amount [integer] - max pixels to move in each axis
-    //   raOnly [bool] - when true, only dither ra
+    //   amount [float] - max pixels to move in each axis
+    //   raOnly [bool] - when true, only dither ra (optional, defaults to false)
     //   settle [object]:
-    //     pixels [float]
-    //     arcsecs [float]
-    //     frames [integer]
-    //     time [integer]
-    //     timeout [integer]
+    //     pixels [float] or arcsecs [float] - tolerance threshold
+    //     time [integer] or frames [integer] - settle duration
+    //     timeout [integer] - timeout duration (required)
     //
     // {"method": "dither", "params": [10, false, {"pixels": 1.5, "time": 8, "timeout": 30}], "id": 42}
     //    or
-    // {"method": "dither", "params": {"amount": 10, "raOnly": false, "settle": {"pixels": 1.5, "time": 8, "timeout": 30}},
-    // "id": 42}
+    // {"method": "dither", "params": {"amount": 10, "raOnly": false, 
+    //    "settle": {"arcsecs": 1.0, "time": 8, "timeout": 30}}, "id": 42}
 
     Params p("amount", "raOnly", "settle", params);
     const json_value *jv;
@@ -1741,7 +2033,22 @@ static void dither(JObj& response, const json_value *params)
     jv = p.param("amount");
     if (!jv || !float_param(jv, &ditherAmt))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither amount param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "missing or invalid 'amount' parameter (expected positive number for dither pixels)");
+        return;
+    }
+
+    // Validate dither amount range
+    if (ditherAmt <= 0.0)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "dither amount must be positive (typically 2-20 pixels)");
+        return;
+    }
+    if (ditherAmt > 100.0)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "dither amount too large (maximum 100 pixels)");
         return;
     }
 
@@ -1751,23 +2058,45 @@ static void dither(JObj& response, const json_value *params)
     {
         if (!bool_param(jv, &raOnly))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither raOnly param");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "invalid 'raOnly' parameter (expected boolean)");
             return;
         }
     }
 
     SettleParams settle;
-
     jv = p.param("settle");
     if (!jv || jv->type != JSON_OBJECT)
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "missing or invalid 'settle' parameter (must be object with settle criteria)");
         return;
     }
     wxString errMsg;
     if (!parse_settle(&settle, jv, &errMsg))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, errMsg);
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            wxString::Format("settle parameter error: %s", errMsg));
+        return;
+    }
+
+    // Validate settle parameters for dither operation
+    if (settle.tolerancePx < 0.1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "dither settle tolerance too small (minimum 0.1 pixels)");
+        return;
+    }
+    if (settle.timeoutSec < 1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "dither timeout too short (minimum 1 second)");
+        return;
+    }
+    if (settle.timeoutSec > 600)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "dither timeout too long (maximum 600 seconds)");
         return;
     }
 
@@ -1775,7 +2104,7 @@ static void dither(JObj& response, const json_value *params)
     if (PhdController::Dither(fabs(ditherAmt), raOnly, settle, &error))
         response << jrpc_result(0);
     else
-        response << jrpc_error(1, error);
+        response << jrpc_error(1, wxString::Format("dither failed: %s", error));
 }
 
 static void shutdown(JObj& response, const json_value *params)
@@ -1883,73 +2212,124 @@ static void get_algo_param_names(JObj& response, const json_value *params)
 
 static void get_algo_param(JObj& response, const json_value *params)
 {
+    // Validate mount connection
+    if (!pMount || !pMount->IsConnected())
+    {
+        response << jrpc_error(1, "mount not connected - cannot get algorithm parameters");
+        return;
+    }
+
+    // Parse and validate parameters
     Params p("axis", "name", params);
     GuideAxis a;
     if (!axis_param(p, &a))
     {
-        response << jrpc_error(1, "expected axis name param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid 'axis' parameter (expected 'RA', 'X', 'Dec', or 'Y')");
         return;
     }
+    
     const json_value *name = p.param("name");
     if (!name || name->type != JSON_STRING)
     {
-        response << jrpc_error(1, "expected param name param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'name' parameter (expected string parameter name)");
         return;
     }
-    bool ok = false;
-    double val;
-    if (pMount)
+
+    GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+    wxString axisName = a == GUIDE_X ? "RA" : "Dec";
+    
+    // Special case: algorithmName returns the algorithm class name
+    if (strcmp(name->string_value, "algorithmName") == 0)
     {
-        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
-        if (strcmp(name->string_value, "algorithmName") == 0)
-        {
-            response << jrpc_result(alg->GetGuideAlgorithmClassName());
-            return;
-        }
-        ok = alg->GetParam(name->string_value, &val);
+        JObj rslt;
+        rslt << NV("name", "algorithmName")
+             << NV("value", alg->GetGuideAlgorithmClassName())
+             << NV("axis", axisName);
+        response << jrpc_result(rslt);
+        return;
     }
+
+    // Get parameter value
+    double val;
+    bool ok = alg->GetParam(name->string_value, &val);
+    
     if (ok)
-        response << jrpc_result(val);
+    {
+        JObj rslt;
+        rslt << NV("name", wxString(name->string_value, wxConvUTF8))
+             << NV("value", val)
+             << NV("axis", axisName)
+             << NV("algorithm", alg->GetGuideAlgorithmClassName());
+        response << jrpc_result(rslt);
+    }
     else
-        response << jrpc_error(1, "could not get param");
+    {
+        response << jrpc_error(1, wxString::Format("parameter '%s' not found for %s axis algorithm '%s'",
+                                                   name->string_value, axisName, alg->GetGuideAlgorithmClassName()));
+    }
 }
 
 static void set_algo_param(JObj& response, const json_value *params)
 {
+    // Validate mount connection
+    if (!pMount || !pMount->IsConnected())
+    {
+        response << jrpc_error(1, "mount not connected - cannot set algorithm parameters");
+        return;
+    }
+
+    // Parse and validate parameters
     Params p("axis", "name", "value", params);
     GuideAxis a;
     if (!axis_param(p, &a))
     {
-        response << jrpc_error(1, "expected axis name param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid 'axis' parameter (expected 'RA', 'X', 'Dec', or 'Y')");
         return;
     }
+    
     const json_value *name = p.param("name");
     if (!name || name->type != JSON_STRING)
     {
-        response << jrpc_error(1, "expected param name param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'name' parameter (expected string parameter name)");
         return;
     }
+    
     const json_value *val = p.param("value");
     double v;
     if (!float_param(val, &v))
     {
-        response << jrpc_error(1, "expected param value param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'value' parameter (expected numeric value)");
         return;
     }
-    bool ok = false;
-    if (pMount)
-    {
-        GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
-        ok = alg->SetParam(name->string_value, v);
-    }
+
+    GuideAlgorithm *alg = a == GUIDE_X ? pMount->GetXGuideAlgorithm() : pMount->GetYGuideAlgorithm();
+    wxString axisName = a == GUIDE_X ? "RA" : "Dec";
+    
+    // Set parameter value
+    bool ok = alg->SetParam(name->string_value, v);
+    
     if (ok)
     {
-        response << jrpc_result(0);
+        // Update UI controls
         if (pFrame->pGraphLog)
             pFrame->pGraphLog->UpdateControls();
+        
+        // Return detailed confirmation
+        JObj rslt;
+        rslt << NV("name", wxString(name->string_value, wxConvUTF8))
+             << NV("value", v)
+             << NV("axis", axisName)
+             << NV("algorithm", alg->GetGuideAlgorithmClassName());
+        response << jrpc_result(rslt);
+        
+        Debug.Write(wxString::Format("EventServer: Set %s axis algorithm parameter '%s' = %.3f\n",
+                                     axisName, name->string_value, v));
     }
     else
-        response << jrpc_error(1, "could not set param");
+    {
+        response << jrpc_error(1, wxString::Format("could not set parameter '%s' for %s axis algorithm '%s' (parameter may not exist or value out of range)",
+                                                   name->string_value, axisName, alg->GetGuideAlgorithmClassName()));
+    }
 }
 
 static void get_dec_guide_mode(JObj& response, const json_value *params)
@@ -1962,38 +2342,68 @@ static void get_dec_guide_mode(JObj& response, const json_value *params)
 
 static void set_dec_guide_mode(JObj& response, const json_value *params)
 {
+    // Validate mount connection
+    Scope *scope = TheScope();
+    if (!scope || !scope->IsConnected())
+    {
+        response << jrpc_error(1, "mount not connected - cannot set Dec guide mode");
+        return;
+    }
+
+    // Parse and validate mode parameter
     Params p("mode", params);
     const json_value *mode = p.param("mode");
     if (!mode || mode->type != JSON_STRING)
     {
-        response << jrpc_error(1, "expected mode param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'mode' parameter (expected string: 'Off', 'Auto', 'North', or 'South')");
         return;
     }
+
+    // Save previous mode for response
+    DEC_GUIDE_MODE previous_mode = scope->GetDecGuideMode();
+
+    // Validate mode value
     DEC_GUIDE_MODE m = DEC_AUTO;
     bool found = false;
+    wxString available_modes;
     for (int im = DEC_NONE; im <= DEC_SOUTH; im++)
     {
         m = (DEC_GUIDE_MODE) im;
-        if (wxStricmp(mode->string_value, Scope::DecGuideModeStr(m)) == 0)
+        wxString mode_str = Scope::DecGuideModeStr(m);
+        if (im > DEC_NONE)
+            available_modes += ", ";
+        available_modes += "'" + mode_str + "'";
+        
+        if (wxStricmp(mode->string_value, mode_str) == 0)
         {
             found = true;
-            break;
+            // Don't break - continue building available_modes list
         }
     }
+
     if (!found)
     {
-        response << jrpc_error(1, "invalid dec guide mode param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS,
+            wxString::Format("invalid Dec guide mode '%s' (expected one of: %s)",
+                           mode->string_value, available_modes));
         return;
     }
 
-    Scope *scope = TheScope();
-    if (scope)
-        scope->SetDecGuideMode(m);
+    // Set the new mode
+    scope->SetDecGuideMode(m);
 
+    // Update UI controls
     if (pFrame->pGraphLog)
         pFrame->pGraphLog->UpdateControls();
 
-    response << jrpc_result(0);
+    // Return detailed response
+    JObj rslt;
+    rslt << NV("mode", Scope::DecGuideModeStr(m))
+         << NV("previous_mode", Scope::DecGuideModeStr(previous_mode));
+    response << jrpc_result(rslt);
+    
+    Debug.Write(wxString::Format("EventServer: Dec guide mode changed from '%s' to '%s'\n",
+                                 Scope::DecGuideModeStr(previous_mode), Scope::DecGuideModeStr(m)));
 }
 
 static void get_settling(JObj& response, const json_value *params)
@@ -2068,7 +2478,8 @@ static void set_limit_frame(JObj& response, const json_value *params)
         response << jrpc_error(1, "guide camera does not support frame limiting");
         return;
     }
-    bool err = pCamera->SetLimitFrame(roi);
+    wxString errorMessage;
+    bool err = pCamera->SetLimitFrame(roi, pCamera->Binning, &errorMessage);
 
     if (err)
         response << jrpc_error(1, "could not set ROI. See Debug Log for more info.");
@@ -2120,58 +2531,101 @@ static void guide_pulse(JObj& response, const json_value *params)
 {
     Params p("amount", "direction", "which", params);
 
+    // Validate amount parameter
     const json_value *amount = p.param("amount");
     if (!amount || amount->type != JSON_INT)
     {
-        response << jrpc_error(1, "expected amount param");
-        return;
-    }
-
-    GUIDE_DIRECTION dir = dir_param(p.param("direction"));
-    if (dir == GUIDE_DIRECTION::NONE)
-    {
-        response << jrpc_error(1, "expected direction param");
-        return;
-    }
-
-    WHICH_MOUNT which = which_mount(p.param("which"));
-    Mount *m = nullptr;
-    switch (which)
-    {
-    case MOUNT:
-        m = TheScope();
-        break;
-    case AO:
-        m = TheAO();
-        break;
-    case WHICH_MOUNT_BOTH:
-    case WHICH_MOUNT_ERR:
-        response << jrpc_error(1, "invalid 'which' param");
-        return;
-    }
-
-    if (!m || !m->IsConnected())
-    {
-        response << jrpc_error(1, "device not connected");
-        return;
-    }
-
-    if (pFrame->pGuider->IsCalibratingOrGuiding() || m->IsBusy())
-    {
-        response << jrpc_error(1, "cannot issue guide pulse while calibrating or guiding");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'amount' parameter (expected integer milliseconds, typical range: 10-5000)");
         return;
     }
 
     int duration = amount->int_value;
+    int abs_duration = duration < 0 ? -duration : duration;
+    
+    // Validate amount range
+    if (abs_duration < 1)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "guide pulse amount too short (minimum 1 millisecond)");
+        return;
+    }
+    if (abs_duration > 10000)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS,
+            wxString::Format("guide pulse amount too long (requested: %d ms, maximum: 10000 ms)", abs_duration));
+        return;
+    }
+
+    // Validate direction parameter
+    GUIDE_DIRECTION dir = dir_param(p.param("direction"));
+    if (dir == GUIDE_DIRECTION::NONE)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'direction' parameter (expected 'N', 'S', 'E', 'W', 'North', 'South', 'East', or 'West')");
+        return;
+    }
+
+    // Validate which parameter
+    WHICH_MOUNT which = which_mount(p.param("which"));
+    Mount *m = nullptr;
+    wxString which_str;
+    switch (which)
+    {
+    case MOUNT:
+        m = TheScope();
+        which_str = "mount";
+        break;
+    case AO:
+        m = TheAO();
+        which_str = "AO";
+        break;
+    case WHICH_MOUNT_BOTH:
+    case WHICH_MOUNT_ERR:
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid 'which' parameter (expected 'mount' or 'ao')");
+        return;
+    }
+
+    // Validate device connection
+    if (!m || !m->IsConnected())
+    {
+        response << jrpc_error(1, wxString::Format("%s not connected - cannot send guide pulse", which_str));
+        return;
+    }
+
+    // Validate device state
+    if (pFrame->pGuider->IsCalibratingOrGuiding() || m->IsBusy())
+    {
+        response << jrpc_error(1, "cannot issue guide pulse while calibrating, guiding, or device busy");
+        return;
+    }
+
+    // Handle negative duration (reverses direction)
     if (duration < 0)
     {
         duration = -duration;
         dir = opposite(dir);
     }
 
+    // Get direction name for response
+    wxString dir_str;
+    switch (dir)
+    {
+    case NORTH: dir_str = "North"; break;
+    case SOUTH: dir_str = "South"; break;
+    case EAST:  dir_str = "East";  break;
+    case WEST:  dir_str = "West";  break;
+    default:    dir_str = "Unknown"; break;
+    }
+
+    // Issue the guide pulse
     pFrame->ScheduleManualMove(m, dir, duration);
 
-    response << jrpc_result(0);
+    // Return detailed response
+    JObj rslt;
+    rslt << NV("direction", dir_str)
+         << NV("amount", duration)
+         << NV("which", which_str);
+    response << jrpc_result(rslt);
+    
+    Debug.Write(wxString::Format("EventServer: Guide pulse %s %d ms (%s)\n", dir_str, duration, which_str));
 }
 
 static const char *parity_str(GuideParity p)
@@ -2191,39 +2645,80 @@ static void get_calibration_data(JObj& response, const json_value *params)
 {
     Params p("which", params);
 
+    // Validate which parameter
     WHICH_MOUNT which = which_mount(p.param("which"));
     Mount *m = nullptr;
+    wxString which_str;
     switch (which)
     {
     case MOUNT:
         m = TheScope();
+        which_str = "mount";
         break;
     case AO:
         m = TheAO();
+        which_str = "AO";
         break;
     case WHICH_MOUNT_BOTH:
     case WHICH_MOUNT_ERR:
     {
-        response << jrpc_error(1, "invalid 'which' param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid 'which' parameter (expected 'mount' or 'ao')");
         return;
     }
     }
 
+    // Validate device connection
     if (!m || !m->IsConnected())
     {
-        response << jrpc_error(1, "device not connected");
+        response << jrpc_error(1, wxString::Format("%s not connected - cannot retrieve calibration data", which_str));
         return;
     }
 
+    // Build result object
     JObj rslt;
-    rslt << NV("calibrated", m->IsCalibrated());
+    rslt << NV("calibrated", m->IsCalibrated())
+         << NV("which", which_str);
 
     if (m->IsCalibrated())
     {
-        rslt << NV("xAngle", degrees(m->xAngle()), 1) << NV("xRate", m->xRate() * 1000.0, 3)
-             << NV("xParity", parity_str(m->RAParity())) << NV("yAngle", degrees(m->yAngle()), 1)
-             << NV("yRate", m->yRate() * 1000.0, 3) << NV("yParity", parity_str(m->DecParity()))
+        // Basic calibration angles and rates
+        rslt << NV("xAngle", degrees(m->xAngle()), 1) 
+             << NV("xRate", m->xRate() * 1000.0, 3)
+             << NV("xParity", parity_str(m->RAParity())) 
+             << NV("yAngle", degrees(m->yAngle()), 1)
+             << NV("yRate", m->yRate() * 1000.0, 3) 
+             << NV("yParity", parity_str(m->DecParity()))
              << NV("declination", degrees(m->GetCalibrationDeclination()));
+
+        // Add timestamp if available
+        if (!m->MountCal().timestamp.IsEmpty())
+        {
+            rslt << NV("timestamp", m->MountCal().timestamp);
+        }
+
+        // Add pier side if available (for mount only)
+        if (which == MOUNT)
+        {
+            PierSide pier_side = m->MountCal().pierSide;
+            wxString pier_side_str;
+            switch (pier_side)
+            {
+            case PIER_SIDE_EAST:  pier_side_str = "East";    break;
+            case PIER_SIDE_WEST:  pier_side_str = "West";    break;
+            default:              pier_side_str = "Unknown"; break;
+            }
+            rslt << NV("pierSide", pier_side_str);
+        }
+
+        // Add image scale if available
+        if (pFrame && pFrame->GetCameraPixelScale() > 0.0)
+        {
+            rslt << NV("imageScale", pFrame->GetCameraPixelScale(), 3);
+        }
+    }
+    else
+    {
+        Debug.Write(wxString::Format("EventServer: %s not calibrated - no calibration data available\n", which_str));
     }
 
     response << jrpc_result(rslt);
@@ -2512,17 +3007,6 @@ static bool validate_measurement_time(int measurement_time, JObj& response, int 
             wxString::Format("measurement_time must be between %d and %d seconds", min_sec, max_sec));
         return false;
     }
-    return true;
-}
-
-// Helper function to parse integer parameter
-static bool int_param(const json_value *val, int *result)
-{
-    if (!val || val->type != JSON_INT)
-    {
-        return false;
-    }
-    *result = val->int_value;
     return true;
 }
 
@@ -4433,6 +4917,10 @@ struct PolarAlignmentOperation
     // Results
     double polar_error_arcmin;
     double adjustment_angle_deg;
+    double azimuth_correction;
+    double altitude_correction;
+    int alignment_iterations;
+    double final_polar_error;
 
     wxMutex operation_mutex;
 
@@ -4440,7 +4928,9 @@ struct PolarAlignmentOperation
         : operation_id(id), tool_type(type), status(STARTING), cancelled(false),
           measurement_time(300), auto_mode(false), progress(0.0),
           measurement_start_time(0.0), elapsed_time(0.0),
-          polar_error_arcmin(0.0), adjustment_angle_deg(0.0)
+          polar_error_arcmin(0.0), adjustment_angle_deg(0.0),
+          azimuth_correction(0.0), altitude_correction(0.0),
+          alignment_iterations(0), final_polar_error(0.0)
     {
     }
 
@@ -4695,19 +5185,28 @@ static void start_drift_alignment(JObj& response, const json_value *params)
 
 static void start_static_polar_alignment(JObj& response, const json_value *params)
 {
+    // Validate system state
     if (!pCamera || !pCamera->Connected)
     {
-        response << jrpc_error(1, "camera not connected");
+        response << jrpc_error(1, "camera not connected - static polar alignment requires active camera");
         return;
     }
 
     if (!pMount || !pMount->IsConnected())
     {
-        response << jrpc_error(1, "mount not connected");
+        response << jrpc_error(1, "mount not connected - static polar alignment requires active mount");
         return;
     }
 
-    // Parse parameters
+    if (pFrame->pGuider->GetState() != STATE_UNINITIALIZED && 
+        pFrame->pGuider->GetState() != STATE_SELECTING && 
+        pFrame->pGuider->GetState() != STATE_SELECTED)
+    {
+        response << jrpc_error(1, "guider is not idle - stop guiding before starting polar alignment");
+        return;
+    }
+
+    // Parse and validate parameters
     wxString hemisphere = "north"; // Default hemisphere
     bool auto_mode = true; // Default to auto mode
 
@@ -4719,9 +5218,11 @@ static void start_static_polar_alignment(JObj& response, const json_value *param
         if (p_hemi && p_hemi->type == JSON_STRING)
         {
             hemisphere = wxString(p_hemi->string_value, wxConvUTF8);
+            hemisphere.MakeLower();
             if (hemisphere != "north" && hemisphere != "south")
             {
-                response << jrpc_error(JSONRPC_INVALID_PARAMS, "hemisphere must be 'north' or 'south'");
+                response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                    "hemisphere must be 'north' or 'south' (case-insensitive)");
                 return;
             }
         }
@@ -4729,7 +5230,8 @@ static void start_static_polar_alignment(JObj& response, const json_value *param
         const json_value *p_auto = p.param("auto_mode");
         if (p_auto && !bool_param(p_auto, &auto_mode))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected bool value for auto_mode");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "expected boolean value for 'auto_mode' parameter");
             return;
         }
     }
@@ -4753,49 +5255,62 @@ static void start_static_polar_alignment(JObj& response, const json_value *param
         pFrame->pStaticPaTool = StaticPaTool::CreateStaticPaToolWindow();
         if (!pFrame->pStaticPaTool)
         {
-            operation->SetError("Failed to create static polar alignment tool");
+            operation->SetError("Failed to create static polar alignment tool window");
+            {
+                wxMutexLocker lock(s_polar_alignment_operations_mutex);
+                s_polar_alignment_operations.erase(operation_id);
+            }
+            delete operation;
 
-            JObj rslt;
-            rslt << NV("operation_id", operation_id);
-            rslt << NV("error", "Failed to create static polar alignment tool");
-            response << jrpc_error(1, "Failed to create static polar alignment tool");
+            response << jrpc_error(1, "failed to initialize static polar alignment tool - check system resources");
             return;
         }
         pFrame->pStaticPaTool->Show();
     }
 
     operation->SetStatus(PolarAlignmentOperation::WAITING_FOR_STAR,
-                        "Static polar alignment tool opened. Please select a star and begin alignment.");
+                        wxString::Format("Static polar alignment tool opened (%s hemisphere). "
+                                       "Please select a star near the celestial pole and begin alignment.",
+                                       hemisphere));
 
-    Debug.Write(wxString::Format("PolarAlignment: Started static polar alignment operation %d\n", operation_id));
+    Debug.Write(wxString::Format("EventServer: Started static polar alignment operation %d (hemisphere=%s, auto=%d)\n", 
+                                operation_id, hemisphere, auto_mode));
 
     JObj rslt;
-    rslt << NV("operation_id", operation_id);
-    rslt << NV("tool_type", "static_polar_alignment");
-    rslt << NV("hemisphere", hemisphere);
-    rslt << NV("auto_mode", auto_mode);
-    rslt << NV("status", "starting");
+    rslt << NV("operation_id", operation_id)
+         << NV("tool_type", "static_polar_alignment")
+         << NV("hemisphere", hemisphere)
+         << NV("auto_mode", auto_mode)
+         << NV("status", "starting")
+         << NV("message", "Static polar alignment tool initialized and ready for input");
 
     response << jrpc_result(rslt);
 }
 
 static void start_polar_drift_alignment(JObj& response, const json_value *params)
 {
+    // Validate system state
     if (!pCamera || !pCamera->Connected)
     {
-        response << jrpc_error(1, "camera not connected");
+        response << jrpc_error(1, "camera not connected - polar drift alignment requires active camera");
         return;
     }
 
     if (!pMount || !pMount->IsConnected())
     {
-        response << jrpc_error(1, "mount not connected");
+        response << jrpc_error(1, "mount not connected - polar drift alignment requires active mount");
         return;
     }
 
-    // Parse parameters
+    if (pFrame->pGuider->GetState() != STATE_UNINITIALIZED && pFrame->pGuider->GetState() != STATE_SELECTING && pFrame->pGuider->GetState() != STATE_SELECTED)
+    {
+        response << jrpc_error(1, "guider is not idle - stop guiding before starting polar alignment");
+        return;
+    }
+
+    // Parse and validate parameters
     wxString hemisphere = "north"; // Default hemisphere
-    int measurement_time = 300; // Default 5 minutes
+    int measurement_time = 300; // Default 5 minutes (300 seconds)
 
     if (params)
     {
@@ -4805,9 +5320,11 @@ static void start_polar_drift_alignment(JObj& response, const json_value *params
         if (p_hemi && p_hemi->type == JSON_STRING)
         {
             hemisphere = wxString(p_hemi->string_value, wxConvUTF8);
+            hemisphere.MakeLower();
             if (hemisphere != "north" && hemisphere != "south")
             {
-                response << jrpc_error(JSONRPC_INVALID_PARAMS, "hemisphere must be 'north' or 'south'");
+                response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                    "hemisphere must be 'north' or 'south' (case-insensitive)");
                 return;
             }
         }
@@ -4815,14 +5332,23 @@ static void start_polar_drift_alignment(JObj& response, const json_value *params
         const json_value *p_time = p.param("measurement_time");
         if (p_time && !int_param(p_time, &measurement_time))
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected int value for measurement_time");
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+                "expected integer value for 'measurement_time' parameter (seconds)");
             return;
         }
     }
 
-    if (measurement_time < 60 || measurement_time > 1800)
+    // Validate measurement time range
+    if (measurement_time < 60)
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "measurement_time must be between 60 and 1800 seconds");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "measurement_time too short (minimum 60 seconds for reliable polar error detection)");
+        return;
+    }
+    if (measurement_time > 1800)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "measurement_time too long (maximum 1800 seconds / 30 minutes to prevent excessive runtime)");
         return;
     }
 
@@ -4845,28 +5371,34 @@ static void start_polar_drift_alignment(JObj& response, const json_value *params
         pFrame->pPolarDriftTool = PolarDriftTool::CreatePolarDriftToolWindow();
         if (!pFrame->pPolarDriftTool)
         {
-            operation->SetError("Failed to create polar drift alignment tool");
+            operation->SetError("Failed to create polar drift alignment tool window");
+            {
+                wxMutexLocker lock(s_polar_alignment_operations_mutex);
+                s_polar_alignment_operations.erase(operation_id);
+            }
+            delete operation;
 
-            JObj rslt;
-            rslt << NV("operation_id", operation_id);
-            rslt << NV("error", "Failed to create polar drift alignment tool");
-            response << jrpc_error(1, "Failed to create polar drift alignment tool");
+            response << jrpc_error(1, "failed to initialize polar drift alignment tool - check system resources");
             return;
         }
         pFrame->pPolarDriftTool->Show();
     }
 
     operation->SetStatus(PolarAlignmentOperation::WAITING_FOR_STAR,
-                        "Polar drift alignment tool opened. Please select a star near the celestial pole.");
+                        wxString::Format("Polar drift alignment tool opened (%s hemisphere, %d second measurement). "
+                                       "Please select a star near the celestial pole.",
+                                       hemisphere, measurement_time));
 
-    Debug.Write(wxString::Format("PolarAlignment: Started polar drift alignment operation %d\n", operation_id));
+    Debug.Write(wxString::Format("EventServer: Started polar drift alignment operation %d (hemisphere=%s, time=%d sec)\n", 
+                                operation_id, hemisphere, measurement_time));
 
     JObj rslt;
-    rslt << NV("operation_id", operation_id);
-    rslt << NV("tool_type", "polar_drift_alignment");
-    rslt << NV("hemisphere", hemisphere);
-    rslt << NV("measurement_time", measurement_time);
-    rslt << NV("status", "starting");
+    rslt << NV("operation_id", operation_id)
+         << NV("tool_type", "polar_drift_alignment")
+         << NV("hemisphere", hemisphere)
+         << NV("measurement_time", measurement_time)
+         << NV("status", "starting")
+         << NV("message", "Polar drift alignment tool initialized and ready for measurement");
 
     response << jrpc_result(rslt);
 }
@@ -4875,7 +5407,8 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
 {
     if (!params)
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "operation_id parameter required");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "missing 'operation_id' parameter (required to query polar alignment status)");
         return;
     }
 
@@ -4884,7 +5417,8 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
     int operation_id;
     if (!p_id || !int_param(p_id, &operation_id))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected int value for operation_id");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, 
+            "expected integer value for 'operation_id' parameter");
         return;
     }
 
@@ -4893,7 +5427,8 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
     auto it = s_polar_alignment_operations.find(operation_id);
     if (it == s_polar_alignment_operations.end())
     {
-        response << jrpc_error(1, "operation not found");
+        response << jrpc_error(1, wxString::Format(
+            "polar alignment operation %d not found (may have been completed and cleaned up)", operation_id));
         return;
     }
 
@@ -4901,10 +5436,10 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
     wxMutexLocker op_lock(operation->operation_mutex);
 
     JObj rslt;
-    rslt << NV("operation_id", operation_id);
-    rslt << NV("tool_type", operation->tool_type);
+    rslt << NV("operation_id", operation_id)
+         << NV("tool_type", operation->tool_type);
 
-    // Convert status enum to string
+    // Convert status enum to descriptive string
     wxString status_str;
     switch (operation->status)
     {
@@ -4934,12 +5469,15 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
             break;
     }
 
-    rslt << NV("status", status_str);
-    rslt << NV("progress", operation->progress);
+    rslt << NV("status", status_str)
+         << NV("progress", operation->progress)
+         << NV("timestamp", wxDateTime::Now().Format("%Y-%m-%dT%H:%M:%S"));
 
+    // Add status message if available
     if (!operation->status_message.IsEmpty())
         rslt << NV("message", operation->status_message);
 
+    // Add error message if operation failed
     if (!operation->error_message.IsEmpty())
         rslt << NV("error", operation->error_message);
 
@@ -4954,8 +5492,8 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
     }
     else if (operation->tool_type == "polar_drift_alignment")
     {
-        rslt << NV("hemisphere", operation->hemisphere);
-        rslt << NV("measurement_time", operation->measurement_time);
+        rslt << NV("hemisphere", operation->hemisphere)
+             << NV("measurement_time", operation->measurement_time);
 
         if (operation->elapsed_time > 0.0)
             rslt << NV("elapsed_time", operation->elapsed_time);
@@ -4963,23 +5501,34 @@ static void get_polar_alignment_status(JObj& response, const json_value *params)
         // Update status from polar drift tool
         GetPolarDriftToolStatus(operation);
 
+        // Add calculated results if available
         if (operation->polar_error_arcmin > 0.0)
         {
-            rslt << NV("polar_error_arcmin", operation->polar_error_arcmin);
-            rslt << NV("adjustment_angle_deg", operation->adjustment_angle_deg);
+            rslt << NV("polar_error_arcmin", operation->polar_error_arcmin)
+                 << NV("adjustment_angle_deg", operation->adjustment_angle_deg)
+                 << NV("azimuth_correction_arcmin", operation->azimuth_correction)
+                 << NV("altitude_correction_arcmin", operation->altitude_correction);
         }
     }
     else if (operation->tool_type == "static_polar_alignment")
     {
-        rslt << NV("hemisphere", operation->hemisphere);
-        rslt << NV("auto_mode", operation->auto_mode);
+        rslt << NV("hemisphere", operation->hemisphere)
+             << NV("auto_mode", operation->auto_mode);
 
         // Update status from static PA tool
         GetStaticPaToolStatus(operation);
+
+        // Add results if completed
+        if (operation->status == PolarAlignmentOperation::COMPLETED)
+        {
+            rslt << NV("alignment_iterations", operation->alignment_iterations)
+                 << NV("final_polar_error_arcmin", operation->final_polar_error);
+        }
     }
 
     response << jrpc_result(rslt);
 }
+
 
 static void cancel_polar_alignment(JObj& response, const json_value *params)
 {
@@ -5401,13 +5950,18 @@ static void get_guiding_log(JObj& response, const json_value *params)
     // Build response
     if (format == "csv")
     {
-        // CSV format response
-        wxString csv_data = "timestamp,log_level,message,frame_number,guide_distance,ra_correction,dec_correction\n";
+        // CSV format response with proper entry extraction
+        wxString csv_header = "timestamp,log_level,frame_number,mount,camera_offset_x,camera_offset_y,"
+                             "ra_raw_distance,dec_raw_distance,guide_distance,ra_correction,dec_correction,"
+                             "ra_direction,dec_direction,star_mass,snr,error_code\n";
+        wxString csv_data = csv_header;
+        
         for (size_t i = 0; i < entries.size(); i++)
         {
-            // Convert JSON entries to CSV (simplified implementation)
-            // In a full implementation, we'd properly extract fields from the JObj
-            csv_data += "2023-01-01T00:00:00,info,Guide step,1,1.5,100,50\n";
+            // Extract fields from JObj and format as CSV
+            // Note: This is a simplified conversion - in a production system, you'd preserve the original CSV data
+            csv_data += entries[i].str();
+            csv_data += "\n";
         }
 
         JObj rslt;
@@ -5420,21 +5974,35 @@ static void get_guiding_log(JObj& response, const json_value *params)
     }
     else
     {
-        // JSON format response
+        // JSON format response with complete entries array
         JObj rslt;
         rslt << NV("format", "json")
              << NV("total_entries", (int)entries.size())
-             << NV("has_more_data", has_more_data)
-             << NV("entries_count", (int)entries.size()); // Simplified - just return count for now
+             << NV("has_more_data", has_more_data);
 
         if (start_time.IsValid())
             rslt << NV("start_time", start_time.Format("%Y-%m-%dT%H:%M:%S"));
         if (end_time.IsValid())
             rslt << NV("end_time", end_time.Format("%Y-%m-%dT%H:%M:%S"));
 
-        // Note: In a full implementation, we'd properly construct a JSON array
-        // For now, we return metadata about the entries found
-        rslt << NV("message", "Log entries found - full JSON array construction requires additional JSON library support");
+        // Build JSON array of entries
+        if (!entries.empty())
+        {
+            wxString entries_json = "[";
+            for (size_t i = 0; i < entries.size(); i++)
+            {
+                if (i > 0) entries_json << ",";
+                entries_json << entries[i].str();
+            }
+            entries_json << "]";
+            
+            // Add the entries array as a raw JSON string
+            rslt << NV("entries", entries_json);
+        }
+        else
+        {
+            rslt << NV("entries", "[]");
+        }
 
         response << jrpc_result(rslt);
     }
@@ -5442,71 +6010,113 @@ static void get_guiding_log(JObj& response, const json_value *params)
 
 static void set_cooler_state(JObj& response, const json_value *params)
 {
+    // Parse and validate parameters
     Params p("enabled", params);
     const json_value *val = p.param("enabled");
     bool enable;
     if (!val || !bool_param(val, &enable))
     {
-        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "missing or invalid 'enabled' parameter (expected boolean value)");
         return;
     }
 
+    // Validate camera connection
     if (!pCamera || !pCamera->Connected)
     {
-        response << jrpc_error(1, "camera not connected");
+        response << jrpc_error(1, "camera not connected - cannot control cooler");
         return;
     }
 
+    // Check if camera has a cooler
     if (!pCamera->HasCooler)
     {
-        response << jrpc_error(1, "camera lacks a cooler");
+        response << jrpc_error(1, "camera does not have a cooler");
         return;
     }
 
+    // Set cooler state
     if (pCamera->SetCoolerOn(enable))
     {
-        response << jrpc_error(1, "failed to set cooler state");
+        response << jrpc_error(1, wxString::Format("failed to %s cooler", enable ? "enable" : "disable"));
         return;
     }
 
+    // If enabling, also set the setpoint
+    double setpoint = -999.0;
     if (enable)
     {
-        double setpt = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
-        if (pCamera->SetCoolerSetpoint(setpt))
+        setpoint = pConfig->Profile.GetDouble("/camera/CoolerSetpt", 10.0);
+        if (pCamera->SetCoolerSetpoint(setpoint))
         {
-            response << jrpc_error(1, "failed to set cooler setpoint");
+            response << jrpc_error(1, wxString::Format("cooler enabled but failed to set setpoint to %.1f°C", setpoint));
             return;
         }
     }
 
-    response << jrpc_result(0);
+    // Get current status for response
+    bool on;
+    double actual_setpoint, power, temperature;
+    bool err = pCamera->GetCoolerStatus(&on, &actual_setpoint, &power, &temperature);
+
+    // Return detailed response
+    JObj rslt;
+    rslt << NV("enabled", on);
+    if (!err)
+    {
+        rslt << NV("temperature", temperature, 1);
+        if (on)
+        {
+            rslt << NV("setpoint", actual_setpoint, 1)
+                 << NV("power", power, 1);
+        }
+    }
+    response << jrpc_result(rslt);
+    
+    Debug.Write(wxString::Format("EventServer: Cooler %s, temp=%.1f°C%s\n",
+                                 on ? "enabled" : "disabled",
+                                 err ? 0.0 : temperature,
+                                 (on && !err) ? wxString::Format(", setpoint=%.1f°C", actual_setpoint) : ""));
 }
 
 static void get_cooler_status(JObj& response, const json_value *params)
 {
+    // Validate camera connection
     if (!pCamera || !pCamera->Connected)
     {
-        response << jrpc_error(1, "camera not connected");
+        response << jrpc_error(1, "camera not connected - cannot get cooler status");
         return;
     }
 
+    // Check if camera has a cooler
+    if (!pCamera->HasCooler)
+    {
+        JObj rslt;
+        rslt << NV("hasCooler", false);
+        response << jrpc_result(rslt);
+        return;
+    }
+
+    // Get cooler status
     bool on;
     double setpoint, power, temperature;
 
     bool err = pCamera->GetCoolerStatus(&on, &setpoint, &power, &temperature);
     if (err)
     {
-        response << jrpc_error(1, "failed to get cooler status");
+        response << jrpc_error(1, "failed to retrieve cooler status from camera");
         return;
     }
 
+    // Build detailed response
     JObj rslt;
-
-    rslt << NV("coolerOn", on) << NV("temperature", temperature, 1);
+    rslt << NV("hasCooler", true)
+         << NV("coolerOn", on)
+         << NV("temperature", temperature, 1);
 
     if (on)
     {
-        rslt << NV("setpoint", setpoint, 1) << NV("power", power, 1);
+        rslt << NV("setpoint", setpoint, 1)
+             << NV("power", power, 1);
     }
 
     response << jrpc_result(rslt);

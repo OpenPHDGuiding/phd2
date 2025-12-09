@@ -41,8 +41,8 @@ class RunInBg
 {
     RunInBgImpl *m_impl;
 
-    RunInBg(const RunInBg&); // not implemented
-    RunInBg& operator=(const RunInBg&); // not implemented
+    RunInBg(const RunInBg&) = delete; // Copy constructor deleted - non-copyable class
+    RunInBg& operator=(const RunInBg&) = delete; // Copy assignment operator deleted
 
 public:
     RunInBg(wxWindow *parent, const wxString& title, const wxString& message);

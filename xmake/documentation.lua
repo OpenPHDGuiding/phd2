@@ -156,7 +156,7 @@ generate_hhk_file = function(html_files, output_file)
 end
 
 -- Function to package documentation files
-function package_documentation(input_folder, output_folder, locale, tools)
+package_documentation = function(input_folder, output_folder, locale, tools)
     local zip_file = path.join(output_folder, "PHD2GuideHelp.zip")
     
     -- Ensure output directory exists
@@ -201,7 +201,7 @@ function package_documentation(input_folder, output_folder, locale, tools)
 end
 
 -- Function to detect available documentation languages
-function detect_documentation_languages()
+detect_documentation_languages = function()
     local available_langs = {}
 
     -- Check for default English documentation
@@ -235,7 +235,7 @@ function detect_documentation_languages()
 end
 
 -- Function to create documentation target for a specific locale
-function create_locale_documentation_target(locale)
+create_locale_documentation_target = function(locale)
     local target_name = locale .. "_html"
 
     target(target_name)
@@ -284,7 +284,7 @@ function create_locale_documentation_target(locale)
 end
 
 -- Function to create all documentation targets
-function create_documentation_targets()
+create_documentation_targets = function()
     local available_langs = detect_documentation_languages()
 
     if #available_langs == 0 then
@@ -315,7 +315,7 @@ function create_documentation_targets()
 end
 
 -- Function to create translation targets (integrates with localization.lua)
-function create_translation_targets()
+create_translation_targets = function()
     local available_langs = detect_documentation_languages()
 
     for _, locale in ipairs(available_langs) do
@@ -343,7 +343,7 @@ function create_translation_targets()
 end
 
 -- Main setup function
-function setup_documentation()
+setup_documentation = function()
     create_documentation_targets()
     create_translation_targets()
 

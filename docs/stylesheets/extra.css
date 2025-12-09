@@ -1,0 +1,209 @@
+/* Custom styles for PHD2 documentation */
+
+/* Code block improvements */
+.highlight pre {
+  padding: 1em;
+  border-radius: 0.3em;
+}
+
+/* Admonition styling */
+.admonition {
+  border-left: 0.2rem solid;
+  border-radius: 0.2rem;
+  margin: 1.5625em 0;
+  padding: 0 0.6rem;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  overflow: auto;
+  margin: 1em 0;
+}
+
+table th {
+  font-weight: 700;
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+/* Image captions */
+figure {
+  text-align: center;
+  margin: 2em 0;
+}
+
+figcaption {
+  font-style: italic;
+  color: var(--md-default-fg-color--light);
+  margin-top: 0.5em;
+}
+
+/* Command prompts */
+.command-prompt {
+  background-color: var(--md-code-bg-color);
+  padding: 0.1em 0.3em;
+  border-radius: 0.2em;
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+}
+
+/* Platform badges */
+.platform-badge {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  margin: 0.2em;
+  border-radius: 0.3em;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.platform-windows {
+  background-color: #0078D4;
+  color: white;
+}
+
+.platform-macos {
+  background-color: #000000;
+  color: white;
+}
+
+.platform-linux {
+  background-color: #FCC624;
+  color: black;
+}
+
+/* Status indicators */
+.status-stable {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.status-experimental {
+  color: #FF9800;
+  font-weight: 600;
+}
+
+.status-deprecated {
+  color: #F44336;
+  font-weight: 600;
+}
+
+/* API method signatures */
+.api-signature {
+  background-color: var(--md-code-bg-color);
+  padding: 1em;
+  border-left: 0.3rem solid var(--md-primary-fg-color);
+  border-radius: 0.2rem;
+  margin: 1em 0;
+  font-family: var(--md-code-font-family);
+  overflow-x: auto;
+}
+
+/* Version badges */
+.version-badge {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  background-color: var(--md-primary-fg-color);
+  color: white;
+  border-radius: 0.2em;
+  font-size: 0.75em;
+  font-weight: 600;
+  vertical-align: middle;
+  margin-left: 0.5em;
+}
+
+/* Keyboard shortcuts */
+kbd {
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  font-size: 0.85em;
+  color: var(--md-default-fg-color);
+  background-color: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2em;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  font-family: var(--md-code-font-family);
+}
+
+/* Warning boxes for important notes */
+.important-note {
+  background-color: #FFF3CD;
+  border-left: 0.3rem solid #FFC107;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 0.2rem;
+}
+
+.md-typeset .important-note p:last-child {
+  margin-bottom: 0;
+}
+
+/* Grid layouts for feature lists */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5em;
+  margin: 2em 0;
+}
+
+.feature-item {
+  padding: 1.5em;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.3em;
+  transition: box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-item h3 {
+  margin-top: 0;
+  color: var(--md-primary-fg-color);
+}
+
+/* Responsive images */
+.md-typeset img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Code tabs styling */
+.tabbed-set {
+  margin: 1.5em 0;
+}
+
+/* Glossary term highlighting */
+.glossary-term {
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}
+
+/* Download buttons */
+.download-button {
+  display: inline-block;
+  padding: 0.8em 1.5em;
+  background-color: var(--md-primary-fg-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.3em;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  margin: 0.5em 0.5em 0.5em 0;
+}
+
+.download-button:hover {
+  background-color: var(--md-accent-fg-color);
+  color: white;
+}
+
+/* TOC styling improvements */
+.md-sidebar--secondary .md-sidebar__scrollwrap {
+  position: sticky;
+  top: 4.8rem;
+}
+
+/* Footer improvements */
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color);
+}

@@ -6,160 +6,307 @@
 -- Source file collections
 local cam_sources = {
     "src/cameras/drivers/cam_altair.cpp",
-    "src/cameras/drivers/cam_ascom.cpp", 
+    "src/cameras/drivers/cam_altair.h",
+    "src/cameras/drivers/cam_ascom.cpp",
+    "src/cameras/drivers/cam_ascom.h", 
     "src/cameras/drivers/cam_atik16.cpp",
+    "src/cameras/drivers/cam_atik16.h",
     "src/cameras/drivers/cam_firewire_IC.cpp",
+    "src/cameras/drivers/cam_firewire_IC.h",
     "src/cameras/drivers/cam_firewire_OSX.cpp",
+    "src/cameras/drivers/cam_firewire_OSX.h",
     "src/cameras/drivers/cam_indi.cpp",
+    "src/cameras/drivers/cam_indi.h",
     "src/cameras/drivers/cam_INovaPLC.cpp",
+    "src/cameras/drivers/cam_INovaPLC.h",
     "src/cameras/drivers/cam_ioptron.cpp",
+    "src/cameras/drivers/cam_ioptron.h",
     "src/cameras/drivers/cam_KWIQGuider.cpp",
+    "src/cameras/drivers/cam_KWIQGuider.h",
     "src/cameras/drivers/cam_LEwebcam.cpp",
+    "src/cameras/drivers/cam_LEwebcam.h",
     "src/cameras/drivers/cam_MeadeDSI.cpp",
+    "src/cameras/drivers/cam_MeadeDSI.h",
     "src/cameras/drivers/cam_moravian.cpp",
+    "src/cameras/drivers/cam_moravian.h",
     "src/cameras/drivers/cam_NebSBIG.cpp",
+    "src/cameras/drivers/cam_NebSBIG.h",
     "src/cameras/drivers/cam_ogma.cpp",
+    "src/cameras/drivers/cam_ogma.h",
     "src/cameras/drivers/cam_opencv.cpp",
+    "src/cameras/drivers/cam_opencv.h",
     "src/cameras/drivers/cam_openssag.cpp",
+    "src/cameras/drivers/cam_openssag.h",
     "src/cameras/drivers/cam_OSPL130.cpp",
+    "src/cameras/drivers/cam_OSPL130.h",
     "src/cameras/drivers/cam_playerone.cpp",
+    "src/cameras/drivers/cam_playerone.h",
     "src/cameras/drivers/cam_qguide.cpp",
+    "src/cameras/drivers/cam_qguide.h",
     "src/cameras/drivers/cam_qhy.cpp",
+    "src/cameras/drivers/cam_qhy.h",
     "src/cameras/drivers/cam_sbig.cpp",
+    "src/cameras/drivers/cam_sbig.h",
     "src/cameras/drivers/cam_sbigrotator.cpp",
+    "src/cameras/drivers/cam_sbigrotator.h",
     "src/cameras/drivers/cam_skyraider.cpp",
+    "src/cameras/drivers/cam_skyraider.h",
     "src/cameras/drivers/cam_sspiag.cpp",
+    "src/cameras/drivers/cam_sspiag.h",
     "src/cameras/drivers/cam_starfish.cpp",
+    "src/cameras/drivers/cam_starfish.h",
     "src/cameras/drivers/cam_StarShootDSCI.cpp",
+    "src/cameras/drivers/cam_StarShootDSCI.h",
     "src/cameras/drivers/cam_svb.cpp",
+    "src/cameras/drivers/cam_svb.h",
     "src/cameras/drivers/cam_sxv.cpp",
+    "src/cameras/drivers/cam_sxv.h",
     "src/cameras/drivers/cam_touptek.cpp",
+    "src/cameras/drivers/cam_touptek.h",
     "src/cameras/drivers/cam_vfw.cpp",
+    "src/cameras/drivers/cam_vfw.h",
+    "src/cameras/drivers/cam_wdm_base.h",
     "src/cameras/drivers/cam_wdm.cpp",
+    "src/cameras/drivers/cam_wdm.h",
     "src/cameras/drivers/cam_zwo.cpp",
+    "src/cameras/drivers/cam_zwo.h",
     "src/cameras/camera.cpp",
-    "src/cameras/camcal_import_dialog.cpp"
+    "src/cameras/camera.h",
+    "src/cameras/cameras.h",
+    "src/cameras/camcal_import_dialog.cpp",
+    "src/cameras/camcal_import_dialog.h"
 }
 
 -- Windows-specific camera sources
 if is_plat("windows") then
     table.insert(cam_sources, "src/cameras/drivers/cam_LEParallelWebcam.cpp")
+    table.insert(cam_sources, "src/cameras/drivers/cam_LEParallelWebcam.h")
     table.insert(cam_sources, "src/cameras/drivers/cam_LESerialWebcam.cpp")
+    table.insert(cam_sources, "src/cameras/drivers/cam_LESerialWebcam.h")
     table.insert(cam_sources, "src/cameras/drivers/cam_LELXUSBWebcam.cpp")
+    table.insert(cam_sources, "src/cameras/drivers/cam_LELXUSBWebcam.h")
+    table.insert(cam_sources, "cameras/ArtemisHSCAPI.h")
     table.insert(cam_sources, "cameras/ArtemisHSCAPI.cpp")
 elseif is_plat("linux") then
+    table.insert(cam_sources, "src/cameras/drivers/cam_qhy5.h")
     table.insert(cam_sources, "src/cameras/drivers/cam_qhy5.cpp")
 end
 
 local scope_sources = {
     "src/mounts/mount.cpp",
+    "src/mounts/mount.h",
     "src/mounts/scope.cpp",
+    "src/mounts/scope.h",
+    "src/mounts/scopes.h",
     "src/mounts/drivers/scope_ascom.cpp",
+    "src/mounts/drivers/scope_ascom.h",
     "src/mounts/drivers/scope_eqmac.cpp",
+    "src/mounts/drivers/scope_eqmac.h",
     "src/mounts/drivers/scope_equinox.cpp",
+    "src/mounts/drivers/scope_equinox.h",
     "src/mounts/drivers/scope_GC_USBST4.cpp",
+    "src/mounts/drivers/scope_GC_USBST4.h",
     "src/mounts/drivers/scope_gpint.cpp",
+    "src/mounts/drivers/scope_gpint.h",
     "src/mounts/drivers/scope_gpusb.cpp",
+    "src/mounts/drivers/scope_gpusb.h",
     "src/mounts/drivers/scope_manual_pointing.cpp",
+    "src/mounts/drivers/scope_manual_pointing.h",
     "src/mounts/drivers/scope_onboard_st4.cpp",
+    "src/mounts/drivers/scope_onboard_st4.h",
     "src/mounts/drivers/scope_oncamera.cpp",
+    "src/mounts/drivers/scope_oncamera.h",
     "src/mounts/drivers/scope_onstepguider.cpp",
+    "src/mounts/drivers/scope_onstepguider.h",
     "src/mounts/drivers/scope_voyager.cpp",
+    "src/mounts/drivers/scope_voyager.h",
     "src/mounts/drivers/scope_indi.cpp",
+    "src/mounts/drivers/scope_indi.h",
     "src/stepguiders/stepguider_sxao.cpp",
+    "src/stepguiders/stepguider_sxao.h",
     "src/stepguiders/stepguider_sxao_indi.cpp",
+    "src/stepguiders/stepguider_sxao_indi.h",
     "src/stepguiders/stepguider_sbigao_indi.cpp",
-    "src/stepguiders/stepguider.cpp"
+    "src/stepguiders/stepguider_sbigao_indi.h",
+    "src/stepguiders/stepguider.cpp",
+    "src/stepguiders/stepguider.h",
+    "src/stepguiders/stepguiders.h"
 }
 
 local guiding_sources = {
     "src/guiding/backlash_comp.cpp",
+    "src/guiding/backlash_comp.h",
     "src/guiding/algorithms/guide_algorithm_hysteresis.cpp",
+    "src/guiding/algorithms/guide_algorithm_hysteresis.h",
     "src/guiding/algorithms/guide_algorithm_gaussian_process.cpp",
+    "src/guiding/algorithms/guide_algorithm_gaussian_process.h",
     "src/guiding/algorithms/guide_algorithm_identity.cpp",
+    "src/guiding/algorithms/guide_algorithm_identity.h",
     "src/guiding/algorithms/guide_algorithm_lowpass.cpp",
+    "src/guiding/algorithms/guide_algorithm_lowpass.h",
     "src/guiding/algorithms/guide_algorithm_lowpass2.cpp",
+    "src/guiding/algorithms/guide_algorithm_lowpass2.h",
     "src/guiding/algorithms/guide_algorithm_resistswitch.cpp",
+    "src/guiding/algorithms/guide_algorithm_resistswitch.h",
     "src/guiding/algorithms/guide_algorithm_zfilter.cpp",
+    "src/guiding/algorithms/guide_algorithm_zfilter.h",
     "src/guiding/guide_algorithm.cpp",
+    "src/guiding/guide_algorithm.h",
+    "src/guiding/guide_algorithms.h",
     "src/guiding/guider_multistar.cpp",
+    "src/guiding/guider_multistar.h",
     "src/guiding/guider.cpp",
+    "src/guiding/guider.h",
+    "src/guiding/guiders.h",
     "src/guiding/zfilterfactory.cpp",
+    "src/guiding/zfilterfactory.h",
     "src/guiding/calibration_assistant.cpp",
-    "src/guiding/guiding_assistant.cpp"
+    "src/guiding/calibration_assistant.h",
+    "src/guiding/guiding_assistant.cpp",
+    "src/guiding/guiding_assistant.h"
 }
 
 local core_sources = {
     "src/ui/dialogs/about_dialog.cpp",
+    "src/ui/dialogs/about_dialog.h",
     "src/ui/dialogs/advanced_dialog.cpp",
+    "src/ui/dialogs/advanced_dialog.h",
     "src/ui/aui_controls.cpp",
+    "src/ui/aui_controls.h",
     "src/ui/dialogs/calreview_dialog.cpp",
+    "src/ui/dialogs/calreview_dialog.h",
     "src/ui/dialogs/calstep_dialog.cpp",
+    "src/ui/dialogs/calstep_dialog.h",
     "src/utilities/circbuf.h",
     "src/ui/tools/comet_tool.cpp",
+    "src/ui/tools/comet_tool.h",
     "src/core/config_indi.cpp",
+    "src/core/config_indi.h",
     "src/core/configdialog.cpp",
+    "src/core/configdialog.h",
     "src/ui/dialogs/confirm_dialog.cpp",
+    "src/ui/dialogs/confirm_dialog.h",
     "src/ui/dialogs/darks_dialog.cpp",
+    "src/ui/dialogs/darks_dialog.h",
     "src/logging/debuglog.cpp",
+    "src/logging/debuglog.h",
     "src/ui/tools/drift_tool.cpp",
+    "src/ui/tools/drift_tool.h",
     "src/utilities/eegg.cpp",
     "src/communication/network/event_server.cpp",
+    "src/communication/network/event_server.h",
     "src/utilities/fitsiowrap.cpp",
+    "src/utilities/fitsiowrap.h",
     "src/ui/dialogs/gear_dialog.cpp",
+    "src/ui/dialogs/gear_dialog.h",
     "src/ui/gear_simulator.cpp",
+    "src/ui/gear_simulator.h",
     "src/ui/graph-stepguider.cpp",
+    "src/ui/graph-stepguider.h",
     "src/ui/graph.cpp",
+    "src/ui/graph.h",
     "src/logging/guidinglog.cpp",
+    "src/logging/guidinglog.h",
     "src/logging/guiding_stats.cpp",
+    "src/logging/guiding_stats.h",
     "src/core/image_math.cpp",
+    "src/core/image_math.h",
     "src/logging/imagelogger.cpp",
+    "src/logging/imagelogger.h",
     "src/core/indi_gui.cpp",
+    "src/core/indi_gui.h",
     "src/utilities/json_parser.cpp",
+    "src/utilities/json_parser.h",
     "src/logging/logger.cpp",
+    "src/logging/logger.h",
     "src/logging/log_uploader.cpp",
+    "src/logging/log_uploader.h",
     "src/ui/dialogs/manualcal_dialog.cpp",
+    "src/ui/dialogs/manualcal_dialog.h",
     "src/utilities/messagebox_proxy.cpp",
+    "src/utilities/messagebox_proxy.h",
     "src/ui/myframe.cpp",
+    "src/ui/myframe.h",
     "src/ui/myframe_events.cpp",
     "src/utilities/nudge_lock.cpp",
+    "src/utilities/nudge_lock.h",
     "src/communication/onboard_st4.cpp",
+    "src/communication/onboard_st4.h",
     "src/ui/optionsbutton.cpp",
+    "src/ui/optionsbutton.h",
     "src/core/phd.cpp",
+    "src/core/phd.h",
     "src/core/phdconfig.cpp",
+    "src/core/phdconfig.h",
     "src/core/phdcontrol.cpp",
+    "src/core/phdcontrol.h",
     "src/core/phdupdate.cpp",
+    "src/core/phdupdate.h",
     "src/ui/tools/pierflip_tool.cpp",
+    "src/ui/tools/pierflip_tool.h",
+    "src/ui/tools/polardrift_tool.h",
     "src/ui/tools/polardrift_toolwin.cpp",
+    "src/ui/tools/polardrift_toolwin.h",
     "src/ui/profile_wizard.cpp",
+    "src/ui/profile_wizard.h",
+    "src/utilities/point.h",
     "src/utilities/Refine_DefMap.cpp",
+    "src/utilities/Refine_DefMap.h",
+    "src/rotators/rotators.h",
     "src/rotators/rotator.cpp",
+    "src/rotators/rotator.h",
     "src/rotators/rotator_ascom.cpp",
+    "src/rotators/rotator_ascom.h",
     "src/rotators/rotator_indi.cpp",
+    "src/rotators/rotator_indi.h",
     "src/utilities/runinbg.cpp",
+    "src/utilities/runinbg.h",
     "src/communication/serial/serialport.cpp",
+    "src/communication/serial/serialport.h",
     "src/communication/serial/serialport_loopback.cpp",
+    "src/communication/serial/serialport_loopback.h",
     "src/communication/serial/serialport_mac.cpp",
+    "src/communication/serial/serialport_mac.h",
     "src/communication/serial/serialport_win32.cpp",
+    "src/communication/serial/serialport_win32.h",
     "src/communication/serial/serialport_posix.cpp",
+    "src/communication/serial/serialport_posix.h",
+    "src/communication/serial/serialports.h",
     "src/utilities/sha1.cpp",
+    "src/utilities/sha1.h",
     "src/communication/network/socket_server.cpp",
+    "src/communication/network/socket_server.h",
     "src/core/starcross_test.cpp",
+    "src/core/starcross_test.h",
+    "src/ui/tools/staticpa_tool.h",
     "src/ui/tools/staticpa_toolwin.cpp",
+    "src/ui/tools/staticpa_toolwin.h",
     "src/ui/statswindow.cpp",
+    "src/ui/statswindow.h",
     "src/core/star.cpp",
+    "src/core/star.h",
     "src/core/star_profile.cpp",
+    "src/core/star_profile.h",
     "src/core/target.cpp",
+    "src/core/target.h",
     "src/core/testguide.cpp",
+    "src/core/testguide.h",
     "src/core/usImage.cpp",
+    "src/core/usImage.h",
     "src/core/worker_thread.cpp",
-    "src/ui/wxled.cpp"
+    "src/core/worker_thread.h",
+    "src/ui/wxled.cpp",
+    "src/ui/wxled.h"
 }
 
 -- Windows-specific sources
 if is_plat("windows") then
+    table.insert(core_sources, "src/communication/parallel/parallelports.h")
+    table.insert(core_sources, "src/communication/parallel/parallelport.h")
     table.insert(core_sources, "src/communication/parallel/parallelport.cpp")
+    table.insert(core_sources, "src/communication/parallel/parallelport_win32.h")
     table.insert(core_sources, "src/communication/parallel/parallelport_win32.cpp")
+    table.insert(core_sources, "src/communication/comdispatch.h")
     table.insert(core_sources, "src/communication/comdispatch.cpp")
 end
 
@@ -170,7 +317,9 @@ target("MPIIS_GP_TOOLS")
     add_headerfiles("contributions/MPI_IS_gaussian_process/tools/math_tools.h")
     add_includedirs("contributions/MPI_IS_gaussian_process/src", {public = true})
     add_includedirs("contributions/MPI_IS_gaussian_process/tools", {public = true})
-    -- configure_eigen3(target) -- TODO: implement eigen3 configuration
+    on_load(function (target)
+        configure_eigen3(target)
+    end)
     set_group("Contributions")
 
 target("MPIIS_GP")
@@ -181,7 +330,9 @@ target("MPIIS_GP")
     add_deps("MPIIS_GP_TOOLS")
     add_includedirs("contributions/MPI_IS_gaussian_process/src", {public = true})
     add_includedirs("contributions/MPI_IS_gaussian_process/tools", {public = true})
-    -- configure_eigen3(target) -- TODO: implement eigen3 configuration
+    on_load(function (target)
+        configure_eigen3(target)
+    end)
     set_group("Contributions")
 
 target("GPGuider")
@@ -192,15 +343,17 @@ target("GPGuider")
     add_includedirs("contributions/MPI_IS_gaussian_process/src", {public = true})
     add_includedirs("contributions/MPI_IS_gaussian_process/tools", {public = true})
     add_includedirs("src", {public = true})
-    -- configure_eigen3(target) -- TODO: implement eigen3 configuration
+    on_load(function (target)
+        configure_eigen3(target)
+    end)
     set_group("Contributions")
 
 -- Build third-party library targets using dependency functions
--- TODO: implement these build functions
--- deps.build_libusb_target()
--- deps.build_openssag_target()
--- deps.build_vidcapture_target()
--- deps.build_indi_target()
+-- All targets are built automatically when their conditions are met
+-- build_libusb_target() is called conditionally in dependencies.lua
+-- build_openssag_target() is called conditionally in dependencies.lua
+-- build_vidcapture_target() is called conditionally in dependencies.lua
+-- build_indi_target() is called conditionally in dependencies.lua
 
 -- Main PHD2 executable target
 target("phd2")
@@ -233,6 +386,9 @@ target("phd2")
     -- Add dependencies on contribution libraries
     add_deps("MPIIS_GP", "GPGuider")
 
+    -- Add dependencies on documentation and localization (matching CMake)
+    add_deps("documentation", "locales")
+
     -- Add third-party library dependencies
     if not is_plat("windows") then
         if not has_config("use_system_libusb") then
@@ -251,26 +407,29 @@ target("phd2")
         add_deps("indi_client")
     end
 
-    -- Configure external dependencies
-    -- TODO: implement these configuration functions
-    -- deps.configure_wxwidgets(target)
-    -- deps.configure_cfitsio(target)
-    -- deps.configure_curl(target)
-    -- deps.configure_eigen3(target)
-    -- deps.configure_opencv(target)
-    -- deps.configure_libusb(target)
-    -- deps.configure_indi(target)
-
-    -- Configure camera SDKs
-    -- cam.configure_camera_sdks(target)
-
-    -- Configure platform-specific settings
-    -- plat.configure_platform_specific(target) -- TODO: implement platform configuration
-    -- plat.configure_debug_tools(target) -- TODO: implement debug tools configuration
-    -- plat.configure_optimization(target) -- TODO: implement optimization configuration
-
-    -- Configure localization
-    -- loc.configure_localization(target) -- TODO: implement localization configuration
+    -- Configure external dependencies using on_load
+    on_load(function (target)
+        configure_wxwidgets(target)
+        configure_cfitsio(target)
+        configure_curl(target)
+        configure_eigen3(target)
+        configure_opencv(target)
+        configure_libusb(target)
+        configure_indi(target)
+        
+        -- Configure camera SDKs
+        configure_camera_sdks(target)
+        
+        -- Configure platform-specific settings
+        configure_platform_specific(target)
+        configure_debug_tools(target)
+        configure_optimization(target)
+        
+        -- Configure localization
+        if configure_localization then
+            configure_localization(target)
+        end
+    end)
 
     -- Platform-specific configuration
     if is_plat("windows") then
@@ -335,7 +494,9 @@ target("GaussianProcessTest")
     add_files("contributions/MPI_IS_gaussian_process/tests/gaussian_process/gaussian_process_test.cpp")
     add_deps("MPIIS_GP")
     add_includedirs("contributions/MPI_IS_gaussian_process/tools")
-    -- deps.configure_gtest(target) -- TODO: implement gtest configuration
+    on_load(function (target)
+        configure_gtest(target)
+    end)
     set_group("Tests")
 
 target("MathToolboxTest")
@@ -343,8 +504,10 @@ target("MathToolboxTest")
     add_files("contributions/MPI_IS_gaussian_process/tests/gaussian_process/math_tools_test.cpp")
     add_deps("MPIIS_GP_TOOLS")
     add_includedirs("contributions/MPI_IS_gaussian_process/src")
-    -- deps.configure_eigen3(target) -- TODO: implement eigen3 configuration
-    -- deps.configure_gtest(target) -- TODO: implement gtest configuration
+    on_load(function (target)
+        configure_eigen3(target)
+        configure_gtest(target)
+    end)
     set_group("Tests")
 
 target("GPGuiderTest")
@@ -353,7 +516,9 @@ target("GPGuiderTest")
     add_deps("MPIIS_GP", "GPGuider")
     add_includedirs("contributions/MPI_IS_gaussian_process/tools")
     add_includedirs("src")
-    -- deps.configure_gtest(target) -- TODO: implement gtest configuration
+    on_load(function (target)
+        configure_gtest(target)
+    end)
     set_group("Tests")
 
 target("GuidePerformanceTest")
@@ -362,7 +527,9 @@ target("GuidePerformanceTest")
     add_deps("MPIIS_GP", "GPGuider")
     add_includedirs("contributions/MPI_IS_gaussian_process/tools")
     add_includedirs("src")
-    -- deps.configure_gtest(target) -- TODO: implement gtest configuration
+    on_load(function (target)
+        configure_gtest(target)
+    end)
     set_group("Tests")
 
 target("GuidePerformanceEval")
@@ -371,7 +538,9 @@ target("GuidePerformanceEval")
     add_deps("MPIIS_GP", "GPGuider")
     add_includedirs("contributions/MPI_IS_gaussian_process/tools")
     add_includedirs("src")
-    -- deps.configure_gtest(target) -- TODO: implement gtest configuration
+    on_load(function (target)
+        configure_gtest(target)
+    end)
     set_group("Tests")
 
 -- Set up localization and documentation targets

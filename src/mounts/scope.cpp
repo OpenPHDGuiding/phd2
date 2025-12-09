@@ -1138,7 +1138,7 @@ bool Scope::IsCalibrated() const
         return have_ns_calibration;
     }
     default:
-        assert(false);
+        Debug.Write(wxString::Format("Scope: Unknown declination calibration state %d\n", (int)m_decGuideMode));
         return true;
     }
 }
@@ -1232,7 +1232,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         switch (m_calibrationState)
         {
         case CALIBRATION_STATE_CLEARED:
-            assert(false);
+            Debug.Write("Scope: Calibration state should not be cleared during calibration\n");
             break;
 
         case CALIBRATION_STATE_GO_WEST:

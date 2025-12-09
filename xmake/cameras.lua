@@ -3,8 +3,8 @@
 
 -- Camera SDK detection and configuration functions
 
--- Function to detect and configure camera SDKs
-function configure_camera_sdks(target)
+-- Function to detect and configure camera SDKs (global scope)
+configure_camera_sdks = function(target)
     if is_plat("windows") then
         configure_windows_cameras(target)
     elseif is_plat("macosx") then
@@ -14,8 +14,8 @@ function configure_camera_sdks(target)
     end
 end
 
--- Windows camera SDK configuration
-function configure_windows_cameras(target)
+-- Windows camera SDK configuration (global scope)
+configure_windows_cameras = function(target)
     local arch = is_arch("x64") and "x64" or "x86"
     local camera_root = "cameras"
     
@@ -104,7 +104,7 @@ function configure_windows_cameras(target)
     configure_windows_additional_cameras(target, arch)
 end
 
-function configure_windows_additional_cameras(target, arch)
+configure_windows_additional_cameras = function(target, arch)
     local camera_root = "cameras"
     
     -- INOVA PLC
@@ -163,8 +163,8 @@ function configure_windows_additional_cameras(target, arch)
     target:add("installfiles", "WinLibs/" .. arch .. "/concrt140.dll")
 end
 
--- macOS camera framework configuration
-function configure_macos_cameras(target)
+-- macOS camera framework configuration (global scope)
+configure_macos_cameras = function(target)
     local camera_root = "cameras"
     
     -- SBIG framework
@@ -225,8 +225,8 @@ function configure_macos_cameras(target)
     target:add("defines", "HAVE_OPENSSAG_CAMERA=1")
 end
 
--- Linux camera library configuration  
-function configure_linux_cameras(target)
+-- Linux camera library configuration (global scope)
+configure_linux_cameras = function(target)
     if has_config("opensource_only") then
         -- Only open source camera support
         target:add("defines", "HAVE_SXV_CAMERA=1")
@@ -283,8 +283,8 @@ function configure_linux_cameras(target)
     target:add("defines", "HAVE_OPENSSAG_CAMERA=1")
 end
 
--- Helper functions for architecture detection
-function get_linux_camera_arch()
+-- Helper functions for architecture detection (global scope)
+get_linux_camera_arch = function()
     if is_arch("x86_64") then
         return "x64"
     elseif is_arch("i386") then
@@ -300,7 +300,7 @@ function get_linux_camera_arch()
     end
 end
 
-function get_toupcam_arch()
+get_toupcam_arch = function()
     if is_arch("x86_64") then
         return "x64"
     elseif is_arch("i386") then
@@ -316,8 +316,8 @@ function get_toupcam_arch()
     end
 end
 
--- Function to check if camera SDK is available
-function check_camera_sdk(sdk_path, sdk_name)
+-- Function to check if camera SDK is available (global scope)
+check_camera_sdk = function(sdk_path, sdk_name)
     if os.isfile(sdk_path) then
         print("Found " .. sdk_name .. " SDK: " .. sdk_path)
         return true
@@ -327,8 +327,8 @@ function check_camera_sdk(sdk_path, sdk_name)
     end
 end
 
--- Function to add camera SDK with validation
-function add_camera_sdk(target, sdk_name, lib_path, include_path, dll_path, defines)
+-- Function to add camera SDK with validation (global scope)
+add_camera_sdk = function(target, sdk_name, lib_path, include_path, dll_path, defines)
     if check_camera_sdk(lib_path, sdk_name) then
         target:add("defines", defines)
         if include_path then
@@ -343,8 +343,8 @@ function add_camera_sdk(target, sdk_name, lib_path, include_path, dll_path, defi
     return false
 end
 
--- Enhanced Windows camera configuration with better error handling
-function configure_windows_cameras_enhanced(target)
+-- Enhanced Windows camera configuration with better error handling (global scope)
+configure_windows_cameras_enhanced = function(target)
     local arch = is_arch("x64") and "x64" or "x86"
     local camera_root = "cameras"
     local camera_count = 0

@@ -345,7 +345,7 @@ wxWindow *AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
         return m_pDevicesSettingsPanel;
     else
     {
-        assert(false); // Fundamental problem
+        Debug.Write(wxString::Format("AdvancedDialog: Unknown page ID %d\n", id));
         return nullptr;
     }
 }

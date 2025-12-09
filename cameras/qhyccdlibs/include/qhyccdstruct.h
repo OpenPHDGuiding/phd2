@@ -181,7 +181,7 @@ enum CONTROL_ID
 /*17*/  CONTROL_CFWPORT,        //!< control camera color filter wheel port
 /*18*/  CONTROL_COOLER,         //!< check if camera has cooler
 /*19*/  CONTROL_ST4PORT,        //!< check if camera has st4port
-/*20*/  CAM_COLOR,              /// FIXME!  CAM_IS_COLOR CAM_COLOR conflict
+/*20*/  CAM_COLOR,              //!< check if camera is color (note: CAM_IS_COLOR also used - see implementation)
 /*21*/  CAM_BIN1X1MODE,         //!< check if camera has bin1x1 mode
 /*22*/  CAM_BIN2X2MODE,         //!< check if camera has bin2x2 mode
 /*23*/  CAM_BIN3X3MODE,         //!< check if camera has bin3x3 mode

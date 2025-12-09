@@ -39,7 +39,7 @@ if has_config("use_system_libindi") and is_plat("linux") then
     add_requires("pkgconfig::libnova", {optional = true})
 end
 
--- Function to configure wxWidgets
+-- Function to configure wxWidgets (global scope for use in targets)
 function configure_wxwidgets(target)
     if is_plat("windows") then
         target:add("packages", "vcpkg::wxwidgets")
@@ -48,19 +48,48 @@ function configure_wxwidgets(target)
         -- Try to find wxWidgets using wx-config
         local wx_config = find_program("wx-config")
         if wx_config then
+            -- Get required components flags
             local wx_cflags = os.iorunv(wx_config, {"--cflags"})
             local wx_libs = os.iorunv(wx_config, {"--libs", "aui,core,base,adv,html,net"})
             if wx_cflags and wx_libs then
-                target:add("cxflags", wx_cflags:trim())
-                target:add("ldflags", wx_libs:trim())
+                -- Parse and add cflags
+                for _, flag in ipairs(wx_cflags:trim():split("%s+")) do
+                    if flag:startswith("-I") then
+                        target:add("includedirs", flag:sub(3))
+                    elseif flag:startswith("-D") then
+                        target:add("defines", flag:sub(3))
+                    else
+                        target:add("cxflags", flag)
+                    end
+                end
+                -- Parse and add libs
+                for _, flag in ipairs(wx_libs:trim():split("%s+")) do
+                    if flag:startswith("-L") then
+                        target:add("linkdirs", flag:sub(3))
+                    elseif flag:startswith("-l") then
+                        target:add("links", flag:sub(3))
+                    elseif flag:startswith("-framework") then
+                        -- macOS frameworks
+                        local next_flag = true
+                    else
+                        target:add("ldflags", flag)
+                    end
+                end
+            else
+                cprint("${yellow}Warning: wx-config found but failed to get flags${clear}")
+                -- Fallback to package config
+                target:add("packages", "pkgconfig::wxwidgets")
             end
+        else
+            cprint("${yellow}Warning: wx-config not found, using pkg-config${clear}")
+            target:add("packages", "pkgconfig::wxwidgets")
         end
         target:add("defines", "__WXGTK__", "WXUSINGDLL", "_FILE_OFFSET_BITS=64")
     end
 end
 
--- Function to configure CFITSIO
-function configure_cfitsio(target)
+-- Function to configure CFITSIO (global scope for use in targets)
+configure_cfitsio = function(target)
     if is_plat("windows") then
         target:add("packages", "vcpkg::cfitsio")
     else
@@ -68,8 +97,8 @@ function configure_cfitsio(target)
     end
 end
 
--- Function to configure libcurl
-function configure_curl(target)
+-- Function to configure libcurl (global scope for use in targets)
+configure_curl = function(target)
     if is_plat("windows") then
         target:add("packages", "vcpkg::curl[ssl]")
     else
@@ -77,8 +106,8 @@ function configure_curl(target)
     end
 end
 
--- Function to configure Eigen3
-function configure_eigen3(target)
+-- Function to configure Eigen3 (global scope for use in targets)
+configure_eigen3 = function(target)
     if is_plat("windows") then
         target:add("packages", "vcpkg::eigen3")
     else
@@ -86,8 +115,8 @@ function configure_eigen3(target)
     end
 end
 
--- Function to configure OpenCV
-function configure_opencv(target)
+-- Function to configure OpenCV (global scope for use in targets)
+configure_opencv = function(target)
     if is_plat("windows") then
         target:add("packages", "vcpkg::opencv4")
     else
@@ -98,8 +127,8 @@ function configure_opencv(target)
     end
 end
 
--- Function to configure libusb
-function configure_libusb(target)
+-- Function to configure libusb (global scope for use in targets)
+configure_libusb = function(target)
     if is_plat("windows") then
         -- Windows builds libusb from source or uses bundled version
         return
@@ -111,8 +140,8 @@ function configure_libusb(target)
     end
 end
 
--- Function to configure INDI
-function configure_indi(target)
+-- Function to configure INDI (global scope for use in targets)
+configure_indi = function(target)
     if has_config("use_system_libindi") and is_plat("linux") then
         target:add("packages", "pkgconfig::libindi")
         target:add("packages", "pkgconfig::libnova")
@@ -124,13 +153,13 @@ function configure_indi(target)
     end
 end
 
--- Function to configure Google Test
-function configure_gtest(target)
+-- Function to configure Google Test (global scope for use in targets)
+configure_gtest = function(target)
     target:add("packages", "gtest")
 end
 
--- Function to build libusb from source (non-Windows)
-function build_libusb_target()
+-- Function to build libusb from source (non-Windows) (global scope)
+build_libusb_target = function()
     if is_plat("windows") then
         return
     end
@@ -172,8 +201,8 @@ function build_libusb_target()
         set_group("Thirdparty")
 end
 
--- Function to build OpenSSAG library
-function build_openssag_target()
+-- Function to build OpenSSAG library (global scope)
+build_openssag_target = function()
     if is_plat("windows") then
         return
     end
@@ -188,8 +217,8 @@ function build_openssag_target()
         set_group("Thirdparty")
 end
 
--- Function to build VidCapture library (Windows x86 only)
-function build_vidcapture_target()
+-- Function to build VidCapture library (Windows x86 only) (global scope)
+build_vidcapture_target = function()
     if not (is_plat("windows") and is_arch("x86")) then
         return
     end
@@ -214,8 +243,8 @@ function build_vidcapture_target()
         set_group("Thirdparty")
 end
 
--- Function to configure INDI external project (when not using system)
-function build_indi_target()
+-- Function to configure INDI external project (when not using system) (global scope)
+build_indi_target = function()
     if has_config("use_system_libindi") then
         return
     end
@@ -242,12 +271,24 @@ function build_indi_target()
 end
 
 -- Build libusb target if not using system libusb
--- Temporarily disabled - using system libusb for now
--- if not has_config("use_system_libusb") then
---     build_libusb_target()
--- end
+if not has_config("use_system_libusb") and not is_plat("windows") then
+    build_libusb_target()
+end
 
 -- Build OpenSSAG target if not opensource_only
+if not has_config("opensource_only") and not is_plat("windows") then
+    build_openssag_target()
+end
+
+-- Build VidCapture target for Windows x86
+if is_plat("windows") and is_arch("x86") then
+    build_vidcapture_target()
+end
+
+-- Build or configure INDI
+if not has_config("use_system_libindi") then
+    build_indi_target()
+end
 if not has_config("opensource_only") then
     build_openssag_target()
 end

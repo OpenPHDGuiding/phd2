@@ -44,14 +44,60 @@
 wxArrayString SerialPortPosix::GetSerialPortList(void)
 {
     wxArrayString ret;
-
-    // TODO generate this list
-    ret.Add("/dev/ttyS0");
-    ret.Add("/dev/ttyS1");
-    ret.Add("/dev/ttyUSB0");
-    ret.Add("/dev/ttyUSB1");
-    ret.Add("/dev/sx-ao-lf");
-
+    
+    // Check common Linux/Unix serial device locations
+    // Standard UART devices
+    const char* standard_ports[] = {
+        "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
+        "/dev/ttyS4", "/dev/ttyS5", "/dev/ttyS6", "/dev/ttyS7",
+    };
+    
+    // USB serial devices
+    const char* usb_ports[] = {
+        "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+        "/dev/ttyUSB4", "/dev/ttyUSB5",
+    };
+    
+    // Arduino-style devices
+    const char* arduino_ports[] = {
+        "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2",
+    };
+    
+    // Alternate USB names
+    const char* alt_usb_ports[] = {
+        "/dev/ttyDEVICE0", "/dev/ttyDEVICE1",
+    };
+    
+    // Custom ports
+    const char* custom_ports[] = {
+        "/dev/sx-ao-lf",
+    };
+    
+    // Check all potential port locations and add those that exist
+    const char** all_ports[] = {
+        standard_ports, usb_ports, arduino_ports, alt_usb_ports, custom_ports
+    };
+    int port_counts[] = {
+        WXSIZEOF(standard_ports), WXSIZEOF(usb_ports), 
+        WXSIZEOF(arduino_ports), WXSIZEOF(alt_usb_ports),
+        WXSIZEOF(custom_ports)
+    };
+    
+    for (int i = 0; i < WXSIZEOF(all_ports); i++)
+    {
+        const char** ports = all_ports[i];
+        int count = port_counts[i];
+        
+        for (int j = 0; j < count; j++)
+        {
+            // Check if port file exists and is readable
+            if (access(ports[j], F_OK) == 0)
+            {
+                ret.Add(wxString::FromUTF8(ports[j]));
+            }
+        }
+    }
+    
     return ret;
 }
 
@@ -132,8 +178,25 @@ bool SerialPortPosix::Connect(const wxString& portName, int baud, int dataBits, 
         case ParityEven:
             attr.c_cflag |= PARENB; // Enable parity generation on output and parity checking for input.
             break;
-        case ParityMark: // TODO, not in POSIX. CMSPAR
-        case ParitySpace: // TODO, not in POSIX. CMSPAR
+# ifdef CMSPAR
+        // Mark and Space parity are extensions to POSIX standard (GNU extensions)
+        case ParityMark:
+            attr.c_cflag |= CMSPAR | PARENB; // Mark parity - always 1
+            break;
+        case ParitySpace:
+            attr.c_cflag |= CMSPAR | PARENB | PARODD; // Space parity - always 0
+            break;
+# else
+        // CMSPAR not available - fallback to Even parity for Mark/Space
+        case ParityMark:
+            Debug.Write("SerialPortPosix: Mark parity not available on this system, using Even parity instead\n");
+            attr.c_cflag |= PARENB; // Even parity as fallback
+            break;
+        case ParitySpace:
+            Debug.Write("SerialPortPosix: Space parity not available on this system, using Even parity instead\n");
+            attr.c_cflag |= PARENB; // Even parity as fallback
+            break;
+# endif
         default:
             throw ERROR_INFO("SerialPortPosix::Connect invalid parity");
             break;

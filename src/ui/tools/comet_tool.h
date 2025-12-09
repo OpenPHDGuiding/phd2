@@ -37,7 +37,9 @@
 
 class CometTool
 {
-    CometTool(); // not implemented
+    CometTool() = delete; // Prevent instantiation - utility class with only static methods
+    CometTool(const CometTool&) = delete;
+    CometTool& operator=(const CometTool&) = delete;
 public:
     static wxWindow *CreateCometToolWindow();
     static void NotifyUpdateLockPos();

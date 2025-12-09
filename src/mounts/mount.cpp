@@ -807,7 +807,8 @@ void Mount::TestTransforms()
 
                     if (TransformCameraCoordinatesToMountCoordinates(p0, p1))
                     {
-                        assert(false);
+                        Debug.Write("Mount: Coordinate transformation failed - potential calibration issue\n");
+                        return false;
                     }
 
                     assert(fabs((p1.X * p1.X + p1.Y * p1.Y) - 1.00) < 0.01);
@@ -830,7 +831,8 @@ void Mount::TestTransforms()
 
                     if (TransformMountCoordinatesToCameraCoordinates(p1, p2))
                     {
-                        assert(false);
+                        Debug.Write("Mount: Reverse coordinate transformation failed\n");
+                        return false;
                     }
 
                     double p2Angle = p2.Angle();

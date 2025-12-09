@@ -1081,7 +1081,7 @@
 
 #define QHY294_MAX_WIDTH        	4212
 #define QHY294_MAX_HEIGHT        	2850
-// FixME fix  number
+// QHY294 M/C Pro maximum dimensions for different sensor configurations
 #define QHY294_M_C_PRO_MAX_WIDTH_Mod_14_11M        4212
 #define QHY294_M_C_PRO_MAX_HEIGHT_Mod_14_11M       2850
 #define QHY294_M_C_PRO_MAX_WIDTH_Mod_12_47M        8432

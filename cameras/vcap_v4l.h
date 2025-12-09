@@ -153,7 +153,9 @@ protected:
     // Platform dependent video conversion
     // ----------------------------------------------------------------------
 
-    // FIXME add conversion here!
+    // Platform dependent video conversion
+    // Conversion functions can be implemented here for V4L-specific formats
+    // Extension point for additional video format support
 
     // ----------------------------------------------------------------------
     // Member Variables

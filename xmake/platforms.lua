@@ -1,8 +1,8 @@
 -- PHD2 Platform-specific Configuration for xmake
 -- Handles Windows, macOS, and Linux specific build settings
 
--- Windows-specific configuration
-function configure_windows_platform(target)
+-- Windows-specific configuration (global scope)
+configure_windows_platform = function(target)
     -- Windows version targeting
     add_defines("WINVER=0x0601", "_WIN32_WINNT=0x0601") -- Windows 7+
     
@@ -52,14 +52,19 @@ function configure_windows_platform(target)
     end
 end
 
--- macOS-specific configuration
-function configure_macos_platform(target)
+-- macOS-specific configuration (global scope)
+configure_macos_platform = function(target)
     -- macOS deployment target
     set_policy("build.macosx.deployment_target", "10.14")
     
     -- Compiler settings
     add_cxflags("-Wall", "-Wno-unused-parameter", "-Wno-sign-compare")
     add_cxflags("-Wno-unused-variable", "-Wno-unused-function")
+    add_cxflags("-Wno-inconsistent-missing-override")
+    
+    -- Use libc++ on macOS (matches CMake)
+    add_cxflags("-stdlib=libc++")
+    add_ldflags("-stdlib=libc++")
     
     -- macOS system frameworks
     add_frameworks("Carbon", "Cocoa", "IOKit", "QuickTime", "System")
@@ -109,8 +114,8 @@ function configure_macos_platform(target)
     add_ldflags("-Wl,-rpath,@loader_path/../Frameworks")
 end
 
--- Linux-specific configuration
-function configure_linux_platform(target)
+-- Linux-specific configuration (global scope)
+configure_linux_platform = function(target)
     -- Compiler settings
     add_cxflags("-Wall", "-Wno-unused-parameter", "-Wno-sign-compare")
     add_cxflags("-Wno-unused-variable", "-Wno-unused-function")
@@ -152,8 +157,8 @@ function configure_linux_platform(target)
     end
 end
 
--- Generic Unix configuration (for other Unix-like systems)
-function configure_unix_platform(target)
+-- Generic Unix configuration (for other Unix-like systems) (global scope)
+configure_unix_platform = function(target)
     -- Compiler settings
     add_cxflags("-Wall", "-Wno-unused-parameter")
     
@@ -165,8 +170,8 @@ function configure_unix_platform(target)
     add_defines("_FILE_OFFSET_BITS=64")
 end
 
--- Function to configure platform-specific settings
-function configure_platform_specific(target)
+-- Function to configure platform-specific settings (global scope)
+configure_platform_specific = function(target)
     if is_plat("windows") then
         configure_windows_platform(target)
     elseif is_plat("macosx") then
@@ -179,8 +184,8 @@ function configure_platform_specific(target)
     end
 end
 
--- Function to get platform-specific installation directories
-function get_install_dirs()
+-- Function to get platform-specific installation directories (global scope)
+get_install_dirs = function()
     if is_plat("windows") then
         return {
             bindir = ".",
@@ -205,8 +210,8 @@ function get_install_dirs()
     end
 end
 
--- Function to configure debug tools
-function configure_debug_tools(target)
+-- Function to configure debug tools (global scope)
+configure_debug_tools = function(target)
     if is_mode("debug") then
         if is_plat("windows") then
             -- Visual Leak Detector
@@ -227,8 +232,8 @@ function configure_debug_tools(target)
     end
 end
 
--- Function to configure optimization settings
-function configure_optimization(target)
+-- Function to configure optimization settings (global scope)
+configure_optimization = function(target)
     if is_mode("release") then
         if is_plat("windows") then
             add_cxflags("/O2", "/Ob2", "/Oi", "/Ot", "/Oy", "/GL")

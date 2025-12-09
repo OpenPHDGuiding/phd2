@@ -37,7 +37,9 @@
 
 class GuidingAssistant
 {
-    GuidingAssistant(); // not implemented
+    GuidingAssistant() = delete; // Prevent instantiation - utility class with only static methods
+    GuidingAssistant(const GuidingAssistant&) = delete;
+    GuidingAssistant& operator=(const GuidingAssistant&) = delete;
 public:
     static wxWindow *CreateDialogBox();
     static void NotifyGuideStep(const GuideStepInfo& info);

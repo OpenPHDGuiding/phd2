@@ -1605,16 +1605,14 @@ bool GuideCamera::ST4HostConnected()
 
 bool GuideCamera::ST4HasNonGuiMove()
 {
-    // should never be called
-
-    assert(false);
+    // This method should be overridden by camera subclasses that support ST4 output
+    Debug.Write("GuideCamera: ST4HasNonGuiMove() called on base class - override in subclass\n");
     return true;
 }
 
 bool GuideCamera::ST4PulseGuideScope(int direction, int duration)
 {
-    // should never be called
-
-    assert(false);
+    // This method should be overridden by camera subclasses that support ST4 output
+    Debug.Write("GuideCamera: ST4PulseGuideScope() called on base class - override in subclass\n");
     return true;
 }

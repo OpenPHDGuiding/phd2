@@ -104,76 +104,15 @@ option("use_system_libindi")
     set_description("Use system libindi instead of building from source")
 option_end()
 
--- Include subdirectories for modular configuration
+-- Load utility functions first (before targets)
+-- This ensures all configuration functions are available when targets load
 includes("xmake/dependencies.lua")
--- includes("xmake/cameras.lua")  -- TODO: implement camera SDK configuration
--- includes("xmake/platforms.lua")  -- TODO: implement platform-specific configuration
--- includes("xmake/localization.lua")  -- TODO: implement localization
+includes("xmake/cameras.lua")
+includes("xmake/platforms.lua")
+includes("xmake/localization.lua")
 includes("xmake/documentation.lua")
--- includes("xmake/targets.lua")  -- Using simplified target definition for now
 
--- Main targets will be defined in the included files
+-- Now load targets (which use the functions defined above)
+includes("xmake/targets.lua")
 
--- Set up documentation and localization targets
--- Note: These will be called from the included module files
-
--- Simplified target for testing
-target("phd2")
-    set_kind("binary")
-
-    -- Core functionality
-    add_files("src/core/*.cpp")
-    add_files("src/logging/*.cpp")
-    add_files("src/utilities/*.cpp")
-
-    -- Guiding algorithms
-    add_files("src/guiding/*.cpp")
-    add_files("src/guiding/algorithms/*.cpp")
-
-    -- UI components
-    add_files("src/ui/*.cpp")
-    add_files("src/ui/dialogs/*.cpp")
-    add_files("src/ui/tools/*.cpp")
-
-    -- Camera support (including essential drivers)
-    add_files("src/cameras/camera.cpp")
-    add_files("src/cameras/camcal_import_dialog.cpp")
-    add_files("src/cameras/drivers/cam_indi.cpp")
-    add_files("src/cameras/drivers/cam_ascom.cpp")
-    add_files("src/cameras/drivers/cam_qhy5.cpp")  -- Required by camera factory
-
-    -- Mount support
-    add_files("src/mounts/*.cpp")
-    add_files("src/mounts/drivers/scope_indi.cpp")
-    add_files("src/mounts/drivers/scope_ascom.cpp")
-    add_files("src/mounts/drivers/scope_manual_pointing.cpp")
-    add_files("src/mounts/drivers/scope_oncamera.cpp")      -- Required by scope factory
-    add_files("src/mounts/drivers/scope_onstepguider.cpp")  -- Required by scope factory
-    add_files("src/mounts/drivers/scope_onboard_st4.cpp")   -- Required by oncamera/onstepguider
-
-    -- Step guiders and rotators
-    add_files("src/stepguiders/*.cpp")
-    add_files("src/rotators/*.cpp")
-
-    -- Communication
-    add_files("src/communication/network/*.cpp")
-    add_files("src/communication/serial/*.cpp")
-    add_files("src/communication/onboard_st4.cpp")
-
-    -- Gaussian Process (simplified)
-    add_files("contributions/MPI_IS_gaussian_process/src/gaussian_process.cpp")
-    add_files("contributions/MPI_IS_gaussian_process/src/covariance_functions.cpp")
-    add_files("contributions/MPI_IS_gaussian_process/src/gaussian_process_guider.cpp")
-    add_files("contributions/MPI_IS_gaussian_process/tools/math_tools.cpp")
-
-    -- Add wxWidgets manually for now
-    add_includedirs("/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2", "/usr/include/wx-3.2")
-    add_defines("_FILE_OFFSET_BITS=64", "WXUSINGDLL", "__WXGTK__")
-    add_cxflags("-pthread")
-
-    -- Add wxWidgets libraries
-    add_linkdirs("/usr/lib/x86_64-linux-gnu")
-    add_links("wx_gtk3u_xrc-3.2", "wx_gtk3u_html-3.2", "wx_gtk3u_qa-3.2", "wx_gtk3u_aui-3.2", "wx_gtk3u_core-3.2", "wx_baseu_xml-3.2", "wx_baseu_net-3.2", "wx_baseu-3.2")
-
-    -- Add X11 and other system libraries
-    add_syslinks("X11", "curl", "cfitsio", "usb-1.0", "indidriver", "indiclient")
+-- Main targets and build rules are defined in the included files

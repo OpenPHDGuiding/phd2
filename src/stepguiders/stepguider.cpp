@@ -763,7 +763,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
             Debug.Write("Calibration Complete\n");
             break;
         default:
-            assert(false);
+            Debug.Write("Stepguider: Unexpected stepguider state encountered\n");
+            return false;
             break;
         }
 

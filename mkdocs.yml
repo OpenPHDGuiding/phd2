@@ -1,0 +1,286 @@
+site_name: PHD2 Guiding
+site_description: Professional telescope guiding software for astrophotography
+site_author: PHD2 Development Team
+site_url: https://openphdguiding.org
+
+repo_name: OpenPHDGuiding/phd2
+repo_url: https://github.com/OpenPHDGuiding/phd2
+edit_uri: edit/master/docs/
+
+copyright: Copyright &copy; 2006-2025 PHD2 Development Team
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.follow
+    - toc.integrate
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - tags
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - minify:
+      minify_html: true
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      skip_classes:
+        - custom-skip-class-name
+      auto_caption: false
+      caption_position: bottom
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - tables
+  
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/OpenPHDGuiding/phd2
+    - icon: fontawesome/solid/globe
+      link: https://openphdguiding.org
+  version:
+    provider: mike
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve by opening an issue.
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/index.md
+    - Installation:
+      - Windows: getting-started/installation/windows.md
+      - macOS: getting-started/installation/macos.md
+      - Linux: getting-started/installation/linux.md
+    - Quick Start: getting-started/quickstart.md
+    - First Light: getting-started/first-light.md
+  
+  - User Guide:
+    - Introduction: user-guide/index.md
+    - Basic Usage:
+      - Main Screen: user-guide/basic/main-screen.md
+      - Connecting Equipment: user-guide/basic/connecting.md
+      - Starting Guiding: user-guide/basic/starting-guiding.md
+      - Calibration: user-guide/basic/calibration.md
+    - Advanced Topics:
+      - Guide Algorithms: user-guide/advanced/algorithms.md
+      - Advanced Settings: user-guide/advanced/settings.md
+      - Dark Frames & Bad Pixel Maps: user-guide/advanced/darks-defects.md
+      - Dither & Settling: user-guide/advanced/dither.md
+      - Multi-Star Guiding: user-guide/advanced/multistar.md
+    - Equipment:
+      - Camera Support: user-guide/equipment/cameras.md
+      - Mount Support: user-guide/equipment/mounts.md
+      - Adaptive Optics: user-guide/equipment/ao.md
+      - Auxiliary Mounts: user-guide/equipment/aux-mount.md
+    - Tools:
+      - Guiding Assistant: user-guide/tools/guiding-assistant.md
+      - Manual Guide: user-guide/tools/manual-guide.md
+      - Comet Tracking: user-guide/tools/comet-tracking.md
+      - Star Profile & Cross Test: user-guide/tools/star-tools.md
+      - Log Analysis: user-guide/tools/log-analysis.md
+    - Visualization: user-guide/visualization.md
+    - Troubleshooting: user-guide/troubleshooting.md
+    - Keyboard Shortcuts: user-guide/keyboard-shortcuts.md
+    - Glossary: user-guide/glossary.md
+  
+  - Tutorials:
+    - tutorials/index.md
+    - Basic Tutorials:
+      - First Time Setup: tutorials/basic/first-setup.md
+      - Calibration Guide: tutorials/basic/calibration-guide.md
+      - Optimizing Performance: tutorials/basic/optimization.md
+    - Advanced Tutorials:
+      - Using Guiding Assistant: tutorials/advanced/using-assistant.md
+      - Dealing with Backlash: tutorials/advanced/backlash.md
+      - Drift Alignment: tutorials/advanced/drift-alignment.md
+      - Analyzing Guide Logs: tutorials/advanced/log-analysis.md
+  
+  - API Reference:
+    - api-reference/index.md
+    - Event Server:
+      - Overview: api-reference/event-server/overview.md
+      - JSON-RPC Protocol: api-reference/event-server/protocol.md
+      - Methods: api-reference/event-server/methods.md
+      - Events: api-reference/event-server/events.md
+      - Error Codes: api-reference/event-server/errors.md
+    - Calibration API:
+      - Overview: api-reference/calibration/overview.md
+      - Methods: api-reference/calibration/methods.md
+      - Examples: api-reference/calibration/examples.md
+    - Python Client:
+      - Overview: api-reference/python/overview.md
+      - Installation: api-reference/python/installation.md
+      - Quick Start: api-reference/python/quickstart.md
+      - API Reference: api-reference/python/api.md
+      - Events: api-reference/python/events.md
+      - Examples: api-reference/python/examples.md
+      - Troubleshooting: api-reference/python/troubleshooting.md
+    - PHD2py Library:
+      - Overview: api-reference/phd2py/overview.md
+      - Installation: api-reference/phd2py/installation.md
+      - User Guide: api-reference/phd2py/guide.md
+      - API Reference: api-reference/phd2py/api.md
+      - Configuration: api-reference/phd2py/configuration.md
+      - CLI Tools: api-reference/phd2py/cli.md
+  
+  - Developer Guide:
+    - developer-guide/index.md
+    - Building from Source:
+      - Overview: developer-guide/building/index.md
+      - Quick Start: developer-guide/building/quickstart.md
+      - Linux: developer-guide/building/linux.md
+      - macOS: developer-guide/building/macos.md
+      - Windows: developer-guide/building/windows.md
+      - Build Options: developer-guide/building/options.md
+      - xmake Build: developer-guide/building/xmake.md
+      - Packaging: developer-guide/building/packaging.md
+      - Troubleshooting: developer-guide/building/troubleshooting.md
+    - Architecture:
+      - Overview: developer-guide/architecture/overview.md
+      - Core Components: developer-guide/architecture/core.md
+      - Guiding System: developer-guide/architecture/guiding.md
+      - Camera Interface: developer-guide/architecture/cameras.md
+      - Mount Interface: developer-guide/architecture/mounts.md
+      - UI Framework: developer-guide/architecture/ui.md
+    - Code Organization:
+      - Directory Structure: developer-guide/code/structure.md
+      - Coding Standards: developer-guide/code/standards.md
+      - Module Overview: developer-guide/code/modules.md
+    - Testing:
+      - Overview: developer-guide/testing/index.md
+      - Unit Tests: developer-guide/testing/unit-tests.md
+      - Integration Tests: developer-guide/testing/integration-tests.md
+      - Running Tests: developer-guide/testing/running.md
+      - Writing Tests: developer-guide/testing/writing.md
+    - Releasing:
+      - Release Process: developer-guide/releasing/process.md
+      - Version Management: developer-guide/releasing/versioning.md
+      - Platform Packages: developer-guide/releasing/packages.md
+  
+  - Contributing:
+    - contributing/index.md
+    - How to Contribute: contributing/how-to-contribute.md
+    - Development Setup: contributing/development-setup.md
+    - Code Style: contributing/code-style.md
+    - Pull Requests: contributing/pull-requests.md
+    - Bug Reports: contributing/bug-reports.md
+    - Feature Requests: contributing/feature-requests.md
+    - Documentation: contributing/documentation.md
+    - Translation: contributing/translation.md
+  
+  - About:
+    - about/index.md
+    - License: about/license.md
+    - Changelog: about/changelog.md
+    - Credits: about/credits.md
+    - Contact: about/contact.md

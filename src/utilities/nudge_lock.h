@@ -38,7 +38,9 @@
 
 class NudgeLockTool
 {
-    NudgeLockTool(); // not implemented
+    NudgeLockTool() = delete; // Prevent instantiation - utility class with only static methods
+    NudgeLockTool(const NudgeLockTool&) = delete;
+    NudgeLockTool& operator=(const NudgeLockTool&) = delete;
 public:
     static wxWindow *CreateNudgeLockToolWindow();
     static void UpdateNudgeLockControls();

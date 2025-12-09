@@ -36,7 +36,9 @@
 
 class DriftTool
 {
-    DriftTool(); // not implemented
+    DriftTool() = delete; // Prevent instantiation - utility class with only static methods
+    DriftTool(const DriftTool&) = delete;
+    DriftTool& operator=(const DriftTool&) = delete;
 public:
     static wxWindow *CreateDriftToolWindow();
 };

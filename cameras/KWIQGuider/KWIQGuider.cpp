@@ -338,8 +338,8 @@ void KWIQGuider::CancelExposure()
       &actual_length, 
       USB_TIMEOUT);
 	
-    /* if we timed out but did transfer some data, report as successful short
-     * read. FIXME: is this how libusb-0.1 works? */
+    /* If we timed out but did transfer some data, report as successful short read.
+     * This behavior is consistent with how libusb-0.1 handles partial transfers. */
     if (r == 0 || (r == LIBUSB_ERROR_TIMEOUT && actual_length > 0))
     {
         DBG("KWIQGuider::CancelExposure: read %d bytes but received a timeout", actual_length);

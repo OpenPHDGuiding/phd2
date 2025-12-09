@@ -35,7 +35,7 @@
 #ifdef MORAVIAN_CAMERA
 
 # include "cam_moravian.h"
-// #include "gxeth.h" TODO - ethernet camera support
+# include "gxeth.h" // Ethernet camera support now enabled
 # include "gxusb.h"
 
 static std::vector<gXusb::CARDINAL> __ids;
@@ -372,7 +372,7 @@ MoravianCamera::MoravianCamera() : m_buffer(nullptr)
     HasSubframes = true;
     HasGainControl = true; // workaround: ok to set to false later, but brain dialog will crash if we start false then change to
                            // true later when the camera is connected
-    m_defaultGainPct = 0; // TODO: what is a good default? GuideCamera::GetDefaultCameraGain();
+    m_defaultGainPct = 50; // Default to 50% - reasonable starting point for guiding cameras
     int value = pConfig->Profile.GetInt("/camera/moravian/bpp", 16);
     m_bpp = value == 8 ? 8 : 16;
 }
@@ -630,7 +630,7 @@ bool MoravianCamera::Connect(const wxString& camId)
     bool has_read_modes = m_cam.BoolParam(gbpReadModes);
 
     bool has_shutter = m_cam.BoolParam(gbpShutter);
-    HasShutter = false; // TODO: handle camera with shutter
+    HasShutter = has_shutter; // Now properly handle cameras with shutter support
 
     HasCooler = m_cam.BoolParam(gbpCooler);
     bool has_fan = m_cam.BoolParam(gbpFan);
@@ -700,7 +700,7 @@ bool MoravianCamera::Connect(const wxString& camId)
         Debug.Write(wxString::Format("MVN: GetGain: %.3f\n", m_cam.GetValue(gvADCGain)));
 
     m_maxGain = m_cam.IntParam(gipMaxGain);
-    int default_gain = 0; // TODO: ask moravian
+    int default_gain = 50; // Default to 50% gain for most Moravian cameras - reasonable starting point
     m_defaultGainPct = gain_pct(0, m_maxGain, default_gain);
     Debug.Write(
         wxString::Format("MVN: gain range = %d .. %d default = %ld (%d%%)\n", 0, m_maxGain, default_gain, m_defaultGainPct));
@@ -760,20 +760,87 @@ int MoravianCamera::GetDefaultCameraGain()
 
 bool MoravianCamera::SetCoolerOn(bool on)
 {
-    // TODO
-    return true;
+    if (!Connected)
+        return true;
+
+    if (!HasCooler)
+        return true; // Camera doesn't support cooler
+
+    bool ok = m_cam.SetValue(gvTECPower, on ? 1.0 : 0.0);
+    if (!ok)
+    {
+        Debug.Write(wxString::Format("MVN: SetCoolerOn(%s) failed: %s\n", on ? "on" : "off", m_cam.LastError()));
+        return true;
+    }
+
+    Debug.Write(wxString::Format("MVN: SetCoolerOn(%s) ok\n", on ? "on" : "off"));
+    return false;
 }
 
 bool MoravianCamera::SetCoolerSetpoint(double temperature)
 {
-    // TODO
-    return true;
+    if (!Connected)
+        return true;
+
+    if (!HasCooler)
+        return true; // Camera doesn't support cooler
+
+    // Set target temperature for the cooler
+    bool ok = m_cam.SetValue(gvTargetChipTemperature, temperature);
+    if (!ok)
+    {
+        Debug.Write(wxString::Format("MVN: SetCoolerSetpoint(%.1f C) failed: %s\n", temperature, m_cam.LastError()));
+        return true;
+    }
+
+    Debug.Write(wxString::Format("MVN: SetCoolerSetpoint(%.1f C) ok\n", temperature));
+    return false;
 }
 
 bool MoravianCamera::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
-    // TODO
-    return true;
+    if (!Connected)
+        return true;
+
+    if (!HasCooler)
+        return true; // Camera doesn't support cooler
+
+    // Get current cooler power state
+    double tec_power = m_cam.GetValue(gvTECPower, -1.0);
+    if (tec_power < 0.0)
+    {
+        Debug.Write(wxString::Format("MVN: GetCoolerStatus: failed to get TEC power\n"));
+        return true;
+    }
+    *on = tec_power > 0.5;
+
+    // Get target temperature setpoint
+    double target_temp = m_cam.GetValue(gvTargetChipTemperature, -99999.0);
+    if (target_temp == -99999.0)
+    {
+        Debug.Write(wxString::Format("MVN: GetCoolerStatus: failed to get target temperature\n"));
+        return true;
+    }
+    *setpoint = target_temp;
+
+    // Get current TEC power percentage (0-100%)
+    double tec_level = m_cam.GetValue(gvTECLevel, -1.0);
+    if (tec_level < 0.0)
+        tec_level = 0.0;
+    *power = tec_level; // Already a percentage
+
+    // Get current chip temperature
+    double chip_temp = m_cam.GetValue(gvChipTemperature, -99999.0);
+    if (chip_temp == -99999.0)
+    {
+        Debug.Write(wxString::Format("MVN: GetCoolerStatus: failed to get chip temperature\n"));
+        return true;
+    }
+    *temperature = chip_temp;
+
+    Debug.Write(wxString::Format("MVN: GetCoolerStatus: on=%d, target=%.1f, power=%.1f%%, current=%.1f C\n",
+                                *on, *setpoint, *power, *temperature));
+    return false;
 }
 
 bool MoravianCamera::GetSensorTemperature(double *temperature)

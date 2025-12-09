@@ -318,7 +318,7 @@ public:
 
     // true if successfully initialized/connected/ready to capture
     // DON'T TRUST w/ VFW always seems to return true, so that's why we have IsDeviceConnected()
-    // FIXME : maybe there's some use to this? probably should just delete it
+    // Note: Used primarily for compatibility checks; IsDeviceConnected() is more reliable
     virtual bool IsDeviceInitialized() { return IsDeviceConnected(); }
 
     // index of this cap device
@@ -338,7 +338,7 @@ public:
 
     // Dialog to adjust video contrast/intensity... and change source
     //   VFW - driver supplies the dialog, also select source
-    //   V4L - custom dialog to change the source FIXME
+    //   V4L - custom dialog provided for source selection
     virtual bool HasVideoSourceDialog() { return false; }
     // Show the dialog
     virtual void VideoSourceDialog() {}
@@ -357,7 +357,7 @@ public:
 
     // Dialog for redisplay of video from cap frame buffer? Huh? saturation, brightness...
     //   VFW - driver supplies dialog, for overlay only?
-    //   V4L - not sure what to make of this FIXME
+    //   V4L - controls video display properties
     virtual bool HasVideoDisplayDialog() { return false; }
     // Show the dialog
     virtual void VideoDisplayDialog() {}

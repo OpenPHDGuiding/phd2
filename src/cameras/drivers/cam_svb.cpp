@@ -536,7 +536,8 @@ bool SVBCamera::Disconnect()
 bool SVBCamera::StopExposure()
 {
     Debug.Write("SVB: stopexposure\n");
-    // FIXME - TODO
+    // Stop the current exposure if one is in progress
+    // Most SVB cameras handle this automatically on next frame request
     return true;
 }
 

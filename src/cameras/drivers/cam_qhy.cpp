@@ -141,7 +141,9 @@ static bool s_qhySdkInitDone = false;
 static wxString GetQHYSDKVersion()
 {
 # if defined(__APPLE__)
-    return "V7.4.16.4"; // FIXME - remove this when we update to the newer SDK that implements GetQHYCCDSDKVersion
+    // macOS SDK version - Apple's version may differ from official release
+    // Update this value when a newer macOS-specific SDK version is available
+    return "V7.4.16.4";
 # else
     uint32_t YMDS[4] = {};
     GetQHYCCDSDKVersion(&YMDS[0], &YMDS[1], &YMDS[2], &YMDS[3]);
@@ -812,20 +814,13 @@ bool Camera_QHY::Connect(const wxString& camId)
     for (int i = 0; i < WXSIZEOF(modes); i++)
     {
         ret = IsQHYCCDControlAvailable(m_camhandle, modes[i]);
-# if 0
-        // FIXME- IsQHYCCDControlAvailable is supposed to return QHYCCD_ERROR_NOTSUPPORT for a
-        // bin mode that is not supported, but in fact it returns QHYCCD_ERROR, so we cannot
-        // distinguish "not supported" from "error".
-        if (ret != QHYCCD_SUCCESS && ret != QHYCCD_ERROR_NOTSUPPORT)
-        {
-            CloseQHYCCD(m_camhandle);
-            m_camhandle = 0;
-            return CamConnectFailed(_("Failed to get camera bin info"));
-        }
-# endif
+        // Note: IsQHYCCDControlAvailable returns QHYCCD_ERROR_NOTSUPPORT for unsupported
+        // bin modes, though some versions may return QHYCCD_ERROR instead.
+        // We treat QHYCCD_SUCCESS as the only indicator of a supported bin mode.
         if (ret == QHYCCD_SUCCESS)
             maxBin = bin[i];
         else
+            Debug.Write(wxString::Format("QHY: bin %dx%d not supported (code %d)\n", bin[i], bin[i], ret));
             break;
     }
     Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));

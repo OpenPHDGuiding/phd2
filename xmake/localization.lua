@@ -9,8 +9,8 @@ local languages = {
     "ca", "cs", "da", "de", "el", "es", "fr", "it", "ja", "ko", "nl", "pl", "pt", "ru", "sv", "zh_CN", "zh_TW"
 }
 
--- Function to find gettext tools
-function find_gettext_tools()
+-- Function to find gettext tools (global scope)
+find_gettext_tools = function()
     local tools = {}
 
     -- Simple tool detection - assume tools are in PATH or common locations
@@ -70,8 +70,8 @@ function find_gettext_tools()
     return tools
 end
 
--- Function to create locale targets
-function create_locale_targets()
+-- Function to create locale targets (global scope)
+create_locale_targets = function()
     local tools = find_gettext_tools()
     
     if not tools.msgfmt then
@@ -174,7 +174,7 @@ function create_locale_targets()
 end
 
 -- Function to create additional resource targets
-function create_resource_targets()
+create_resource_targets = function()
     -- Dark theme files
     target("dark_theme")
         set_kind("phony")
@@ -237,7 +237,7 @@ function create_resource_targets()
 end
 
 -- Function to configure localization for a target
-function configure_localization(target)
+configure_localization = function(target)
     -- Add locale directory to search path
     if is_plat("windows") then
         target:add("defines", 'PHD_LOCALE_DIR="locale"')
@@ -270,7 +270,7 @@ function configure_localization(target)
 end
 
 -- Main function to set up localization and resources
-function setup_localization_and_resources()
+setup_localization_and_resources = function()
     create_locale_targets()
     create_resource_targets()
 

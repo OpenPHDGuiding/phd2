@@ -42,13 +42,15 @@ bool OnboardST4::ST4HasGuideOutput(void)
 
 bool OnboardST4::ST4HostConnected(void)
 {
-    assert(false);
+    // Onboard ST4 is never connected to an external host
+    Debug.Write("OnboardST4: ST4HostConnected() called - onboard ST4 cannot connect to external hosts\n");
     return true;
 }
 
 bool OnboardST4::ST4HasNonGuiMove(void)
 {
-    assert(false);
+    // Onboard ST4 doesn't support non-GUI moves
+    Debug.Write("OnboardST4: ST4HasNonGuiMove() called - onboard ST4 does not support non-GUI moves\n");
     return true;
 }
 
@@ -59,6 +61,8 @@ bool OnboardST4::ST4SynchronousOnly(void)
 
 bool OnboardST4::ST4PulseGuideScope(int direction, int duration)
 {
-    assert(false);
+    // Onboard ST4 doesn't support pulse guide
+    Debug.Write(wxString::Format("OnboardST4: ST4PulseGuideScope(dir=%d, dur=%d) - onboard ST4 does not support pulse guide\n", 
+                                direction, duration));
     return true;
 }

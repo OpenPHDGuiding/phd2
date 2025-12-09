@@ -503,17 +503,137 @@ void IndiGui::CreateNumberWidget(INDI::Property property, IndiProp *indiProp)
 
 void IndiGui::CreateLightWidget(INDI::Property property, IndiProp *indiProp)
 {
-    // printf("IndiGui: Unimplemented CreateLightWidget\n");
+    // Light properties are read-only status indicators in INDI
+    // Each light element shows the state of a device capability
+    ILightVectorProperty *lvp = property.getLight();
+    wxPanel *p = indiProp->panel;
+    wxGridBagSizer *gbs = indiProp->gbs;
+
+    // Iterate through each light element
+    for (int pos = 0; pos < lvp->nlp; pos++)
+    {
+        // Create label for the light element
+        wxString label = wxString::FromAscii(lvp->lp[pos].label);
+        if (label.empty())
+            label = wxString::FromAscii(lvp->lp[pos].name);
+        
+        gbs->Add(new wxStaticText(p, wxID_ANY, label), POS(pos, 0), SPAN(1, 1),
+                 wxALIGN_LEFT | wxALL);
+
+        // Create a visual indicator (LED) showing the light state
+        IndiStatus *light_indicator = new IndiStatus(p, wxID_ANY, lvp->lp[pos].s);
+        indiProp->ctrl[wxString::FromAscii(lvp->lp[pos].name)] = light_indicator;
+        gbs->Add(light_indicator, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+
+        // Show the light state as text
+        wxString state_text;
+        switch (lvp->lp[pos].s)
+        {
+        case IPS_IDLE:
+            state_text = _("Idle");
+            break;
+        case IPS_OK:
+            state_text = _("Ok");
+            break;
+        case IPS_BUSY:
+            state_text = _("Busy");
+            break;
+        case IPS_ALERT:
+            state_text = _("Alert");
+            break;
+        default:
+            state_text = _("Unknown");
+            break;
+        }
+        wxStaticText *status_text = new wxStaticText(p, wxID_ANY, state_text);
+        gbs->Add(status_text, POS(pos, 2), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    }
 }
 
 void IndiGui::CreateBlobWidget(INDI::Property property, IndiProp *indiProp)
 {
-    // printf("IndiGui: Unimplemented CreateBlobWidget\n");
+    // BLOB properties handle binary large objects (images, files, etc.)
+    // These are typically read-only and show file information
+    IBLOBVectorProperty *bvp = property.getBLOB();
+    wxPanel *p = indiProp->panel;
+    wxGridBagSizer *gbs = indiProp->gbs;
+
+    int pos = 0;
+    // Iterate through each BLOB element
+    for (int i = 0; i < bvp->nbp; i++)
+    {
+        // Create label for the BLOB element
+        wxString label = wxString::FromAscii(bvp->bp[i].label);
+        if (label.empty())
+            label = wxString::FromAscii(bvp->bp[i].name);
+        
+        gbs->Add(new wxStaticText(p, wxID_ANY, label), POS(pos, 0), SPAN(1, 1),
+                 wxALIGN_LEFT | wxALL);
+
+        // Display BLOB size and format information
+        wxString blob_info = wxString::Format(wxT("%u bytes, %s"),
+                                             (unsigned int)bvp->bp[i].size,
+                                             wxString::FromAscii(bvp->bp[i].format));
+        wxStaticText *blob_text = new wxStaticText(p, wxID_ANY, blob_info);
+        indiProp->ctrl[wxString::FromAscii(bvp->bp[i].name)] = blob_text;
+        gbs->Add(blob_text, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+
+        // Add a button to save the BLOB data if needed (for future enhancement)
+        if (bvp->bp[i].size > 0 && bvp->bp[i].blob)
+        {
+            wxButton *save_button = new wxButton(p, wxID_ANY, _("Save"));
+            save_button->SetClientData(indiProp);
+            // Note: Button event handling for BLOB save would be implemented separately
+            gbs->Add(save_button, POS(pos, 2), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+        }
+
+        pos++;
+    }
 }
 
 void IndiGui::CreateUnknowWidget(INDI::Property property, IndiProp *indiProp)
 {
-    // printf("IndiGui: Unimplemented CreateUnknowWidget\n");
+    // Unknown property type - create a generic placeholder display
+    // This handles edge cases where the property type is not recognized
+    wxPanel *p = indiProp->panel;
+    wxGridBagSizer *gbs = indiProp->gbs;
+
+    // Display property name
+    wxString propname = wxString::FromAscii(property.getName());
+    gbs->Add(new wxStaticText(p, wxID_ANY, _("Property Type")), POS(0, 0), SPAN(1, 1),
+             wxALIGN_LEFT | wxALL);
+
+    // Display unknown property type message
+    wxStaticText *unknown_text = new wxStaticText(p, wxID_ANY, 
+                                                  wxString::Format(_("Unknown property type for '%s'"), propname));
+    indiProp->ctrl[propname] = unknown_text;
+    gbs->Add(unknown_text, POS(0, 1), SPAN(1, 2), wxALIGN_LEFT | wxALL);
+
+    // Display additional info row for debugging
+    gbs->Add(new wxStaticText(p, wxID_ANY, _("Status")), POS(1, 0), SPAN(1, 1),
+             wxALIGN_LEFT | wxALL);
+
+    wxString state_text;
+    switch (property.getState())
+    {
+    case IPS_IDLE:
+        state_text = _("Idle");
+        break;
+    case IPS_OK:
+        state_text = _("Ok");
+        break;
+    case IPS_BUSY:
+        state_text = _("Busy");
+        break;
+    case IPS_ALERT:
+        state_text = _("Alert");
+        break;
+    default:
+        state_text = _("Unknown");
+        break;
+    }
+    wxStaticText *state_display = new wxStaticText(p, wxID_ANY, state_text);
+    gbs->Add(state_display, POS(1, 1), SPAN(1, 2), wxALIGN_LEFT | wxALL);
 }
 
 void IndiGui::OnUpdatePropertyFromThread(wxThreadEvent& event)

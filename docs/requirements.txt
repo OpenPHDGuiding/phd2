@@ -1,0 +1,31 @@
+# MkDocs documentation dependencies
+# Install with: pip install -r docs/requirements.txt
+
+# Core
+mkdocs>=1.5.3
+mkdocs-material>=9.5.0
+
+# Plugins
+mkdocs-git-revision-date-localized-plugin>=1.2.0
+mkdocs-minify-plugin>=0.7.0
+mkdocs-glightbox>=0.3.0
+
+# Markdown extensions
+pymdown-extensions>=10.5
+markdown>=3.5
+
+# Optional: Multi-language support
+# mkdocs-static-i18n>=1.2.0
+
+# Optional: Version management
+# mike>=2.0.0
+
+# Optional: API documentation
+# mkdocstrings[python]>=0.24.0
+# mkdocstrings-python>=1.7.0
+
+# Optional: Jupyter notebook support
+# mkdocs-jupyter>=0.24.0
+
+# Optional: PDF generation
+# mkdocs-pdf-export-plugin>=0.5.10

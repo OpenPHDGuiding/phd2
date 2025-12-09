@@ -37,7 +37,9 @@
 
 class TestGuide
 {
-    TestGuide(); // not implemented
+    TestGuide() = delete; // Prevent instantiation - utility class with only static methods
+    TestGuide(const TestGuide&) = delete;
+    TestGuide& operator=(const TestGuide&) = delete;
 public:
     static wxWindow *CreateManualGuideWindow();
     static void ManualGuideUpdateControls();
