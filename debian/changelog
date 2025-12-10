@@ -1,3 +1,23 @@
+phd2 (2.6.14) stable; urgency=low
+
+  * Windows: support for obsolete cameras has been removed: Fishcamp, Meade DSI, SAC4-2, SSAG. To use these cameras, stick with an older version of PHD2.
+  * Mac: no longer supporting 32-bit Macs. Stick with an older version to use PHD2 on a 32-bit Mac.
+  * Improved handling of image scale changes
+  * Improved alert messages when guiding is ineffective
+  * MultiStar guiding interacts better with subframes and the comet tool
+  * Improved Guiding Assistant and Calibration Assistant recommendations for encoder mounts
+  * Improved star profile display
+  * Equipment Profile Wizard improved and updated
+  * Faster display of camera images
+  * Updated camera support: Altair, OGMA, Player One, QHY, Svbony, ToupTek and ZWO ASI cameras
+  * opencv-accessible cameras are now available on Mac and Linux
+  * INDI rotator support added
+  * Udated translations - Czech, Spanish, Traditional Chinese
+  * Help file updates
+  * Special thanks to our new contributors - see the Help > About window
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Tue, 09 Dec 2025 23:46:14 -0500
+
 phd2 (2.6.13dev8) unstable; urgency=low
 
   * Comet tool: disable multi-star guiding when comet tracking is enabled
