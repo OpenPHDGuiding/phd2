@@ -1,9 +1,8 @@
 /*
- *  scopes.h
+ *  cam_alpaca.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created for Alpaca Server support
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,53 +31,65 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+#ifndef CAM_ALPACA_INCLUDED
+#define CAM_ALPACA_INCLUDED
 
-#if defined(__WINDOWS__)
+#ifdef ALPACA_CAMERA
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_ASCOM
-# ifdef HAVE_SHOESTRING
-#  define GUIDE_GPUSB
-#  define GUIDE_GPINT
-# endif
-# define GUIDE_INDI
-# define GUIDE_ALPACA
+#include "alpaca_client.h"
 
-#elif defined(__APPLE__)
+class CameraAlpaca : public GuideCamera
+{
+private:
+    AlpacaClient *m_client;
+    wxString m_host;
+    long m_port;
+    long m_deviceNumber;
+    wxSize m_maxSize;
+    wxRect m_roi;
+    bool m_swapAxes;
+    wxByte m_bitsPerPixel;
+    wxByte m_curBin;
+    double m_driverPixelSize;
+    int m_driverVersion;
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_GPUSB
-# define GUIDE_GCUSBST4
-# define GUIDE_INDI
-# define GUIDE_EQUINOX
-// #define GUIDE_VOYAGER
-// #define GUIDE_NEB
-# define GUIDE_EQMAC
+    // Capability flags
+    bool m_canAbortExposure;
+    bool m_canStopExposure;
+    bool m_canSetCoolerTemperature;
+    bool m_canGetCoolerPower;
 
-#elif defined(__linux__) || defined(__FreeBSD__)
+    void ClearStatus();
+    void CameraSetup();
+    bool AbortExposure();
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_INDI
+public:
+    bool Color;
 
-#endif // WINDOWS/APPLE/LINUX
+    CameraAlpaca();
+    ~CameraAlpaca();
 
-#include "scope.h"
-#include "scope_oncamera.h"
-#include "scope_onstepguider.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
-#include "scope_indi.h"
-#include "scope_alpaca.h"
-#include "scope_manual_pointing.h"
+    bool Connect(const wxString& camId) override;
+    bool Disconnect() override;
+    bool HasNonGuiCapture() override;
+    wxByte BitsPerPixel() override;
+    bool GetDevicePixelSize(double *pixSize) override;
+    void ShowPropertyDialog() override;
 
-#endif /* SCOPES_H_INCLUDED */
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool ST4PulseGuideScope(int direction, int duration) override;
+    bool SetCoolerOn(bool on) override;
+    bool SetCoolerSetpoint(double temperature) override;
+    bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature) override;
+    bool GetSensorTemperature(double *temperature) override;
+    bool ST4HasNonGuiMove() override;
+};
+
+class AlpacaCameraFactory
+{
+public:
+    static GuideCamera *MakeAlpacaCamera();
+};
+
+#endif // ALPACA_CAMERA
+#endif // CAM_ALPACA_INCLUDED

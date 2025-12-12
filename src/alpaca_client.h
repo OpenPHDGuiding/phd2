@@ -1,9 +1,8 @@
 /*
- *  scopes.h
+ *  alpaca_client.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created for Alpaca Server support
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,53 +31,39 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+#ifndef ALPACA_CLIENT_H
+#define ALPACA_CLIENT_H
 
-#if defined(__WINDOWS__)
+#include "phd.h"
+#include "json_parser.h"
+#include <curl/curl.h>
+#include <sstream>
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_ASCOM
-# ifdef HAVE_SHOESTRING
-#  define GUIDE_GPUSB
-#  define GUIDE_GPINT
-# endif
-# define GUIDE_INDI
-# define GUIDE_ALPACA
+class AlpacaClient
+{
+private:
+    CURL *m_curl;
+    wxString m_host;
+    long m_port;
+    long m_deviceNumber;
+    std::stringstream m_response;
 
-#elif defined(__APPLE__)
+    static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+    wxString BuildRequestUrl(const wxString& endpoint) const;
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_GPUSB
-# define GUIDE_GCUSBST4
-# define GUIDE_INDI
-# define GUIDE_EQUINOX
-// #define GUIDE_VOYAGER
-// #define GUIDE_NEB
-# define GUIDE_EQMAC
+public:
+    AlpacaClient(const wxString& host, long port, long deviceNumber);
+    ~AlpacaClient();
 
-#elif defined(__linux__) || defined(__FreeBSD__)
+    bool Get(const wxString& endpoint, JsonParser& parser, long *errorCode = nullptr);
+    bool Put(const wxString& endpoint, const wxString& params, JsonParser& parser, long *errorCode = nullptr);
+    bool GetDouble(const wxString& endpoint, double *value, long *errorCode = nullptr);
+    bool GetInt(const wxString& endpoint, int *value, long *errorCode = nullptr);
+    bool GetBool(const wxString& endpoint, bool *value, long *errorCode = nullptr);
+    bool PutAction(const wxString& endpoint, const wxString& action, const wxString& params, long *errorCode = nullptr);
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_INDI
+    wxString GetBaseUrl() const;
+};
 
-#endif // WINDOWS/APPLE/LINUX
+#endif // ALPACA_CLIENT_H
 
-#include "scope.h"
-#include "scope_oncamera.h"
-#include "scope_onstepguider.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
-#include "scope_indi.h"
-#include "scope_alpaca.h"
-#include "scope_manual_pointing.h"
-
-#endif /* SCOPES_H_INCLUDED */
