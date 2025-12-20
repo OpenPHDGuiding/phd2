@@ -50,7 +50,7 @@ public:
     CameraSBIGRotator();
     ~CameraSBIGRotator();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
@@ -141,9 +141,9 @@ bool CameraSBIGRotator::Disconnect()
     return false;
 }
 
-bool CameraSBIGRotator::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSBIGRotator::Capture(usImage& img, const CaptureParams& captureParams)
 {
-    bool bError = m_pSubcamera->Capture(duration, img, options, subframe);
+    bool bError = m_pSubcamera->Capture(img, captureParams);
 
     img.Rotate(m_raAngle, m_mirror);
 

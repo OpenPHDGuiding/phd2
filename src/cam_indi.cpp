@@ -181,7 +181,7 @@ public:
     bool GetDevicePixelSize(double *pixSize) override;
     void ShowPropertyDialog() override;
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool ST4HasNonGuiMove() override;
@@ -983,13 +983,15 @@ void CameraINDI::SendBinning()
     m_curBinning = Binning;
 }
 
-bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
 {
     if (!Connected)
         return true;
 
     bool takeSubframe = UseSubframes;
-    wxRect subframe(subframeArg);
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    wxRect subframe(captureParams.subframe);
 
     // we can set the exposure time directly in the camera
     if (expose_prop && !INDICameraForceVideo)
@@ -1101,7 +1103,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                         wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
                     INDICameraForceVideo = true;
                     first_frame = false;
-                    return Capture(duration, img, options, subframeArg);
+                    return Capture(img, captureParams);
                 }
                 else
                 {

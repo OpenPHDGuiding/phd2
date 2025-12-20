@@ -73,7 +73,7 @@ public:
     CameraASCOM(const wxString& choice);
     ~CameraASCOM();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
@@ -977,11 +977,14 @@ bool CameraASCOM::AbortExposure()
     }
 }
 
-bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool retval = false;
     bool takeSubframe = UseSubframes;
-    wxRect roi(subframeArg);
+    wxRect roi(captureParams.subframe);
 
     if (roi.width <= 0 || roi.height <= 0)
     {
