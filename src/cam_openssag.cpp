@@ -168,8 +168,11 @@ bool CameraOpenSSAG::Disconnect()
     return false;
 }
 
-bool CameraOpenSSAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpenSSAG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);

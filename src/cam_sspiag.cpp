@@ -350,8 +350,11 @@ bool CameraSSPIAG::Disconnect()
     return false;
 }
 
-bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSSPIAG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     // Only does full frames still
     static int last_dur = 0;
     static int last_gain = 60;

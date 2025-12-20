@@ -461,8 +461,11 @@ void CameraWDM::EndCapture()
     }
 }
 
-bool CameraWDM::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool bError = false;
 
     try
@@ -493,7 +496,7 @@ bool CameraWDM::Capture(int duration, usImage& img, int options, const wxRect& s
     return bError;
 }
 
-bool CameraWDM::CaptureOneFrame(usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::CaptureOneFrame(usImage& img, int options)
 {
     bool bError = false;
 

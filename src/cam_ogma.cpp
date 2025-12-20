@@ -250,7 +250,7 @@ public:
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
-    bool Capture(int duration, usImage&, int, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     bool ST4HasGuideOutput() override;
@@ -515,8 +515,12 @@ inline static int round_up(int v, int m)
     return round_down(v + m - 1, m);
 }
 
-bool CameraOgma::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOgma::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
     if (Binning != m_cam.m_curBin)

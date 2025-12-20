@@ -108,7 +108,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -931,8 +931,12 @@ inline static int round_up(int v, int m)
 // stopping capture causes problems on some cameras on Windows, disable it for now until we can test with a newer SDK
 // #define CAN_STOP_CAPTURE
 
-bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
     if (Binning != m_curBin)

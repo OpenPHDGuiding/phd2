@@ -141,9 +141,12 @@ static bool StopExposure()
     return true;
 }
 
-bool CameraQGuider::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraQGuider::Capture(usImage& img, const CaptureParams& captureParams)
 {
     // Only does full frames still
+
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
 
     unsigned short *dptr;
     bool firstimg = true;
