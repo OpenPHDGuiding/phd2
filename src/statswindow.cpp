@@ -152,7 +152,6 @@ StatsWindow::StatsWindow(wxWindow *parent)
 
     SetSizerAndFit(sizer2);
 }
-
 StatsWindow::~StatsWindow(void) { }
 
 void StatsWindow::SetState(bool is_active)

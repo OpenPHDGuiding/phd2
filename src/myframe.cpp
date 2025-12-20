@@ -38,6 +38,8 @@
 
 #include "aui_controls.h"
 #include "comet_tool.h"
+#include "solarsys.h"
+#include "solarsys_tool.h"
 #include "config_indi.h"
 #include "guiding_assistant.h"
 #include "phdupdate.h"
@@ -78,7 +80,6 @@ wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(UPDATER_EVENT, wxThreadEvent);
 
 // clang-format off
-// clang-format off
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 EVT_MENU_HIGHLIGHT_ALL(MyFrame::OnMenuHighlight)
 EVT_MENU_CLOSE(MyFrame::OnAnyMenuClose)
@@ -97,6 +98,7 @@ EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
 EVT_MENU(MENU_POLARDRIFTTOOL, MyFrame::OnPolarDriftTool)
 EVT_MENU(MENU_STATICPATOOL, MyFrame::OnStaticPaTool)
 EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+EVT_MENU(MENU_SOLAR_SYSTEM_TOOL, MyFrame::OnSolarSystemGuiding)
 EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
 EVT_MENU(MENU_HELP_UPGRADE, MyFrame::OnUpgrade)
 EVT_MENU(MENU_HELP_ONLINE, MyFrame::OnHelpOnline)
@@ -124,7 +126,6 @@ EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
 EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
 EVT_MENU(MENU_REFINEDEFECTMAP, MyFrame::OnRefineDefMap)
 EVT_MENU(MENU_IMPORTCAMCAL, MyFrame::OnImportCamCal)
-
 EVT_CHAR_HOOK(MyFrame::OnCharHook)
 
 #if defined (V4L_CAMERA)
@@ -211,7 +212,9 @@ struct FileDropTarget : public wxFileDropTarget
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, wxEmptyString), m_showBookmarksAccel(0), m_bookmarkLockPosAccel(0), pStatsWin(nullptr)
+    : wxFrame(nullptr, wxID_ANY, wxEmptyString), pGuider(nullptr), pSolarSysTool(nullptr), m_showBookmarksAccel(0),
+      m_bookmarkLockPosAccel(0), pStatsWin(nullptr), m_pGuiderMultiStar(nullptr), m_pGuiderSolarSys(nullptr),
+      m_solarSystemMode(false)
 {
     m_mgr.SetManagedWindow(this);
 
@@ -253,6 +256,7 @@ MyFrame::MyFrame()
     // Setup container window for alert message info bar and guider window
     wxWindow *guiderWin = new wxWindow(this, wxID_ANY);
     wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    wxWindow *guiderWinSSO = new wxWindow(this, wxID_ANY);
 
     m_infoBar = new wxInfoBar(guiderWin);
     m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON, wxCommandEventHandler(MyFrame::OnAlertButton), nullptr, this);
@@ -262,17 +266,20 @@ MyFrame::MyFrame()
 
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
-    pGuider = new GuiderMultiStar(guiderWin);
+    m_pGuiderSolarSys = new GuiderSolarSys(guiderWinSSO);
+    m_pGuiderSolarSys->SetImageDisplayWindow(guiderWinSSO);
+    m_pGuiderMultiStar = new GuiderMultiStar(guiderWin);
+    pGuider = m_pGuiderMultiStar;
     sizer->Add(pGuider, wxSizerFlags().Proportion(1).Expand());
 
     guiderWin->SetSizer(sizer);
-
     pGuider->LoadProfileSettings();
+    m_pGuiderSolarSys->LoadProfileSettings();
 
     bool sticky = pConfig->Global.GetBoolean("/StickyLockPosition", false);
     pGuider->SetLockPosIsSticky(sticky);
     tools_menu->Check(EEGG_STICKY_LOCK, sticky);
-
+    // Set sizes for the entire PHD2 parent window
     SetMinSize(wxSize(300, 300));
     SetSize(800, 600);
 
@@ -306,8 +313,10 @@ MyFrame::MyFrame()
 
     guiderWin->SetMinSize(wxSize(XWinSize, YWinSize));
     guiderWin->SetSize(wxSize(XWinSize, YWinSize));
+    guiderWinSSO->SetSize(wxSize(XWinSize, YWinSize));
     m_mgr.AddPane(guiderWin,
                   wxAuiPaneInfo().Name(_T("Guider")).Caption(_T("Guider")).CenterPane().MinSize(wxSize(XWinSize, YWinSize)));
+    m_mgr.AddPane(guiderWinSSO, wxAuiPaneInfo().Name(_T("GuiderSolarSys")).Caption(_T("Solar System Guider")).Hide());
 
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().Name(_T("GraphLog")).Caption(_("History")).Hide());
@@ -318,7 +327,7 @@ MyFrame::MyFrame()
     pStepGuiderGraph = new GraphStepguiderWindow(this);
     m_mgr.AddPane(pStepGuiderGraph, wxAuiPaneInfo().Name(_T("AOPosition")).Caption(_("AO Position")).Hide());
 
-    pProfile = new ProfileWindow(this);
+    pProfile = new ProfileWindow(this, m_pGuiderSolarSys->m_SolarSystemObject);
     m_mgr.AddPane(pProfile, wxAuiPaneInfo().Name(_T("Profile")).Caption(_("Star Profile")).Hide());
 
     pTarget = new TargetWindow(this);
@@ -335,6 +344,7 @@ MyFrame::MyFrame()
     pStarCrossDlg = nullptr;
     pNudgeLock = nullptr;
     pCometTool = nullptr;
+    pSolarSysTool = nullptr;
     pGuidingAssistant = nullptr;
     pRefineDefMap = nullptr;
     pCalSanityCheckDlg = nullptr;
@@ -377,6 +387,7 @@ MyFrame::MyFrame()
         m_mgr.LoadPerspective(perspective);
         m_mgr.GetPane(_T("MainToolBar")).Caption(_T("Main tool bar"));
         m_mgr.GetPane(_T("Guider")).Caption(_T("Guider"));
+        m_mgr.GetPane(_T("GuiderSolarSys")).Caption(_("Solar System Guiding"));
         m_mgr.GetPane(_T("GraphLog")).Caption(_("History"));
         m_mgr.GetPane(_T("Stats")).Caption(_("Guide Stats"));
         m_mgr.GetPane(_T("AOPosition")).Caption(_("AO Position"));
@@ -410,6 +421,9 @@ MyFrame::MyFrame()
     pTarget->SetState(panel_state);
     Menubar->Check(MENU_TARGET, panel_state);
 
+    panel_state = m_mgr.GetPane(_T("GuiderSolarSys")).IsShown();
+    pTarget->SetState(panel_state);
+
     m_mgr.Update();
 
     // this forces force a resize of MainToolbar in case size changed from the saved perspective
@@ -439,6 +453,8 @@ MyFrame::~MyFrame()
         pStarCrossDlg->Destroy();
     if (pierFlipToolWin)
         pierFlipToolWin->Destroy();
+    if (pSolarSysTool)
+        pSolarSysTool->Destroy();
 
     m_mgr.UnInit();
 
@@ -493,6 +509,8 @@ void MyFrame::SetupMenuBar()
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
+    m_PlanetaryMenuItem =
+        tools_menu->AppendCheckItem(MENU_SOLAR_SYSTEM_TOOL, _("Solar/Lunar Guiding"), _("Guide on a solar/lunar disk"));
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_PIERFLIP_TOOL, _("Calibrate meridian flip"),
                        _("Automatically determine the correct meridian flip settings"));
@@ -623,7 +641,7 @@ int MyFrame::GetExposureDelay()
 void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 {
     unsigned int i;
-    int width = -1;
+    int width = GetTextWidth(pComboBox, _("Custom: 0.999 s"));
 
     for (i = 0; i < pComboBox->GetCount(); i++)
     {
@@ -662,18 +680,21 @@ bool MyFrame::SetCustomExposureDuration(int ms)
     return false;
 }
 
-void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp) const
+bool MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp) const
 {
+    bool bEerr = false;
     if (!pCamera || !pCamera->Connected)
     {
         *currExpMs = 0;
         *autoExp = false;
+        bEerr = true;
     }
     else
     {
         *currExpMs = m_exposureDuration;
         *autoExp = m_autoExp.enabled;
     }
+    return bEerr;
 }
 
 static int dur_index(int duration)
@@ -684,7 +705,7 @@ static int dur_index(int duration)
     return -1;
 }
 
-bool MyFrame::SetExposureDuration(int val)
+bool MyFrame::SetExposureDuration(int val, bool updateCustom)
 {
     if (val < 0)
     {
@@ -695,7 +716,15 @@ bool MyFrame::SetExposureDuration(int val)
     {
         int idx = dur_index(val);
         if (idx == -1)
-            return false;
+        {
+            if (updateCustom)
+            {
+                SetCustomExposureDuration(val);
+                idx = dur_index(val);
+            }
+            if (idx == -1)
+                return false;
+        }
         Dur_Choice->SetSelection(idx + 1); // skip Auto
     }
 
@@ -978,7 +1007,7 @@ void MyFrame::SetupToolBar()
     Dur_Choice =
         new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize, durs, wxCB_READONLY);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
-    SetComboBoxWidth(Dur_Choice, 10);
+    SetComboBoxWidth(Dur_Choice, 35);
 
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1, -1), wxSize(160, -1));
     Gamma_Slider->SetBackgroundColour(wxColor(60, 60, 60)); // Slightly darker than toolbar background
@@ -1075,6 +1104,14 @@ static bool cond_update_tool(wxAuiToolBar *tb, int toolId, wxMenuItem *mi, bool 
         ret = true;
     }
     return ret;
+}
+// Notify SolarSysTool of relevant changes to camera settings, eg. exposure time, timelapse, gain
+void MyFrame::NotifyCameraSettingsChange()
+{
+    if (pSolarSysTool)
+    {
+        PlanetTool::NotifyCameraSettingsChange();
+    }
 }
 
 void MyFrame::UpdateButtonsStatus()
@@ -1728,6 +1765,8 @@ void MyFrame::ScheduleExposure()
 
     if (m_pPrimaryWorkerThread) // can be null when app is shutting down (unlikely but possible)
         m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
+    else
+        delete img;
 }
 
 void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
@@ -2771,6 +2810,8 @@ bool MyFrame::SetTimeLapse(int timeLapse)
     }
 
     pConfig->Profile.SetInt("/frame/timeLapse", m_timeLapse);
+
+    NotifyCameraSettingsChange();
 
     return bError;
 }

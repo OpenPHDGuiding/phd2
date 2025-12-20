@@ -105,6 +105,7 @@ struct LockPosShiftParams
 };
 
 class DefectMap;
+class SolarSystemObject;
 
 /*
  * The Guider class is responsible for running the state machine
@@ -136,8 +137,6 @@ struct GuiderOffset
 
 class Guider : public wxWindow
 {
-    wxImage *m_displayedImage;
-    OVERLAY_MODE m_overlayMode;
     OverlaySlitCoords m_overlaySlitCoords;
     const DefectMap *m_defectMapPreview;
     double m_polarAlignCircleRadius;
@@ -156,8 +155,7 @@ class Guider : public wxWindow
     unsigned int m_avgDistanceCnt;
     bool m_avgDistanceNeedReset;
     GUIDER_STATE m_state;
-    usImage *m_pCurrentImage;
-    bool m_scaleImage;
+
     bool m_lockPosIsSticky;
     bool m_ignoreLostStarLooping;
     bool m_fastRecenterEnabled;
@@ -170,6 +168,10 @@ class Guider : public wxWindow
     unsigned int m_autoSelDownsample; // downsample factor for star auto-selection, 0=Auto
 
 protected:
+    wxImage *m_displayedImage;
+    usImage *m_pCurrentImage;
+    bool m_scaleImage;
+    OVERLAY_MODE m_overlayMode;
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
     bool m_forceFullFrame;
     double m_scaleFactor;
@@ -202,7 +204,7 @@ protected:
     Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider();
 
-    bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
+    virtual bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
     void SetState(GUIDER_STATE newState);
     void UpdateCurrentDistance(double distance, double distanceRA);
 
@@ -280,6 +282,9 @@ public:
 
     void SetAutoSelDownsample(unsigned int val);
     unsigned int GetAutoSelDownsample() const;
+
+    // Solar system object
+    SolarSystemObject *m_SolarSystemObject;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of

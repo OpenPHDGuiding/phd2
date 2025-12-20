@@ -44,6 +44,7 @@
 #include "Refine_DefMap.h"
 #include "starcross_test.h"
 #include "calibration_assistant.h"
+#include "solarsys_tool.h"
 
 #include <algorithm>
 #include <memory>
@@ -132,6 +133,7 @@ void MyFrame::NotifyExposureChanged()
 {
     NotifyGuidingParam("Exposure", ExposureDurationSummary());
     pConfig->Profile.SetInt("/ExposureDurationMs", m_autoExp.enabled ? -1 : m_exposureDuration);
+    NotifyCameraSettingsChange();
 }
 
 int MyFrame::RequestedExposureDuration()
@@ -409,6 +411,7 @@ void MyFrame::FinishStop(void)
     ResetAutoExposure();
     UpdateButtonsStatus();
     StatusMsg(_("Stopped."));
+
     PhdController::AbortController("Stopped capturing");
 }
 
@@ -936,7 +939,45 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     m_mgr.Update();
 }
 
-// Re-dock windows and restore main window to size/position where everything should be readily accessible
+void MyFrame::SetSolarSystemMode(bool Enable)
+{
+    if (Enable)
+    {
+        pFrame->pGuider->StopGuiding();
+        m_solarSystemMode = true;
+        m_mgr.GetPane(_T("GuiderSolarSys")).Show().Float();
+        m_mgr.GetPane(_T("Guider")).Hide();
+        m_mgr.Update();
+        pFrame->pGuider = pFrame->m_pGuiderSolarSys;
+        pAdvancedDialog->UpdateMountPage(); // Top sizer on Guider tab changes for solar guiding
+        if (!pSolarSysTool)
+        {
+            pSolarSysTool = PlanetTool::CreateSolarSysToolWindow();
+        }
+        pSolarSysTool->Show();
+    }
+    else
+    {
+        m_solarSystemMode = false;
+        m_mgr.GetPane(_T("GuiderSolarSys")).Hide();
+        m_mgr.GetPane(_T("Guider")).Show().Bottom().Left().Position(0).MinSize(-1, 400);
+        m_mgr.Update();
+        pFrame->StopCapturing();
+        pFrame->pGuider = pFrame->m_pGuiderMultiStar;
+        pAdvancedDialog->UpdateMountPage(); // Revert the Guider tab contents to reflect stellar guiding
+        pFrame->m_PlanetaryMenuItem->Check(false);
+        pSolarSysTool->Close();
+    }
+    m_mgr.Update();
+}
+
+void MyFrame::OnSolarSystemGuiding(wxCommandEvent& evt)
+{
+    bool checked = evt.IsChecked();
+    SetSolarSystemMode(evt.IsChecked());
+}
+
+// Redock windows and restore main window to size/position where everything should be readily accessible
 void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 {
     wxAuiPaneInfoArray& panes = m_mgr.GetAllPanes();
@@ -1209,30 +1250,34 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
     {
         Menubar->Check(MENU_TOOLBAR, false);
     }
-    if (p->name == _T("GraphLog"))
+    else if (p->name == _T("GraphLog"))
     {
         Menubar->Check(MENU_GRAPH, false);
         pGraphLog->SetState(false);
     }
-    if (p->name == _T("Stats"))
+    else if (p->name == _T("Stats"))
     {
         Menubar->Check(MENU_STATS, false);
         pStatsWin->SetState(false);
     }
-    if (p->name == _T("Profile"))
+    else if (p->name == _T("Profile"))
     {
         Menubar->Check(MENU_STARPROFILE, false);
         pProfile->SetState(false);
     }
-    if (p->name == _T("AOPosition"))
+    else if (p->name == _T("AOPosition"))
     {
         Menubar->Check(MENU_AO_GRAPH, false);
         pStepGuiderGraph->SetState(false);
     }
-    if (p->name == _T("Target"))
+    else if (p->name == _T("Target"))
     {
         Menubar->Check(MENU_TARGET, false);
         pTarget->SetState(false);
+    }
+    else if (p->name == _T("GuiderSolarSys")) // Happens with user 'close' of solar sys display panel
+    {
+        SetSolarSystemMode(false);
     }
 }
 

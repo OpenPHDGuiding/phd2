@@ -184,8 +184,6 @@ protected:
     bool GetServerMode() const;
     bool SetServerMode(bool val);
 
-    bool SetTimeLapse(int timeLapse);
-    int GetTimeLapse() const;
     int GetExposureDelay();
 
     bool SetFocalLength(int focalLength);
@@ -201,12 +199,12 @@ private:
     bool m_ditherRaOnly;
     DitherSpiral m_ditherSpiral;
     bool m_serverMode;
-    int m_timeLapse; // Delay between frames (useful for vid cameras)
     VarDelayCfg m_varDelayConfig;
     int m_focalLength;
     bool m_beepForLostStar;
     double m_sampling;
     bool m_autoLoadCalibration;
+    bool m_solarSystemMode;
 
     wxAuiManager m_mgr;
     PHDStatusBar *m_statusbar;
@@ -219,6 +217,8 @@ public:
     virtual ~MyFrame();
 
     Guider *pGuider;
+    GuiderMultiStar *m_pGuiderMultiStar;
+    GuiderSolarSys *m_pGuiderSolarSys;
     wxMenuBar *Menubar;
     wxMenu *tools_menu, *view_menu, *bookmarks_menu, *darks_menu;
     wxMenuItem *m_showBookmarksMenuItem;
@@ -233,6 +233,7 @@ public:
     wxMenuItem *m_cameraMenuItem;
     wxMenuItem *m_autoSelectStarMenuItem;
     wxMenuItem *m_takeDarksMenuItem;
+    wxMenuItem *m_PlanetaryMenuItem;
     wxMenuItem *m_useDarksMenuItem;
     wxMenuItem *m_refineDefMapMenuItem;
     wxMenuItem *m_useDefectMapMenuItem;
@@ -259,6 +260,7 @@ public:
     wxDialog *pStarCrossDlg;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
+    wxWindow *pSolarSysTool;
     wxWindow *pGuidingAssistant;
     wxWindow *pierFlipToolWin;
     RefineDefMap *pRefineDefMap;
@@ -272,6 +274,8 @@ public:
     wxDateTime m_guidingStarted;
     wxStopWatch m_guidingElapsed;
     Star::FindMode m_starFindMode;
+    // wxString m_StopReason;
+
     double m_minStarHFD;
     bool m_rawImageMode;
     bool m_rawImageModeWarningDone;
@@ -315,6 +319,7 @@ public:
     void OnStaticPaTool(wxCommandEvent& evt);
     void OnCalibrationAssistant(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
+    void OnSolarSystemGuiding(wxCommandEvent& evt);
     void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
@@ -359,13 +364,16 @@ public:
 
     const std::vector<int>& GetExposureDurations() const;
     bool SetCustomExposureDuration(int ms);
-    void GetExposureInfo(int *currExpMs, bool *autoExp) const;
-    bool SetExposureDuration(int val);
+    bool GetExposureInfo(int *currExpMs, bool *autoExp) const;
+    bool SetExposureDuration(int val, bool updateCustom = false);
     const AutoExposureCfg& GetAutoExposureCfg() const { return m_autoExp; }
     bool SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
     void ResetAutoExposure();
     void AdjustAutoExposure(double curSNR);
     static wxString ExposureDurationLabel(int exposure);
+    bool SetTimeLapse(int timeLapse);
+    int GetTimeLapse() const;
+    int m_timeLapse; // Delay between frames (useful for vid cameras)
     const VarDelayCfg& GetVariableDelayConfig() const { return m_varDelayConfig; }
     void SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int LongDelayMS);
     double GetDitherScaleFactor() const;
@@ -375,6 +383,7 @@ public:
     static double GetDitherAmount(int ditherType);
     Star::FindMode GetStarFindMode() const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
+
     bool GetRawImageMode() const;
     bool SetRawImageMode(bool force);
 
@@ -432,6 +441,8 @@ public:
     bool StartLooping(); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding();
     bool Dither(double amount, bool raOnly);
+    bool GetSolarSystemMode() { return m_solarSystemMode; }
+    void SetSolarSystemMode(bool Enable);
 
     static bool GuidingRAOnly();
     double CurrentGuideError() const;
@@ -439,6 +450,7 @@ public:
 
     void NotifyUpdateButtonsStatus(); // can be called from any thread
     void UpdateButtonsStatus();
+    void NotifyCameraSettingsChange();
 
     static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);
     double GetCameraPixelScale() const;
@@ -645,6 +657,7 @@ enum
     MENU_POLARDRIFTTOOL,
     MENU_STATICPATOOL,
     MENU_COMETTOOL,
+    MENU_SOLAR_SYSTEM_TOOL,
     MENU_GUIDING_ASSISTANT,
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,

@@ -38,5 +38,6 @@
 
 #include "guider.h"
 #include "guider_multistar.h"
+#include "guider_solarsys.h"
 
 #endif /* GUIDERS_H_INCLUDED */

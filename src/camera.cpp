@@ -713,6 +713,9 @@ bool GuideCamera::SetCameraGain(int cameraGain)
 
     pConfig->Profile.SetInt("/camera/gain", GuideCameraGain);
 
+    if (pFrame)
+        pFrame->NotifyCameraSettingsChange();
+
     return bError;
 }
 

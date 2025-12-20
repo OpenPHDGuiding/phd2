@@ -329,6 +329,8 @@ set(guiding_SRC
   ${phd_src_dir}/guide_algorithms.h
   ${phd_src_dir}/guider_multistar.cpp
   ${phd_src_dir}/guider_multistar.h
+  ${phd_src_dir}/guider_solarsys.cpp
+  ${phd_src_dir}/guider_solarsys.h
   ${phd_src_dir}/guider.cpp
   ${phd_src_dir}/guider.h
   ${phd_src_dir}/guiders.h
@@ -427,6 +429,10 @@ set(phd2_SRC
   ${phd_src_dir}/phdupdate.h
   ${phd_src_dir}/pierflip_tool.cpp
   ${phd_src_dir}/pierflip_tool.h
+  ${phd_src_dir}/solarsys_tool.cpp
+  ${phd_src_dir}/solarsys_tool.h
+  ${phd_src_dir}/solarsys.cpp
+  ${phd_src_dir}/solarsys.h
   ${phd_src_dir}/polardrift_tool.h
   ${phd_src_dir}/polardrift_toolwin.h
   ${phd_src_dir}/polardrift_toolwin.cpp
