@@ -3594,3 +3594,17 @@ void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val, bool
     GuideLog.SetGuidingParam(name, val, true);
     EvtServer.NotifyGuidingParam(name, val);
 }
+
+int GetIntChoice(wxChoice *choice, int dflt)
+{
+    unsigned long value;
+    if (!choice->GetStringSelection().ToULong(&value))
+        value = dflt;
+    return value;
+}
+
+void SetIntChoice(wxChoice *choice, int value)
+{
+    if (!choice->SetStringSelection(wxString::Format("%d", value)))
+        choice->SetSelection(0);
+}
