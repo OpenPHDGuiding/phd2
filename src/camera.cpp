@@ -1063,16 +1063,11 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_resetGain->Enable(false);
     }
 
-    if (m_binning)
-    {
-        int idx = m_pCamera->GetBinning() - 1;
-        m_binning->Select(idx);
-        m_prevBinning = idx + 1;
-        // don't allow binning change when calibrating or guiding
-        m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
-    }
-    else
-        m_binning->Enable(false);
+    int idx = m_pCamera->GetBinning() - 1;
+    m_binning->Select(idx);
+    m_prevBinning = idx + 1;
+    // don't allow binning change when calibrating or guiding
+    m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
 
     m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
 
