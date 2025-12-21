@@ -516,6 +516,10 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         CaptureParams captureParams;
         captureParams.duration = expTime;
         captureParams.hwBinning = pCamera->HwBinning;
+        // darks are not software-binned as this allows the dark library to be re-used
+        // for any software binning level (dark subtraction / bad-pixel map correction
+        // is performed before software binning)
+        captureParams.swBinning = 1;
         captureParams.bpp = pCamera->BitsPerPixel();
         captureParams.gain = pCamera->GuideCameraGain;
         captureParams.captureOptions = CAPTURE_DARK;

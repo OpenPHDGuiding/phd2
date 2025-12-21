@@ -225,6 +225,7 @@ GuideCamera::GuideCamera()
     m_pixelSize = GetProfilePixelSize();
     MaxHwBinning = 1;
     HwBinning = pConfig->Profile.GetInt("/camera/binning", 1);
+    SwBinning = wxClip(pConfig->Profile.GetInt("/camera/SoftwareBinning", 1), 1, (int) GuideCamera::MAX_SOFTWARE_BINNING);
     CurrentDarkFrame = nullptr;
     CurrentDefectMap = nullptr;
 }
@@ -721,15 +722,23 @@ int GuideCamera::GetDefaultCameraGain()
 
 bool GuideCamera::SetBinning(int binning)
 {
-    if (binning < 1)
-        binning = 1;
-    if (binning > MaxHwBinning)
-        binning = MaxHwBinning;
+    auto hwSwBin = GetHwAndSwBinning(binning);
+    auto hwBin = hwSwBin.first;
+    auto swBin = hwSwBin.second;
+    return SetBinning(hwBin, swBin);
+}
 
-    Debug.Write(wxString::Format("camera: set binning = %u\n", (unsigned int) binning));
+bool GuideCamera::SetBinning(int hwBinning, int swBinning)
+{
+    HwBinning = wxClip(hwBinning, 1, MaxHwBinning);
+    SwBinning = wxClip(swBinning, 1, (int) MAX_SOFTWARE_BINNING);
 
-    HwBinning = binning;
-    pConfig->Profile.SetInt("/camera/binning", binning);
+    auto binning = GetBinning();
+    Debug.Write(wxString::Format("camera: set binning = %u (hw = %u, sw = %u)\n", (unsigned int) binning,
+                                 (unsigned int) HwBinning, (unsigned int) SwBinning));
+
+    pConfig->Profile.SetInt("/camera/binning", HwBinning);
+    pConfig->Profile.SetInt("/camera/SoftwareBinning", SwBinning);
 
     // if a Limit Frame ROI is in use, adjust it for the new binning
     if (HasFrameLimiting)
@@ -754,8 +763,9 @@ bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning, wxString *errorM
     // binning to a lower binning.  For example, if we have a limit frame coordinate
     // value of 101 at bin 1, after switching to bin 2 the coordinate will be 50; and
     // switching back to bin 1 we can recover the inital value of 101.
-    for (int new_bin = 1; new_bin <= MaxHwBinning; new_bin++)
+    for (auto choice : GetBinningChoices())
     {
+        auto new_bin = choice.first;
         wxRect const limit_frame(roi.x * binning / new_bin, roi.y * binning / new_bin, roi.width * binning / new_bin,
                                  roi.height * binning / new_bin);
         wxString const key = wxString::Format("/camera/LimitFrameBin%d", new_bin);
@@ -983,7 +993,8 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     // Binning
     m_binning = 0;
     wxArrayString opts;
-    m_pCamera->GetBinningOpts(&opts);
+    bool includeSwBinning = false; // TODO: SW binning UI
+    m_pCamera->GetBinningOpts(&opts, includeSwBinning);
     int width = StringArrayWidth(opts);
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
     AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
@@ -1241,10 +1252,63 @@ void CameraConfigDialogCtrlSet::SetBinning(int binning)
         SetIntChoice(m_binning, binning);
 }
 
-void GuideCamera::GetBinningOpts(int maxBin, wxArrayString *opts)
+void GuideCamera::GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning)
 {
-    for (int i = 1; i <= maxBin; i++)
-        opts->Add(wxString::Format("%d", i));
+    for (auto choice : GetBinningChoices(maxHwBinning))
+    {
+        if (includeSwBinning || choice.second.second == 1)
+            opts->Add(wxString::Format("%d", choice.first));
+    }
+}
+
+// Get all the available binning choices for both hardware and software binning.
+// Hardware binning takes precedence over software binning.
+//
+// The max combined binning level is the camera's max binning or the software max
+// binning (4), whichever is greater.
+//
+// Example: maxHwBin = 2
+//    combined     hw     sw
+//         1        1      1
+//         2        2      1
+//         3        1      3
+//         4        2      2
+BinningChoices GuideCamera::GetBinningChoices(int maxHwBin)
+{
+    int maxSwBin = GuideCamera::MAX_SOFTWARE_BINNING;
+    int maxCombinedBin = wxMax(maxHwBin, maxSwBin);
+    BinningChoices choices;
+    for (int hwBin = 1; hwBin <= maxHwBin; hwBin++)
+        for (int swBin = 1; swBin <= maxSwBin; swBin++)
+        {
+            auto combined = hwBin * swBin;
+            if (combined > maxCombinedBin)
+                continue;
+            auto it = choices.find(combined);
+            if (it == choices.end() || hwBin > it->second.first)
+                choices[combined] = std::make_pair(hwBin, swBin);
+        }
+    return choices;
+}
+
+// Get the hardware and software binning levels for a given combined binning level and
+// maximum hardware binning level.
+//
+// Uses GuideCamera::GetBinningChoices() to generate the list of valid choices, then
+// selects the closest match having a combined binning value less than or equal to the
+// requested value.
+std::pair<int, int> GuideCamera::GetHwAndSwBinning(int maxHwBinning, int combinedBinning)
+{
+    auto prev = std::make_pair(1, 1);
+    for (auto choice : GetBinningChoices(maxHwBinning))
+    {
+        if (choice.first == combinedBinning)
+            return choice.second;
+        if (choice.first > combinedBinning)
+            return prev;
+        prev = choice.second;
+    }
+    return prev;
 }
 
 wxString GuideCamera::GetSettingsSummary()
@@ -1443,15 +1507,72 @@ void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconne
 
 void GuideCamera::InitCapture() { }
 
+// convert a rectangle from binned coordinates to un-binned coordinates
+inline static wxRect unbinned_rect(const wxRect& binnedRect, int binning)
+{
+    auto x = binnedRect.GetLeft() * binning;
+    auto y = binnedRect.GetTop() * binning;
+    auto width = binnedRect.GetWidth() * binning;
+    auto heigth = binnedRect.GetHeight() * binning;
+    return wxRect(x, y, width, heigth);
+}
+
+// convert a rectangle from un-binned coordinates to binned coordinates
+inline static wxRect binned_rect(const wxRect& unbinnedRect, int binning)
+{
+    auto x = unbinnedRect.GetLeft() / binning;
+    auto y = unbinnedRect.GetTop() / binning;
+    auto width = unbinnedRect.GetWidth() / binning;
+    auto heigth = unbinnedRect.GetHeight() / binning;
+    return wxRect(x, y, width, heigth);
+}
+
+inline static wxSize binned_size(const wxSize& unbinnedSize, int binning)
+{
+    return wxSize(unbinnedSize.x / binning, unbinnedSize.y / binning);
+}
+
 bool GuideCamera::Capture(GuideCamera *camera, usImage& img, const CaptureParams& captureParams)
 {
+    // The subframe and LimitFrame are in software-binned coordinates, but the camera
+    // subclass Capture methods work with hardware coordinates.
+    int swBinning = captureParams.swBinning;
+    CaptureParams cameraParams(captureParams);
+    if (swBinning > 1)
+    {
+        cameraParams.limitFrame = unbinned_rect(captureParams.limitFrame, swBinning);
+        cameraParams.subframe = unbinned_rect(captureParams.subframe, swBinning);
+    }
+
     img.InitImgStartTime();
     img.LimitFrame = captureParams.limitFrame;
     img.Binning = captureParams.hwBinning;
     img.BitsPerPixel = captureParams.bpp;
     img.Gain = captureParams.gain;
     img.ImgExpDur = captureParams.duration;
-    bool err = camera->Capture(img, captureParams);
+
+    bool err = camera->Capture(img, cameraParams);
+    if (err)
+        return err;
+
+    // perform software binning if needed
+    if (swBinning > 1)
+    {
+        usImage binnedImage;
+        if (binnedImage.Init(binned_size(img.Size, swBinning)))
+        {
+            camera->DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+        BinPixels(binnedImage.ImageData, img.ImageData, img.Size, swBinning);
+        img.SwapImageData(binnedImage);
+        img.Size = binnedImage.Size;
+        img.NPixels = binnedImage.NPixels;
+        img.Binning *= swBinning;
+        // scale the subframe from camera coords to binned coords
+        img.Subframe = binned_rect(img.Subframe, swBinning);
+    }
+
     return err;
 }
 

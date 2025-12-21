@@ -1385,9 +1385,14 @@ void GuidingAsstWin::MakeRecommendations()
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
-    if (pxscale <= 0.5 && pCamera->GetBinning() == 1 && pCamera->MaxHwBinning > 1)
+    if (pxscale <= 0.5)
     {
-        wxString msg = _("Try binning your guide camera");
+        bool swBinningEnabled = false; // TODO: SW binning UI
+        wxString msg;
+        if (pCamera->GetBinning() < pCamera->MaxHwBinning || swBinningEnabled)
+            msg = _("Try increasing your binning level");
+        else
+            msg = _("Try enabling software binning and increase your binning level");
         allRecommendations += "Bin:" + msg + "\n";
         m_binning_msg = AddRecommendationMsg(msg);
         Debug.Write(wxString::Format("Recommendation: %s\n", msg));
