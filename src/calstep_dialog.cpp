@@ -123,7 +123,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // binning
     wxArrayString opts;
-    GuideCamera::GetBinningOpts(pCamera ? pCamera->MaxHwBinning : 1, &opts);
+    bool includeSwBinning = false; // TODO: SW binning UI
+    GuideCamera::GetBinningOpts(&opts, pCamera ? pCamera->MaxHwBinning : 1, includeSwBinning);
     m_binningChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, opts);
     m_binningChoice->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
     m_binningChoice->Bind(wxEVT_CHOICE, &CalstepDialog::OnText, this);

@@ -1379,6 +1379,25 @@ static void save_image(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
+static bool IsValidBinning(GuideCamera *camera, int binning, wxString *message)
+{
+    auto choices = camera->GetBinningChoices();
+    if (choices.find(binning) != choices.end())
+        return true;
+    wxString buf = wxString::Format("Invalid binning value (%d). Valid choices are: ", binning);
+    bool first = true;
+    for (auto choice : choices)
+    {
+        if (first)
+            first = false;
+        else
+            buf.Append(", ");
+        buf.Append(wxString::Format("%d", choice.first));
+    }
+    *message = buf;
+    return false;
+}
+
 static void capture_single_frame(JObj& response, const json_value *params)
 {
     if (pFrame->CaptureActive)
@@ -1409,10 +1428,15 @@ static void capture_single_frame(JObj& response, const json_value *params)
     wxByte binning = pCamera->GetBinning();
     if ((j = p.param("binning")) != nullptr)
     {
-        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxHwBinning)
+        if (j->type != JSON_INT)
         {
-            response << jrpc_error(JSONRPC_INVALID_PARAMS,
-                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxHwBinning));
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "binning value must be an integer");
+            return;
+        }
+        wxString message;
+        if (!IsValidBinning(pCamera, j->int_value, &message))
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, message);
             return;
         }
         binning = j->int_value;
