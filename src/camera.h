@@ -125,14 +125,12 @@ public:
     wxSize FrameSize; // Size of current image
     bool Connected;
     PropDlgType PropertyDialogType;
-    bool HasDelayParam;
     bool HasGainControl;
     bool HasShutter;
     bool HasSubframes;
     bool HasFrameLimiting;
     wxByte MaxBinning;
     wxByte Binning;
-    int ReadDelay;
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;

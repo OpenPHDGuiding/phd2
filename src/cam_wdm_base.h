@@ -76,6 +76,8 @@ protected:
     int m_deviceNumber;
     int m_deviceMode;
     bool m_rawYUY2;
+
+public:
     CVVidCaptureDSWin32 *m_pVidCap;
 
 public:
@@ -120,6 +122,9 @@ protected:
         LECAMERA_EXPOSURE_FIELD_A = 256,
         LECAMERA_EXPOSURE_FIELD_B = 512,
     };
+
+public:
+    int ReadDelay;
 
 public:
     CameraLEWebcam();
