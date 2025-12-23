@@ -113,8 +113,6 @@ bool CameraLESerialWebcam::Connect(const wxString& camId)
             throw ERROR_INFO("LESerialWebcamClass::Connect: serial port connect failed");
         }
 
-        // pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
-
         if (CameraLEWebcam::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");

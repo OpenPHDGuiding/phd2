@@ -1003,7 +1003,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     m_coolerOn = new wxCheckBox(GetParentWindow(AD_szCooler), wxID_ANY, _("Cooler On"));
     m_coolerOn->SetToolTip(_("Turn camera cooler on or off"));
     sz->Add(m_coolerOn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT));
-    m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, -99, 99, 1);
+    m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szCooler), textWidth, 5, -99, 99, 1);
     wxSizer *szt = MakeLabeledControl(AD_szCooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
     sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
     AddGroup(CtrlMap, AD_szCooler, sz);
