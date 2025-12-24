@@ -53,6 +53,7 @@ public:
 
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
+    void ShowPropertyDialog() override;
 };
 
 /* ----Prototypes of Inp and Out32--- */
@@ -62,6 +63,7 @@ void _stdcall Out32(short PortAddress, short data);
 CameraLEParallelWebcam::CameraLEParallelWebcam(void) : CameraLEWebcam()
 {
     Name = _T("Parallel LE Webcam");
+    PropertyDialogType = PROPDLG_ANY;
     m_pParallelPort = NULL;
 }
 
@@ -84,9 +86,7 @@ bool CameraLEParallelWebcam::Connect(const wxString& camId)
             throw ERROR_INFO("LEParallelWebcamClass::Connect: parallel port is NULL");
         }
 
-        wxString lastParallelPort = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", "");
-
-        wxString choice = m_pParallelPort->ChooseParallelPort(lastParallelPort);
+        wxString choice = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", wxEmptyString);
 
         Debug.Write(wxString::Format("CameraLEParallelWebcam::Connect: parallel port choice is: %s\n", choice));
 
@@ -99,8 +99,6 @@ bool CameraLEParallelWebcam::Connect(const wxString& camId)
         {
             throw ERROR_INFO("LEParallelWebcamClass::Connect: parallel port connect failed");
         }
-
-        pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", choice);
 
         if (CameraLEWebcam::Connect(camId))
         {
@@ -203,6 +201,120 @@ bool CameraLEParallelWebcam::LEControl(int actions)
     }
 
     return bError;
+}
+
+struct LEParallelWebcamDialog : public wxDialog
+{
+    LEParallelWebcamDialog(wxWindow *parent, CameraLEWebcam *camera);
+    ~LEParallelWebcamDialog() { }
+    wxListBox *m_portListBox;
+    wxTextCtrl *m_customPort;
+    wxSpinCtrl *m_delay;
+    CVVidCapture *m_pVidCap;
+    void OnVidCapClick(wxCommandEvent& evt);
+
+    wxDECLARE_EVENT_TABLE();
+};
+
+// clang-format off
+wxBEGIN_EVENT_TABLE(LEParallelWebcamDialog, wxDialog)
+    EVT_BUTTON(wxID_CONVERT, LEParallelWebcamDialog::OnVidCapClick)
+wxEND_EVENT_TABLE();
+// clang-format on
+
+void LEParallelWebcamDialog::OnVidCapClick(wxCommandEvent& evt)
+{
+    if (m_pVidCap)
+    {
+        m_pVidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
+    }
+}
+
+LEParallelWebcamDialog::LEParallelWebcamDialog(wxWindow *parent, CameraLEWebcam *camera)
+    : wxDialog(parent, wxID_ANY, _("Parallel LE Webcam"))
+{
+    m_pVidCap = camera->m_pVidCap;
+
+    wxArrayString ports;
+    ports.Add("LPT1 - 0x3BC");
+    ports.Add("LPT2 - 0x378");
+    ports.Add("LPT3 - 0x278");
+
+    wxString customPort = pConfig->Global.GetString("/CustomParallelPort", wxEmptyString);
+    if (!customPort.IsEmpty())
+        ports.Add(customPort);
+
+    wxString lastParallelPort = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", wxEmptyString);
+
+    wxSizer *sz1 = new wxBoxSizer(wxVERTICAL);
+
+    m_portListBox = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, ports);
+    m_portListBox->SetStringSelection(lastParallelPort);
+    sz1->Add(m_portListBox);
+
+    auto label = new wxStaticText(this, wxID_ANY, _("Custom Port Address:"));
+    m_customPort = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(70, -1));
+
+    wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
+    sz2->Add(label, wxSizerFlags(0).Border(wxALL, 10));
+    sz2->Add(m_customPort, wxSizerFlags(0).Border(wxALL, 10));
+
+    sz1->Add(sz2);
+
+    // Delay parameter
+    int textWidth = StringWidth(this, _T("0000"));
+    m_delay = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(textWidth, -1), wxSP_ARROW_KEYS, 0, 250,
+                                   camera->ReadDelay);
+    m_delay->SetToolTip(_("LE Read Delay (ms). Adjust if you get dropped frames"));
+    m_delay->SetValue(camera->ReadDelay);
+    label = new wxStaticText(this, wxID_ANY, _("Delay"));
+    wxBoxSizer *delaySizer = new wxBoxSizer(wxHORIZONTAL);
+    delaySizer->Add(label, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10));
+    delaySizer->Add(m_delay, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10).Expand());
+
+    sz1->Add(delaySizer);
+
+    sz1->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Right().Border(wxALL, 10));
+
+    SetSizerAndFit(sz1);
+}
+
+void CameraLEParallelWebcam::ShowPropertyDialog()
+{
+    wxWindow *parent = pFrame;
+    if (pFrame->pGearDialog->IsActive())
+        parent = pFrame->pGearDialog;
+
+    LEParallelWebcamDialog dlg(parent, this);
+
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+    wxString choice;
+
+    wxString custom = dlg.m_customPort->GetValue();
+    if (!custom.IsEmpty())
+    {
+        long val;
+        if (custom.ToLong(&val, 16) && val != 0)
+        {
+            choice = wxString::Format("Custom - 0x%x", val);
+            pConfig->Global.SetString("/CustomParallelPort", choice);
+        }
+    }
+    else
+    {
+        choice = dlg.m_portListBox->GetStringSelection();
+    }
+    pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", choice);
+
+    ReadDelay = dlg.m_delay->GetValue();
+    pConfig->Profile.SetInt("/camera/ReadDelay", ReadDelay);
+
+    if (!Connected)
+    {
+        CameraLEWebcam::ShowPropertyDialog();
+    }
 }
 
 GuideCamera *LEParallelWebcamCameraFactory::MakeLEParallelWebcamCamera()

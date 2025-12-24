@@ -51,7 +51,6 @@ CameraWDM::CameraWDM()
     m_deviceNumber = -1; // Which WDM device connected
     m_deviceMode = -1;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = false;
     m_captureMode = NOT_CAPTURING;
     m_pVidCap = nullptr;
     m_rawYUY2 = false;

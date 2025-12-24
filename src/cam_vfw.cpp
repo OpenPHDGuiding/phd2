@@ -51,7 +51,6 @@ CameraVFW::CameraVFW()
     VFW_Window = NULL;
     Extra_Window = NULL;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = false;
 }
 
 wxByte CameraVFW::BitsPerPixel()

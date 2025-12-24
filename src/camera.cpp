@@ -44,7 +44,6 @@
 static const int DefaultGuideCameraGain = 95;
 static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
-static const int DefaultReadDelay = 150;
 
 const double GuideCamera::UnknownPixelSize = 0.0;
 
@@ -210,7 +209,6 @@ GuideCamera::GuideCamera()
     Connected = false;
     m_hasGuideOutput = false;
     PropertyDialogType = PROPDLG_NONE;
-    HasDelayParam = false;
     HasGainControl = false;
     HasShutter = false;
     ShutterClosed = false;
@@ -219,7 +217,6 @@ GuideCamera::GuideCamera()
     HasCooler = false;
     FrameSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
-    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
     m_saturationADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/SaturationADU", 0), 65535);
@@ -913,8 +910,6 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
         pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
-        if (pCamera->HasDelayParam)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
         pSpecGroup->Layout();
     }
@@ -990,13 +985,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     int width = StringArrayWidth(opts);
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
     AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
-
-    // Delay parameter
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, 0, 250, 150);
-        AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-    }
 
     // Cooler
     wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
@@ -1115,11 +1103,6 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_camSaturationADU->Enable(false);
     }
 
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pDelay->SetValue(m_pCamera->ReadDelay);
-    }
-
     double pxSize;
     if (m_pCamera->GetDevicePixelSize(&pxSize)) // true=>error
     {
@@ -1196,12 +1179,6 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     }
 
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
-
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pCamera->ReadDelay = m_pDelay->GetValue();
-        pConfig->Profile.SetInt("/camera/ReadDelay", m_pCamera->ReadDelay);
-    }
 
     double oldPxSz = m_pCamera->GetCameraPixelSize();
     double newPxSz = m_pPixelSize->GetValue();
@@ -1287,9 +1264,8 @@ wxString GuideCamera::GetSettingsSummary()
     else
         pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
 
-    return wxString::Format("Camera = %s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
-                            HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
-                            HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "", FrameSize.GetWidth(),
+    return wxString::Format("Camera = %s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
+                            HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "", FrameSize.GetWidth(),
                             FrameSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
                             CurrentDefectMap ? "defect map in use" : "no defect map", pixelSizeStr);
 }

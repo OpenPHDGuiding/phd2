@@ -40,11 +40,13 @@
 
 # include "cam_wdm_base.h"
 
+static const int DefaultReadDelay = 150;
+
 CameraLEWebcam::CameraLEWebcam(void) : CameraWDM()
 {
     Name = _T("Generic LE Webcam");
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = true;
+    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 }
 
 CameraLEWebcam::~CameraLEWebcam(void) { }
