@@ -68,7 +68,6 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxSpinCtrl *m_pCameraGain;
     wxButton *m_resetGain;
     wxSpinCtrl *m_timeoutVal;
-    wxChoice *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxChoice *m_binning;
@@ -126,7 +125,6 @@ public:
     wxSize FrameSize; // Size of current image
     bool Connected;
     PropDlgType PropertyDialogType;
-    bool HasPortNum;
     bool HasDelayParam;
     bool HasGainControl;
     bool HasShutter;
@@ -134,7 +132,6 @@ public:
     bool HasFrameLimiting;
     wxByte MaxBinning;
     wxByte Binning;
-    short Port;
     int ReadDelay;
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;

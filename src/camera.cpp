@@ -210,7 +210,6 @@ GuideCamera::GuideCamera()
     Connected = false;
     m_hasGuideOutput = false;
     PropertyDialogType = PROPDLG_NONE;
-    HasPortNum = false;
     HasDelayParam = false;
     HasGainControl = false;
     HasShutter = false;
@@ -916,8 +915,6 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
         if (pCamera->HasDelayParam)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
-        if (pCamera->HasPortNum)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
         pSpecGroup->Layout();
     }
@@ -999,21 +996,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     {
         m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, 0, 250, 150);
         AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-    }
-
-    // Port number
-    if (m_pCamera->HasPortNum)
-    {
-        wxString port_choices[] = {
-            _T("Port 378"), _T("Port 3BC"), _T("Port 278"), _T("COM1"),  _T("COM2"),  _T("COM3"),  _T("COM4"),
-            _T("COM5"),     _T("COM6"),     _T("COM7"),     _T("COM8"),  _T("COM9"),  _T("COM10"), _T("COM11"),
-            _T("COM12"),    _T("COM13"),    _T("COM14"),    _T("COM15"), _T("COM16"),
-        };
-
-        width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1),
-                                  WXSIZEOF(port_choices), port_choices);
-        AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
 
     // Cooler
@@ -1138,72 +1120,6 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_pDelay->SetValue(m_pCamera->ReadDelay);
     }
 
-    if (m_pCamera->HasPortNum)
-    {
-        switch (m_pCamera->Port)
-        {
-        case 0x3BC:
-            m_pPortNum->SetSelection(1);
-            break;
-        case 0x278:
-            m_pPortNum->SetSelection(2);
-            break;
-        case 1: // COM1
-            m_pPortNum->SetSelection(3);
-            break;
-        case 2: // COM2
-            m_pPortNum->SetSelection(4);
-            break;
-        case 3: // COM3
-            m_pPortNum->SetSelection(5);
-            break;
-        case 4: // COM4
-            m_pPortNum->SetSelection(6);
-            break;
-        case 5: // COM5
-            m_pPortNum->SetSelection(7);
-            break;
-        case 6: // COM6
-            m_pPortNum->SetSelection(8);
-            break;
-        case 7: // COM7
-            m_pPortNum->SetSelection(9);
-            break;
-        case 8: // COM8
-            m_pPortNum->SetSelection(10);
-            break;
-        case 9: // COM9
-            m_pPortNum->SetSelection(11);
-            break;
-        case 10: // COM10
-            m_pPortNum->SetSelection(12);
-            break;
-        case 11: // COM11
-            m_pPortNum->SetSelection(13);
-            break;
-        case 12: // COM12
-            m_pPortNum->SetSelection(14);
-            break;
-        case 13: // COM13
-            m_pPortNum->SetSelection(15);
-            break;
-        case 14: // COM14
-            m_pPortNum->SetSelection(16);
-            break;
-        case 15: // COM15
-            m_pPortNum->SetSelection(17);
-            break;
-        case 16: // COM16
-            m_pPortNum->SetSelection(18);
-            break;
-        default:
-            m_pPortNum->SetSelection(0);
-            break;
-        }
-
-        m_pPortNum->Enable(!pFrame->CaptureActive);
-    }
-
     double pxSize;
     if (m_pCamera->GetDevicePixelSize(&pxSize)) // true=>error
     {
@@ -1285,34 +1201,6 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     {
         m_pCamera->ReadDelay = m_pDelay->GetValue();
         pConfig->Profile.SetInt("/camera/ReadDelay", m_pCamera->ReadDelay);
-    }
-
-    if (m_pCamera->HasPortNum)
-    {
-        switch (m_pPortNum->GetSelection())
-        {
-        case 0:
-            m_pCamera->Port = 0x378;
-            break;
-        case 1:
-            m_pCamera->Port = 0x3BC;
-            break;
-        case 2:
-            m_pCamera->Port = 0x278;
-            break;
-        case 3:
-            m_pCamera->Port = 1;
-            break;
-        case 4:
-            m_pCamera->Port = 2;
-            break;
-        case 5:
-            m_pCamera->Port = 3;
-            break;
-        case 6:
-            m_pCamera->Port = 4;
-            break;
-        }
     }
 
     double oldPxSz = m_pCamera->GetCameraPixelSize();
@@ -1399,10 +1287,9 @@ wxString GuideCamera::GetSettingsSummary()
     else
         pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
 
-    return wxString::Format("Camera = %s%s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
+    return wxString::Format("Camera = %s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
                             HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
-                            HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
-                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FrameSize.GetWidth(),
+                            HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "", FrameSize.GetWidth(),
                             FrameSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
                             CurrentDefectMap ? "defect map in use" : "no defect map", pixelSizeStr);
 }
