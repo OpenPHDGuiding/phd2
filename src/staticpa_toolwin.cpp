@@ -171,17 +171,11 @@ StaticPaToolWin::StaticPaToolWin()
     ClearState();
     m_aligning = false;
 
-    // Fairly convoluted way to get the camera size in pixels
-    wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
-    double scalefactor = pFrame->pGuider->ScaleFactor();
-    double xpx = pDispImg->GetWidth() / scalefactor;
-    double ypx = pDispImg->GetHeight() / scalefactor;
-    m_pxCentre.X = xpx / 2;
-    m_pxCentre.Y = ypx / 2;
+    auto frameSize = pFrame->pGuider->CurrentImage()->Size;
+    m_pxCentre.X = frameSize.GetWidth() / 2.;
+    m_pxCentre.Y = frameSize.GetHeight() / 2.;
     m_pxScale = pFrame->GetCameraPixelScale();
-    // FrameSize is easier but the camera simulator does not set this.
-    //    wxSize camsize = pCamera->FrameSize;
-    m_camWidth = pCamera->FrameSize.GetWidth() == 0 ? xpx : pCamera->FrameSize.GetWidth();
+    m_camWidth = frameSize.GetWidth();
 
     m_camAngle = 0.0;
     double camAngle_rad = 0.0;
@@ -746,14 +740,13 @@ void StaticPaToolWin::CalcRotationCentre(void)
     m_pxCentre.Y = cy;
     m_radius = cr;
 
-    wxImage *pDispImg = pFrame->pGuider->DisplayedImage();
-    double scalefactor = pFrame->pGuider->ScaleFactor();
-    int xpx = pDispImg->GetWidth() / scalefactor;
-    int ypx = pDispImg->GetHeight() / scalefactor;
+    auto frameSize = pFrame->pGuider->CurrentImage()->Size;
+    int xpx = frameSize.GetWidth();
+    int ypx = frameSize.GetHeight();
     m_dispSz[0] = xpx;
     m_dispSz[1] = ypx;
 
-    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:scale:angle %d: %d: %.1f %.1f", xpx, ypx, scalefactor, m_camAngle));
+    Debug.AddLine(wxString::Format("StaticPA CalcCoR: W:H:angle %d: %d: %.1f %.1f", xpx, ypx, m_camAngle));
 
     // Distance and angle of CoR from centre of sensor
     double cor_r = hypot(xpx / 2 - cx, ypx / 2 - cy);
