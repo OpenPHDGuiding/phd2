@@ -215,6 +215,7 @@ GuideCamera::GuideCamera()
     HasSubframes = false;
     HasFrameLimiting = false;
     HasCooler = false;
+    HasBayer = false;
     FrameSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);

@@ -148,6 +148,7 @@ public:
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;
+    bool HasBayer; // true for color camera
     wxRect LimitFrame; // limit full frames to this region of interest (ROI). An empty rect for no limit.
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread

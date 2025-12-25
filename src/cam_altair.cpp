@@ -132,7 +132,6 @@ struct AltairCamera : public GuideCamera
     SDKLib m_sdk;
     wxRect m_frame;
     unsigned char *m_buffer;
-    bool m_isColor;
     bool m_capturing;
     unsigned int m_discardCnt;
     int m_minGain;
@@ -361,9 +360,9 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     Name = pai->displayname;
     bool hasROI = (pai->model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
     bool hasSkip = (pai->model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
-    m_isColor = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
+    HasBayer = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
 
-    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n", m_isColor, hasROI, hasSkip));
+    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n", HasBayer, hasROI, hasSkip));
 
     int width, height;
     if (FAILED(m_sdk.get_Resolution(m_handle, 0, &width, &height)))
@@ -629,7 +628,7 @@ bool AltairCamera::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

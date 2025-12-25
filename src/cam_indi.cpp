@@ -133,7 +133,6 @@ private:
     double PixSizeY;
     wxSize m_maxSize;
     wxByte m_curBinning;
-    bool HasBayer;
     long INDIport;
     wxString INDIhost;
     wxString INDICameraName;

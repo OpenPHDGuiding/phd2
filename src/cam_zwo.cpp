@@ -70,7 +70,6 @@ class Camera_ZWO : public GuideCamera
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
 
 public:
@@ -447,8 +446,8 @@ bool Camera_ZWO::Connect(const wxString& camId)
     m_cameraId = selected;
     Connected = true;
     Name = info.Name;
-    m_isColor = info.IsColorCam != ASI_FALSE;
-    Debug.Write(wxString::Format("ZWO: IsColorCam = %d\n", m_isColor));
+    HasBayer = info.IsColorCam != ASI_FALSE;
+    Debug.Write(wxString::Format("ZWO: IsColorCam = %d\n", HasBayer));
 
     if (m_mode == CM_SNAP && info.MechanicalShutter != ASI_FALSE)
     {
@@ -1014,7 +1013,7 @@ bool Camera_ZWO::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

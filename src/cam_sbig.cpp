@@ -57,7 +57,6 @@ class CameraSBIG : public GuideCamera
     bool m_driverLoaded;
     wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
     double m_devicePixelSize;
-    bool IsColor;
 
 public:
     CameraSBIG();
@@ -105,7 +104,7 @@ CameraSBIG::CameraSBIG() : m_driverLoaded(false)
     m_useTrackingCCD = false;
     HasShutter = true;
     HasSubframes = true;
-    IsColor = false;
+    HasBayer = false;
 }
 
 CameraSBIG::~CameraSBIG()
@@ -400,7 +399,7 @@ bool CameraSBIG::Connect(const wxString& camId)
 
     FrameSize = m_imageSize[HwBinning - 1];
 
-    IsColor = false;
+    HasBayer = false;
 
     if (!m_useTrackingCCD)
     {
@@ -409,20 +408,20 @@ bool CameraSBIG::Connect(const wxString& camId)
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir6);
         if (err == CE_NO_ERROR)
         {
-            IsColor = gcir6.ccdBits & 1; // b0 set indicates color CCD
+            HasBayer = gcir6.ccdBits & 1; // b0 set indicates color CCD
         }
     }
 
     Name = gcir0.name;
     if (Name.Find("Color") != wxNOT_FOUND)
     {
-        IsColor = true;
+        HasBayer = true;
     }
 
     Debug.Write(
         wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
                          gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxHwBinning, m_imageSize[0].x, m_imageSize[0].y,
-                         m_imageSize[1].x, m_imageSize[1].y, IsColor));
+                         m_imageSize[1].x, m_imageSize[1].y, HasBayer));
 
     Connected = true;
     return false;
@@ -625,7 +624,7 @@ bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && IsColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

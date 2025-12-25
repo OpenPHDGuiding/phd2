@@ -297,6 +297,8 @@ bool CameraSSPIAG::Connect(const wxString& camId)
     Q5V_SetQHY5VGlobalGain(60);
     Q5V_GetFullSizeImage(RawBuffer);
 
+    HasBayer = true;
+
     Connected = true;
     return false;
 }
