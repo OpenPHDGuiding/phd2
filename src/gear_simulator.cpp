@@ -1469,7 +1469,7 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
         usingSubframe = false;
     if (!usingSubframe)
-        subframe = wxRect(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight());
+        subframe = wxRect(FrameSize);
 
     int const exptime = duration;
     int const gain = 30;
