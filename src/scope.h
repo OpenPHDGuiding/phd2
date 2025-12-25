@@ -232,7 +232,7 @@ public:
     virtual ~Scope();
 
     void SetCalibration(const Calibration& cal) override;
-    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
+    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);
     bool IsCalibrated() const override;
     bool BeginCalibration(const PHD_Point& currentLocation) override;

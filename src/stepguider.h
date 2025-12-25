@@ -190,7 +190,7 @@ public:
     static StepGuider *Factory(const wxString& choice);
 
     void SetCalibration(const Calibration& cal) override;
-    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
+    void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning);
     bool BeginCalibration(const PHD_Point& currentLocation) override;
     bool UpdateCalibrationState(const PHD_Point& currentLocation) override;
     void ClearCalibration() override;

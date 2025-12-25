@@ -339,7 +339,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel *parentPanel, wxSizer *parentHSize
         if (validDetails)
         {
             wxString binning =
-                wxString::Format(_("Binning: %d"), (int) calDetails.origBinning); // Always binning used in actual calibration
+                wxString::Format(_("Binning: %d"), calDetails.origBinning); // Always binning used in actual calibration
             cfgGrid->SetCellValue(row, col++, wxString::Format("%0.2f %s\n%s", calDetails.imageScale, ARCSECPERPX, binning));
         }
         else

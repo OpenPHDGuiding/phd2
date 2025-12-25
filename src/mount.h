@@ -109,7 +109,7 @@ struct CalibrationDetails
     double raGuideSpeed;
     double decGuideSpeed;
     double orthoError;
-    double origBinning;
+    int origBinning;
     std::vector<wxRealPoint> raSteps;
     std::vector<wxRealPoint> decSteps;
     int raStepCount;
