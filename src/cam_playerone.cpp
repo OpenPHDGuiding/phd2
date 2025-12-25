@@ -456,14 +456,14 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     }
     MaxHwBinning = maxBin;
 
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     m_maxSize.x = info.maxWidth;
     m_maxSize.y = info.maxHeight;
 
-    FrameSize = BinnedFrameSize(Binning);
-    m_prevBinning = Binning;
+    FrameSize = BinnedFrameSize(HwBinning);
+    m_prevBinning = HwBinning;
 
     ::free(m_buffer);
     m_buffer_size = info.maxWidth * info.maxHeight * (m_bpp == 8 ? 1 : 2);
@@ -557,7 +557,7 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("Player One: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
-    POASetImageBin(m_cameraId, Binning);
+    POASetImageBin(m_cameraId, HwBinning);
     POASetImageStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
     POASetImageSize(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight());
     POASetImageFormat(m_cameraId, m_bpp == 8 ? POA_RAW8 : POA_RAW16);
@@ -713,10 +713,10 @@ bool PlayerOneCamera::Capture(usImage& img, const CaptureParams& captureParams)
     const wxRect& subframe = captureParams.subframe;
 
     bool binning_change = false;
-    if (Binning != m_prevBinning)
+    if (HwBinning != m_prevBinning)
     {
-        FrameSize = BinnedFrameSize(Binning);
-        m_prevBinning = Binning;
+        FrameSize = BinnedFrameSize(HwBinning);
+        m_prevBinning = HwBinning;
         binning_change = true;
     }
 
@@ -782,9 +782,9 @@ bool PlayerOneCamera::Capture(usImage& img, const CaptureParams& captureParams)
     {
         StopCapture();
 
-        POAErrors status = POASetImageBin(m_cameraId, Binning);
+        POAErrors status = POASetImageBin(m_cameraId, HwBinning);
         if (status != POA_OK)
-            Debug.Write(wxString::Format("Player One: setImageBin(%hu) => %d\n", Binning, status));
+            Debug.Write(wxString::Format("Player One: setImageBin(%hu) => %d\n", HwBinning, status));
 
         status = POASetImageSize(m_cameraId, frame.GetWidth(), frame.GetHeight());
         if (status != POA_OK)

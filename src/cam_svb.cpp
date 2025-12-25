@@ -411,15 +411,15 @@ bool SVBCamera::Connect(const wxString& camId)
     }
     MaxHwBinning = maxBin;
 
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     m_maxSize.x = props.MaxWidth;
     m_maxSize.y = props.MaxHeight;
 
-    FrameSize.x = m_maxSize.x / Binning;
-    FrameSize.y = m_maxSize.y / Binning;
-    m_prevBinning = Binning;
+    FrameSize.x = m_maxSize.x / HwBinning;
+    FrameSize.y = m_maxSize.y / HwBinning;
+    m_prevBinning = HwBinning;
 
     ::free(m_buffer);
     m_buffer_size = props.MaxWidth * props.MaxHeight * (m_bpp == 8 ? 1 : 2);
@@ -503,7 +503,7 @@ bool SVBCamera::Connect(const wxString& camId)
 
     SVBSetOutputImageType(m_cameraId, img_type);
 
-    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(), m_frame.GetWidth(), m_frame.GetHeight(), Binning);
+    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(), m_frame.GetWidth(), m_frame.GetHeight(), HwBinning);
 
     return false;
 }
@@ -590,11 +590,11 @@ bool SVBCamera::Capture(usImage& img, const CaptureParams& captureParams)
     const wxRect& subframe = captureParams.subframe;
 
     bool binning_change = false;
-    if (Binning != m_prevBinning)
+    if (HwBinning != m_prevBinning)
     {
-        FrameSize.x = m_maxSize.x / Binning;
-        FrameSize.y = m_maxSize.y / Binning;
-        m_prevBinning = Binning;
+        FrameSize.x = m_maxSize.x / HwBinning;
+        FrameSize.y = m_maxSize.y / HwBinning;
+        m_prevBinning = HwBinning;
         binning_change = true;
     }
 
@@ -661,11 +661,11 @@ bool SVBCamera::Capture(usImage& img, const CaptureParams& captureParams)
         StopCapture();
 
         SVB_ERROR_CODE status =
-            SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), Binning);
+            SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), HwBinning);
 
         if (status != SVB_SUCCESS)
             Debug.Write(wxString::Format("SVB: setImageFormat(%d,%d,%d,%d,%hu) => %d\n", frame.GetLeft(), frame.GetTop(),
-                                         frame.GetWidth(), frame.GetHeight(), Binning, status));
+                                         frame.GetWidth(), frame.GetHeight(), HwBinning, status));
     }
 
     int poll = wxMin(duration, 100);

@@ -354,25 +354,26 @@ void CameraSXV::InitFrameSizes()
     if (Interlaced)
     {
         // The interlaced CCDs report the size of a field for the height
-        m_darkFrameSize = wxSize(CCDParams.width / Binning, CCDParams.height); // always vertically binned
+        m_darkFrameSize = wxSize(CCDParams.width / HwBinning, CCDParams.height); // always vertically binned
         if (SquarePixels)
         {
-            FrameSize.SetWidth(CCDParams.width / Binning);
+            FrameSize.SetWidth(CCDParams.width / HwBinning);
             // This is the height after squaring pixels.
-            FrameSize.SetHeight((int) floor((float) (CCDParams.height / Binning) * CCDParams.pix_height / CCDParams.pix_width));
+            FrameSize.SetHeight(
+                (int) floor((float) (CCDParams.height / HwBinning) * CCDParams.pix_height / CCDParams.pix_width));
         }
         else
         {
-            FrameSize = wxSize(CCDParams.width / Binning, CCDParams.height * 2 / Binning);
+            FrameSize = wxSize(CCDParams.width / HwBinning, CCDParams.height * 2 / HwBinning);
         }
     }
     else
     {
-        FrameSize = wxSize(CCDParams.width / Binning, CCDParams.height / Binning);
+        FrameSize = wxSize(CCDParams.width / HwBinning, CCDParams.height / HwBinning);
         m_darkFrameSize = FrameSize;
     }
 
-    Debug.Write(wxString::Format("SXV: Bin = %hu, dark size = %dx%d, frame size = %dx%d\n", Binning, m_darkFrameSize.x,
+    Debug.Write(wxString::Format("SXV: Bin = %hu, dark size = %dx%d, frame size = %dx%d\n", HwBinning, m_darkFrameSize.x,
                                  m_darkFrameSize.y, FrameSize.x, FrameSize.y));
 }
 
@@ -463,11 +464,11 @@ bool CameraSXV::Connect(const wxString& camId)
     {
         MaxHwBinning = 2;
     }
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     InitFrameSizes();
-    m_prevBin = Binning;
+    m_prevBin = HwBinning;
 
     if (CCDParams.extra_caps & 0x20)
         HasShutter = true;
@@ -781,7 +782,7 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
         wxMilliSleep(200);
     }
 
-    if (Binning != m_prevBin)
+    if (HwBinning != m_prevBin)
     {
         InitFrameSizes();
         if (tmpImg.Init(m_darkFrameSize))
@@ -789,19 +790,19 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
             DisconnectWithAlert(CAPT_FAIL_MEMORY);
             return true;
         }
-        m_prevBin = Binning;
+        m_prevBin = HwBinning;
         takeSubframe = false; // subframe may be out of bounds now
     }
 
     unsigned short xbin, ybin;
     if (Interlaced)
     {
-        xbin = Binning;
+        xbin = HwBinning;
         ybin = 1;
     }
     else
     {
-        xbin = ybin = Binning;
+        xbin = ybin = HwBinning;
     }
 
     // driver expects offsets and sizes in un-binned pixel coordinates
@@ -831,7 +832,7 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
                 }
                 else
                 {
-                    if (Binning == 1)
+                    if (HwBinning == 1)
                     {
                         unsigned int y0 = (unsigned int) subframe.GetTop() / 2;
                         // interpolation may require the next row
@@ -862,8 +863,8 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
         else
         {
             // not interlaced (progressive)
-            yofs = subframe.GetTop() * Binning;
-            ysize = subframe.GetHeight() * Binning;
+            yofs = subframe.GetTop() * HwBinning;
+            ysize = subframe.GetHeight() * HwBinning;
         }
     }
     else
@@ -932,7 +933,7 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
 
     // Re-assemble image
 
-    if (!Interlaced || (Binning > 1 && !SquarePixels))
+    if (!Interlaced || (HwBinning > 1 && !SquarePixels))
     {
         bool error;
 
@@ -985,7 +986,7 @@ bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
         bool error;
 
         if (SquarePixels)
-            error = InitImgInterlacedSquare(img, FrameSize, takeSubframe, subframe, CCDParams, Binning, tmpImg);
+            error = InitImgInterlacedSquare(img, FrameSize, takeSubframe, subframe, CCDParams, HwBinning, tmpImg);
         else
             error = InitImgInterlacedInterp(img, FrameSize, takeSubframe, subframe, tmpImg);
 

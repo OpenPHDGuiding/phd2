@@ -223,7 +223,7 @@ GuideCamera::GuideCamera()
     m_saturationByADU = pConfig->Profile.GetBoolean("/camera/SaturationByADU", true);
     m_pixelSize = GetProfilePixelSize();
     MaxHwBinning = 1;
-    Binning = pConfig->Profile.GetInt("/camera/binning", 1);
+    HwBinning = pConfig->Profile.GetInt("/camera/binning", 1);
     CurrentDarkFrame = nullptr;
     CurrentDefectMap = nullptr;
 }
@@ -727,7 +727,7 @@ bool GuideCamera::SetBinning(int binning)
 
     Debug.Write(wxString::Format("camera: set binning = %u\n", (unsigned int) binning));
 
-    Binning = binning;
+    HwBinning = binning;
     pConfig->Profile.SetInt("/camera/binning", binning);
 
     // if a Limit Frame ROI is in use, adjust it for the new binning

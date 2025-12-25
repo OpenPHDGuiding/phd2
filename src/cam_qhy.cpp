@@ -830,21 +830,21 @@ bool Camera_QHY::Connect(const wxString& camId)
     }
     Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));
     MaxHwBinning = maxBin;
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
-    Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", HwBinning));
+    ret = SetQHYCCDBinMode(m_camhandle, HwBinning, HwBinning);
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
         return CamConnectFailed(_("Failed to set camera binning"));
     }
-    m_curBin = Binning;
+    m_curBin = HwBinning;
 
     m_maxSize = wxSize(imagew, imageh);
-    FrameSize = wxSize(imagew / Binning, imageh / Binning);
+    FrameSize = wxSize(imagew / HwBinning, imageh / HwBinning);
 
     delete[] RawBuffer;
     size_t size = GetQHYCCDMemLength(m_camhandle);
@@ -939,10 +939,10 @@ bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
-    if (Binning != m_curBin)
+    if (HwBinning != m_curBin)
     {
-        FrameSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
-        m_curBin = Binning;
+        FrameSize = wxSize(m_maxSize.GetX() / HwBinning, m_maxSize.GetY() / HwBinning);
+        m_curBin = HwBinning;
         useSubframe = false; // subframe may be out of bounds now
     }
 
@@ -979,7 +979,7 @@ bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 
     uint32_t ret = QHYCCD_ERROR;
     // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    ret = SetQHYCCDBinMode(m_camhandle, HwBinning, HwBinning);
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int) ret));

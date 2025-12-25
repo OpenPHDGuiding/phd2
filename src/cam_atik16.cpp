@@ -186,14 +186,14 @@ bool CameraAtik16::Connect(const wxString& camId)
     int maxbinx = 1, maxbiny = 1;
     ArtemisGetMaxBin(Cam_Handle, &maxbinx, &maxbiny);
     MaxHwBinning = wxMin(maxbinx, maxbiny);
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
-    FrameSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
+    FrameSize = wxSize(m_properties.nPixelsX / HwBinning, m_properties.nPixelsY / HwBinning);
 
-    ArtemisBin(Cam_Handle, Binning, Binning);
+    ArtemisBin(Cam_Handle, HwBinning, HwBinning);
     ArtemisSubframe(Cam_Handle, 0, 0, m_properties.nPixelsX, m_properties.nPixelsY);
-    m_curBin = Binning;
+    m_curBin = HwBinning;
 
     char devname[64];
     ArtemisDeviceName(devnum, devname);
@@ -301,11 +301,11 @@ bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
     if (subframe.width <= 0 || subframe.height <= 0)
         useSubframe = false;
 
-    if (m_curBin != Binning)
+    if (m_curBin != HwBinning)
     {
-        FrameSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
-        ArtemisBin(Cam_Handle, Binning, Binning);
-        m_curBin = Binning;
+        FrameSize = wxSize(m_properties.nPixelsX / HwBinning, m_properties.nPixelsY / HwBinning);
+        ArtemisBin(Cam_Handle, HwBinning, HwBinning);
+        m_curBin = HwBinning;
         useSubframe = false; // subframe may be out of bounds now
     }
 
@@ -323,25 +323,25 @@ bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
     {
         // Round height up to next multiple of 2 to workaround bug where the camera returns incorrect data when the subframe
         // height is odd.
-        int w = subframe.width * Binning;
-        int x = subframe.x * Binning;
+        int w = subframe.width * HwBinning;
+        int x = subframe.x * HwBinning;
         if (w & 1)
         {
-            w += Binning;
+            w += HwBinning;
             if (x + w > m_properties.nPixelsX)
-                x -= Binning;
+                x -= HwBinning;
         }
-        int h = subframe.height * Binning;
-        int y = subframe.y * Binning;
+        int h = subframe.height * HwBinning;
+        int y = subframe.y * HwBinning;
         if (h & 1)
         {
-            h += Binning;
+            h += HwBinning;
             if (y + h > m_properties.nPixelsY)
-                y -= Binning;
+                y -= HwBinning;
         }
         frame = wxRect(x, y, w, h);
-        subframePos.x = subframe.x - x / Binning;
-        subframePos.y = subframe.y - y / Binning;
+        subframePos.x = subframe.x - x / HwBinning;
+        subframePos.y = subframe.y - y / HwBinning;
         ArtemisSubframe(Cam_Handle, x, y, w, h);
     }
     else
@@ -391,7 +391,7 @@ bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
         img.Clear();
         const unsigned short *buf = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
 
-        int w_binned = frame.width / Binning;
+        int w_binned = frame.width / HwBinning;
         for (int y = 0; y < subframe.height; y++)
         {
             const unsigned short *src = buf + (y + subframePos.y) * w_binned + subframePos.x;
