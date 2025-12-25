@@ -104,6 +104,20 @@ enum CaptureOptionBits
     CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK | CAPTURE_IGNORE_FRAME_LIMIT,
 };
 
+struct CaptureParams
+{
+    wxRect subframe;
+    wxRect limitFrame;
+    int duration;
+    int gain;
+    int captureOptions;
+    wxByte hwBinning;
+    wxByte bpp;
+
+    // combined binning level - hardware + software
+    int CombinedBinning() const { return hwBinning; }
+};
+
 class GuideCamera : public wxMessageBoxProxy, public OnboardST4
 {
     friend class CameraConfigDialogPane;
@@ -150,11 +164,7 @@ public:
     virtual bool HasNonGuiCapture() = 0;
     virtual wxByte BitsPerPixel() = 0;
 
-    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
-    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions)
-    {
-        return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0));
-    }
+    static bool Capture(GuideCamera *camera, usImage& img, const CaptureParams& capture);
 
     virtual bool CanSelectCamera() const { return false; }
     virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
@@ -217,7 +227,7 @@ public:
     bool SetCameraGain(int cameraGain);
     virtual int GetDefaultCameraGain();
 
-    virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
+    virtual bool Capture(usImage& img, const CaptureParams& captureParams) = 0;
 
 protected:
     int GetTimeoutMs() const;

@@ -78,7 +78,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -706,8 +706,12 @@ static void flush_buffered_image(int cameraId, void *buf, size_t size)
     }
 }
 
-bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool PlayerOneCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool binning_change = false;
     if (Binning != m_prevBinning)
     {

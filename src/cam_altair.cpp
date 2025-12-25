@@ -150,7 +150,7 @@ struct AltairCamera : public GuideCamera
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -522,8 +522,11 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 //     }
 // }
 
-bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool AltairCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);

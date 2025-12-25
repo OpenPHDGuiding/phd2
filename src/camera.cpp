@@ -1445,15 +1445,15 @@ void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconne
 
 void GuideCamera::InitCapture() { }
 
-bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe)
+bool GuideCamera::Capture(GuideCamera *camera, usImage& img, const CaptureParams& captureParams)
 {
     img.InitImgStartTime();
-    img.LimitFrame = camera->LimitFrame;
-    img.Binning = camera->GetBinning();
-    img.BitsPerPixel = camera->BitsPerPixel();
-    img.Gain = camera->GuideCameraGain;
-    img.ImgExpDur = duration;
-    bool err = camera->Capture(duration, img, captureOptions, subframe);
+    img.LimitFrame = captureParams.limitFrame;
+    img.Binning = captureParams.hwBinning;
+    img.BitsPerPixel = captureParams.bpp;
+    img.Gain = captureParams.gain;
+    img.ImgExpDur = captureParams.duration;
+    bool err = camera->Capture(img, captureParams);
     return err;
 }
 

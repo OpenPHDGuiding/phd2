@@ -59,7 +59,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
     bool Connect(const wxString& camId) override;
@@ -185,8 +185,11 @@ bool CameraDSI::GetDevicePixelSize(double *devPixelSize)
     return false; // Pixel sizes are hard-coded
 }
 
-bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraDSI::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
 

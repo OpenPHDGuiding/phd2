@@ -58,7 +58,7 @@ struct SkyraiderCamera : public GuideCamera
     SkyraiderCamera();
     ~SkyraiderCamera();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -187,8 +187,11 @@ bool SkyraiderCamera::Disconnect()
     return false;
 }
 
-bool SkyraiderCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool SkyraiderCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);

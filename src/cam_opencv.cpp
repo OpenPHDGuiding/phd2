@@ -114,8 +114,10 @@ bool CameraOpenCV::Disconnect()
     return false;
 }
 
-bool CameraOpenCV::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpenCV::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+
     bool bError = false;
 
     try

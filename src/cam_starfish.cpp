@@ -54,7 +54,7 @@ class CameraStarfish : public GuideCamera
 public:
     CameraStarfish();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void InitCapture() override;
@@ -229,8 +229,12 @@ static bool StopExposure(int camNum)
     return ret == kIOReturnSuccess;
 }
 
-bool CameraStarfish::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraStarfish::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool debug = true;
     int xsize, ysize, xpos, ypos;
     bool usingSubFrames = UseSubframes && subframe.GetWidth() > 0 && subframe.GetHeight() > 0;

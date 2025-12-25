@@ -82,8 +82,7 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 /*************      Expose      **************************/
 
-void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions,
-                                                    const wxRect& subframe)
+void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, const CaptureParams& captureParams)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -94,9 +93,7 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposur
 
     message.request = REQUEST_EXPOSE;
     message.args.expose.pImage = pImage;
-    message.args.expose.exposureDuration = exposureDuration;
-    message.args.expose.options = exposureOptions;
-    message.args.expose.subframe = subframe;
+    message.args.expose.captureParams = captureParams;
     message.args.expose.pSemaphore = 0;
 
     EnqueueMessage(message);
@@ -184,22 +181,23 @@ bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
             throw ERROR_INFO("Time lapse interrupted");
         }
 
+        const CaptureParams& params = req->captureParams;
         if (pCamera->HasNonGuiCapture())
         {
-            Debug.Write(wxString::Format("Handling exposure in thread, d=%d o=%x r=(%d,%d,%d,%d)\n", req->exposureDuration,
-                                         req->options, req->subframe.x, req->subframe.y, req->subframe.width,
-                                         req->subframe.height));
+            Debug.Write(wxString::Format("Handling exposure in thread, d=%d o=%x r=(%d,%d,%d,%d)\n", params.duration,
+                                         params.captureOptions, params.subframe.x, params.subframe.y, params.subframe.width,
+                                         params.subframe.height));
 
-            if (GuideCamera::Capture(pCamera, req->exposureDuration, *req->pImage, req->options, req->subframe))
+            if (GuideCamera::Capture(pCamera, *req->pImage, params))
             {
                 throw ERROR_INFO("Capture failed");
             }
         }
         else
         {
-            Debug.Write(wxString::Format("Handling exposure in myFrame, d=%d o=%x r=(%d,%d,%d,%d)\n", req->exposureDuration,
-                                         req->options, req->subframe.x, req->subframe.y, req->subframe.width,
-                                         req->subframe.height));
+            Debug.Write(wxString::Format("Handling exposure in myFrame, d=%d o=%x r=(%d,%d,%d,%d)\n", params.duration,
+                                         params.captureOptions, params.subframe.x, params.subframe.y, params.subframe.width,
+                                         params.subframe.height));
 
             wxSemaphore semaphore;
             req->pSemaphore = &semaphore;
@@ -422,7 +420,8 @@ wxThread::ExitCode WorkerThread::Entry()
             break;
 
         case REQUEST_EXPOSE:
-            Debug.Write(wxString::Format("worker thread servicing REQUEST_EXPOSE %d\n", message.args.expose.exposureDuration));
+            Debug.Write(
+                wxString::Format("worker thread servicing REQUEST_EXPOSE %d\n", message.args.expose.captureParams.duration));
             bError = HandleExpose(&message.args.expose);
             if (m_skipSendExposeComplete)
             {

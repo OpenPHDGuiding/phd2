@@ -345,7 +345,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -786,8 +786,12 @@ bool MoravianCamera::GetSensorTemperature(double *temperature)
     return false;
 }
 
-bool MoravianCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool MoravianCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     unsigned int new_gain = cam_gain(0, m_maxGain, GuideCameraGain);
     if (new_gain != m_curGain)
     {

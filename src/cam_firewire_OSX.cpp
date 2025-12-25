@@ -269,8 +269,11 @@ bool CameraFirewire::Disconnect()
     return false;
 }
 
-bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraFirewire::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     static int programmed_dur = 1000;
     wxStopWatch swatch;
 
