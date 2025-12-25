@@ -136,7 +136,15 @@ public:
 
     int GuideCameraGain;
     wxString Name; // User-friendly name
-    wxSize FrameSize; // Size of current image
+
+    // FrameSize is the size of the current guide frame, *before software binning*. To
+    // get the actual size of the current guide frame image, callers should use
+    // pFrame->pGuider->CurrentImage()->Size. If the current image is not available,
+    // pCamera->GetFrameSize() can be used, but this is not guaranteed match the current
+    // frame size, and may even be an empty rect for some cameras (ASCOM cameras for
+    // example) that do not report a frame size until after an image is captured.
+    wxSize FrameSize;
+
     bool Connected;
     PropDlgType PropertyDialogType;
     bool HasGainControl;
@@ -216,6 +224,7 @@ public:
     void SubtractDark(usImage& img);
     void GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
+    virtual wxSize GetFrameSize() const;
     virtual wxSize DarkFrameSize() { return FrameSize; }
 
     static double GetProfilePixelSize();
@@ -264,6 +273,12 @@ inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
 inline int GuideCamera::GetBinning() const
 {
     return HwBinning;
+}
+
+// returns the expected frame size after software binning
+inline wxSize GuideCamera::GetFrameSize() const
+{
+    return FrameSize;
 }
 
 inline double GuideCamera::GetCameraPixelSize() const
