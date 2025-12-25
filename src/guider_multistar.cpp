@@ -579,7 +579,7 @@ wxRect GuiderMultiStar::GetBoundingBox() const
     if (subframe)
     {
         wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
-        box.Intersect(wxRect(pCamera->FrameSize));
+        box.Intersect(wxRect(CurrentImage()->Size));
         return box;
     }
     else
