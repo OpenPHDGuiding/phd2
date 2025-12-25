@@ -1063,9 +1063,9 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_resetGain->Enable(false);
     }
 
-    int idx = m_pCamera->GetBinning() - 1;
-    m_binning->Select(idx);
-    m_prevBinning = idx + 1;
+    int binning = m_pCamera->GetBinning();
+    SetIntChoice(m_binning, binning);
+    m_prevBinning = binning;
     // don't allow binning change when calibrating or guiding
     m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
 
@@ -1169,10 +1169,10 @@ void CameraConfigDialogCtrlSet::UnloadValues()
     if (m_binning)
     {
         int oldBin = m_pCamera->GetBinning();
-        int newBin = m_binning->GetSelection() + 1;
-        if (oldBin != newBin)
+        int newBin = GetIntChoice(m_binning, 1);
+        if (newBin != oldBin)
             pFrame->pAdvancedDialog->FlagImageScaleChange();
-        m_pCamera->SetBinning(m_binning->GetSelection() + 1);
+        m_pCamera->SetBinning(newBin);
     }
 
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
@@ -1230,13 +1230,15 @@ void CameraConfigDialogCtrlSet::SetPixelSize(double val)
 
 int CameraConfigDialogCtrlSet::GetBinning()
 {
-    return m_binning ? m_binning->GetSelection() + 1 : 1;
+    if (!m_binning)
+        return 1;
+    return GetIntChoice(m_binning, 1);
 }
 
 void CameraConfigDialogCtrlSet::SetBinning(int binning)
 {
     if (m_binning)
-        m_binning->Select(binning - 1);
+        SetIntChoice(m_binning, binning);
 }
 
 void GuideCamera::GetBinningOpts(int maxBin, wxArrayString *opts)

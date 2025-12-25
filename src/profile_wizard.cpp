@@ -968,7 +968,7 @@ void ProfileWizard::WrapUp()
     m_launchDarks = m_pLaunchDarks->GetValue();
     m_autoRestore = m_pAutoRestore->GetValue();
 
-    int binning = m_pBinningLevel->GetSelection() + 1;
+    int binning = GetIntChoice(m_pBinningLevel, 1);
     if (m_useCamera)
         SetBinningLevel(this, m_SelectedCamera, binning);
 
@@ -1387,7 +1387,7 @@ inline static double round2(double x)
 
 void ProfileWizard::UpdatePixelScale()
 {
-    int binning = m_pBinningLevel->GetSelection() + 1;
+    int binning = GetIntChoice(m_pBinningLevel, 1);
 
     double scale = 0.0;
     if (m_FocalLength > 0)
