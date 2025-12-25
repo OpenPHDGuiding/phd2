@@ -852,10 +852,6 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
         }
 
         const usImage *image = CurrentImage();
-        if (!image)
-        {
-            throw ERROR_INFO("cannot move lock pos without an image");
-        }
 
         // This loop is to handle dithers when the star is near the edge of the frame. The strategy
         // is to try reflecting the requested dither in 4 directions along the RA/Dec axes; if any
