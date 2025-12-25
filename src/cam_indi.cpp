@@ -1131,10 +1131,10 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
                 delete frame;
                 if (options & CAPTURE_SUBTRACT_DARK)
                     SubtractDark(img);
-                if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
-                    QuickLRecon(img);
                 if (options & CAPTURE_RECON)
                 {
+                    if (HasBayer && captureParams.CombinedBinning() == 1)
+                        QuickLRecon(img);
                     if (PixSizeX != PixSizeY)
                         SquarePixels(img, PixSizeX, PixSizeY);
                 }

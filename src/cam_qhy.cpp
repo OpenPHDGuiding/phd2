@@ -1205,7 +1205,7 @@ bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && Color && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

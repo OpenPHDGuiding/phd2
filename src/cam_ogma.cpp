@@ -709,7 +709,7 @@ bool CameraOgma::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_cam.m_isColor && binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && m_cam.m_isColor && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

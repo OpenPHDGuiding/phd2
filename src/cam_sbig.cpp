@@ -625,7 +625,7 @@ bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (IsColor && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && IsColor && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
