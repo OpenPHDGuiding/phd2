@@ -1714,6 +1714,7 @@ void MyFrame::ScheduleExposure()
     captureParams.duration = RequestedExposureDuration();
     captureParams.subframe = m_singleExposure.enabled ? m_singleExposure.subframe : pGuider->GetBoundingBox();
     captureParams.hwBinning = pCamera->HwBinning;
+    captureParams.swBinning = pCamera->SwBinning;
     captureParams.bpp = pCamera->BitsPerPixel();
     captureParams.limitFrame = pCamera->LimitFrame;
     captureParams.gain = pCamera->GuideCameraGain;

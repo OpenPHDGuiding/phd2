@@ -112,11 +112,15 @@ struct CaptureParams
     int gain;
     int captureOptions;
     wxByte hwBinning;
+    wxByte swBinning;
     wxByte bpp;
 
     // combined binning level - hardware + software
-    int CombinedBinning() const { return hwBinning; }
+    int CombinedBinning() const { return hwBinning * swBinning; }
 };
+
+// mapping from combined binning to (hwBinning, swBinning) pair
+typedef std::map<int, std::pair<int, int>> BinningChoices;
 
 class GuideCamera : public wxMessageBoxProxy, public OnboardST4
 {
@@ -132,6 +136,11 @@ protected:
     unsigned short m_saturationADU;
 
 public:
+    enum
+    {
+        MAX_SOFTWARE_BINNING = 4
+    };
+
     static const double UnknownPixelSize;
 
     int GuideCameraGain;
@@ -152,7 +161,8 @@ public:
     bool HasSubframes;
     bool HasFrameLimiting;
     wxByte MaxHwBinning; // max hardware binning level
-    wxByte HwBinning;
+    wxByte HwBinning; // hardware binning level
+    wxByte SwBinning; // software binning level
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;
@@ -197,10 +207,19 @@ public:
     CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog,
                                                    BrainCtrlIdMap& CtrlMap);
 
-    static void GetBinningOpts(int maxBin, wxArrayString *opts);
-    void GetBinningOpts(wxArrayString *opts);
+    static BinningChoices GetBinningChoices(int maxHwBinning);
+    BinningChoices GetBinningChoices() const;
+    static std::pair<int, int> GetHwAndSwBinning(int maxHwBinning, int combinedBinning);
+    std::pair<int, int> GetHwAndSwBinning(int combinedBinning) const;
+    static void GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning);
+    void GetBinningOpts(wxArrayString *opts, bool includeSwBinning) const;
+    static bool GetOfferSwBinning(int maxHwBinning);
+    bool GetOfferSwBinning() const;
     int GetBinning() const;
+    // set the combined binning level
     bool SetBinning(int binning);
+    // set the hardware and software binning levels
+    bool SetBinning(int hwBinning, int swBinning);
     bool SetLimitFrame(const wxRect& roi, int binning, wxString *errorMessage);
     void LoadLimitFrame(int binning);
 
@@ -264,21 +283,47 @@ inline int GuideCamera::GetTimeoutMs() const
     return m_timeoutMs;
 }
 
-inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
+inline BinningChoices GuideCamera::GetBinningChoices() const
 {
-    GetBinningOpts(MaxHwBinning, opts);
+    return GetBinningChoices(MaxHwBinning);
+}
+
+inline std::pair<int, int> GuideCamera::GetHwAndSwBinning(int combinedBinning) const
+{
+    return GetHwAndSwBinning(MaxHwBinning, combinedBinning);
+}
+
+inline void GuideCamera::GetBinningOpts(wxArrayString *opts, bool includeSwBinning) const
+{
+    GetBinningOpts(opts, MaxHwBinning, includeSwBinning);
 }
 
 // get the combined binning level -- hardware and software binning
 inline int GuideCamera::GetBinning() const
 {
-    return HwBinning;
+    return HwBinning * SwBinning;
+}
+
+// Returns true when software binning should be offered in the UI.
+//
+// For cameras with adequate hardware binning capability (>= 4x), returns false.
+inline bool GuideCamera::GetOfferSwBinning(int maxHwBinning)
+{
+    return maxHwBinning < MAX_SOFTWARE_BINNING;
+}
+
+// Returns true when software binning should be offered in the UI.
+//
+// For cameras with adequate hardware binning capability (>= 4x), returns false.
+inline bool GuideCamera::GetOfferSwBinning() const
+{
+    return GetOfferSwBinning(MaxHwBinning);
 }
 
 // returns the expected frame size after software binning
 inline wxSize GuideCamera::GetFrameSize() const
 {
-    return FrameSize;
+    return wxSize(FrameSize.GetWidth() / SwBinning, FrameSize.GetHeight() / SwBinning);
 }
 
 inline double GuideCamera::GetCameraPixelSize() const

@@ -116,7 +116,8 @@ struct SingleExposure
     wxRect subframe;
     bool save;
     wxString path;
-    wxByte prev_binning;
+    wxByte prev_hw_binning;
+    wxByte prev_sw_binning;
     int prev_gain;
 
     SingleExposure();
