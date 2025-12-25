@@ -991,7 +991,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddGroup(CtrlMap, AD_szGain, sizer);
 
     // Binning
-    m_binning = 0;
     wxArrayString opts;
     bool includeSwBinning = false; // TODO: SW binning UI
     m_pCamera->GetBinningOpts(&opts, includeSwBinning);
@@ -1177,14 +1176,11 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
-    if (m_binning)
-    {
-        int oldBin = m_pCamera->GetBinning();
-        int newBin = GetIntChoice(m_binning, 1);
-        if (newBin != oldBin)
-            pFrame->pAdvancedDialog->FlagImageScaleChange();
-        m_pCamera->SetBinning(newBin);
-    }
+    int oldBin = m_pCamera->GetBinning();
+    int newBin = GetIntChoice(m_binning, 1);
+    if (newBin != oldBin)
+        pFrame->pAdvancedDialog->FlagImageScaleChange();
+    m_pCamera->SetBinning(newBin);
 
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
 
@@ -1241,15 +1237,12 @@ void CameraConfigDialogCtrlSet::SetPixelSize(double val)
 
 int CameraConfigDialogCtrlSet::GetBinning()
 {
-    if (!m_binning)
-        return 1;
     return GetIntChoice(m_binning, 1);
 }
 
 void CameraConfigDialogCtrlSet::SetBinning(int binning)
 {
-    if (m_binning)
-        SetIntChoice(m_binning, binning);
+    SetIntChoice(m_binning, binning);
 }
 
 void GuideCamera::GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning)
