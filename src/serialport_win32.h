@@ -40,7 +40,7 @@ class SerialPortWin32 : public SerialPort
 {
     HANDLE m_handle;
 
-    bool SerialPortWin32::EscapeFunction(DWORD command);
+    bool EscapeFunction(DWORD command);
 
 public:
     wxArrayString GetSerialPortList() override;
