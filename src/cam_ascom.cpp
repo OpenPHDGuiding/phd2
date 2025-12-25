@@ -679,10 +679,10 @@ bool CameraASCOM::Connect(const wxString& camId)
         maxBinX = vRes.iVal;
     if (driver.GetProp(&vRes, L"MaxBinY"))
         maxBinY = vRes.iVal;
-    MaxBinning = wxMin(maxBinX, maxBinY);
-    Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxBinning));
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    MaxHwBinning = wxMin(maxBinX, maxBinY);
+    Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxHwBinning));
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
     m_curBin = Binning;
 
     HasCooler = false;
@@ -775,7 +775,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (ASCOM_SetBin(driver.IDisp(), Binning, &excep))
     {
         // only make this error fatal if the camera supports binning > 1
-        if (MaxBinning > 1)
+        if (MaxHwBinning > 1)
         {
             return CamConnectFailed(_("The ASCOM camera failed to set binning. See the debug log for more information."));
         }

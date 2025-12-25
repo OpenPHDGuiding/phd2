@@ -1409,10 +1409,10 @@ static void capture_single_frame(JObj& response, const json_value *params)
     wxByte binning = pCamera->Binning;
     if ((j = p.param("binning")) != nullptr)
     {
-        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxBinning)
+        if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxHwBinning)
         {
             response << jrpc_error(JSONRPC_INVALID_PARAMS,
-                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxBinning));
+                                   wxString::Format("invalid binning value: min=1, max=%d", pCamera->MaxHwBinning));
             return;
         }
         binning = j->int_value;

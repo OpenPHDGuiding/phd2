@@ -185,9 +185,9 @@ bool CameraAtik16::Connect(const wxString& camId)
 
     int maxbinx = 1, maxbiny = 1;
     ArtemisGetMaxBin(Cam_Handle, &maxbinx, &maxbiny);
-    MaxBinning = wxMin(maxbinx, maxbiny);
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    MaxHwBinning = wxMin(maxbinx, maxbiny);
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     FrameSize = wxSize(m_properties.nPixelsX / Binning, m_properties.nPixelsY / Binning);
 

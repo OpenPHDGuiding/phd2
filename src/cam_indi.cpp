@@ -382,10 +382,10 @@ void CameraINDI::updateProperty(INDI::Property property)
         }
         else if (nvp == binning_prop)
         {
-            MaxBinning = wxMin(binning_x->max, binning_y->max);
+            MaxHwBinning = wxMin(binning_x->max, binning_y->max);
             m_curBinning = wxMin(binning_x->value, binning_y->value);
-            if (Binning > MaxBinning)
-                Binning = MaxBinning;
+            if (Binning > MaxHwBinning)
+                Binning = MaxHwBinning;
             // defer defining FrameSize since it is not simply derivable from max size and binning
             // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
         }

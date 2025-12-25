@@ -958,7 +958,7 @@ struct AutoConnectCamera
 static void SetBinningLevel(ProfileWizard *parent, const wxString& selection, int val)
 {
     AutoConnectCamera cam(parent, selection, false);
-    if (cam && cam->MaxBinning > 1)
+    if (cam && cam->MaxHwBinning > 1)
         cam->SetBinning(val);
 }
 

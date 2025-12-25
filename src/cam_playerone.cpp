@@ -454,10 +454,10 @@ bool PlayerOneCamera::Connect(const wxString& camId)
         if (info.bins[i] > maxBin)
             maxBin = info.bins[i];
     }
-    MaxBinning = maxBin;
+    MaxHwBinning = maxBin;
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     m_maxSize.x = info.maxWidth;
     m_maxSize.y = info.maxHeight;

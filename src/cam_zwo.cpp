@@ -465,10 +465,10 @@ bool Camera_ZWO::Connect(const wxString& camId)
         if (info.SupportedBins[i] > maxBin)
             maxBin = info.SupportedBins[i];
     }
-    MaxBinning = maxBin;
+    MaxHwBinning = maxBin;
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     m_maxSize.x = info.MaxWidth;
     m_maxSize.y = info.MaxHeight;

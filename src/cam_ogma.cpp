@@ -279,7 +279,7 @@ CameraOgma::CameraOgma()
     m_cam.m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ogma/bpp", 8);
     m_cam.m_bpp = value == 8 ? 8 : 16;
-    MaxBinning = 4;
+    MaxHwBinning = 4;
 }
 
 CameraOgma::~CameraOgma() { }

@@ -376,7 +376,7 @@ bool CameraSBIG::Connect(const wxString& camId)
         }
     }
 
-    MaxBinning = 1;
+    MaxHwBinning = 1;
     m_devicePixelSize = 0.0;
     for (int i = 0; i < gcir0.readoutModes; i++)
     {
@@ -391,12 +391,12 @@ bool CameraSBIG::Connect(const wxString& camId)
                 m_devicePixelSize = (double) bcd2long(bcd) / 100.0;
             }
             else // RM_2x2
-                MaxBinning = 2;
+                MaxHwBinning = 2;
         }
     }
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     FrameSize = m_imageSize[Binning - 1];
 
@@ -421,7 +421,7 @@ bool CameraSBIG::Connect(const wxString& camId)
 
     Debug.Write(
         wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
-                         gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y,
+                         gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxHwBinning, m_imageSize[0].x, m_imageSize[0].y,
                          m_imageSize[1].x, m_imageSize[1].y, IsColor));
 
     Connected = true;

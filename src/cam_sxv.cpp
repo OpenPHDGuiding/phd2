@@ -461,10 +461,10 @@ bool CameraSXV::Connect(const wxString& camId)
 
     if (!IsCMOSGuider(CameraModel))
     {
-        MaxBinning = 2;
+        MaxHwBinning = 2;
     }
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     InitFrameSizes();
     m_prevBin = Binning;
