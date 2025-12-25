@@ -414,7 +414,7 @@ void BacklashComp::GetBacklashCompSettings(int *pulseWidth, int *floor, int *cei
 // May change max-move value for Dec depending on the context
 void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 {
-    m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
+    m_pulseWidth = wxClip(requestedSize, 0, MAX_COMP_AMOUNT);
     if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT) // Coming from GA or user input makes no sense
         m_adjustmentFloor = MIN_COMP_AMOUNT;
     else
@@ -1002,11 +1002,13 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             {
                 m_bltState = BLT_STATE_STEP_NORTH;
                 double totalBacklashCleared = m_stepCount * m_pulseWidth;
-                // Want to move the mount North at >=500 ms, regardless of image scale. But reduce pulse width if it would
-                // exceed 80% of the tracking rectangle - need to leave some room for seeing deflections and dec drift
+                // Want to move the mount North at >=500 ms, regardless of image scale.
+                // But reduce pulse width if it would exceed 80% of the tracking
+                // rectangle - need to leave some room for seeing deflections and dec
+                // drift
                 m_pulseWidth = wxMax((int) NORTH_PULSE_SIZE, m_scope->GetCalibrationDuration());
-                m_pulseWidth =
-                    wxMin(m_pulseWidth, (int) floor(0.7 * (double) pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                auto maxPulse = (int) floor(0.7 * (double) pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate);
+                m_pulseWidth = wxMin(m_pulseWidth, maxPulse);
                 m_stepCount = 0;
                 // Move 50% more than the backlash we cleared or >=8 secs, whichever is greater.  We want to leave plenty of
                 // room for giving South moves time to clear backlash and actually get moving
