@@ -338,13 +338,14 @@ void CalibrationAssistant::PerformSanityChecks(void)
     }
     else
     {
-        int recDistance =
-            CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        int binning = pCamera->Binning;
+        auto focalLength = pFrame->GetFocalLength();
+        auto pixelSize = pCamera->GetCameraPixelSize();
+        int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
         int currStepSize = TheScope()->GetCalibrationDuration();
         int recStepSize;
-        CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning,
-                                              sidRate, CalstepDialog::DEFAULT_STEPS, m_currentDec, recDistance, 0,
-                                              &recStepSize);
+        CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, sidRate, CalstepDialog::DEFAULT_STEPS,
+                                              m_currentDec, recDistance, 0, &recStepSize);
         if (fabs(1.0 - (double) currStepSize / (double) recStepSize) > 0.3) // Within 30% is good enough
         {
             msg = _("Your current calibration parameters can be adjusted for more accurate results."
@@ -1199,11 +1200,12 @@ void CalAssistSanityDialog::OnRecal(wxCommandEvent& evt)
                     minSpd = raSpd;
                 double sidrate = RateX(minSpd);
                 int calibrationStep;
-                int recDistance = CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(),
-                                                                        pCamera->Binning);
-                CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning,
-                                                      sidrate, CalstepDialog::DEFAULT_STEPS, m_parent->GetCalibrationDec(),
-                                                      recDistance, nullptr, &calibrationStep);
+                int binning = pCamera->Binning;
+                auto focalLength = pFrame->GetFocalLength();
+                auto pixelSize = pCamera->GetCameraPixelSize();
+                int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
+                CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, sidrate, CalstepDialog::DEFAULT_STEPS,
+                                                      m_parent->GetCalibrationDec(), recDistance, nullptr, &calibrationStep);
                 TheScope()->SetCalibrationDuration(calibrationStep);
                 EndDialog(wxOK);
             }

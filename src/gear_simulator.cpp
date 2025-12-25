@@ -1229,6 +1229,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 # endif // STEPGUIDER_SIMULATOR
 
+    int binning = pCamera->Binning;
+
     // render each star
     if (!pCamera->ShutterClosed)
     {
@@ -1239,7 +1241,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double) (rand() % (gain * 100));
             double inten = star + dark + noise;
 
-            render_star(img, pCamera->Binning, subframe, cc[i], inten);
+            render_star(img, binning, subframe, cc[i], inten);
         }
 
 # ifndef SIM_FILE_DISPLACEMENTS
@@ -1256,7 +1258,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double) (rand() % (gain * 100));
             inten = star + dark + noise;
 
-            render_comet(img, pCamera->Binning, subframe, wxRealPoint(cx, cy), inten);
+            render_comet(img, binning, subframe, wxRealPoint(cx, cy), inten);
         }
 # endif
     }
@@ -1268,8 +1270,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     for (unsigned int i = 0; i < hotpx.size(); i++)
     {
         wxPoint p(hotpx[i]);
-        p.x /= pCamera->Binning;
-        p.y /= pCamera->Binning;
+        p.x /= binning;
+        p.y /= binning;
         if (subframe.Contains(p))
             set_pixel(img, p.x, p.y, (unsigned short) -1);
     }

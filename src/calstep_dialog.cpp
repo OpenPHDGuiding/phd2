@@ -220,7 +220,7 @@ int CalstepDialog::GetCalibrationDistance(int focalLength, double pixelSize, int
 //
 //  FocalLength = focal length in millimeters
 //  PixelSize = pixel size in microns (un-binned)
-//  Binning = hardware pixel binning factor
+//  Binning = pixel binning factor (combined hardware and software binning)
 //  GuideSpeed = guide rate as fraction of sidereal rate
 //  DesiredSteps = desired number of calibration steps
 //  Declination = declination in degrees

@@ -610,19 +610,20 @@ double AdvancedDialog::PercentChange(double oldVal, double newVal)
 // cleared, MinMoves are set to defaults based on new image scale
 void AdvancedDialog::MakeImageScaleAdjustments()
 {
+    int binning = pCamera->Binning;
+    auto focalLength = pFrame->GetFocalLength();
+    auto pixelSize = pCamera->GetCameraPixelSize();
     double guideSpeedX;
     Debug.Write("Image scale has changed via AD UI - step-size and algo adjustments will be made\n");
-    Debug.Write(wxString::Format("New image scale properties:  fl= %d, px= %.3fu, bin= %d\n", pFrame->GetFocalLength(),
-                                 pCamera->GetCameraPixelSize(), pCamera->Binning));
+    Debug.Write(wxString::Format("New image scale properties:  fl= %d, px= %.3fu, bin= %d\n", focalLength, pixelSize, binning));
 
     // Determine a calibration step-size based on recommended distance and best estimator of mount guide speeds
     guideSpeedX = DetermineGuideSpeed();
     int calibrationStep;
-    int recDistance =
-        CalstepDialog::GetCalibrationDistance(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+    int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
     int oldStepSize = TheScope()->GetCalibrationDuration();
-    CalstepDialog::GetCalibrationStepSize(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning,
-                                          guideSpeedX, CalstepDialog::DEFAULT_STEPS, 0, recDistance, nullptr, &calibrationStep);
+    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeedX, CalstepDialog::DEFAULT_STEPS, 0,
+                                          recDistance, nullptr, &calibrationStep);
     TheScope()->SetCalibrationDuration(calibrationStep);
     Debug.Write(wxString::Format("Cal step-size changed from %d ms to %d ms\n", oldStepSize, calibrationStep));
     // Clear the calibration to force a new one and reset the min-move values
@@ -633,8 +634,7 @@ void AdvancedDialog::MakeImageScaleAdjustments()
             pSecondaryMount->ClearCalibration();
         Debug.Write("Calibrations cleared because of image scale change\n");
 
-        double defMinMove =
-            GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        double defMinMove = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
         Debug.Write(wxString::Format("Guide algo min moves reset to %.3fu\n", defMinMove));
         pMount->GetXGuideAlgorithm()->SetMinMove(defMinMove);
         pMount->GetYGuideAlgorithm()->SetMinMove(defMinMove);

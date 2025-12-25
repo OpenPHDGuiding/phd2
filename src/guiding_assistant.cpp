@@ -759,8 +759,9 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                     m_backlashMs = m_backlashTool->GetBacklashResultMs();
                     double bltSigmaPx;
                     m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
-                    double bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
-                    double bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
+                    auto pixelScale = pFrame->GetCameraPixelScale();
+                    double bltGearAngle = (m_backlashPx * pixelScale);
+                    double bltGearAngleSigma = (bltSigmaPx * pixelScale);
                     wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
                     wxString outStr, outStrTr; // untranslated and translated
                     if (qual == BacklashTool::MEASUREMENT_VALID)
@@ -1154,7 +1155,10 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
     const int WINDOW_ADJUSTMENT = MEASUREMENT_WINDOW_SIZE / 2;
 
     int lastInx = m_decAxisStats.GetCount() - 1;
-    double pxscale = pFrame->GetCameraPixelScale();
+    auto pxscale = pFrame->GetCameraPixelScale();
+    int binning = pCamera->Binning;
+    auto focalLength = pFrame->GetFocalLength();
+    auto pixelSize = pCamera->GetCameraPixelSize();
     StarDisplacement val = m_decAxisStats.GetEntry(0);
     double tStart = val.DeltaTime;
     double multiplier_ra; // 65% of Dec recommendation, but 100% for encoder mounts
@@ -1256,8 +1260,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
         else
         {
             // Just reiterate the estimates made in the new-profile-wiz
-            RecDec =
-                GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+            RecDec = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
             RecRA = wxMax(minMoveFloor, RecDec * multiplier_ra);
             Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, Dec-HPF-Sigma=%0.3f\n",
                                          roundUpEst, m_hpfDecStats.GetSigma()));
@@ -1268,7 +1271,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
     {
         Debug.Write("Exception thrown in GA min-move calcs: " + msg + "\n");
         // Punt by reiterating estimates made by new-profile-wiz
-        RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        RecDec = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
         RecRA = RecDec * multiplier_ra / multiplier_dec;
         Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
     }

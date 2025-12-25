@@ -1315,8 +1315,9 @@ void GuiderMultiStar::SaveStarFITS()
         hdr.write("DATE", wxDateTime::UNow(), wxDateTime::UTC, "file creation time, UTC");
         hdr.write("DATE-OBS", pImage->ImgStartTime, wxDateTime::UTC, "image capture start time, UTC");
         hdr.write("EXPOSURE", (float) pImage->ImgExpDur / 1000.0f, "Exposure time [s]");
-        hdr.write("XBINNING", (unsigned int) pCamera->Binning, "Camera X binning");
-        hdr.write("YBINNING", (unsigned int) pCamera->Binning, "Camera Y binning");
+        unsigned int binning = pCamera->Binning;
+        hdr.write("XBINNING", binning, "Camera X binning");
+        hdr.write("YBINNING", binning, "Camera Y binning");
         hdr.write("XORGSUB", start_x, "Subframe x position in binned pixels");
         hdr.write("YORGSUB", start_y, "Subframe y position in binned pixels");
 

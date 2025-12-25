@@ -72,10 +72,12 @@ double GuideAlgorithm::SmartDefaultMinMove()
 {
     try
     {
-        double focalLength = pFrame->GetFocalLength();
+        auto focalLength = pFrame->GetFocalLength();
         if (focalLength != 0)
         {
-            return GuideAlgorithm::SmartDefaultMinMove(focalLength, pCamera->GetCameraPixelSize(), pCamera->Binning);
+            int binning = pCamera->Binning;
+            auto pixelSize = pCamera->GetCameraPixelSize();
+            return GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
         }
         else
             return 0.2;
