@@ -437,9 +437,6 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
         return false;
 
     this->subframe = subframe;
-    if (!this->subframe.IsEmpty())
-        subframe.Intersect(wxRect(pCamera->FrameSize));
-
     this->save = save;
     this->path = path;
 
