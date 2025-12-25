@@ -610,7 +610,7 @@ double AdvancedDialog::PercentChange(double oldVal, double newVal)
 // cleared, MinMoves are set to defaults based on new image scale
 void AdvancedDialog::MakeImageScaleAdjustments()
 {
-    int binning = pCamera->Binning;
+    auto binning = pCamera->GetBinning();
     auto focalLength = pFrame->GetFocalLength();
     auto pixelSize = pCamera->GetCameraPixelSize();
     double guideSpeedX;

@@ -1156,7 +1156,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
 
     int lastInx = m_decAxisStats.GetCount() - 1;
     auto pxscale = pFrame->GetCameraPixelScale();
-    int binning = pCamera->Binning;
+    auto binning = pCamera->GetBinning();
     auto focalLength = pFrame->GetFocalLength();
     auto pixelSize = pCamera->GetCameraPixelSize();
     StarDisplacement val = m_decAxisStats.GetEntry(0);
@@ -1385,7 +1385,7 @@ void GuidingAsstWin::MakeRecommendations()
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
-    if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxHwBinning > 1)
+    if (pxscale <= 0.5 && pCamera->GetBinning() == 1 && pCamera->MaxHwBinning > 1)
     {
         wxString msg = _("Try binning your guide camera");
         allRecommendations += "Bin:" + msg + "\n";

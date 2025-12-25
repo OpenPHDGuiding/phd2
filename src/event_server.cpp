@@ -1406,7 +1406,7 @@ static void capture_single_frame(JObj& response, const json_value *params)
         exposure = j->int_value;
     }
 
-    wxByte binning = pCamera->Binning;
+    wxByte binning = pCamera->GetBinning();
     if ((j = p.param("binning")) != nullptr)
     {
         if (j->type != JSON_INT || j->int_value < 1 || j->int_value > pCamera->MaxHwBinning)
@@ -1770,7 +1770,7 @@ static void get_camera_binning(JObj& response, const json_value *params)
 {
     if (pCamera && pCamera->Connected)
     {
-        int binning = pCamera->Binning;
+        int binning = pCamera->GetBinning();
         response << jrpc_result(binning);
     }
     else

@@ -338,7 +338,7 @@ void CalibrationAssistant::PerformSanityChecks(void)
     }
     else
     {
-        int binning = pCamera->Binning;
+        auto binning = pCamera->GetBinning();
         auto focalLength = pFrame->GetFocalLength();
         auto pixelSize = pCamera->GetCameraPixelSize();
         int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
@@ -1200,7 +1200,7 @@ void CalAssistSanityDialog::OnRecal(wxCommandEvent& evt)
                     minSpd = raSpd;
                 double sidrate = RateX(minSpd);
                 int calibrationStep;
-                int binning = pCamera->Binning;
+                auto binning = pCamera->GetBinning();
                 auto focalLength = pFrame->GetFocalLength();
                 auto pixelSize = pCamera->GetCameraPixelSize();
                 int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
