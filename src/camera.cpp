@@ -893,6 +893,12 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
+static void FillChoiceItems(wxChoice *listBox, wxArrayString opts)
+{
+    listBox->Clear();
+    listBox->Append(opts);
+}
+
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
@@ -920,8 +926,10 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
-        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
+        pDetailsSizer->AddSpacer(10);
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
+        pDetailsSizer->AddSpacer(20);
+        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
         pSpecGroup->Layout();
     }
@@ -991,12 +999,25 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddGroup(CtrlMap, AD_szGain, sizer);
 
     // Binning
+    wxSizer *binSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_binning = 0;
     wxArrayString opts;
-    bool includeSwBinning = false; // TODO: SW binning UI
-    m_pCamera->GetBinningOpts(&opts, includeSwBinning);
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_pCamera->GetBinningOpts(&opts, includeSwBinning); // Default initialization, will be overridden in LayoutControls()
     int width = StringArrayWidth(opts);
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
-    AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
+    wxSizer *szB = MakeLabeledControl(AD_szBinning, _("Binning"), m_binning,
+                                      _("Camera binning, used to achieve suitable image scale. "
+                                        "Optimum image scales are >= 0.5 arc-sec/px and < 5.0 arc-sec/px."));
+    m_allowSwBinning = new wxCheckBox(GetParentWindow(AD_szBinning), wxID_ANY, _("Enable software binning"));
+    m_allowSwBinning->SetValue(false); // May be overridden in LoadValues()
+    m_allowSwBinning->Enable(includeSwBinning);
+    m_allowSwBinning->SetToolTip(_("Can be used to increase binning beyond camera hardware/driver limits. "
+                                   "Try to keep the guider image scale > 0.5 arc-sec/px."));
+    m_allowSwBinning->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &CameraConfigDialogCtrlSet::OnSwBinningChecked, this);
+    binSizer->Add(szB, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+    binSizer->Add(m_allowSwBinning, wxSizerFlags().Border(wxLEFT, 8).Align(wxALIGN_CENTER_VERTICAL));
+    AddGroup(CtrlMap, AD_szBinning, binSizer);
 
     // Cooler
     wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
@@ -1044,6 +1065,18 @@ void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
     m_camSaturationADU->Enable(m_SaturationByADU->GetValue());
 }
 
+void CameraConfigDialogCtrlSet::OnSwBinningChecked(wxCommandEvent& event)
+{
+    wxArrayString opts;
+    int currBinning = GetIntChoice(m_binning, 1);
+    m_pCamera->GetBinningOpts(&opts, event.IsChecked());
+    FillChoiceItems(m_binning, opts);
+    if (event.IsChecked())
+        SetIntChoice(m_binning, currBinning);
+    else
+        SetIntChoice(m_binning, std::min(currBinning, (int) m_pCamera->MaxHwBinning));
+}
+
 static unsigned short SaturationValFromBPP(GuideCamera *cam)
 {
     return (unsigned short) ((1U << cam->BitsPerPixel()) - 1);
@@ -1073,7 +1106,22 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_resetGain->Enable(false);
     }
 
+    wxArrayString opts;
     int binning = m_pCamera->GetBinning();
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_allowSwBinning->Enable(includeSwBinning);
+    // Automatically show s/w binning options if they're likely to be needed
+    if (includeSwBinning && (pFrame->GetCameraPixelScale() < 1.0 || binning > m_pCamera->MaxHwBinning))
+    {
+        m_allowSwBinning->SetValue(true);
+        m_pCamera->GetBinningOpts(&opts, true);
+    }
+    else
+    {
+        m_allowSwBinning->SetValue(false);
+        m_pCamera->GetBinningOpts(&opts, false);
+    }
+    FillChoiceItems(m_binning, opts);
     SetIntChoice(m_binning, binning);
     m_prevBinning = binning;
     // don't allow binning change when calibrating or guiding
