@@ -901,23 +901,27 @@ static void FillChoiceItems(wxChoice *listBox, wxArrayString opts)
 
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
-    wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
+    // wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 5, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szNoiseReduction));
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
-    pGenGroup->Add(pTopline, def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
+    // pGenGroup->Add(pTopline, def_flags);
+    // pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
+    // pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
+    this->Add(pTopline, def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
 
-    pGenGroup->Layout();
+    this->Layout();
 
     // Specific controls
-    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-Specific Properties"));
+    // wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-Specific Properties"));
+    wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
     if (pCamera)
     {
-        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
+
         // Create all possible property controls then disable individual controls later if camera doesn't support them.  This is
         // safer for "omnibus" style drivers that handle many cameras with different capabilities.  Exceptions are 'port' and
         // 'LE-delay' which will be created conditionally
@@ -926,22 +930,28 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
-        pDetailsSizer->AddSpacer(10);
+        // pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSwBinning), wxSizerFlags(0).Border(wxLeft, 10));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
         pDetailsSizer->AddSpacer(20);
-        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
-        pSpecGroup->Add(pDetailsSizer, spec_flags);
-        pSpecGroup->Layout();
+        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags(0).Border(wxTOP, 3));
+        // pSpecGroup->Add(pDetailsSizer, spec_flags);
+        //  pSpecGroup->Layout();
+        // this->Add(pDetailsSizer, spec_flags);
+        Layout();
     }
     else
     {
         wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
-        pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
-        pSpecGroup->Layout();
+        // pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
+        this->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
+        Layout(); // pSpecGroup->Layout();
     }
     if (pCamera)
-        pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
-    this->Add(pGenGroup, def_flags);
+        /*pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());*/
+        this->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
+
+    // this->Add(pGenGroup, def_flags);
+
     if (pCamera && !pCamera->Connected)
     {
         wxStaticText *pNotConnected = new wxStaticText(
@@ -949,8 +959,12 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         MakeBold(pNotConnected);
         this->Add(pNotConnected, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 10));
     }
+    else
+    {
+        this->Add(pDetailsSizer, wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand());
+    }
 
-    this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
+    //  this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
     this->Layout();
     Fit(m_pParent);
 }
@@ -999,25 +1013,30 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddGroup(CtrlMap, AD_szGain, sizer);
 
     // Binning
-    wxSizer *binSizer = new wxBoxSizer(wxHORIZONTAL);
+    // wxSizer *binSizer = new wxBoxSizer(wxHORIZONTAL);
     m_binning = 0;
     wxArrayString opts;
-    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
-    m_pCamera->GetBinningOpts(&opts, includeSwBinning); // Default initialization, will be overridden in LayoutControls()
+    bool includeSwBinning = false; // m_pCamera->GetOfferSwBinning();
+    m_pCamera->GetBinningOpts(&opts, false); // Default initialization, will be overridden in LoadValues()
     int width = StringArrayWidth(opts);
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
     wxSizer *szB = MakeLabeledControl(AD_szBinning, _("Binning"), m_binning,
                                       _("Camera binning, used to achieve suitable image scale. "
                                         "Optimum image scales are >= 0.5 arc-sec/px and < 5.0 arc-sec/px."));
     m_allowSwBinning = new wxCheckBox(GetParentWindow(AD_szBinning), wxID_ANY, _("Enable software binning"));
+    // wxSizer *szB = new wxBoxSizer(wxHORIZONTAL);
+    // szB->Add(m_binning);
+    szB->Add(m_allowSwBinning);
     m_allowSwBinning->SetValue(false); // May be overridden in LoadValues()
     m_allowSwBinning->Enable(includeSwBinning);
     m_allowSwBinning->SetToolTip(_("Can be used to increase binning beyond camera hardware/driver limits. "
                                    "Try to keep the guider image scale > 0.5 arc-sec/px."));
     m_allowSwBinning->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &CameraConfigDialogCtrlSet::OnSwBinningChecked, this);
-    binSizer->Add(szB, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
-    binSizer->Add(m_allowSwBinning, wxSizerFlags().Border(wxLEFT, 8).Align(wxALIGN_CENTER_VERTICAL));
-    AddGroup(CtrlMap, AD_szBinning, binSizer);
+    // szB->Add(m_allowSwBinning);
+    //  sizer->Add(szB, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+    //  sizer->Add(m_allowSwBinning, wxSizerFlags().Border(wxLEFT, 8).Align(wxALIGN_CENTER_VERTICAL));
+    AddGroup(CtrlMap, AD_szBinning, szB);
+    // AddCtrl(CtrlMap, AD_cbUseSwBinning, m_allowSwBinning);
 
     // Cooler
     wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
@@ -1054,7 +1073,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
-    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
+    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive camera after (seconds)"), m_timeoutVal,
                    wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
                                       "The default value, %d seconds, should be appropriate for most cameras."),
                                     DefaultGuideCameraTimeoutMs / 1000));

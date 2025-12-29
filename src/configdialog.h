@@ -70,6 +70,7 @@ enum BRAIN_CTRL_IDS
     AD_szPixelSize,
     AD_szGain,
     AD_szBinning,
+    // AD_cbUseSwBinning,
     AD_szCooler,
     AD_CAMERA_TAB_BOUNDARY, // ------ end of camera tab controls
 
