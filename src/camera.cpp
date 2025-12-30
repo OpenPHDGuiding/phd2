@@ -920,16 +920,15 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
         // Create all possible property controls then disable individual controls later if camera doesn't support them.  This is
         // safer for "omnibus" style drivers that handle many cameras with different capabilities.  Exceptions are 'port' and
         // 'LE-delay' which will be created conditionally
-        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
+        // wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain), wxSizerFlags(0).Border(wxLEFT, 45));
         pDetailsSizer->AddSpacer(20);
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
         pDetailsSizer->AddSpacer(20);
         pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags(0).Border(wxTOP, 3));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
-        // pDetailsSizer->Layout();
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout), wxSizerFlags(0).Border(wxLEFT, 20));
         this->Layout();
     }
     else
@@ -1006,7 +1005,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     wxSizer *szB = new wxBoxSizer(wxHORIZONTAL);
     szB->Add(pLabel, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL));
     szB->Add(m_binning, wxSizerFlags(0).Border(wxLEFT, 2));
-    szB->Add(m_allowSwBinning, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 12));
+    szB->Add(m_allowSwBinning, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 4));
     m_allowSwBinning->SetValue(false); // May be overridden in LoadValues()
     m_allowSwBinning->Enable(includeSwBinning);
 
