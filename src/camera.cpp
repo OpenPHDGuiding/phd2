@@ -918,9 +918,7 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap
     {
 
         // Create all possible property controls then disable individual controls later if camera doesn't support them.  This is
-        // safer for "omnibus" style drivers that handle many cameras with different capabilities.  Exceptions are 'port' and
-        // 'LE-delay' which will be created conditionally
-        // wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
+        // safer for "omnibus" style drivers that handle many cameras with different capabilities.
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain), wxSizerFlags(0).Border(wxLEFT, 45));
         pDetailsSizer->AddSpacer(20);
