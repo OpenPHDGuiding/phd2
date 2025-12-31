@@ -893,56 +893,54 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
+static void FillChoiceItems(wxChoice *listBox, const wxArrayString& opts)
+{
+    listBox->Clear();
+    listBox->Append(opts);
+}
+
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
-    wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 5, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szNoiseReduction));
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
-    pGenGroup->Add(pTopline, def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
+    this->Add(pTopline, def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
 
-    pGenGroup->Layout();
+    this->Layout();
 
     // Specific controls
-    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-Specific Properties"));
+    wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
     if (pCamera)
     {
-        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
+
         // Create all possible property controls then disable individual controls later if camera doesn't support them.  This is
-        // safer for "omnibus" style drivers that handle many cameras with different capabilities.  Exceptions are 'port' and
-        // 'LE-delay' which will be created conditionally
-        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
+        // safer for "omnibus" style drivers that handle many cameras with different capabilities.
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain), wxSizerFlags(0).Border(wxLEFT, 45));
+        pDetailsSizer->AddSpacer(20);
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
-        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
-        pSpecGroup->Add(pDetailsSizer, spec_flags);
-        pSpecGroup->Layout();
+        pDetailsSizer->AddSpacer(20);
+        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags(0).Border(wxTOP, 3));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout), wxSizerFlags(0).Border(wxLEFT, 20));
+        this->Layout();
     }
     else
     {
         wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
-        pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
-        pSpecGroup->Layout();
+        this->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
+        Layout();
     }
     if (pCamera)
-        pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
-    this->Add(pGenGroup, def_flags);
-    if (pCamera && !pCamera->Connected)
     {
-        wxStaticText *pNotConnected = new wxStaticText(
-            m_pParent, wxID_ANY, _("Camera is not connected.  Property controls may change if you connect to it first."));
-        MakeBold(pNotConnected);
-        this->Add(pNotConnected, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 10));
+        this->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
+        this->Add(pDetailsSizer, wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand());
     }
 
-    this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
     this->Layout();
     Fit(m_pParent);
 }
@@ -992,11 +990,24 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     // Binning
     wxArrayString opts;
-    bool includeSwBinning = false; // TODO: SW binning UI
-    m_pCamera->GetBinningOpts(&opts, includeSwBinning);
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_pCamera->GetBinningOpts(&opts, false); // Default initialization, will be overridden in LoadValues()
     int width = StringArrayWidth(opts);
+    wxStaticText *pLabel = new wxStaticText(GetParentWindow(AD_szBinning), wxID_ANY, _("Binning:"));
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
-    AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
+    m_binning->SetToolTip("Camera binning, used to optimize guider image scale or improve SNR for CCD cameras");
+    m_allowSwBinning = new wxCheckBox(GetParentWindow(AD_szBinning), wxID_ANY, _("Enable software binning"));
+    m_allowSwBinning->SetToolTip(_("Can be used to increase binning beyond camera hardware/driver limits. "
+                                   "Try to keep the guider image scale > 0.5 arc-sec/px."));
+    wxSizer *szB = new wxBoxSizer(wxHORIZONTAL);
+    szB->Add(pLabel, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL));
+    szB->Add(m_binning, wxSizerFlags(0).Border(wxLEFT, 2));
+    szB->Add(m_allowSwBinning, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 4));
+    m_allowSwBinning->SetValue(false); // May be overridden in LoadValues()
+    m_allowSwBinning->Enable(includeSwBinning);
+
+    m_allowSwBinning->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &CameraConfigDialogCtrlSet::OnSwBinningChecked, this);
+    AddGroup(CtrlMap, AD_szBinning, szB);
 
     // Cooler
     wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
@@ -1033,7 +1044,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
-    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
+    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive   \n camera after (seconds)"), m_timeoutVal,
                    wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
                                       "The default value, %d seconds, should be appropriate for most cameras."),
                                     DefaultGuideCameraTimeoutMs / 1000));
@@ -1042,6 +1053,18 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
 {
     m_camSaturationADU->Enable(m_SaturationByADU->GetValue());
+}
+
+void CameraConfigDialogCtrlSet::OnSwBinningChecked(wxCommandEvent& event)
+{
+    wxArrayString opts;
+    int currBinning = GetIntChoice(m_binning, 1);
+    m_pCamera->GetBinningOpts(&opts, event.IsChecked());
+    FillChoiceItems(m_binning, opts);
+    if (event.IsChecked())
+        SetIntChoice(m_binning, currBinning);
+    else
+        SetIntChoice(m_binning, wxMin(currBinning, m_pCamera->MaxHwBinning));
 }
 
 static unsigned short SaturationValFromBPP(GuideCamera *cam)
@@ -1073,7 +1096,22 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_resetGain->Enable(false);
     }
 
+    wxArrayString opts;
     int binning = m_pCamera->GetBinning();
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_allowSwBinning->Enable(includeSwBinning);
+    // Automatically show s/w binning options if they're likely to be needed
+    if (includeSwBinning && (pFrame->GetCameraPixelScale() < 1.0 || binning > m_pCamera->MaxHwBinning))
+    {
+        m_allowSwBinning->SetValue(true);
+        m_pCamera->GetBinningOpts(&opts, true);
+    }
+    else
+    {
+        m_allowSwBinning->SetValue(false);
+        m_pCamera->GetBinningOpts(&opts, false);
+    }
+    FillChoiceItems(m_binning, opts);
     SetIntChoice(m_binning, binning);
     m_prevBinning = binning;
     // don't allow binning change when calibrating or guiding
