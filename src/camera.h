@@ -71,11 +71,13 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxChoice *m_binning;
+    wxCheckBox *m_allowSwBinning;
     wxCheckBox *m_coolerOn;
     wxSpinCtrl *m_coolerSetpt;
     wxTextCtrl *m_camSaturationADU;
     wxRadioButton *m_SaturationByProfile;
     wxRadioButton *m_SaturationByADU;
+    void OnSwBinningChecked(wxCommandEvent& event);
 
     int m_prevBinning;
 
