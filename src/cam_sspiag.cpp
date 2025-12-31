@@ -401,7 +401,7 @@ bool CameraSSPIAG::Capture(usImage& img, const CaptureParams& captureParams)
         SubtractDark(img);
 
     // Do quick L recon to remove bayer array
-    if (options & CAPTURE_RECON)
+    if ((options & CAPTURE_RECON) && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
