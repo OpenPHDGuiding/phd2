@@ -829,9 +829,9 @@ bool Camera_QHY::Connect(const wxString& camId)
             break;
     }
     Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));
-    MaxBinning = maxBin;
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    MaxHwBinning = maxBin;
+    if (Binning > MaxHwBinning)
+        Binning = MaxHwBinning;
 
     Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
     ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);

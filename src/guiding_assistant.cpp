@@ -1332,8 +1332,8 @@ void GuidingAsstWin::MakeRecommendations()
     GetMinMoveRecs(m_ra_minmove_rec, m_dec_minmove_rec);
 
     // Refine the drift-limiting exposure value based on the ra_min_move recommendation
-    m_othergrid->SetCellValue(
-        m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") : wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
+    m_othergrid->SetCellValue(m_ra_drift_exp_loc,
+                              maxRateRA <= 0.0 ? _(" ") : wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, _("s")));
 
     LogResults(); // Dump the raw statistics
 
@@ -1382,7 +1382,7 @@ void GuidingAsstWin::MakeRecommendations()
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
-    if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxBinning > 1)
+    if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxHwBinning > 1)
     {
         wxString msg = _("Try binning your guide camera");
         allRecommendations += "Bin:" + msg + "\n";

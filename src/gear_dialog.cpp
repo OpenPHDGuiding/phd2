@@ -1173,7 +1173,7 @@ bool GearDialog::DoConnectCamera(bool autoReconnecting)
 
         // See if the profile was created with a binning level that isn't supported by the camera (user mistake) - if so, reset
         // binning to 1 Must be done here because orig binning level is not saved
-        if (profileBinning > m_pCamera->MaxBinning)
+        if (profileBinning > m_pCamera->MaxHwBinning)
         {
             int rslt;
             if (TheScope())
