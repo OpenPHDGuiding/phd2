@@ -177,6 +177,8 @@ static const int NormalHelpHeight = 85;
 static const int DefaultFocalLength = 160;
 static wxString TitlePrefix;
 
+static const int DefaultMaxHwBinning = 4;
+
 static wxStaticText *Label(wxWindow *parent, const wxString& txt)
 {
     return new wxStaticText(parent, wxID_ANY, wxString::Format(_("%s:"), txt));
@@ -277,7 +279,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
 
     // Binning
     wxArrayString opts;
-    GuideCamera::GetBinningOpts(4, &opts);
+    bool includeSwBinning = false; // TODO: SW binning UI
+    GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
     m_pBinningLevel = new wxChoice(this, ID_BINNING, wxDefaultPosition, wxDefaultSize, opts);
     m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  "
                                   "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
@@ -955,11 +958,15 @@ struct AutoConnectCamera
     GuideCamera *operator->() const { return m_camera; }
 };
 
-static void SetBinningLevel(ProfileWizard *parent, const wxString& selection, int val)
+static std::pair<int, int> SetBinningLevel(ProfileWizard *parent, const wxString& selection, int combinedBinning)
 {
     AutoConnectCamera cam(parent, selection, false);
-    if (cam && cam->MaxHwBinning > 1)
-        cam->SetBinning(val);
+
+    if (!cam)
+        return std::make_pair(wxClip(combinedBinning, 1, DefaultMaxHwBinning), 1);
+
+    cam->SetBinning(combinedBinning);
+    return std::make_pair(cam->HwBinning, cam->SwBinning);
 }
 
 // Wrapup logic - build the new profile, maybe launch the darks dialog
@@ -968,18 +975,30 @@ void ProfileWizard::WrapUp()
     m_launchDarks = m_pLaunchDarks->GetValue();
     m_autoRestore = m_pAutoRestore->GetValue();
 
-    int binning = GetIntChoice(m_pBinningLevel, 1);
+    int combinedBinning = GetIntChoice(m_pBinningLevel, 1);
+    std::pair<int, int> hwSwBinning;
     if (m_useCamera)
-        SetBinningLevel(this, m_SelectedCamera, binning);
+    {
+        hwSwBinning = SetBinningLevel(this, m_SelectedCamera, combinedBinning);
+    }
+    else
+    {
+        hwSwBinning = GuideCamera::GetHwAndSwBinning(DefaultMaxHwBinning, combinedBinning);
+    }
+    auto hwBinning = hwSwBinning.first;
+    auto swBinning = hwSwBinning.second;
+    combinedBinning = hwBinning * swBinning;
 
-    int calibrationDistance = CalstepDialog::GetCalibrationDistance(m_FocalLength, m_PixelSize, binning);
-    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, binning, calibrationDistance);
+    int calibrationDistance = CalstepDialog::GetCalibrationDistance(m_FocalLength, m_PixelSize, combinedBinning);
+    int calibrationStepSize =
+        GetCalibrationStepSize(m_FocalLength, m_PixelSize, m_GuideSpeed, combinedBinning, calibrationDistance);
 
-    Debug.Write(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, High-res encoders=%s, AuxMount=%s, "
-                                 "AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, CalDist=%d, LaunchDarks=%d\n",
-                                 m_ProfileName, m_SelectedCamera, m_SelectedMount, m_pHPEncoders->GetValue() ? "True" : "False",
-                                 m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize,
-                                 calibrationDistance, m_launchDarks));
+    Debug.Write(
+        wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, High-res encoders=%s, AuxMount=%s, "
+                         "AO=%s, PixelSize=%0.1f, FocalLength=%d, Bin=%d(%d,%d), CalStep=%d, CalDist=%d, LaunchDarks=%d\n",
+                         m_ProfileName, m_SelectedCamera, m_SelectedMount, m_pHPEncoders->GetValue() ? "True" : "False",
+                         m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, combinedBinning, hwBinning, swBinning,
+                         calibrationStepSize, calibrationDistance, m_launchDarks));
 
     // create the new profile
     if (!m_profile.Commit(m_ProfileName))
@@ -996,7 +1015,8 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetString("/rotator/LastMenuChoice", m_SelectedRotator);
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
-    pConfig->Profile.SetInt("/camera/binning", binning);
+    pConfig->Profile.SetInt("/camera/binning", hwBinning);
+    pConfig->Profile.SetInt("/camera/SoftwareBinning", swBinning);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     pConfig->Profile.SetInt("/scope/CalibrationDistance", calibrationDistance);
     bool highResEncoders = m_pHPEncoders->GetValue();
@@ -1009,7 +1029,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/CalStepCalc/GuideSpeed", m_GuideSpeed);
     pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoRestore);
     pConfig->Profile.SetBoolean("/guider/multistar/enabled", true);
-    double ImageScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+    double ImageScale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, combinedBinning);
     if (ImageScale < 2.0)
         pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", false);
     pConfig->Profile.SetInt("/camera/SaturationADU", 0); // Default will be updated with first auto-find to reflect bpp
@@ -1022,7 +1042,7 @@ void ProfileWizard::WrapUp()
     GuideLog.EnableLogging(true); // Especially for newbies
 
     // Construct a good baseline set of guiding parameters based on image scale
-    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning, m_pHPEncoders->GetValue());
+    SetGuideAlgoParams(m_PixelSize, m_FocalLength, combinedBinning, m_pHPEncoders->GetValue());
 
     EndModal(wxOK);
 }
@@ -1268,6 +1288,7 @@ static double GetPixelSize(GuideCamera *cam)
 
 void ProfileWizard::InitCameraProps(bool tryConnect)
 {
+    bool includeSwBinning = false; // TODO: SW binning UI
     if (tryConnect)
     {
         // Pixel size
@@ -1282,16 +1303,16 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         // Binning
         wxArrayString opts;
         if (cam)
-            cam->GetBinningOpts(&opts);
+            cam->GetBinningOpts(&opts, includeSwBinning);
         else
-            GuideCamera::GetBinningOpts(4, &opts);
+            GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
         m_pBinningLevel->Set(opts);
         m_pBinningLevel->SetSelection(0);
     }
     else
     {
         wxArrayString opts;
-        GuideCamera::GetBinningOpts(4, &opts);
+        GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
         m_pBinningLevel->Set(opts);
         m_pBinningLevel->SetSelection(0);
         m_pPixelSize->SetValue(0.);
