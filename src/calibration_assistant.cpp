@@ -173,8 +173,8 @@ static void MakeBold(wxControl *ctrl)
 
 CalibrationAssistant::CalibrationAssistant()
     : wxDialog(pFrame, wxID_ANY, _("Calibration Assistant"), wxDefaultPosition, wxSize(700, -1), wxCAPTION | wxCLOSE_BOX),
-      m_sanityCheckDone(0), m_justSlewed(0), m_isSlewing(0), m_monitoringCalibration(0), m_calibrationActive(0)
-
+      m_sanityCheckDone(false), m_justSlewed(false), m_isSlewing(false), m_monitoringCalibration(false),
+      m_calibrationActive(false)
 {
     wxStaticBoxSizer *currSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Current Pointing Location"));
     wxStaticBoxSizer *tgtSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Calibration Location"));
