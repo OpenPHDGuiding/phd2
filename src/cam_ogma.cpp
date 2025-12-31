@@ -373,15 +373,15 @@ bool CameraOgma::Connect(const wxString& camIdArg)
             Disconnect();
             return CamConnectFailed(_("Failed to initialize camera binning."));
         }
-        m_cam.SetBinning(Binning);
+        m_cam.SetBinning(HwBinning);
     }
     else
     {
         // hardware binning
-        if (!m_cam.SetBinning(Binning))
+        if (!m_cam.SetBinning(HwBinning))
         {
-            Binning = 1;
-            if (!m_cam.SetBinning(Binning))
+            HwBinning = 1;
+            if (!m_cam.SetBinning(HwBinning))
             {
                 Disconnect();
                 return CamConnectFailed(_("Failed to initialize camera binning."));
@@ -389,8 +389,8 @@ bool CameraOgma::Connect(const wxString& camIdArg)
         }
     }
 
-    FrameSize.x = m_cam.m_maxSize.x / Binning;
-    FrameSize.y = m_cam.m_maxSize.y / Binning;
+    FrameSize.x = m_cam.m_maxSize.x / HwBinning;
+    FrameSize.y = m_cam.m_maxSize.y / HwBinning;
 
     size_t buffer_size = m_cam.m_maxSize.x * m_cam.m_maxSize.y;
     if (m_cam.m_bpp != 8)
@@ -523,12 +523,12 @@ bool CameraOgma::Capture(usImage& img, const CaptureParams& captureParams)
 
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
-    if (Binning != m_cam.m_curBin)
+    if (HwBinning != m_cam.m_curBin)
     {
-        if (m_cam.SetBinning(Binning))
+        if (m_cam.SetBinning(HwBinning))
         {
-            FrameSize.x = m_cam.m_maxSize.x / Binning;
-            FrameSize.y = m_cam.m_maxSize.y / Binning;
+            FrameSize.x = m_cam.m_maxSize.x / HwBinning;
+            FrameSize.y = m_cam.m_maxSize.y / HwBinning;
             useSubframe = false; // subframe pos is now invalid
         }
     }

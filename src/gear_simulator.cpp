@@ -1229,7 +1229,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 # endif // STEPGUIDER_SIMULATOR
 
-    int binning = pCamera->Binning;
+    int binning = pCamera->HwBinning;
 
     // render each star
     if (!pCamera->ShutterClosed)
@@ -1456,8 +1456,8 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
 
 # else
 
-    int width = sim.width / Binning;
-    int height = sim.height / Binning;
+    int width = sim.width / HwBinning;
+    int height = sim.height / HwBinning;
     FrameSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
@@ -1511,7 +1511,7 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
 {
     // Following must take into account how the render_star function works.  Render_star uses camera binning explicitly, so
     // relying only on image scale in computing d creates distances that are too small by a factor of <binning>
-    double d = SimCamParams::guide_rate * Binning * duration / (1000.0 * SimCamParams::image_scale);
+    double d = SimCamParams::guide_rate * HwBinning * duration / (1000.0 * SimCamParams::image_scale);
 
     // simulate RA motion scaling according to declination
     if (direction == WEST || direction == EAST)

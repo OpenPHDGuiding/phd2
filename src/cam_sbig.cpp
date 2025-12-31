@@ -395,10 +395,10 @@ bool CameraSBIG::Connect(const wxString& camId)
         }
     }
 
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
-    FrameSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[HwBinning - 1];
 
     IsColor = false;
 
@@ -465,7 +465,7 @@ bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 
     bool TakeSubframe = UseSubframes;
 
-    FrameSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[HwBinning - 1];
 
     if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FrameSize.GetWidth() ||
         subframe.GetBottom() >= FrameSize.GetHeight())
@@ -499,7 +499,7 @@ bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 
     sep.exposureTime = (unsigned long) duration / 10;
     sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
-    sep.readoutMode = rlp.readoutMode = dlp.readoutMode = Binning == 1 ? RM_1X1 : RM_2X2;
+    sep.readoutMode = rlp.readoutMode = dlp.readoutMode = HwBinning == 1 ? RM_1X1 : RM_2X2;
 
     if (TakeSubframe)
     {

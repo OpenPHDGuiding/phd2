@@ -670,16 +670,16 @@ bool MoravianCamera::Connect(const wxString& camId)
 
     MaxHwBinning = std::min(maxbinx, maxbiny);
 
-    if (Binning > MaxHwBinning)
-        Binning = MaxHwBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     m_maxSize = m_cam.ChipSize();
 
-    FrameSize.x = m_maxSize.x / Binning;
-    FrameSize.y = m_maxSize.y / Binning;
-    m_curBinning = Binning;
+    FrameSize.x = m_maxSize.x / HwBinning;
+    FrameSize.y = m_maxSize.y / HwBinning;
+    m_curBinning = HwBinning;
 
-    if (!m_cam.SetBinning(Binning))
+    if (!m_cam.SetBinning(HwBinning))
     {
         wxString err = m_cam.LastError();
         Disconnect();
@@ -801,17 +801,17 @@ bool MoravianCamera::Capture(usImage& img, const CaptureParams& captureParams)
         m_curGain = new_gain;
     }
 
-    if (Binning != m_curBinning)
+    if (HwBinning != m_curBinning)
     {
-        if (!m_cam.SetBinning(Binning))
+        if (!m_cam.SetBinning(HwBinning))
         {
-            Debug.Write(wxString::Format("MVN: SetBinning(%u): %s\n", Binning, m_cam.LastError()));
+            Debug.Write(wxString::Format("MVN: SetBinning(%u): %s\n", HwBinning, m_cam.LastError()));
             return true;
         }
-        Debug.Write(wxString::Format("MVN: SetBinning(%u): ok\n", Binning));
-        FrameSize.x = m_maxSize.x / Binning;
-        FrameSize.y = m_maxSize.y / Binning;
-        m_curBinning = Binning;
+        Debug.Write(wxString::Format("MVN: SetBinning(%u): ok\n", HwBinning));
+        FrameSize.x = m_maxSize.x / HwBinning;
+        FrameSize.y = m_maxSize.y / HwBinning;
+        m_curBinning = HwBinning;
     }
 
     if (img.Init(FrameSize))
