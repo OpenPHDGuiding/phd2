@@ -75,7 +75,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void ShowPropertyDialog() override;
@@ -762,10 +762,13 @@ static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned
     return true;
 }
 
-bool CameraSXV::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraSXV::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool takeSubframe = UseSubframes;
-    wxRect subframe(subframeArg);
+    wxRect subframe(captureParams.subframe);
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {

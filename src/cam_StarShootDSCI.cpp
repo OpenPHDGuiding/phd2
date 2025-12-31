@@ -151,8 +151,10 @@ bool CameraStarShootDSCI::Connect(const wxString& camId)
     return false;
 }
 
-bool CameraStarShootDSCI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraStarShootDSCI::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+
     bool ampoff = true;
     if (duration < 1000)
         ampoff = false;

@@ -56,7 +56,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
@@ -290,8 +290,12 @@ static bool StopCapture(ArtemisHandle h)
     return ret == ARTEMIS_OK;
 }
 
-bool CameraAtik16::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool useSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)

@@ -400,8 +400,11 @@ void CameraFirewire::InitCapture()
     }
 }
 
-bool CameraFirewire::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraFirewire::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     static int programmed_dur = 200;
 
     int xsize = FrameSize.GetWidth();

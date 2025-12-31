@@ -65,7 +65,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void InitCapture() override;
@@ -457,8 +457,12 @@ static bool StopExposure(EndExposureParams *eep)
     return err == CE_NO_ERROR;
 }
 
-bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool TakeSubframe = UseSubframes;
 
     FrameSize = m_imageSize[Binning - 1];

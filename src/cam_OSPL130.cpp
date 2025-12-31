@@ -69,8 +69,11 @@ bool CameraOpticstarPL130::Disconnect()
     return false;
 }
 
-bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpticstarPL130::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool still_going = true;
 
     int mode = 3 * (int) Color;
