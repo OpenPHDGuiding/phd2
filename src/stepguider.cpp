@@ -757,7 +757,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
             m_calibration.rotatorAngle = Rotator::RotatorPosition();
             m_calibration.binning = pCamera->Binning;
             SetCalibration(m_calibration);
-            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
+            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, m_calibration.binning);
             status0 = _("Calibration complete");
             GuideLog.CalibrationComplete(this);
             Debug.Write("Calibration Complete\n");
