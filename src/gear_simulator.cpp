@@ -150,7 +150,7 @@ unsigned int SimCamParams::frame_download_ms; // frame download time, ms
 // Needed to handle legacy registry values that may no longer be in correct units or range
 static double range_check(double thisval, double minval, double maxval)
 {
-    return wxMin(wxMax(thisval, minval), maxval);
+    return wxClip(thisval, minval, maxval);
 }
 
 static void load_sim_params()
