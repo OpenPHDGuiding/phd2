@@ -64,7 +64,6 @@ public:
     bool ST4PulseGuideScope(int direction, int duration) override;
     wxByte BitsPerPixel() override;
 
-    bool Color;
     bool HSModel;
 
 private:
@@ -79,7 +78,7 @@ CameraAtik16::CameraAtik16(bool hsmodel, bool color) : m_dllLoaded(false)
     FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
-    Color = color;
+    HasBayer = color;
     Cam_Handle = NULL;
     HSModel = hsmodel;
     HasSubframes = true;
@@ -409,7 +408,7 @@ bool CameraAtik16::Capture(usImage& img, const CaptureParams& captureParams)
     // Do quick L recon to remove bayer array
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && Color && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

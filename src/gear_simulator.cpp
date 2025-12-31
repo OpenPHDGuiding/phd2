@@ -1312,6 +1312,11 @@ CameraSimulator::CameraSimulator()
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxHwBinning = 3;
     HasCooler = true;
+# if SIMMODE == 2
+    HasBayer = true;
+# else
+    HasBayer = false;
+# endif
 }
 
 wxByte CameraSimulator::BitsPerPixel()

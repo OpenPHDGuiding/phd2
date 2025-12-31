@@ -151,6 +151,9 @@ bool CameraDSI::Connect(const wxString& camId)
 
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
+
+        HasBayer = MeadeCam->IsColor;
+
         Connected = true;
     }
 
@@ -247,7 +250,7 @@ bool CameraDSI::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_RECON)
     {
-        if (MeadeCam->IsColor && captureParams.CombinedBinning() == 1)
+        if (HasBayer && captureParams.CombinedBinning() == 1)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
             SquarePixels(img, 8.6, 8.3);

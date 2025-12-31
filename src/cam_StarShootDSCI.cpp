@@ -147,6 +147,9 @@ bool CameraStarShootDSCI::Connect(const wxString& camId)
     USB2 = OCP_isUSB2();
     RawX = OCP_Width();
     RawY = OCP_Height();
+
+    HasBayer = true;
+
     Connected = true;
     return false;
 }

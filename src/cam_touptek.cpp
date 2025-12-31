@@ -353,7 +353,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
 
     Name = info->displayname;
     HasSubframes = (info->model->flag & TOUPCAM_FLAG_ROI_HARDWARE) != 0;
-    m_cam.m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
+    HasBayer = m_cam.m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
     HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
     m_cam.m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
 
@@ -717,7 +717,7 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && m_cam.m_isColor && captureParams.CombinedBinning() == 1)
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
