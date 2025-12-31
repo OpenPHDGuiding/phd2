@@ -2836,7 +2836,7 @@ double MyFrame::GetCameraPixelScale() const
     if (pixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    int binning = pCamera->Binning;
+    auto binning = pCamera->GetBinning();
     return GetPixelScale(pixelSize, m_focalLength, binning);
 }
 
@@ -2855,7 +2855,7 @@ wxString MyFrame::PixelScaleSummary() const
     else
         focalLengthStr = wxString::Format("%d mm", m_focalLength);
 
-    int binning = pCamera->Binning;
+    int binning = pCamera->GetBinning();
     return wxString::Format("Pixel scale = %s, Binning = %d, Focal length = %s", scaleStr, binning, focalLengthStr);
 }
 

@@ -1255,7 +1255,7 @@ void Mount::AdjustCalibrationForScopePointing()
     double newDeclination = pPointingSource->GetDeclinationRadians();
     PierSide newPierSide = pPointingSource->SideOfPier();
     double newRotatorAngle = Rotator::RotatorPosition();
-    unsigned short binning = pCamera->Binning;
+    unsigned short binning = pCamera->GetBinning();
 
     Debug.AddLine(wxString::Format(
         "AdjustCalibrationForScopePointing (%s): current dec=%s pierSide=%d, cal dec=%s pierSide=%d rotAngle=%s bin=%hu",
