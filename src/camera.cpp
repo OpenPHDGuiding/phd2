@@ -893,7 +893,7 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
-static void FillChoiceItems(wxChoice *listBox, wxArrayString opts)
+static void FillChoiceItems(wxChoice *listBox, const wxArrayString& opts)
 {
     listBox->Clear();
     listBox->Append(opts);
@@ -989,7 +989,6 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddGroup(CtrlMap, AD_szGain, sizer);
 
     // Binning
-    m_binning = 0;
     wxArrayString opts;
     bool includeSwBinning = m_pCamera->GetOfferSwBinning();
     m_pCamera->GetBinningOpts(&opts, false); // Default initialization, will be overridden in LoadValues()
@@ -1065,7 +1064,7 @@ void CameraConfigDialogCtrlSet::OnSwBinningChecked(wxCommandEvent& event)
     if (event.IsChecked())
         SetIntChoice(m_binning, currBinning);
     else
-        SetIntChoice(m_binning, std::min(currBinning, (int) m_pCamera->MaxHwBinning));
+        SetIntChoice(m_binning, wxMin(currBinning, m_pCamera->MaxHwBinning));
 }
 
 static unsigned short SaturationValFromBPP(GuideCamera *cam)
