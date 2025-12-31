@@ -47,7 +47,7 @@ ManualCalDialog::ManualCalDialog(const Calibration& cal)
     wxArrayString opts;
     pCamera->GetBinningOpts(&opts);
     m_binning = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, opts);
-    m_binning->Select(cal.binning - 1);
+    SetIntChoice(m_binning, cal.binning);
     pGridSizer->Add(pLabel);
     pGridSizer->Add(m_binning);
 
