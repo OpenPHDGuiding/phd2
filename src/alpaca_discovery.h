@@ -1,9 +1,8 @@
 /*
- *  scopes.h
+ *  alpaca_discovery.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created for Alpaca Server support
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,53 +31,39 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+#ifndef ALPACA_DISCOVERY_H
+#define ALPACA_DISCOVERY_H
 
-#if defined(__WINDOWS__)
+#include "phd.h"
+#include <wx/arrstr.h>
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_ASCOM
-# ifdef HAVE_SHOESTRING
-#  define GUIDE_GPUSB
-#  define GUIDE_GPINT
-# endif
-# define GUIDE_INDI
-# define GUIDE_ALPACA
+struct AlpacaServerInfo
+{
+    wxString host;
+    long port;
+    
+    AlpacaServerInfo() : port(0) {}
+    AlpacaServerInfo(const wxString& h, long p) : host(h), port(p) {}
+    
+    wxString ToString() const
+    {
+        return wxString::Format("%s:%ld", host, port);
+    }
+};
 
-#elif defined(__APPLE__)
+class AlpacaDiscovery
+{
+public:
+    // Discover Alpaca servers on the local network
+    // Returns a list of discovered servers (host:port format)
+    static wxArrayString DiscoverServers(int numQueries = 2, int timeoutSeconds = 2);
+    
+    // Discover servers and return detailed info
+    static void DiscoverServers(wxArrayString& serverList, int numQueries = 2, int timeoutSeconds = 2);
+    
+    // Parse a server string (host:port) into components
+    static bool ParseServerString(const wxString& serverStr, wxString& host, long& port);
+};
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_GPUSB
-# define GUIDE_GCUSBST4
-# define GUIDE_INDI
-# define GUIDE_EQUINOX
-// #define GUIDE_VOYAGER
-// #define GUIDE_NEB
-# define GUIDE_EQMAC
+#endif // ALPACA_DISCOVERY_H
 
-#elif defined(__linux__) || defined(__FreeBSD__)
-
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_INDI
-
-#endif // WINDOWS/APPLE/LINUX
-
-#include "scope.h"
-#include "scope_oncamera.h"
-#include "scope_onstepguider.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
-#include "scope_indi.h"
-#include "scope_alpaca.h"
-#include "scope_manual_pointing.h"
-
-#endif /* SCOPES_H_INCLUDED */
