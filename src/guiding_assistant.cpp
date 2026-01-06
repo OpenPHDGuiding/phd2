@@ -1324,6 +1324,12 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
 
     return likely;
 }
+// Compute binning level needed to meet or exceed the requested minimum image scale
+static int RecommendedBinning(double currScale, double currBinning, double targetScale)
+{
+    double rslt = wxMin((targetScale * currBinning) / currScale, (int) GuideCamera::MAX_SOFTWARE_BINNING);
+    return (int) std::ceil(rslt);
+}
 
 // Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
@@ -1385,17 +1391,17 @@ void GuidingAsstWin::MakeRecommendations()
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
-    if (pxscale <= 0.5)
+    double currBinning = pCamera->GetBinning();
+    if (pxscale < 0.5 && currBinning < (int) GuideCamera::MAX_SOFTWARE_BINNING)
     {
-        bool swBinningEnabled = false; // TODO: SW binning UI
         wxString msg;
-        if (pCamera->GetBinning() < pCamera->MaxHwBinning || swBinningEnabled)
-            msg = _("Try increasing your binning level");
-        else
-            msg = _("Try enabling software binning and increase your binning level");
+        int recBinning = RecommendedBinning(pxscale, currBinning, 0.5);
+        msg = wxString::Format(_("Make a new profile and set binning to %d. Use software binning if necessary"), recBinning);
         allRecommendations += "Bin:" + msg + "\n";
         m_binning_msg = AddRecommendationMsg(msg);
-        Debug.Write(wxString::Format("Recommendation: %s\n", msg));
+        logStr = wxString::Format("Recommendation: %s\n", msg);
+        Debug.Write(logStr);
+        GuideLog.NotifyGAResult(logStr);
     }
     // Previous calibration alert
     if (m_suspectCalibration)
