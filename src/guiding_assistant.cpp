@@ -1392,7 +1392,7 @@ void GuidingAsstWin::MakeRecommendations()
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
     double currBinning = pCamera->GetBinning();
-    if (pxscale < 0.5 && currBinning < (int) GuideCamera::MAX_SOFTWARE_BINNING)
+    if (pxscale < 0.5 && currBinning < pCamera->MaxCombinedBinning())
     {
         wxString msg;
         int recBinning = RecommendedBinning(pxscale, currBinning, 0.5);
