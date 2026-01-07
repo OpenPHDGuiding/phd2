@@ -211,6 +211,8 @@ public:
 
     static BinningChoices GetBinningChoices(int maxHwBinning);
     BinningChoices GetBinningChoices() const;
+    static int MaxCombinedBinning(int maxHwBinning);
+    int MaxCombinedBinning() const;
     static std::pair<int, int> GetHwAndSwBinning(int maxHwBinning, int combinedBinning);
     std::pair<int, int> GetHwAndSwBinning(int combinedBinning) const;
     static void GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning);
@@ -288,6 +290,17 @@ inline int GuideCamera::GetTimeoutMs() const
 inline BinningChoices GuideCamera::GetBinningChoices() const
 {
     return GetBinningChoices(MaxHwBinning);
+}
+
+// returns the max combined binning level (hardware and software)
+inline int GuideCamera::MaxCombinedBinning(int maxHwBinning)
+{
+    return GetBinningChoices(maxHwBinning).rbegin()->first;
+}
+
+inline int GuideCamera::MaxCombinedBinning() const
+{
+    return MaxCombinedBinning(MaxHwBinning);
 }
 
 inline std::pair<int, int> GuideCamera::GetHwAndSwBinning(int combinedBinning) const
