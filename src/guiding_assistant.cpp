@@ -1325,7 +1325,7 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
     return likely;
 }
 // Compute binning level needed to meet or exceed the requested minimum image scale
-static int RecommendedBinning(double currScale, double currBinning, double targetScale)
+static int RecommendedBinning(double currScale, int currBinning, double targetScale)
 {
     double rslt = wxMin((targetScale * currBinning) / currScale, (int) GuideCamera::MAX_SOFTWARE_BINNING);
     return (int) std::ceil(rslt);
