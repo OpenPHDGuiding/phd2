@@ -1327,8 +1327,15 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
 // Compute binning level needed to meet or exceed the requested minimum image scale
 static int RecommendedBinning(double currScale, int currBinning, double targetScale)
 {
-    double rslt = wxMin((targetScale * currBinning) / currScale, (int) GuideCamera::MAX_SOFTWARE_BINNING);
-    return (int) std::ceil(rslt);
+    double bin1scale = currScale / currBinning;
+    for (auto choice : pCamera->GetBinningChoices())
+    {
+        auto binning = choice.first;
+        double scale = bin1scale * binning;
+        if (scale >= targetScale)
+            return binning;
+    }
+    return pCamera->MaxCombinedBinning();
 }
 
 // Produce recommendations for "live" GA run
