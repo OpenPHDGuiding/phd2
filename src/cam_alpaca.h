@@ -76,7 +76,7 @@ public:
     bool GetDevicePixelSize(double *pixSize) override;
     void ShowPropertyDialog() override;
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool SetCoolerOn(bool on) override;
     bool SetCoolerSetpoint(double temperature) override;

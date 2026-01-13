@@ -37,6 +37,7 @@
 #include "gear_simulator.h"
 #include "rotator_ascom.h"
 #include "rotator_indi.h"
+#include "rotator_alpaca.h"
 
 const float Rotator::POSITION_ERROR = -999.f;
 const float Rotator::POSITION_UNKNOWN = -888.f;
@@ -48,6 +49,16 @@ static wxString INDIRotatorName()
     wxString indirotator = pConfig->Profile.GetString("/indi/INDIrotator", wxEmptyString);
     return indirotator.empty() ? _T("INDI Rotator") : wxString::Format("INDI Rotator [%s]", indirotator);
 }
+
+#ifdef ROTATOR_ALPACA
+static wxString AlpacaRotatorName()
+{
+    wxString host = pConfig->Profile.GetString("/alpaca/host", wxEmptyString);
+    long port = pConfig->Profile.GetLong("/alpaca/port", 6800);
+    long device = pConfig->Profile.GetLong("/alpaca/rotator_device", 0);
+    return host.empty() ? _T("Alpaca Rotator") : wxString::Format("Alpaca Rotator [%s:%ld/%ld]", host, port, device);
+}
+#endif
 
 wxArrayString Rotator::RotatorList()
 {
@@ -61,6 +72,9 @@ wxArrayString Rotator::RotatorList()
 #endif
 #ifdef ROTATOR_INDI
     rotatorList.Add(INDIRotatorName());
+#endif
+#ifdef ROTATOR_ALPACA
+    rotatorList.Add(AlpacaRotatorName());
 #endif
 #ifdef ROTATOR_SIMULATOR
     rotatorList.Add(_T("Simulator"));
@@ -96,6 +110,12 @@ Rotator *Rotator::Factory(const wxString& choice)
         else if (choice.Contains(_T("INDI")))
         {
             rotator = INDIRotatorFactory::MakeINDIRotator();
+        }
+#endif
+#ifdef ROTATOR_ALPACA
+        else if (choice.Contains(_T("Alpaca")))
+        {
+            rotator = AlpacaRotatorFactory::MakeAlpacaRotator();
         }
 #endif
         else if (choice.Find(_("None")) != wxNOT_FOUND)

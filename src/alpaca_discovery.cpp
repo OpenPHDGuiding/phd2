@@ -283,6 +283,8 @@ void AlpacaDiscovery::DiscoverServers(wxArrayString& serverList, int numQueries,
         
         Debug.Write(wxString::Format("AlpacaDiscovery: Waiting %d seconds for responses...\n", timeoutSeconds));
         
+        // Continue receiving until timeout, processing all queued responses
+        bool receivedAny = false;
         while (wxGetLocalTimeMillis() - startTime < timeoutMs)
         {
             char buffer[1024];
@@ -299,6 +301,7 @@ void AlpacaDiscovery::DiscoverServers(wxArrayString& serverList, int numQueries,
             if (received > 0)
 #endif
             {
+                receivedAny = true;
                 buffer[received] = '\0';
                 
                 // Get IP address from the sender (UDP from address)
@@ -354,11 +357,19 @@ void AlpacaDiscovery::DiscoverServers(wxArrayString& serverList, int numQueries,
                         serverList.Add(serverStr);
                         Debug.Write(wxString::Format("AlpacaDiscovery: Found server: %s\n", serverStr));
                     }
+                    else
+                    {
+                        Debug.Write(wxString::Format("AlpacaDiscovery: Duplicate server ignored: %s\n", serverStr));
+                    }
                 }
                 else
                 {
-                    Debug.Write(wxString::Format("AlpacaDiscovery: Invalid response format or missing port\n"));
+                    Debug.Write(wxString::Format("AlpacaDiscovery: Invalid response format or missing port from %s\n", ipAddress));
                 }
+                
+                // Continue immediately to process any additional queued responses
+                // Don't sleep here to avoid missing rapid responses
+                continue;
             }
 #ifdef _WIN32
             else if (received == SOCKET_ERROR)
@@ -369,6 +380,12 @@ void AlpacaDiscovery::DiscoverServers(wxArrayString& serverList, int numQueries,
                 {
                     Debug.Write(wxString::Format("AlpacaDiscovery: recvfrom error: %d\n", err));
                 }
+                // If we've received responses before, continue a bit longer in case more arrive
+                // Otherwise, small delay to avoid busy waiting
+                if (!receivedAny)
+                {
+                    wxMilliSleep(10);
+                }
             }
 #else
             else if (received < 0)
@@ -378,10 +395,19 @@ void AlpacaDiscovery::DiscoverServers(wxArrayString& serverList, int numQueries,
                 {
                     Debug.Write(wxString::Format("AlpacaDiscovery: recvfrom error: %s\n", strerror(errno)));
                 }
+                // If we've received responses before, continue a bit longer in case more arrive
+                // Otherwise, small delay to avoid busy waiting
+                if (!receivedAny)
+                {
+                    wxMilliSleep(10);
+                }
             }
 #endif
-            // Small delay to avoid busy waiting
-            wxMilliSleep(10);
+            else
+            {
+                // No data received (timeout or error), small delay to avoid busy waiting
+                wxMilliSleep(10);
+            }
         }
         
         // Small delay between queries

@@ -458,6 +458,9 @@ set(phd2_SRC
   ${phd_src_dir}/rotator_indi.cpp
   ${phd_src_dir}/rotator_indi.h
 
+  ${phd_src_dir}/rotator_alpaca.cpp
+  ${phd_src_dir}/rotator_alpaca.h
+
   ${phd_src_dir}/runinbg.cpp
   ${phd_src_dir}/runinbg.h
 

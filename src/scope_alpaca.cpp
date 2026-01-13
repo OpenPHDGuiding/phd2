@@ -238,21 +238,9 @@ bool ScopeAlpaca::Connect()
         // Get the scope name
         endpoint = wxString::Format("telescope/%ld/name", m_deviceNumber);
         wxString name;
-        JsonParser parser;
-        if (m_client->Get(endpoint, parser, &errorCode))
+        if (!m_client->GetString(endpoint, &name, &errorCode))
         {
-            const json_value *root = parser.Root();
-            if (root && root->type == JSON_OBJECT)
-            {
-                json_for_each(n, root)
-                {
-                    if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_STRING)
-                    {
-                        name = wxString(n->string_value, wxConvUTF8);
-                        break;
-                    }
-                }
-            }
+            name.Clear();
         }
 
         if (!name.IsEmpty())
@@ -733,7 +721,12 @@ bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
                               0, wxEmptyString, 0, 0, true);
                 m_bogusGuideRatesFlagged = true;
             }
-            throw THROW_INFO("Alpaca Mount: mount reporting invalid guide speeds");
+            // Don't throw - allow connection to proceed with warning
+            // Some mounts may not report guide speeds or may return 0.0 initially
+            Debug.Write(wxString::Format("Alpaca Mount: Warning - invalid guide speeds (RA: %.4f, Dec: %.4f), but allowing connection\n", 
+                                        *pRAGuideRate, *pDecGuideRate));
+            bError = true; // Return error but don't block connection
+            return bError;
         }
     }
     catch (const wxString& Msg)

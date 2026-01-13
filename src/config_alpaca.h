@@ -40,13 +40,14 @@ enum AlpacaDevType
 {
     ALPACA_TYPE_CAMERA,
     ALPACA_TYPE_TELESCOPE,
+    ALPACA_TYPE_ROTATOR,
 };
 
 class AlpacaConfig : public wxDialog
 {
     wxTextCtrl *host;
     wxTextCtrl *port;
-    wxWindow *deviceNumber;  // wxComboBox for cameras, wxTextCtrl for telescopes
+    wxWindow *deviceNumber;  // wxComboBox for device selection
     wxComboBox *serverList;
     wxButton *discoverButton;
     wxStaticText *discoverStatus;
@@ -68,13 +69,13 @@ private:
     void OnOK(wxCommandEvent& evt);
     void OnDiscover(wxCommandEvent& evt);
     void OnServerSelected(wxCommandEvent& evt);
-    void QueryCameras(const wxString& host, long port);
+    void QueryDevices(const wxString& host, long port);
 
     enum
     {
         ID_DISCOVER = 1001,
         ID_SERVER_LIST = 1002,
-        ID_CAMERA_LIST = 1003,
+        ID_DEVICE_LIST = 1003,
     };
 
     wxDECLARE_EVENT_TABLE();

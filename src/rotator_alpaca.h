@@ -1,5 +1,5 @@
 /*
- *  alpaca_client.h
+ *  rotator_alpaca.h
  *  PHD Guiding
  *
  *  Created for Alpaca Server support
@@ -31,40 +31,43 @@
  *
  */
 
-#ifndef ALPACA_CLIENT_H
-#define ALPACA_CLIENT_H
+#ifndef ROTATOR_ALPACA_INCLUDED
+#define ROTATOR_ALPACA_INCLUDED
 
-#include "phd.h"
-#include "json_parser.h"
-#include <curl/curl.h>
-#include <sstream>
+#ifdef ROTATOR_ALPACA
 
-class AlpacaClient
+#include "rotator.h"
+#include "alpaca_client.h"
+
+class RotatorAlpaca : public Rotator
 {
 private:
-    CURL *m_curl;
+    AlpacaClient *m_client;
     wxString m_host;
     long m_port;
     long m_deviceNumber;
-    std::stringstream m_response;
+    wxString m_Name;
 
-    static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
-    wxString BuildRequestUrl(const wxString& endpoint) const;
+    void SetupDialog();
+    bool WaitForConnected();
 
 public:
-    AlpacaClient(const wxString& host, long port, long deviceNumber);
-    ~AlpacaClient();
+    RotatorAlpaca();
+    ~RotatorAlpaca();
 
-    bool Get(const wxString& endpoint, JsonParser& parser, long *errorCode = nullptr);
-    bool Put(const wxString& endpoint, const wxString& params, JsonParser& parser, long *errorCode = nullptr);
-    bool GetDouble(const wxString& endpoint, double *value, long *errorCode = nullptr);
-    bool GetInt(const wxString& endpoint, int *value, long *errorCode = nullptr);
-    bool GetBool(const wxString& endpoint, bool *value, long *errorCode = nullptr);
-    bool GetString(const wxString& endpoint, wxString *value, long *errorCode = nullptr);
-    bool PutAction(const wxString& endpoint, const wxString& action, const wxString& params, long *errorCode = nullptr);
+    bool Connect() override;
+    bool Disconnect() override;
+    wxString Name() const override;
+    float Position() const override;
 
-    wxString GetBaseUrl() const;
+    void ShowPropertyDialog() override;
 };
 
-#endif // ALPACA_CLIENT_H
+class AlpacaRotatorFactory
+{
+public:
+    static Rotator *MakeAlpacaRotator();
+};
 
+#endif // ROTATOR_ALPACA
+#endif // ROTATOR_ALPACA_INCLUDED

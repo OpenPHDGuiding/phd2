@@ -47,7 +47,6 @@
 CameraAlpaca::CameraAlpaca()
 {
     Connected = false;
-    Name = wxString::Format("Alpaca Camera [%s:%ld/%ld]", m_host, m_port, m_deviceNumber);
     m_hasGuideOutput = false;
     HasGainControl = false;
     HasSubframes = true;
@@ -66,6 +65,8 @@ CameraAlpaca::CameraAlpaca()
     m_host = pConfig->Profile.GetString("/alpaca/host", _T("localhost"));
     m_port = pConfig->Profile.GetLong("/alpaca/port", 6800);
     m_deviceNumber = pConfig->Profile.GetLong("/alpaca/camera_device", 0);
+    // Set Name after loading settings so it has the correct values
+    Name = wxString::Format("Alpaca Camera [%s:%ld/%ld]", m_host, m_port, m_deviceNumber);
     m_client = nullptr;
 }
 
@@ -98,10 +99,20 @@ wxByte CameraAlpaca::BitsPerPixel()
 bool CameraAlpaca::GetDevicePixelSize(double *devPixelSize)
 {
     if (!Connected)
-        return true;
+    {
+        Debug.Write("Alpaca Camera: GetDevicePixelSize called when not connected\n");
+        return true; // Error: not connected
+    }
+
+    if (m_driverPixelSize <= 0.0)
+    {
+        Debug.Write(wxString::Format("Alpaca Camera: GetDevicePixelSize - invalid pixel size (%.2f)\n", m_driverPixelSize));
+        return true; // Error: invalid pixel size
+    }
 
     *devPixelSize = m_driverPixelSize;
-    return false;
+    Debug.Write(wxString::Format("Alpaca Camera: GetDevicePixelSize returning %.2f microns\n", m_driverPixelSize));
+    return false; // Success
 }
 
 bool CameraAlpaca::Connect(const wxString& camId)
@@ -170,7 +181,51 @@ bool CameraAlpaca::Connect(const wxString& camId)
         JsonParser parser;
         if (!m_client->Put(connectEndpoint, params, parser, &errorCode))
         {
-            wxString errorMsg = wxString::Format(_("Alpaca Camera: Failed to connect device %ld on %s:%ld - HTTP error %ld"), m_deviceNumber, m_host, m_port, errorCode);
+            wxString errorMsg = wxString::Format(_("Alpaca Camera: Failed to connect device %ld on %s:%ld - error %ld"), m_deviceNumber, m_host, m_port, errorCode);
+            Debug.Write(errorMsg + "\n");
+            return CamConnectFailed(errorMsg);
+        }
+
+        bool nowConnected = false;
+        long verifyErrorCode = 0;
+        int connectTimeoutMs = GetTimeoutMs();
+        if (connectTimeoutMs < 2000)
+        {
+            connectTimeoutMs = 2000;
+        }
+        else if (connectTimeoutMs > 30000)
+        {
+            connectTimeoutMs = 30000;
+        }
+        const int pollIntervalMs = 100;
+        int attempts = connectTimeoutMs / pollIntervalMs;
+        if (attempts < 1)
+        {
+            attempts = 1;
+        }
+        Debug.Write(wxString::Format("Alpaca Camera: waiting up to %d ms for device %ld to connect\n",
+                                     connectTimeoutMs, m_deviceNumber));
+        for (int attempt = 0; attempt < attempts; ++attempt)
+        {
+            if (m_client->GetBool(endpoint, &nowConnected, &verifyErrorCode) && nowConnected)
+            {
+                break;
+            }
+            wxMilliSleep(pollIntervalMs);
+        }
+        if (!nowConnected)
+        {
+            wxString errorMsg;
+            if (verifyErrorCode != 0)
+            {
+                errorMsg = wxString::Format(_("Alpaca Camera: Device %ld did not report connected (error %ld) on %s:%ld"),
+                                            m_deviceNumber, verifyErrorCode, m_host, m_port);
+            }
+            else
+            {
+                errorMsg = wxString::Format(_("Alpaca Camera: Timed out waiting for device %ld to connect on %s:%ld"),
+                                            m_deviceNumber, m_host, m_port);
+            }
             Debug.Write(errorMsg + "\n");
             return CamConnectFailed(errorMsg);
         }
@@ -178,22 +233,28 @@ bool CameraAlpaca::Connect(const wxString& camId)
 
     // Get camera name
     endpoint = wxString::Format("camera/%ld/name", m_deviceNumber);
-    JsonParser parser;
-    if (m_client->Get(endpoint, parser, &errorCode))
+    wxString cameraName;
+    if (m_client->GetString(endpoint, &cameraName, &errorCode) && !cameraName.IsEmpty())
     {
-        const json_value *root = parser.Root();
-        if (root && root->type == JSON_OBJECT)
+        Name = wxString::Format("Alpaca Camera [%s:%ld/%ld] - %s", m_host, m_port, m_deviceNumber, cameraName);
+        Debug.Write(wxString::Format("Alpaca Camera: setting camera Name = %s\n", Name));
+    }
+
+    // Get driver description (optional, like NINA does)
+    endpoint = wxString::Format("camera/%ld/description", m_deviceNumber);
+    wxString driverDesc;
+    if (m_client->GetString(endpoint, &driverDesc, &errorCode) && !driverDesc.IsEmpty())
+    {
+        Debug.Write(wxString::Format("Alpaca Camera: Driver Description = %s\n", driverDesc));
+        // Optionally append to Name for better identification
+        if (!Name.Contains(driverDesc))
         {
-            json_for_each(n, root)
-            {
-                if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_STRING)
-                {
-                    Name = wxString::Format("Alpaca Camera [%s:%ld/%ld] - %s", m_host, m_port, m_deviceNumber, wxString(n->string_value, wxConvUTF8));
-                    Debug.Write(wxString::Format("setting camera Name = %s\n", Name));
-                    break;
-                }
-            }
+            Name += wxString::Format(" (%s)", driverDesc);
         }
+    }
+    else
+    {
+        Debug.Write(wxString::Format("Alpaca Camera: Description property not available (HTTP %ld), skipping\n", errorCode));
     }
 
     // Check capabilities - mirror ASCOM approach
@@ -212,20 +273,36 @@ bool CameraAlpaca::Connect(const wxString& camId)
         Debug.Write(wxString::Format("Alpaca Camera: CanPulseGuide property not available (HTTP %ld), assuming no pulse guide support\n", errorCode));
     }
 
-    // Check abort exposure capability
+    // Check abort exposure capability (optional - default to false if not available)
     endpoint = wxString::Format("camera/%ld/canabortexposure", m_deviceNumber);
-    if (!m_client->GetBool(endpoint, &m_canAbortExposure, &errorCode))
+    if (m_client->GetBool(endpoint, &m_canAbortExposure, &errorCode))
     {
-        Debug.Write(wxString::Format("Alpaca Camera: cannot get CanAbortExposure property, HTTP %ld\n", errorCode));
-        return CamConnectFailed(wxString::Format(_("Alpaca Camera driver missing the %s property. Please report this error to your Alpaca driver provider."), "CanAbortExposure"));
+        Debug.Write(wxString::Format("Alpaca Camera: CanAbortExposure = %s\n", m_canAbortExposure ? "true" : "false"));
+    }
+    else
+    {
+        // CanAbortExposure is optional - if not available, default to false
+        m_canAbortExposure = false;
+        Debug.Write(wxString::Format("Alpaca Camera: CanAbortExposure property not available (HTTP %ld), defaulting to false\n", errorCode));
     }
 
-    // Check stop exposure capability
+    // Check stop exposure capability (optional - default to false if not available)
     endpoint = wxString::Format("camera/%ld/canstopexposure", m_deviceNumber);
-    if (!m_client->GetBool(endpoint, &m_canStopExposure, &errorCode))
+    if (m_client->GetBool(endpoint, &m_canStopExposure, &errorCode))
     {
-        Debug.Write(wxString::Format("Alpaca Camera: cannot get CanStopExposure property, HTTP %ld\n", errorCode));
-        return CamConnectFailed(wxString::Format(_("Alpaca Camera driver missing the %s property. Please report this error to your Alpaca driver provider."), "CanStopExposure"));
+        Debug.Write(wxString::Format("Alpaca Camera: CanStopExposure = %s\n", m_canStopExposure ? "true" : "false"));
+    }
+    else
+    {
+        // CanStopExposure is optional - if not available, default to false
+        m_canStopExposure = false;
+        Debug.Write(wxString::Format("Alpaca Camera: CanStopExposure property not available (HTTP %ld), defaulting to false\n", errorCode));
+    }
+    
+    // At least one of them should be available for proper operation, but we'll continue anyway
+    if (!m_canAbortExposure && !m_canStopExposure)
+    {
+        Debug.Write("Alpaca Camera: Warning - neither CanAbortExposure nor CanStopExposure is available. Exposure abort may not work.\n");
     }
 
     // Check if we have a shutter
@@ -241,8 +318,9 @@ bool CameraAlpaca::Connect(const wxString& camId)
     int camXSize = 0;
     if (!m_client->GetInt(endpoint, &camXSize, &errorCode))
     {
-        Debug.Write(wxString::Format("Alpaca Camera: cannot get CameraXSize property, HTTP %ld\n", errorCode));
-        return CamConnectFailed(wxString::Format(_("Alpaca Camera driver missing the %s property. Please report this error to your Alpaca driver provider."), "CameraXSize"));
+        Debug.Write(wxString::Format("Alpaca Camera: cannot get CameraXSize property from %s:%ld device %ld, HTTP %ld\n", m_host, m_port, m_deviceNumber, errorCode));
+        wxString errorMsg = wxString::Format(_("Alpaca Camera driver missing the %s property.\n\nServer: %s:%ld\nDevice: %ld\nHTTP Error: %ld\n\nPlease check:\n- The device number is correct\n- The camera is properly connected to the Alpaca server\n- Report this error to your Alpaca driver provider"), "CameraXSize", m_host, m_port, m_deviceNumber, errorCode);
+        return CamConnectFailed(errorMsg);
     }
     m_maxSize.SetWidth(camXSize);
 
@@ -287,10 +365,11 @@ bool CameraAlpaca::Connect(const wxString& camId)
         if (m_client->GetInt(endpoint, &sensorType, &errorCode) && sensorType > 1)
         {
             Color = true;
+            HasBayer = true;
         }
     }
 
-    // Get pixel size in microns
+    // Get pixel size in microns (required property, like NINA reads)
     endpoint = wxString::Format("camera/%ld/pixelsizex", m_deviceNumber);
     double pixelSizeX = 0.0;
     if (!m_client->GetDouble(endpoint, &pixelSizeX, &errorCode))
@@ -298,20 +377,38 @@ bool CameraAlpaca::Connect(const wxString& camId)
         Debug.Write(wxString::Format("Alpaca Camera: cannot get PixelSizeX property, HTTP %ld\n", errorCode));
         return CamConnectFailed(wxString::Format(_("Alpaca Camera driver missing the %s property. Please report this error to your Alpaca driver provider."), "PixelSizeX"));
     }
+    
+    if (pixelSizeX <= 0.0)
+    {
+        Debug.Write(wxString::Format("Alpaca Camera: PixelSizeX is invalid (%.2f), must be > 0\n", pixelSizeX));
+        return CamConnectFailed(_("Alpaca Camera driver returned invalid pixel size. Please check your camera driver configuration."));
+    }
+    
     m_driverPixelSize = pixelSizeX;
+    Debug.Write(wxString::Format("Alpaca Camera: PixelSizeX = %.2f microns\n", pixelSizeX));
 
     endpoint = wxString::Format("camera/%ld/pixelsizey", m_deviceNumber);
     double pixelSizeY = 0.0;
     if (m_client->GetDouble(endpoint, &pixelSizeY, &errorCode))
     {
-        // If we got PixelSizeY, use the maximum of X and Y
-        m_driverPixelSize = wxMax(m_driverPixelSize, pixelSizeY);
+        if (pixelSizeY > 0.0)
+        {
+            // If we got PixelSizeY, use the maximum of X and Y
+            m_driverPixelSize = wxMax(m_driverPixelSize, pixelSizeY);
+            Debug.Write(wxString::Format("Alpaca Camera: PixelSizeY = %.2f microns, using max = %.2f microns\n", pixelSizeY, m_driverPixelSize));
+        }
+        else
+        {
+            Debug.Write(wxString::Format("Alpaca Camera: PixelSizeY is invalid (%.2f), using PixelSizeX value %.2f\n", pixelSizeY, m_driverPixelSize));
+        }
     }
     else
     {
         // PixelSizeY is optional - if not available, use PixelSizeX
-        Debug.Write(wxString::Format("Alpaca Camera: PixelSizeY property not available (HTTP %ld), using PixelSizeX value %.2f\n", errorCode, m_driverPixelSize));
+        Debug.Write(wxString::Format("Alpaca Camera: PixelSizeY property not available (HTTP %ld), using PixelSizeX value %.2f microns\n", errorCode, m_driverPixelSize));
     }
+    
+    Debug.Write(wxString::Format("Alpaca Camera: Final driver pixel size = %.2f microns\n", m_driverPixelSize));
 
     // Get max binning
     int maxBinX = 1, maxBinY = 1;
@@ -325,24 +422,25 @@ bool CameraAlpaca::Connect(const wxString& camId)
     {
         // Got maxBinY
     }
-    MaxBinning = wxMin(maxBinX, maxBinY);
-    Debug.Write(wxString::Format("Alpaca camera: MaxBinning is %hu\n", MaxBinning));
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
-    m_curBin = Binning;
+    MaxHwBinning = wxMin(maxBinX, maxBinY);
+    Debug.Write(wxString::Format("Alpaca camera: MaxBinning is %hu\n", MaxHwBinning));
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
+    m_curBin = HwBinning;
 
-    // Set binning
-    if (MaxBinning > 1)
+    // Set binning (only if not already 1, as 1 is typically the default and some servers don't allow setting it)
+    // Use ASCOM standard parameter names: BinX and BinY (PascalCase)
+    if (HwBinning != 1)
     {
         endpoint = wxString::Format("camera/%ld/binx", m_deviceNumber);
-        wxString params = wxString::Format("BinX=%d", Binning);
+        wxString params = wxString::Format("BinX=%d", HwBinning);
         if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
         {
             Debug.Write(wxString::Format("Alpaca Camera: failed to set BinX, HTTP %ld\n", errorCode));
             return CamConnectFailed(_("The Alpaca camera failed to set binning. See the debug log for more information."));
         }
         endpoint = wxString::Format("camera/%ld/biny", m_deviceNumber);
-        params = wxString::Format("BinY=%d", Binning);
+        params = wxString::Format("BinY=%d", HwBinning);
         if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
         {
             Debug.Write(wxString::Format("Alpaca Camera: failed to set BinY, HTTP %ld\n", errorCode));
@@ -375,7 +473,14 @@ bool CameraAlpaca::Connect(const wxString& camId)
     }
     else
     {
-        Debug.Write("Alpaca camera: CoolerOn threw exception => no cooler present\n");
+        if (errorCode == 1031)
+        {
+            wxString errorMsg = wxString::Format(_("Alpaca Camera: Device %ld reports not connected while querying CoolerOn on %s:%ld"),
+                                                 m_deviceNumber, m_host, m_port);
+            Debug.Write(errorMsg + "\n");
+            return CamConnectFailed(errorMsg);
+        }
+        Debug.Write(wxString::Format("Alpaca camera: CoolerOn not available (error %ld) => assuming no cooler present\n", errorCode));
     }
 
     // defer defining FrameSize since it is not simply derivable from max size and binning
@@ -473,11 +578,12 @@ bool CameraAlpaca::AbortExposure()
     return !result;
 }
 
-bool CameraAlpaca::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraAlpaca::Capture(usImage& img, const CaptureParams& captureParams)
 {
-    bool retval = false;
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
     bool takeSubframe = UseSubframes;
-    wxRect roi(subframeArg);
+    wxRect roi(captureParams.subframe);
 
     if (roi.width <= 0 || roi.height <= 0)
     {
@@ -485,11 +591,11 @@ bool CameraAlpaca::Capture(int duration, usImage& img, int options, const wxRect
     }
 
     bool binning_changed = false;
-    if (Binning != m_curBin)
+    if (HwBinning != m_curBin)
     {
         binning_changed = true;
         takeSubframe = false; // subframe may be out of bounds now
-        if (Binning == 1)
+        if (HwBinning == 1)
             FrameSize.Set(m_maxSize.x, m_maxSize.y);
         else
             FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
@@ -516,16 +622,17 @@ bool CameraAlpaca::Capture(int duration, usImage& img, int options, const wxRect
             // the max size divided by the binning may be larger than
             // the actual frame, but setting a larger size should
             // request the full binned frame which we want
-            sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            sz.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
         }
         roi = wxRect(sz);
     }
 
     // Set binning if changed
+    // Use ASCOM standard parameter names: BinX and BinY (PascalCase)
     if (binning_changed)
     {
         wxString endpoint = wxString::Format("camera/%ld/binx", m_deviceNumber);
-        wxString params = wxString::Format("BinX=%d", Binning);
+        wxString params = wxString::Format("BinX=%d", HwBinning);
         long errorCode = 0;
         if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
         {
@@ -533,35 +640,59 @@ bool CameraAlpaca::Capture(int duration, usImage& img, int options, const wxRect
             return true;
         }
         endpoint = wxString::Format("camera/%ld/biny", m_deviceNumber);
-        params = wxString::Format("BinY=%d", Binning);
+        params = wxString::Format("BinY=%d", HwBinning);
         if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
         {
             pFrame->Alert(_("The Alpaca camera failed to set binning. See the debug log for more information."));
             return true;
         }
-        m_curBin = Binning;
+        m_curBin = HwBinning;
     }
 
     // Set ROI if changed
+    // Skip setting ROI if it's the full frame (0,0,width,height) as that's the default
+    // Some Alpaca servers don't support setting ROI or have issues with full-frame ROI
     if (roi != m_roi)
     {
-        wxString endpoint = wxString::Format("camera/%ld/startx", m_deviceNumber);
-        wxString params = wxString::Format("StartX=%d", roi.GetLeft());
-        long errorCode = 0;
-        m_client->Put(endpoint, params, JsonParser(), &errorCode);
+        bool isFullFrame = (roi.GetLeft() == 0 && roi.GetTop() == 0 && 
+                           roi.GetWidth() == m_maxSize.x / HwBinning && 
+                           roi.GetHeight() == m_maxSize.y / HwBinning);
+        
+        if (!isFullFrame)
+        {
+            // Only set ROI if it's not the full frame
+            // Use ASCOM standard parameter names: StartX, StartY, NumX, NumY (PascalCase)
+            wxString endpoint = wxString::Format("camera/%ld/startx", m_deviceNumber);
+            wxString params = wxString::Format("StartX=%d", roi.GetLeft());
+            long errorCode = 0;
+            if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
+            {
+                Debug.Write(wxString::Format("Alpaca Camera: failed to set StartX, HTTP %ld (ROI may not be supported)\n", errorCode));
+                // Don't fail capture if ROI setting fails - continue with full frame
+            }
 
-        endpoint = wxString::Format("camera/%ld/starty", m_deviceNumber);
-        params = wxString::Format("StartY=%d", roi.GetTop());
-        m_client->Put(endpoint, params, JsonParser(), &errorCode);
+            endpoint = wxString::Format("camera/%ld/starty", m_deviceNumber);
+            params = wxString::Format("StartY=%d", roi.GetTop());
+            if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
+            {
+                Debug.Write(wxString::Format("Alpaca Camera: failed to set StartY, HTTP %ld (ROI may not be supported)\n", errorCode));
+            }
 
-        endpoint = wxString::Format("camera/%ld/numx", m_deviceNumber);
-        params = wxString::Format("NumX=%d", roi.GetWidth());
-        m_client->Put(endpoint, params, JsonParser(), &errorCode);
+            endpoint = wxString::Format("camera/%ld/numx", m_deviceNumber);
+            params = wxString::Format("NumX=%d", roi.GetWidth());
+            if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
+            {
+                Debug.Write(wxString::Format("Alpaca Camera: failed to set NumX, HTTP %ld (ROI may not be supported)\n", errorCode));
+            }
 
-        endpoint = wxString::Format("camera/%ld/numy", m_deviceNumber);
-        params = wxString::Format("NumY=%d", roi.GetHeight());
-        m_client->Put(endpoint, params, JsonParser(), &errorCode);
-
+            endpoint = wxString::Format("camera/%ld/numy", m_deviceNumber);
+            params = wxString::Format("NumY=%d", roi.GetHeight());
+            if (!m_client->Put(endpoint, params, JsonParser(), &errorCode))
+            {
+                Debug.Write(wxString::Format("Alpaca Camera: failed to set NumY, HTTP %ld (ROI may not be supported)\n", errorCode));
+            }
+        }
+        
         m_roi = roi;
     }
 
@@ -789,7 +920,7 @@ bool CameraAlpaca::Capture(int duration, usImage& img, int options, const wxRect
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

@@ -33,6 +33,45 @@
 
 #include "alpaca_client.h"
 
+namespace {
+bool ExtractAlpacaError(const json_value *root, int *errorNumber, wxString *errorMessage)
+{
+    if (!root || root->type != JSON_OBJECT)
+        return false;
+
+    int number = 0;
+    wxString message;
+    json_for_each(n, root)
+    {
+        if (!n->name)
+            continue;
+
+        if (strcmp(n->name, "ErrorNumber") == 0)
+        {
+            if (n->type == JSON_INT)
+            {
+                number = n->int_value;
+            }
+            else if (n->type == JSON_FLOAT)
+            {
+                number = static_cast<int>(n->float_value);
+            }
+        }
+        else if (strcmp(n->name, "ErrorMessage") == 0 && n->type == JSON_STRING)
+        {
+            message = wxString(n->string_value, wxConvUTF8);
+        }
+    }
+
+    if (errorNumber)
+        *errorNumber = number;
+    if (errorMessage)
+        *errorMessage = message;
+
+    return number != 0;
+}
+} // namespace
+
 size_t AlpacaClient::WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     AlpacaClient *client = static_cast<AlpacaClient *>(userp);
@@ -54,6 +93,10 @@ AlpacaClient::AlpacaClient(const wxString& host, long port, long deviceNumber)
         curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, 10L);
         curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 0L); // Don't follow redirects - they might go to auth pages
         curl_easy_setopt(m_curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        // Disable connection reuse - always use fresh connections
+        // This server closes connections intermittently, so reuse causes curl error 52
+        curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+        curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
         // Enable cookie handling in case server requires authentication
         curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, ""); // Enable cookie engine
         curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, "");  // Store cookies in memory
@@ -129,10 +172,16 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
     m_response.clear();
 
     // Reset curl options for GET request (clear any POSTFIELDS from previous PUT requests)
+    // This ensures clean state between requests, similar to how ASCOM library handles it
     curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, nullptr);
     curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, 0);
     curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, nullptr);
     curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1L);
+    // Clear any headers from previous requests
+    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, nullptr);
+    // Always use fresh connections (set in constructor, but ensure it's still set)
+    curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+    curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
     
     wxString url = BuildRequestUrl(endpoint);
     if (!endpoint.Contains("?"))
@@ -142,8 +191,57 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
 
     Debug.Write(wxString::Format("AlpacaClient GET: %s\n", url));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
+    
+    // Explicitly tell server to close connection after response
+    // This prevents connection reuse issues when server closes connections unpredictably
+    struct curl_slist *headers = nullptr;
+    headers = curl_slist_append(headers, "Connection: close");
+    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
 
-    CURLcode res = curl_easy_perform(m_curl);
+    // Retry logic for curl error 52 (server closes connection) - like NINA/ASCOM library does
+    CURLcode res;
+    int retries = 3;
+    for (int retry = 0; retry < retries; retry++)
+    {
+        res = curl_easy_perform(m_curl);
+        
+        // If successful or not a connection error, break
+        if (res == CURLE_OK || (res != CURLE_GOT_NOTHING && res != CURLE_RECV_ERROR))
+        {
+            break;
+        }
+        
+        // Connection was closed by server - retry with fresh connection
+        if (retry < retries - 1)
+        {
+            Debug.Write(wxString::Format("AlpacaClient GET: Connection closed by server (curl error %d), retrying (%d/%d)...\n", res, retry + 1, retries));
+            // Ensure fresh connection for retry
+            curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+            curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
+            // Exponential backoff delay before retry
+            // Using fixed delays similar to common HTTP retry patterns
+            // First retry: 50ms, Second: 100ms, Third: 200ms
+            int delayMs = (retry == 0) ? 50 : (retry == 1) ? 100 : 200;
+            wxMilliSleep(delayMs);
+            // Clear response buffer for retry
+            m_response.str("");
+            m_response.clear();
+            // Re-add Connection: close header for retry
+            if (headers)
+            {
+                curl_slist_free_all(headers);
+            }
+            headers = curl_slist_append(nullptr, "Connection: close");
+            curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
+        }
+    }
+    
+    // Clean up headers
+    if (headers)
+    {
+        curl_slist_free_all(headers);
+        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, nullptr);
+    }
     
     std::string responseStr = m_response.str();
     
@@ -164,8 +262,8 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
         }
         else
         {
-            Debug.Write(wxString::Format("AlpacaClient GET failed: %s (curl error %d) for URL: %s\n", 
-                                         curlError, res, urlStr ? urlStr : "unknown"));
+            Debug.Write(wxString::Format("AlpacaClient GET failed after %d retries: %s (curl error %d) for URL: %s\n", 
+                                         retries, curlError, res, urlStr ? urlStr : "unknown"));
             if (errorCode)
             {
                 *errorCode = 0; // No HTTP response received
@@ -245,6 +343,19 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
         return false;
     }
 
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
+    if (ExtractAlpacaError(parser.Root(), &alpacaErrorNumber, &alpacaErrorMessage))
+    {
+        Debug.Write(wxString::Format("AlpacaClient PUT: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n",
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
+        }
+        return false;
+    }
+
     return true;
 }
 
@@ -260,7 +371,15 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
     m_response.clear();
 
     wxString url = BuildRequestUrl(endpoint);
-    url += wxString::Format("?ClientID=0&ClientTransactionID=0");
+    if (!params.IsEmpty())
+    {
+        // Some Alpaca servers only read parameters from the query string.
+        url += wxString::Format("?ClientID=0&ClientTransactionID=0&%s", params);
+    }
+    else
+    {
+        url += wxString::Format("?ClientID=0&ClientTransactionID=0");
+    }
 
     Debug.Write(wxString::Format("AlpacaClient PUT: %s, params: %s\n", url, params));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
@@ -275,15 +394,47 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, postData.length());
         
         headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+        headers = curl_slist_append(headers, "Connection: close");
         curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
     }
     else
     {
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, "");
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, 0);
+        headers = curl_slist_append(nullptr, "Connection: close");
+        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
     }
 
-    CURLcode res = curl_easy_perform(m_curl);
+    // Retry logic for curl error 52 (server closes connection) - like NINA/ASCOM library does
+    CURLcode res;
+    int retries = 3;
+    for (int retry = 0; retry < retries; retry++)
+    {
+        res = curl_easy_perform(m_curl);
+        
+        // If successful or not a connection error, break
+        if (res == CURLE_OK || (res != CURLE_GOT_NOTHING && res != CURLE_RECV_ERROR))
+        {
+            break;
+        }
+        
+        // Connection was closed by server - retry with fresh connection
+        if (retry < retries - 1)
+        {
+            Debug.Write(wxString::Format("AlpacaClient PUT: Connection closed by server (curl error %d), retrying (%d/%d)...\n", res, retry + 1, retries));
+            // Ensure fresh connection for retry
+            curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+            curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
+            // Exponential backoff delay before retry
+            // Using fixed delays similar to common HTTP retry patterns
+            // First retry: 50ms, Second: 100ms, Third: 200ms
+            int delayMs = (retry == 0) ? 50 : (retry == 1) ? 100 : 200;
+            wxMilliSleep(delayMs);
+            // Clear response buffer for retry
+            m_response.str("");
+            m_response.clear();
+        }
+    }
     
     // Clean up headers if we set them
     if (headers)
@@ -294,9 +445,14 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
     
     if (res != CURLE_OK)
     {
-        Debug.Write(wxString::Format("AlpacaClient PUT failed: %s\n", curl_easy_strerror(res)));
+        Debug.Write(wxString::Format("AlpacaClient PUT failed after %d retries: %s\n", retries, curl_easy_strerror(res)));
         return false;
     }
+    
+    // After PUT requests, some servers may close the connection
+    // Force a fresh connection for the next request to avoid reuse issues
+    curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+    curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
 
     long httpCode = 0;
     curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -311,6 +467,10 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
         Debug.Write(wxString::Format("AlpacaClient PUT returned HTTP %ld, response: %s\n", httpCode, wxString(responseStr.c_str(), wxConvUTF8)));
         return false;
     }
+    
+    // Small delay after successful PUT to allow server to process the request
+    // This helps prevent the next GET request from failing with curl error 52
+    wxMilliSleep(100);
 
     std::string responseStr = m_response.str();
     if (!parser.Parse(responseStr))
@@ -325,57 +485,299 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
 bool AlpacaClient::GetDouble(const wxString& endpoint, double *value, long *errorCode)
 {
     JsonParser parser;
-    if (!Get(endpoint, parser, errorCode))
+    long httpCode = 0;
+    if (!Get(endpoint, parser, &httpCode))
     {
+        std::string responseStr = m_response.str();
+        Debug.Write(wxString::Format("AlpacaClient GetDouble: Get() failed for %s, HTTP %ld, response: %s\n", 
+                                     endpoint, httpCode, wxString(responseStr.c_str(), wxConvUTF8)));
+        if (errorCode)
+        {
+            *errorCode = httpCode;
+        }
         return false;
     }
 
     const json_value *root = parser.Root();
     if (!root || root->type != JSON_OBJECT)
     {
+        std::string responseStr = m_response.str();
+        Debug.Write(wxString::Format("AlpacaClient GetDouble: Invalid JSON response for %s: %s\n", endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+        if (errorCode)
+        {
+            *errorCode = httpCode; // HTTP was successful but response format is wrong
+        }
         return false;
     }
 
+    // Check for Alpaca API errors first (ErrorNumber/ErrorMessage fields)
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
     json_for_each(n, root)
     {
-        if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_FLOAT)
+        if (n->name && strcmp(n->name, "ErrorNumber") == 0 && n->type == JSON_INT)
         {
-            *value = n->float_value;
-            return true;
+            alpacaErrorNumber = n->int_value;
         }
-        else if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_INT)
+        else if (n->name && strcmp(n->name, "ErrorMessage") == 0 && n->type == JSON_STRING)
         {
-            *value = static_cast<double>(n->int_value);
-            return true;
+            alpacaErrorMessage = wxString(n->string_value, wxConvUTF8);
         }
     }
 
+    if (alpacaErrorNumber != 0)
+    {
+        Debug.Write(wxString::Format("AlpacaClient GetDouble: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n", 
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
+        }
+        return false;
+    }
+
+    // Debug: log all fields found in the JSON object
+    wxString foundFields = "";
+    json_for_each(n, root)
+    {
+        if (n->name)
+        {
+            foundFields += wxString::Format("'%s' (type %d), ", n->name, n->type);
+        }
+    }
+    Debug.Write(wxString::Format("AlpacaClient GetDouble: Found fields in response: %s\n", foundFields));
+
+    // Try to find "Value" field first (standard Alpaca API format)
+    json_for_each(n, root)
+    {
+        if (n->name && strcmp(n->name, "Value") == 0)
+        {
+            Debug.Write(wxString::Format("AlpacaClient GetDouble: Found 'Value' field, type=%d\n", n->type));
+            if (n->type == JSON_FLOAT)
+            {
+                *value = n->float_value;
+                Debug.Write(wxString::Format("AlpacaClient GetDouble: Parsed float value: %.2f\n", *value));
+                return true;
+            }
+            else if (n->type == JSON_INT)
+            {
+                *value = static_cast<double>(n->int_value);
+                Debug.Write(wxString::Format("AlpacaClient GetDouble: Parsed integer value as double: %.2f\n", *value));
+                return true;
+            }
+            else
+            {
+                Debug.Write(wxString::Format("AlpacaClient GetDouble: 'Value' field has unexpected type %d\n", n->type));
+            }
+        }
+    }
+
+    // Some Alpaca servers return the property name directly (e.g., "PixelSizeX" instead of "Value")
+    // Extract the property name from the endpoint (e.g., "camera/1/pixelsizex" -> "PixelSizeX")
+    wxString endpointLower = endpoint.Lower();
+    wxString propertyName;
+    int lastSlash = endpointLower.Find('/', true);
+    if (lastSlash != wxNOT_FOUND)
+    {
+        propertyName = endpointLower.Mid(lastSlash + 1);
+        // Capitalize first letter (pixelsizex -> PixelSizeX)
+        if (!propertyName.IsEmpty())
+        {
+            propertyName = propertyName.Left(1).Upper() + propertyName.Mid(1);
+            // Also capitalize after 'x' or 'y' (pixelsizex -> PixelSizeX)
+            int xPos = propertyName.Find('x');
+            if (xPos != wxNOT_FOUND && xPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(xPos + 1) + propertyName.Mid(xPos + 1, 1).Upper() + propertyName.Mid(xPos + 2);
+            }
+            int yPos = propertyName.Find('y');
+            if (yPos != wxNOT_FOUND && yPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(yPos + 1) + propertyName.Mid(yPos + 1, 1).Upper() + propertyName.Mid(yPos + 2);
+            }
+        }
+    }
+
+    // Try to find the property name directly (e.g., "PixelSizeX")
+    if (!propertyName.IsEmpty())
+    {
+        json_for_each(n, root)
+        {
+            if (n->name && wxString(n->name, wxConvUTF8).CmpNoCase(propertyName) == 0)
+            {
+                Debug.Write(wxString::Format("AlpacaClient GetDouble: Found property name '%s' directly, type=%d\n", propertyName, n->type));
+                if (n->type == JSON_FLOAT)
+                {
+                    *value = n->float_value;
+                    Debug.Write(wxString::Format("AlpacaClient GetDouble: Parsed float value from property name: %.2f\n", *value));
+                    return true;
+                }
+                else if (n->type == JSON_INT)
+                {
+                    *value = static_cast<double>(n->int_value);
+                    Debug.Write(wxString::Format("AlpacaClient GetDouble: Parsed integer value as double from property name: %.2f\n", *value));
+                    return true;
+                }
+            }
+        }
+    }
+
+    // Value field not found or wrong type
+    std::string responseStr = m_response.str();
+    Debug.Write(wxString::Format("AlpacaClient GetDouble: 'Value' field not found or wrong type in response for %s: %s\n", endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+    if (errorCode)
+    {
+        *errorCode = httpCode; // HTTP was successful but response format is wrong
+    }
     return false;
 }
 
 bool AlpacaClient::GetInt(const wxString& endpoint, int *value, long *errorCode)
 {
     JsonParser parser;
-    if (!Get(endpoint, parser, errorCode))
+    long httpCode = 0;
+    if (!Get(endpoint, parser, &httpCode))
     {
+        if (errorCode)
+        {
+            *errorCode = httpCode;
+        }
         return false;
     }
 
     const json_value *root = parser.Root();
     if (!root || root->type != JSON_OBJECT)
     {
+        std::string responseStr = m_response.str();
+        Debug.Write(wxString::Format("AlpacaClient GetInt: Invalid JSON response for %s: %s\n", endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+        if (errorCode)
+        {
+            *errorCode = httpCode; // HTTP was successful but response format is wrong
+        }
         return false;
     }
 
+    // Check for Alpaca API errors first (ErrorNumber/ErrorMessage fields)
+    // Alpaca API returns HTTP 200 even on errors, with error info in JSON
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
     json_for_each(n, root)
     {
-        if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_INT)
+        if (n->name && strcmp(n->name, "ErrorNumber") == 0 && n->type == JSON_INT)
         {
-            *value = n->int_value;
-            return true;
+            alpacaErrorNumber = n->int_value;
+        }
+        else if (n->name && strcmp(n->name, "ErrorMessage") == 0 && n->type == JSON_STRING)
+        {
+            alpacaErrorMessage = wxString(n->string_value, wxConvUTF8);
         }
     }
 
+    if (alpacaErrorNumber != 0)
+    {
+        Debug.Write(wxString::Format("AlpacaClient GetInt: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n", 
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber; // Use Alpaca error number
+        }
+        return false;
+    }
+
+    // Debug: log all fields found in the JSON object
+    wxString foundFields = "";
+    json_for_each(n, root)
+    {
+        if (n->name)
+        {
+            foundFields += wxString::Format("'%s' (type %d), ", n->name, n->type);
+        }
+    }
+    Debug.Write(wxString::Format("AlpacaClient GetInt: Found fields in response: %s\n", foundFields));
+
+    // Try to find "Value" field first (standard Alpaca API format)
+    json_for_each(n, root)
+    {
+        if (n->name && strcmp(n->name, "Value") == 0)
+        {
+            Debug.Write(wxString::Format("AlpacaClient GetInt: Found 'Value' field, type=%d\n", n->type));
+            if (n->type == JSON_INT)
+            {
+                *value = n->int_value;
+                Debug.Write(wxString::Format("AlpacaClient GetInt: Parsed integer value: %d\n", *value));
+                return true;
+            }
+            else if (n->type == JSON_FLOAT)
+            {
+                // Some servers might return floats for integers
+                *value = static_cast<int>(n->float_value);
+                Debug.Write(wxString::Format("AlpacaClient GetInt: Parsed float value as integer: %d\n", *value));
+                return true;
+            }
+            else
+            {
+                Debug.Write(wxString::Format("AlpacaClient GetInt: 'Value' field has unexpected type %d\n", n->type));
+            }
+        }
+    }
+
+    // Some Alpaca servers return the property name directly (e.g., "CameraXSize" instead of "Value")
+    // Extract the property name from the endpoint (e.g., "camera/1/cameraxsize" -> "CameraXSize")
+    wxString endpointLower = endpoint.Lower();
+    wxString propertyName;
+    int lastSlash = endpointLower.Find('/', true);
+    if (lastSlash != wxNOT_FOUND)
+    {
+        propertyName = endpointLower.Mid(lastSlash + 1);
+        // Capitalize first letter (cameraxsize -> CameraXSize)
+        if (!propertyName.IsEmpty())
+        {
+            propertyName = propertyName.Left(1).Upper() + propertyName.Mid(1);
+            // Also capitalize after 'x' or 'y' (cameraxsize -> CameraXSize)
+            int xPos = propertyName.Find('x');
+            if (xPos != wxNOT_FOUND && xPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(xPos + 1) + propertyName.Mid(xPos + 1, 1).Upper() + propertyName.Mid(xPos + 2);
+            }
+            int yPos = propertyName.Find('y');
+            if (yPos != wxNOT_FOUND && yPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(yPos + 1) + propertyName.Mid(yPos + 1, 1).Upper() + propertyName.Mid(yPos + 2);
+            }
+        }
+    }
+
+    // Try to find the property name directly (e.g., "CameraXSize")
+    if (!propertyName.IsEmpty())
+    {
+        json_for_each(n, root)
+        {
+            if (n->name && wxString(n->name, wxConvUTF8).CmpNoCase(propertyName) == 0)
+            {
+                Debug.Write(wxString::Format("AlpacaClient GetInt: Found property name '%s' directly, type=%d\n", propertyName, n->type));
+                if (n->type == JSON_INT)
+                {
+                    *value = n->int_value;
+                    Debug.Write(wxString::Format("AlpacaClient GetInt: Parsed integer value from property name: %d\n", *value));
+                    return true;
+                }
+                else if (n->type == JSON_FLOAT)
+                {
+                    *value = static_cast<int>(n->float_value);
+                    Debug.Write(wxString::Format("AlpacaClient GetInt: Parsed float value as integer from property name: %d\n", *value));
+                    return true;
+                }
+            }
+        }
+    }
+
+    // Value field not found or wrong type
+    std::string responseStr = m_response.str();
+    Debug.Write(wxString::Format("AlpacaClient GetInt: 'Value' field not found or wrong type in response for %s: %s\n", endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+    if (errorCode)
+    {
+        *errorCode = httpCode; // HTTP was successful but response format is wrong
+    }
     return false;
 }
 
@@ -400,6 +802,32 @@ bool AlpacaClient::GetBool(const wxString& endpoint, bool *value, long *errorCod
         if (errorCode)
         {
             *errorCode = httpCode; // HTTP was successful but response format is wrong
+        }
+        return false;
+    }
+
+    // Check for Alpaca API errors first (ErrorNumber/ErrorMessage fields)
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
+    json_for_each(n, root)
+    {
+        if (n->name && strcmp(n->name, "ErrorNumber") == 0 && n->type == JSON_INT)
+        {
+            alpacaErrorNumber = n->int_value;
+        }
+        else if (n->name && strcmp(n->name, "ErrorMessage") == 0 && n->type == JSON_STRING)
+        {
+            alpacaErrorMessage = wxString(n->string_value, wxConvUTF8);
+        }
+    }
+
+    if (alpacaErrorNumber != 0)
+    {
+        Debug.Write(wxString::Format("AlpacaClient GetBool: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n", 
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
         }
         return false;
     }
@@ -450,6 +878,141 @@ bool AlpacaClient::GetBool(const wxString& endpoint, bool *value, long *errorCod
     return false;
 }
 
+bool AlpacaClient::GetString(const wxString& endpoint, wxString *value, long *errorCode)
+{
+    if (!value)
+    {
+        return false;
+    }
+
+    JsonParser parser;
+    long httpCode = 0;
+    if (!Get(endpoint, parser, &httpCode))
+    {
+        if (errorCode)
+        {
+            *errorCode = httpCode;
+        }
+        return false;
+    }
+
+    const json_value *root = parser.Root();
+    if (!root || root->type != JSON_OBJECT)
+    {
+        std::string responseStr = m_response.str();
+        Debug.Write(wxString::Format("AlpacaClient GetString: Invalid JSON response for %s: %s\n",
+                                     endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+        if (errorCode)
+        {
+            *errorCode = httpCode;
+        }
+        return false;
+    }
+
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
+    json_for_each(n, root)
+    {
+        if (n->name && strcmp(n->name, "ErrorNumber") == 0 && n->type == JSON_INT)
+        {
+            alpacaErrorNumber = n->int_value;
+        }
+        else if (n->name && strcmp(n->name, "ErrorMessage") == 0 && n->type == JSON_STRING)
+        {
+            alpacaErrorMessage = wxString(n->string_value, wxConvUTF8);
+        }
+    }
+
+    if (alpacaErrorNumber != 0)
+    {
+        Debug.Write(wxString::Format("AlpacaClient GetString: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n",
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
+        }
+        return false;
+    }
+
+    json_for_each(n, root)
+    {
+        if (n->name && strcmp(n->name, "Value") == 0)
+        {
+            if (n->type == JSON_STRING)
+            {
+                *value = wxString(n->string_value, wxConvUTF8);
+                return true;
+            }
+            if (n->type == JSON_INT)
+            {
+                *value = wxString::Format("%ld", n->int_value);
+                return true;
+            }
+            if (n->type == JSON_FLOAT)
+            {
+                *value = wxString::Format("%.6f", n->float_value);
+                return true;
+            }
+        }
+    }
+
+    wxString endpointLower = endpoint.Lower();
+    wxString propertyName;
+    int lastSlash = endpointLower.Find('/', true);
+    if (lastSlash != wxNOT_FOUND)
+    {
+        propertyName = endpointLower.Mid(lastSlash + 1);
+        if (!propertyName.IsEmpty())
+        {
+            propertyName = propertyName.Left(1).Upper() + propertyName.Mid(1);
+            int xPos = propertyName.Find('x');
+            if (xPos != wxNOT_FOUND && xPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(xPos + 1) + propertyName.Mid(xPos + 1, 1).Upper() + propertyName.Mid(xPos + 2);
+            }
+            int yPos = propertyName.Find('y');
+            if (yPos != wxNOT_FOUND && yPos + 1 < (int)propertyName.length())
+            {
+                propertyName = propertyName.Left(yPos + 1) + propertyName.Mid(yPos + 1, 1).Upper() + propertyName.Mid(yPos + 2);
+            }
+        }
+    }
+
+    if (!propertyName.IsEmpty())
+    {
+        json_for_each(n, root)
+        {
+            if (n->name && wxString(n->name, wxConvUTF8).CmpNoCase(propertyName) == 0)
+            {
+                if (n->type == JSON_STRING)
+                {
+                    *value = wxString(n->string_value, wxConvUTF8);
+                    return true;
+                }
+                if (n->type == JSON_INT)
+                {
+                    *value = wxString::Format("%ld", n->int_value);
+                    return true;
+                }
+                if (n->type == JSON_FLOAT)
+                {
+                    *value = wxString::Format("%.6f", n->float_value);
+                    return true;
+                }
+            }
+        }
+    }
+
+    std::string responseStr = m_response.str();
+    Debug.Write(wxString::Format("AlpacaClient GetString: 'Value' field not found or wrong type in response for %s: %s\n",
+                                 endpoint, wxString(responseStr.c_str(), wxConvUTF8)));
+    if (errorCode)
+    {
+        *errorCode = httpCode;
+    }
+    return false;
+}
+
 bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, const wxString& params, long *errorCode)
 {
     if (!m_curl)
@@ -462,7 +1025,15 @@ bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, c
     m_response.clear();
 
     wxString url = BuildRequestUrl(endpoint);
-    url += wxString::Format("?ClientID=0&ClientTransactionID=0");
+    if (!params.IsEmpty())
+    {
+        // Some Alpaca servers only read parameters from the query string.
+        url += wxString::Format("?ClientID=0&ClientTransactionID=0&%s", params);
+    }
+    else
+    {
+        url += wxString::Format("?ClientID=0&ClientTransactionID=0");
+    }
 
     Debug.Write(wxString::Format("AlpacaClient PutAction: %s, params: %s\n", url, params));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
@@ -477,15 +1048,47 @@ bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, c
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, postData.length());
         
         headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+        headers = curl_slist_append(headers, "Connection: close");
         curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
     }
     else
     {
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, "");
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, 0);
+        headers = curl_slist_append(nullptr, "Connection: close");
+        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
     }
 
-    CURLcode res = curl_easy_perform(m_curl);
+    // Retry logic for curl error 52 (server closes connection) - like NINA/ASCOM library does
+    CURLcode res;
+    int retries = 3;
+    for (int retry = 0; retry < retries; retry++)
+    {
+        res = curl_easy_perform(m_curl);
+        
+        // If successful or not a connection error, break
+        if (res == CURLE_OK || (res != CURLE_GOT_NOTHING && res != CURLE_RECV_ERROR))
+        {
+            break;
+        }
+        
+        // Connection was closed by server - retry with fresh connection
+        if (retry < retries - 1)
+        {
+            Debug.Write(wxString::Format("AlpacaClient PutAction: Connection closed by server (curl error %d), retrying (%d/%d)...\n", res, retry + 1, retries));
+            // Ensure fresh connection for retry
+            curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+            curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
+            // Exponential backoff delay before retry
+            // Using fixed delays similar to common HTTP retry patterns
+            // First retry: 50ms, Second: 100ms, Third: 200ms
+            int delayMs = (retry == 0) ? 50 : (retry == 1) ? 100 : 200;
+            wxMilliSleep(delayMs);
+            // Clear response buffer for retry
+            m_response.str("");
+            m_response.clear();
+        }
+    }
     
     // Clean up headers if we set them
     if (headers)
@@ -496,7 +1099,7 @@ bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, c
     
     if (res != CURLE_OK)
     {
-        Debug.Write(wxString::Format("AlpacaClient PUT failed: %s\n", curl_easy_strerror(res)));
+        Debug.Write(wxString::Format("AlpacaClient PutAction failed after %d retries: %s\n", retries, curl_easy_strerror(res)));
         return false;
     }
 
@@ -512,7 +1115,45 @@ bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, c
         std::string responseStr = m_response.str();
         Debug.Write(wxString::Format("AlpacaClient PutAction returned HTTP %ld, response: %s\n", httpCode, wxString(responseStr.c_str(), wxConvUTF8)));
     }
+    
+    // Small delay after successful PUT action to allow server to process the request
+    // This helps prevent the next GET request from failing with curl error 52
+    if (httpCode == 200)
+    {
+        wxMilliSleep(100);
+    }
 
-    return httpCode == 200;
+    if (httpCode != 200)
+    {
+        return false;
+    }
+
+    std::string responseStr = m_response.str();
+    if (responseStr.empty())
+    {
+        return true;
+    }
+
+    JsonParser parser;
+    if (!parser.Parse(responseStr))
+    {
+        Debug.Write(wxString::Format("AlpacaClient PutAction: JSON parse error: %s\n", parser.ErrorDesc()));
+        return false;
+    }
+
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
+    if (ExtractAlpacaError(parser.Root(), &alpacaErrorNumber, &alpacaErrorMessage))
+    {
+        Debug.Write(wxString::Format("AlpacaClient PutAction: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n",
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
+        }
+        return false;
+    }
+
+    return true;
 }
 
