@@ -452,7 +452,7 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
 
     try
     {
-        if (!image || !image->ImageData)
+        if (!image->ImageData)
         {
             throw ERROR_INFO("No Current Image");
         }
@@ -519,7 +519,7 @@ bool GuiderMultiStar::AutoSelect(const wxRect& roi)
         error = true;
     }
 
-    if (image && image->ImageData)
+    if (image->ImageData)
     {
         if (error)
             Debug.Write("GuiderMultiStar::AutoSelect failed.\n");
@@ -579,7 +579,7 @@ wxRect GuiderMultiStar::GetBoundingBox() const
     if (subframe)
     {
         wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
-        box.Intersect(wxRect(pCamera->FrameSize));
+        box.Intersect(wxRect(CurrentImage()->Size));
         return box;
     }
     else
@@ -1078,8 +1078,6 @@ bool GuiderMultiStar::SetLockPosition(const PHD_Point& position)
 bool GuiderMultiStar::IsValidLockPosition(const PHD_Point& pt)
 {
     const usImage *pImage = CurrentImage();
-    if (!pImage)
-        return false;
     // this is a bit ugly as it is tightly coupled to Star::Find
     return pt.X >= 1 + m_searchRegion && pt.X + 1 + m_searchRegion < pImage->Size.GetX() && pt.Y >= 1 + m_searchRegion &&
         pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
@@ -1088,8 +1086,6 @@ bool GuiderMultiStar::IsValidLockPosition(const PHD_Point& pt)
 bool GuiderMultiStar::IsValidSecondaryStarPosition(const PHD_Point& pt)
 {
     const usImage *pImage = CurrentImage();
-    if (!pImage)
-        return false;
     // As above, tightly coupled to Star::Find but with somewhat relaxed constraints. Find handles cases where search region is
     // only partly within image
     return pt.X >= 5 && pt.X + 5 < pImage->Size.GetX() && pt.Y >= 5 && pt.Y + 5 < pImage->Size.GetY();
@@ -1319,8 +1315,9 @@ void GuiderMultiStar::SaveStarFITS()
         hdr.write("DATE", wxDateTime::UNow(), wxDateTime::UTC, "file creation time, UTC");
         hdr.write("DATE-OBS", pImage->ImgStartTime, wxDateTime::UTC, "image capture start time, UTC");
         hdr.write("EXPOSURE", (float) pImage->ImgExpDur / 1000.0f, "Exposure time [s]");
-        hdr.write("XBINNING", (unsigned int) pCamera->Binning, "Camera X binning");
-        hdr.write("YBINNING", (unsigned int) pCamera->Binning, "Camera Y binning");
+        auto binning = pCamera->GetBinning();
+        hdr.write("XBINNING", binning, "Camera X binning");
+        hdr.write("YBINNING", binning, "Camera Y binning");
         hdr.write("XORGSUB", start_x, "Subframe x position in binned pixels");
         hdr.write("YORGSUB", start_y, "Subframe y position in binned pixels");
 

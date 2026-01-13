@@ -59,7 +59,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
     bool Connect(const wxString& camId) override;
@@ -151,6 +151,9 @@ bool CameraDSI::Connect(const wxString& camId)
 
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
+
+        HasBayer = MeadeCam->IsColor;
+
         Connected = true;
     }
 
@@ -185,8 +188,11 @@ bool CameraDSI::GetDevicePixelSize(double *devPixelSize)
     return false; // Pixel sizes are hard-coded
 }
 
-bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraDSI::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
 
@@ -244,7 +250,7 @@ bool CameraDSI::Capture(int duration, usImage& img, int options, const wxRect& s
 
     if (options & CAPTURE_RECON)
     {
-        if (MeadeCam->IsColor)
+        if (HasBayer && captureParams.CombinedBinning() == 1)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
             SquarePixels(img, 8.6, 8.3);

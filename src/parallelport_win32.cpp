@@ -50,65 +50,6 @@ ParallelPortWin32::ParallelPortWin32(void)
 
 ParallelPortWin32::~ParallelPortWin32(void) { }
 
-struct ParallelPortChooser : public wxDialog
-{
-    ParallelPortChooser();
-};
-
-wxString ParallelPortWin32::ChooseParallelPort(const wxString& dflt)
-{
-    wxArrayString ports;
-    ports.Add("LPT1 - 0x3BC");
-    ports.Add("LPT2 - 0x378");
-    ports.Add("LPT3 - 0x278");
-
-    wxString customPort = pConfig->Global.GetString("/CustomParallelPort", wxEmptyString);
-    if (!customPort.IsEmpty())
-        ports.Add(customPort);
-
-    wxDialog dlg(NULL, wxID_ANY, _("Select Parallel Port"));
-    wxSizer *sz1 = new wxBoxSizer(wxVERTICAL);
-
-    wxListBox *portlb = new wxListBox(&dlg, wxID_ANY, wxDefaultPosition, wxDefaultSize, ports);
-    portlb->SetStringSelection(dflt);
-    sz1->Add(portlb);
-
-    wxWindow *label = new wxStaticText(&dlg, wxID_ANY, _("Custom Port Address:"));
-    wxTextCtrl *customtxt = new wxTextCtrl(&dlg, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(70, -1));
-
-    wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
-    sz2->Add(label, wxSizerFlags(0).Border(wxALL, 10));
-    sz2->Add(customtxt, wxSizerFlags(0).Border(wxALL, 10));
-
-    sz1->Add(sz2);
-
-    sz1->Add(dlg.CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Right().Border(wxALL, 10));
-
-    dlg.SetSizerAndFit(sz1);
-
-    wxString choice;
-
-    if (dlg.ShowModal() == wxID_OK)
-    {
-        wxString custom = customtxt->GetValue();
-        if (!custom.IsEmpty())
-        {
-            long val;
-            if (custom.ToLong(&val, 16) && val != 0)
-            {
-                choice = wxString::Format("Custom - 0x%x", val);
-                pConfig->Global.SetString("/CustomParallelPort", choice);
-            }
-        }
-        else
-        {
-            choice = portlb->GetStringSelection();
-        }
-    }
-
-    return choice;
-}
-
 bool ParallelPortWin32::Connect(const wxString& portName)
 {
     bool bError = false;

@@ -40,7 +40,8 @@ class usImage
 public:
     unsigned short *ImageData; // Pointer to raw data
     wxSize Size; // Dimensions of image
-    wxRect Subframe; // were the valid data is
+    wxRect Subframe; // where the valid data is
+    wxRect LimitFrame; // associated frame limit, empty rect when no frame limit
     unsigned int NPixels;
     unsigned short MinADU;
     unsigned short MaxADU;
@@ -50,13 +51,15 @@ public:
     wxDateTime ImgStartTime;
     int ImgExpDur; // milli-seconds
     int ImgStackCnt;
+    wxByte Binning;
     wxByte BitsPerPixel;
+    unsigned int Gain;
     unsigned short Pedestal;
     unsigned int FrameNum;
 
     usImage()
         : ImageData(nullptr), NPixels(0), MinADU(0), MaxADU(0), MedianADU(0), FiltMin(0), FiltMax(0), ImgExpDur(0),
-          ImgStackCnt(1), BitsPerPixel(0), Pedestal(0), FrameNum(0)
+          ImgStackCnt(1), Binning(0), BitsPerPixel(0), Gain(0), Pedestal(0), FrameNum(0)
     {
     }
     ~usImage() { delete[] ImageData; }

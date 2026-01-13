@@ -68,15 +68,16 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxSpinCtrl *m_pCameraGain;
     wxButton *m_resetGain;
     wxSpinCtrl *m_timeoutVal;
-    wxChoice *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxChoice *m_binning;
+    wxCheckBox *m_allowSwBinning;
     wxCheckBox *m_coolerOn;
     wxSpinCtrl *m_coolerSetpt;
     wxTextCtrl *m_camSaturationADU;
     wxRadioButton *m_SaturationByProfile;
     wxRadioButton *m_SaturationByADU;
+    void OnSwBinningChecked(wxCommandEvent& event);
 
     int m_prevBinning;
 
@@ -98,11 +99,30 @@ enum CaptureOptionBits
 {
     CAPTURE_SUBTRACT_DARK = 1 << 0,
     CAPTURE_RECON = 1 << 1, // debayer and/or deinterlace as required
+    CAPTURE_IGNORE_FRAME_LIMIT = 1 << 2,
 
     CAPTURE_LIGHT = CAPTURE_SUBTRACT_DARK | CAPTURE_RECON,
-    CAPTURE_DARK = 0,
-    CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK,
+    CAPTURE_DARK = CAPTURE_IGNORE_FRAME_LIMIT,
+    CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK | CAPTURE_IGNORE_FRAME_LIMIT,
 };
+
+struct CaptureParams
+{
+    wxRect subframe;
+    wxRect limitFrame;
+    int duration;
+    int gain;
+    int captureOptions;
+    wxByte hwBinning;
+    wxByte swBinning;
+    wxByte bpp;
+
+    // combined binning level - hardware + software
+    int CombinedBinning() const { return hwBinning * swBinning; }
+};
+
+// mapping from combined binning to (hwBinning, swBinning) pair
+typedef std::map<int, std::pair<int, int>> BinningChoices;
 
 class GuideCamera : public wxMessageBoxProxy, public OnboardST4
 {
@@ -118,28 +138,38 @@ protected:
     unsigned short m_saturationADU;
 
 public:
+    enum
+    {
+        MAX_SOFTWARE_BINNING = 4
+    };
+
     static const double UnknownPixelSize;
 
     int GuideCameraGain;
     wxString Name; // User-friendly name
-    wxSize FrameSize; // Size of current image
+
+    // FrameSize is the size of the current guide frame, *before software binning*. To
+    // get the actual size of the current guide frame image, callers should use
+    // pFrame->pGuider->CurrentImage()->Size. If the current image is not available,
+    // pCamera->GetFrameSize() can be used, but this is not guaranteed match the current
+    // frame size, and may even be an empty rect for some cameras (ASCOM cameras for
+    // example) that do not report a frame size until after an image is captured.
+    wxSize FrameSize;
+
     bool Connected;
     PropDlgType PropertyDialogType;
-    bool HasPortNum;
-    bool HasDelayParam;
     bool HasGainControl;
     bool HasShutter;
     bool HasSubframes;
     bool HasFrameLimiting;
-    wxByte MaxBinning;
-    wxByte Binning;
-    short Port;
-    int ReadDelay;
+    wxByte MaxHwBinning; // max hardware binning level
+    wxByte HwBinning; // hardware binning level
+    wxByte SwBinning; // software binning level
     bool ShutterClosed; // false=light, true=dark
     bool UseSubframes;
     bool HasCooler;
+    bool HasBayer; // true for color camera
     wxRect LimitFrame; // limit full frames to this region of interest (ROI). An empty rect for no limit.
-    wxByte LimitFrameBinning; // binning value associated with the LimitFrame
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage *CurrentDarkFrame;
@@ -155,11 +185,7 @@ public:
     virtual bool HasNonGuiCapture() = 0;
     virtual wxByte BitsPerPixel() = 0;
 
-    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
-    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions)
-    {
-        return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0));
-    }
+    static bool Capture(GuideCamera *camera, usImage& img, const CaptureParams& capture);
 
     virtual bool CanSelectCamera() const { return false; }
     virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
@@ -183,10 +209,23 @@ public:
     CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog,
                                                    BrainCtrlIdMap& CtrlMap);
 
-    static void GetBinningOpts(int maxBin, wxArrayString *opts);
-    void GetBinningOpts(wxArrayString *opts);
+    static BinningChoices GetBinningChoices(int maxHwBinning);
+    BinningChoices GetBinningChoices() const;
+    static int MaxCombinedBinning(int maxHwBinning);
+    int MaxCombinedBinning() const;
+    static std::pair<int, int> GetHwAndSwBinning(int maxHwBinning, int combinedBinning);
+    std::pair<int, int> GetHwAndSwBinning(int combinedBinning) const;
+    static void GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning);
+    void GetBinningOpts(wxArrayString *opts, bool includeSwBinning) const;
+    static bool GetOfferSwBinning(int maxHwBinning);
+    bool GetOfferSwBinning() const;
+    int GetBinning() const;
+    // set the combined binning level
     bool SetBinning(int binning);
-    bool SetLimitFrame(const wxRect& roi);
+    // set the hardware and software binning levels
+    bool SetBinning(int hwBinning, int swBinning);
+    bool SetLimitFrame(const wxRect& roi, int binning, wxString *errorMessage);
+    void LoadLimitFrame(int binning);
 
     virtual void ShowPropertyDialog() { return; }
     bool SetCameraPixelSize(double pixel_size);
@@ -208,7 +247,8 @@ public:
     void SubtractDark(usImage& img);
     void GetDarkLibraryProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
-    virtual const wxSize& DarkFrameSize() { return FrameSize; }
+    virtual wxSize GetFrameSize() const;
+    virtual wxSize DarkFrameSize() { return FrameSize; }
 
     static double GetProfilePixelSize();
 
@@ -220,14 +260,7 @@ public:
     bool SetCameraGain(int cameraGain);
     virtual int GetDefaultCameraGain();
 
-    // hook method allowing child classes to apply constraints to a requested frame
-    // limit ROI.  For example, some cameras have constraints on the alignment of a ROI,
-    // or a constraint on the number of pixels transferred. The method should return a
-    // ROI as close as possible to the requested ROI but meeting whatever constraints
-    // the camera may have.  The base class implementation just returns requestedRoi.
-    virtual wxRect ConstrainLimitFrame(const wxRect& requestedRoi);
-
-    virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
+    virtual bool Capture(usImage& img, const CaptureParams& captureParams) = 0;
 
 protected:
     int GetTimeoutMs() const;
@@ -254,9 +287,58 @@ inline int GuideCamera::GetTimeoutMs() const
     return m_timeoutMs;
 }
 
-inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
+inline BinningChoices GuideCamera::GetBinningChoices() const
 {
-    GetBinningOpts(MaxBinning, opts);
+    return GetBinningChoices(MaxHwBinning);
+}
+
+// returns the max combined binning level (hardware and software)
+inline int GuideCamera::MaxCombinedBinning(int maxHwBinning)
+{
+    return GetBinningChoices(maxHwBinning).rbegin()->first;
+}
+
+inline int GuideCamera::MaxCombinedBinning() const
+{
+    return MaxCombinedBinning(MaxHwBinning);
+}
+
+inline std::pair<int, int> GuideCamera::GetHwAndSwBinning(int combinedBinning) const
+{
+    return GetHwAndSwBinning(MaxHwBinning, combinedBinning);
+}
+
+inline void GuideCamera::GetBinningOpts(wxArrayString *opts, bool includeSwBinning) const
+{
+    GetBinningOpts(opts, MaxHwBinning, includeSwBinning);
+}
+
+// get the combined binning level -- hardware and software binning
+inline int GuideCamera::GetBinning() const
+{
+    return HwBinning * SwBinning;
+}
+
+// Returns true when software binning should be offered in the UI.
+//
+// For cameras with adequate hardware binning capability (>= 4x), returns false.
+inline bool GuideCamera::GetOfferSwBinning(int maxHwBinning)
+{
+    return maxHwBinning < MAX_SOFTWARE_BINNING;
+}
+
+// Returns true when software binning should be offered in the UI.
+//
+// For cameras with adequate hardware binning capability (>= 4x), returns false.
+inline bool GuideCamera::GetOfferSwBinning() const
+{
+    return GetOfferSwBinning(MaxHwBinning);
+}
+
+// returns the expected frame size after software binning
+inline wxSize GuideCamera::GetFrameSize() const
+{
+    return wxSize(FrameSize.GetWidth() / SwBinning, FrameSize.GetHeight() / SwBinning);
 }
 
 inline double GuideCamera::GetCameraPixelSize() const
@@ -282,11 +364,6 @@ inline unsigned short GuideCamera::GetSaturationADU() const
 inline int GuideCamera::GetCameraGain() const
 {
     return GuideCameraGain;
-}
-
-inline wxRect GuideCamera::ConstrainLimitFrame(const wxRect& requestedRoi)
-{
-    return requestedRoi;
 }
 
 #endif /* CAMERA_H_INCLUDED */

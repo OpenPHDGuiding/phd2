@@ -88,7 +88,6 @@ class Camera_QHY : public GuideCamera
     wxSize m_maxSize;
     unsigned short m_curBin;
     wxRect m_roi;
-    bool Color;
     wxByte m_bpp;
     bool m_settingsChanged;
     bool m_hasAmpnr;
@@ -108,7 +107,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -218,7 +217,7 @@ Camera_QHY::Camera_QHY()
     HasCooler = false;
 
     RawBuffer = 0;
-    Color = false;
+    HasBayer = false;
     HasSubframes = true;
     m_camhandle = 0;
 
@@ -787,14 +786,14 @@ bool Camera_QHY::Connect(const wxString& camId)
     int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
 
-    Color = false;
+    HasBayer = false;
     switch ((BAYER_ID) bayer)
     {
     case BAYER_GB:
     case BAYER_GR:
     case BAYER_BG:
     case BAYER_RG:
-        Color = true;
+        HasBayer = true;
     }
 
     // check bin modes
@@ -829,22 +828,22 @@ bool Camera_QHY::Connect(const wxString& camId)
             break;
     }
     Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));
-    MaxBinning = maxBin;
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    MaxHwBinning = maxBin;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
-    Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", Binning));
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    Debug.Write(wxString::Format("QHY: call SetQHYCCDBinMode bin = %d\n", HwBinning));
+    ret = SetQHYCCDBinMode(m_camhandle, HwBinning, HwBinning);
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
         return CamConnectFailed(_("Failed to set camera binning"));
     }
-    m_curBin = Binning;
+    m_curBin = HwBinning;
 
     m_maxSize = wxSize(imagew, imageh);
-    FrameSize = wxSize(imagew / Binning, imageh / Binning);
+    FrameSize = wxSize(imagew / HwBinning, imageh / HwBinning);
 
     delete[] RawBuffer;
     size_t size = GetQHYCCDMemLength(m_camhandle);
@@ -931,14 +930,18 @@ inline static int round_up(int v, int m)
 // stopping capture causes problems on some cameras on Windows, disable it for now until we can test with a newer SDK
 // #define CAN_STOP_CAPTURE
 
-bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool Camera_QHY::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
-    if (Binning != m_curBin)
+    if (HwBinning != m_curBin)
     {
-        FrameSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
-        m_curBin = Binning;
+        FrameSize = wxSize(m_maxSize.GetX() / HwBinning, m_maxSize.GetY() / HwBinning);
+        m_curBin = HwBinning;
         useSubframe = false; // subframe may be out of bounds now
     }
 
@@ -975,7 +978,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 
     uint32_t ret = QHYCCD_ERROR;
     // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    ret = SetQHYCCDBinMode(m_camhandle, HwBinning, HwBinning);
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", (int) ret));
@@ -1201,7 +1204,7 @@ bool Camera_QHY::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

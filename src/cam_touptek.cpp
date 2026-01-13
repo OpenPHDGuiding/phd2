@@ -251,7 +251,7 @@ public:
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
-    bool Capture(int duration, usImage&, int, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     bool ST4HasGuideOutput() override;
@@ -280,7 +280,7 @@ CameraToupTek::CameraToupTek()
     m_cam.m_defaultGainPct = GuideCamera::GetDefaultCameraGain();
     int value = pConfig->Profile.GetInt("/camera/ToupTek/bpp", 8);
     m_cam.m_bpp = value == 8 ? 8 : 16;
-    MaxBinning = 4;
+    MaxHwBinning = 4;
 }
 
 CameraToupTek::~CameraToupTek() { }
@@ -353,7 +353,7 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
 
     Name = info->displayname;
     HasSubframes = (info->model->flag & TOUPCAM_FLAG_ROI_HARDWARE) != 0;
-    m_cam.m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
+    HasBayer = m_cam.m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
     HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
     m_cam.m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
 
@@ -374,15 +374,15 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
             Disconnect();
             return CamConnectFailed(_("Failed to initialize camera binning."));
         }
-        m_cam.SetBinning(Binning);
+        m_cam.SetBinning(HwBinning);
     }
     else
     {
         // hardware binning
-        if (!m_cam.SetBinning(Binning))
+        if (!m_cam.SetBinning(HwBinning))
         {
-            Binning = 1;
-            if (!m_cam.SetBinning(Binning))
+            HwBinning = 1;
+            if (!m_cam.SetBinning(HwBinning))
             {
                 Disconnect();
                 return CamConnectFailed(_("Failed to initialize camera binning."));
@@ -390,8 +390,8 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         }
     }
 
-    FrameSize.x = m_cam.m_maxSize.x / Binning;
-    FrameSize.y = m_cam.m_maxSize.y / Binning;
+    FrameSize.x = m_cam.m_maxSize.x / HwBinning;
+    FrameSize.y = m_cam.m_maxSize.y / HwBinning;
 
     size_t buffer_size = m_cam.m_maxSize.x * m_cam.m_maxSize.y;
     if (m_cam.m_bpp != 8)
@@ -523,16 +523,20 @@ inline static int round_up(int v, int m)
     return round_down(v + m - 1, m);
 }
 
-bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool useSubframe = UseSubframes && !subframe.IsEmpty();
 
-    if (Binning != m_cam.m_curBin)
+    if (HwBinning != m_cam.m_curBin)
     {
-        if (m_cam.SetBinning(Binning))
+        if (m_cam.SetBinning(HwBinning))
         {
-            FrameSize.x = m_cam.m_maxSize.x / Binning;
-            FrameSize.y = m_cam.m_maxSize.y / Binning;
+            FrameSize.x = m_cam.m_maxSize.x / HwBinning;
+            FrameSize.y = m_cam.m_maxSize.y / HwBinning;
             useSubframe = false; // subframe pos is now invalid
         }
     }
@@ -713,7 +717,7 @@ bool CameraToupTek::Capture(int duration, usImage& img, int options, const wxRec
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_cam.m_isColor && binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

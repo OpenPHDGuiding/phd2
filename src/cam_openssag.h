@@ -47,7 +47,7 @@ class CameraOpenSSAG : public GuideCamera
 public:
     CameraOpenSSAG();
     ~CameraOpenSSAG();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     bool ST4PulseGuideScope(int direction, int duration) override;

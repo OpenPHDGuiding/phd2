@@ -69,7 +69,6 @@ class PlayerOneCamera : public GuideCamera
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
 
 public:
@@ -78,7 +77,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -441,9 +440,9 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     m_cameraId = selected;
     Connected = true;
     Name = info.cameraModelName;
-    m_isColor = info.isColorCamera != POA_FALSE;
+    HasBayer = info.isColorCamera != POA_FALSE;
 
-    Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", m_isColor));
+    Debug.Write(wxString::Format("Player One: isColorCamera = %d\n", HasBayer));
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.bins); i++)
@@ -454,16 +453,16 @@ bool PlayerOneCamera::Connect(const wxString& camId)
         if (info.bins[i] > maxBin)
             maxBin = info.bins[i];
     }
-    MaxBinning = maxBin;
+    MaxHwBinning = maxBin;
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     m_maxSize.x = info.maxWidth;
     m_maxSize.y = info.maxHeight;
 
-    FrameSize = BinnedFrameSize(Binning);
-    m_prevBinning = Binning;
+    FrameSize = BinnedFrameSize(HwBinning);
+    m_prevBinning = HwBinning;
 
     ::free(m_buffer);
     m_buffer_size = info.maxWidth * info.maxHeight * (m_bpp == 8 ? 1 : 2);
@@ -557,7 +556,7 @@ bool PlayerOneCamera::Connect(const wxString& camId)
     m_frame = wxRect(FrameSize);
     Debug.Write(wxString::Format("Player One: frame (%d,%d)+(%d,%d)\n", m_frame.x, m_frame.y, m_frame.width, m_frame.height));
 
-    POASetImageBin(m_cameraId, Binning);
+    POASetImageBin(m_cameraId, HwBinning);
     POASetImageStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
     POASetImageSize(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight());
     POASetImageFormat(m_cameraId, m_bpp == 8 ? POA_RAW8 : POA_RAW16);
@@ -706,13 +705,17 @@ static void flush_buffered_image(int cameraId, void *buf, size_t size)
     }
 }
 
-bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool PlayerOneCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool binning_change = false;
-    if (Binning != m_prevBinning)
+    if (HwBinning != m_prevBinning)
     {
-        FrameSize = BinnedFrameSize(Binning);
-        m_prevBinning = Binning;
+        FrameSize = BinnedFrameSize(HwBinning);
+        m_prevBinning = HwBinning;
         binning_change = true;
     }
 
@@ -778,9 +781,9 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
     {
         StopCapture();
 
-        POAErrors status = POASetImageBin(m_cameraId, Binning);
+        POAErrors status = POASetImageBin(m_cameraId, HwBinning);
         if (status != POA_OK)
-            Debug.Write(wxString::Format("Player One: setImageBin(%hu) => %d\n", Binning, status));
+            Debug.Write(wxString::Format("Player One: setImageBin(%hu) => %d\n", HwBinning, status));
 
         status = POASetImageSize(m_cameraId, frame.GetWidth(), frame.GetHeight());
         if (status != POA_OK)
@@ -958,7 +961,7 @@ bool PlayerOneCamera::Capture(int duration, usImage& img, int options, const wxR
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

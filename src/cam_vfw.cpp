@@ -51,8 +51,6 @@ CameraVFW::CameraVFW()
     VFW_Window = NULL;
     Extra_Window = NULL;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = false;
-    HasPortNum = false;
 }
 
 wxByte CameraVFW::BitsPerPixel()
@@ -135,8 +133,11 @@ bool CameraVFW::Disconnect()
     return false;
 }
 
-bool CameraVFW::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraVFW::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     int xsize, ysize;
     int NFrames = 0;
     xsize = FrameSize.GetWidth();

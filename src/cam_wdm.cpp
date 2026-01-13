@@ -51,8 +51,6 @@ CameraWDM::CameraWDM()
     m_deviceNumber = -1; // Which WDM device connected
     m_deviceMode = -1;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = false;
-    HasPortNum = false;
     m_captureMode = NOT_CAPTURING;
     m_pVidCap = nullptr;
     m_rawYUY2 = false;
@@ -463,8 +461,11 @@ void CameraWDM::EndCapture()
     }
 }
 
-bool CameraWDM::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool bError = false;
 
     try
@@ -495,7 +496,7 @@ bool CameraWDM::Capture(int duration, usImage& img, int options, const wxRect& s
     return bError;
 }
 
-bool CameraWDM::CaptureOneFrame(usImage& img, int options, const wxRect& subframe)
+bool CameraWDM::CaptureOneFrame(usImage& img, int options)
 {
     bool bError = false;
 

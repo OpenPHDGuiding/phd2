@@ -510,7 +510,7 @@ void StepGuider::SetCalibration(const Calibration& cal)
     Mount::SetCalibration(cal);
 }
 
-void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
+void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning)
 {
     m_calibrationDetails = calDetails;
 
@@ -755,9 +755,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
             m_calibration.pierSide = PIER_SIDE_UNKNOWN;
             m_calibration.raGuideParity = m_calibration.decGuideParity = GUIDE_PARITY_UNKNOWN;
             m_calibration.rotatorAngle = Rotator::RotatorPosition();
-            m_calibration.binning = pCamera->Binning;
+            m_calibration.binning = pCamera->GetBinning();
             SetCalibration(m_calibration);
-            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
+            SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, m_calibration.binning);
             status0 = _("Calibration complete");
             GuideLog.CalibrationComplete(this);
             Debug.Write("Calibration Complete\n");
@@ -1315,7 +1315,7 @@ void StepGuider::AdjustCalibrationForScopePointing()
 {
     // compensate for binning change
 
-    unsigned short binning = pCamera->Binning;
+    unsigned short binning = pCamera->GetBinning();
 
     if (binning == m_calibration.binning)
     {

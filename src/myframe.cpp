@@ -1674,7 +1674,7 @@ bool MyFrame::StopWorkerThread(WorkerThread *& pWorkerThread)
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
     EXPOSE_REQUEST *req = (EXPOSE_REQUEST *) evt.GetClientData();
-    bool error = GuideCamera::Capture(pCamera, req->exposureDuration, *req->pImage, req->options, req->subframe);
+    bool error = GuideCamera::Capture(pCamera, *req->pImage, req->captureParams);
     req->error = error;
     req->pSemaphore->Post();
 }
@@ -1710,12 +1710,18 @@ void MyFrame::OnStatusBarTimerEvent(wxTimerEvent& evt)
 
 void MyFrame::ScheduleExposure()
 {
-    int exposureDuration = RequestedExposureDuration();
-    int exposureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
-    const wxRect& subframe = m_singleExposure.enabled ? m_singleExposure.subframe : pGuider->GetBoundingBox();
+    CaptureParams captureParams;
+    captureParams.duration = RequestedExposureDuration();
+    captureParams.subframe = m_singleExposure.enabled ? m_singleExposure.subframe : pGuider->GetBoundingBox();
+    captureParams.hwBinning = pCamera->HwBinning;
+    captureParams.swBinning = pCamera->SwBinning;
+    captureParams.bpp = pCamera->BitsPerPixel();
+    captureParams.limitFrame = pCamera->LimitFrame;
+    captureParams.gain = pCamera->GuideCameraGain;
+    captureParams.captureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
 
-    Debug.Write(wxString::Format("ScheduleExposure(%d,%x,%d) exposurePending=%d\n", exposureDuration, exposureOptions,
-                                 !subframe.IsEmpty(), m_exposurePending));
+    Debug.Write(wxString::Format("ScheduleExposure(%d,%x,%d) exposurePending=%d\n", captureParams.duration,
+                                 captureParams.captureOptions, !captureParams.subframe.IsEmpty(), m_exposurePending));
 
     assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
     assert(!m_exposurePending);
@@ -1727,7 +1733,7 @@ void MyFrame::ScheduleExposure()
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     if (m_pPrimaryWorkerThread) // can be null when app is shutting down (unlikely but possible)
-        m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
+        m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, captureParams);
 }
 
 void MyFrame::SchedulePrimaryMove(Mount *mount, const GuiderOffset& ofs, unsigned int moveOptions)
@@ -2367,11 +2373,45 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!status)
                 fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
-            float exposure = (float) img->ImgExpDur / 1000.0f;
-            char *keyname = const_cast<char *>("EXPOSURE");
-            char *comment = const_cast<char *>("Exposure time in seconds");
             if (!status)
+            {
+                char *keyname = const_cast<char *>("EXPOSURE");
+                char *comment = const_cast<char *>("Exposure time in seconds");
+                float exposure = (float) img->ImgExpDur / 1000.0f;
                 fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("XBINNING");
+                char *comment = const_cast<char *>("Camera X Bin");
+                int binning = img->Binning;
+                fits_write_key(fptr, TINT, keyname, &binning, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("YBINNING");
+                char *comment = const_cast<char *>("Camera Y Bin");
+                int binning = img->Binning;
+                fits_write_key(fptr, TINT, keyname, &binning, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("SATURATE");
+                char *comment = const_cast<char *>("Data value at which saturation occurs");
+                int saturate = (1U << img->BitsPerPixel) - 1;
+                fits_write_key(fptr, TINT, keyname, &saturate, comment, &status);
+            }
+
+            if (!status)
+            {
+                char *keyname = const_cast<char *>("GAIN");
+                char *comment = const_cast<char *>("PHD Gain Value (0-100)");
+                int gain = img->Gain;
+                fits_write_key(fptr, TINT, keyname, &gain, comment, &status);
+            }
 
             if (!note.IsEmpty())
             {
@@ -2477,9 +2517,29 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
                 }
                 img->ImgExpDur = ROUNDF(exposure * 1000.0);
 
+                char binning_key[] = "XBINNING";
+                int binning = 1;
+                fits_read_key(fptr, TINT, binning_key, &binning, nullptr, &status);
+                img->Binning = wxMax(binning, 1);
+                status = 0;
+
+                char saturate_key[] = "SATURATE";
+                int saturate = 65535;
+                fits_read_key(fptr, TINT, saturate_key, &saturate, nullptr, &status);
+                img->BitsPerPixel = saturate >= 256 ? 16 : 8;
+                status = 0;
+
+                char gain_key[] = "GAIN";
+                int gain = 0;
+                fits_read_key(fptr, TINT, gain_key, &gain, nullptr, &status);
+                img->Gain = gain;
+                status = 0;
+
                 img->CalcStats();
 
-                Debug.Write(wxString::Format("loaded dark frame exposure = %d, med = %u\n", img->ImgExpDur, img->MedianADU));
+                Debug.Write(wxString::Format("loaded dark frame exposure = %d, med = %u, %dx%d bin %d, bpp = %d, gain = %d\n",
+                                             img->ImgExpDur, img->MedianADU, img->Size.x, img->Size.y, img->Binning,
+                                             img->BitsPerPixel, img->Gain));
 
                 camera->AddDark(img.release());
 
@@ -2776,10 +2836,14 @@ wxString MyFrame::GetDefaultFileDir()
 
 double MyFrame::GetCameraPixelScale() const
 {
-    if (!pCamera || pCamera->GetCameraPixelSize() == 0.0 || m_focalLength == 0)
+    if (!pCamera)
+        return 1.0;
+    auto pixelSize = pCamera->GetCameraPixelSize();
+    if (pixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return GetPixelScale(pCamera->GetCameraPixelSize(), m_focalLength, pCamera->Binning);
+    auto binning = pCamera->GetBinning();
+    return GetPixelScale(pixelSize, m_focalLength, binning);
 }
 
 wxString MyFrame::PixelScaleSummary() const
@@ -2797,7 +2861,8 @@ wxString MyFrame::PixelScaleSummary() const
     else
         focalLengthStr = wxString::Format("%d mm", m_focalLength);
 
-    return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s", scaleStr, pCamera->Binning, focalLengthStr);
+    int binning = pCamera->GetBinning();
+    return wxString::Format("Pixel scale = %s, Binning = %d, Focal length = %s", scaleStr, binning, focalLengthStr);
 }
 
 bool MyFrame::GetBeepForLostStar()
@@ -3529,4 +3594,18 @@ void MyFrame::NotifyGuidingParam(const wxString& name, const wxString& val, bool
 {
     GuideLog.SetGuidingParam(name, val, true);
     EvtServer.NotifyGuidingParam(name, val);
+}
+
+int GetIntChoice(wxChoice *choice, int dflt)
+{
+    unsigned long value;
+    if (!choice->GetStringSelection().ToULong(&value))
+        value = dflt;
+    return value;
+}
+
+void SetIntChoice(wxChoice *choice, int value)
+{
+    if (!choice->SetStringSelection(wxString::Format("%d", value)))
+        choice->SetSelection(0);
 }

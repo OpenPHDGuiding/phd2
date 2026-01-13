@@ -759,8 +759,9 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                     m_backlashMs = m_backlashTool->GetBacklashResultMs();
                     double bltSigmaPx;
                     m_backlashTool->GetBacklashSigma(&bltSigmaPx, &m_backlashSigmaMs);
-                    double bltGearAngle = (m_backlashPx * pFrame->GetCameraPixelScale());
-                    double bltGearAngleSigma = (bltSigmaPx * pFrame->GetCameraPixelScale());
+                    auto pixelScale = pFrame->GetCameraPixelScale();
+                    double bltGearAngle = (m_backlashPx * pixelScale);
+                    double bltGearAngleSigma = (bltSigmaPx * pixelScale);
                     wxString preamble = ((m_backlashMs >= 5000 || qual == BacklashTool::MEASUREMENT_TOO_FEW_NORTH) ? ">=" : "");
                     wxString outStr, outStrTr; // untranslated and translated
                     if (qual == BacklashTool::MEASUREMENT_VALID)
@@ -1154,7 +1155,10 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
     const int WINDOW_ADJUSTMENT = MEASUREMENT_WINDOW_SIZE / 2;
 
     int lastInx = m_decAxisStats.GetCount() - 1;
-    double pxscale = pFrame->GetCameraPixelScale();
+    auto pxscale = pFrame->GetCameraPixelScale();
+    auto binning = pCamera->GetBinning();
+    auto focalLength = pFrame->GetFocalLength();
+    auto pixelSize = pCamera->GetCameraPixelSize();
     StarDisplacement val = m_decAxisStats.GetEntry(0);
     double tStart = val.DeltaTime;
     double multiplier_ra; // 65% of Dec recommendation, but 100% for encoder mounts
@@ -1256,8 +1260,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
         else
         {
             // Just reiterate the estimates made in the new-profile-wiz
-            RecDec =
-                GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+            RecDec = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
             RecRA = wxMax(minMoveFloor, RecDec * multiplier_ra);
             Debug.Write(wxString::Format("GA Min-Move calcs failed sanity-check, DecEst=%0.3f, Dec-HPF-Sigma=%0.3f\n",
                                          roundUpEst, m_hpfDecStats.GetSigma()));
@@ -1268,7 +1271,7 @@ void GuidingAsstWin::GetMinMoveRecs(double& RecRA, double& RecDec)
     {
         Debug.Write("Exception thrown in GA min-move calcs: " + msg + "\n");
         // Punt by reiterating estimates made by new-profile-wiz
-        RecDec = GuideAlgorithm::SmartDefaultMinMove(pFrame->GetFocalLength(), pCamera->GetCameraPixelSize(), pCamera->Binning);
+        RecDec = GuideAlgorithm::SmartDefaultMinMove(focalLength, pixelSize, binning);
         RecRA = RecDec * multiplier_ra / multiplier_dec;
         Debug.Write(wxString::Format("GA Min-Move recs reverting to smart defaults, RA=%0.3f, Dec=%0.3f\n", RecRA, RecDec));
     }
@@ -1321,6 +1324,19 @@ bool GuidingAsstWin::LikelyBacklash(const CalibrationDetails& calDetails)
 
     return likely;
 }
+// Compute binning level needed to meet or exceed the requested minimum image scale
+static int RecommendedBinning(double currScale, int currBinning, double targetScale)
+{
+    double bin1scale = currScale / currBinning;
+    for (auto choice : pCamera->GetBinningChoices())
+    {
+        auto binning = choice.first;
+        double scale = bin1scale * binning;
+        if (scale >= targetScale)
+            return binning;
+    }
+    return pCamera->MaxCombinedBinning();
+}
 
 // Produce recommendations for "live" GA run
 void GuidingAsstWin::MakeRecommendations()
@@ -1332,8 +1348,8 @@ void GuidingAsstWin::MakeRecommendations()
     GetMinMoveRecs(m_ra_minmove_rec, m_dec_minmove_rec);
 
     // Refine the drift-limiting exposure value based on the ra_min_move recommendation
-    m_othergrid->SetCellValue(
-        m_ra_drift_exp_loc, maxRateRA <= 0.0 ? _(" ") : wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, (_("s"))));
+    m_othergrid->SetCellValue(m_ra_drift_exp_loc,
+                              maxRateRA <= 0.0 ? _(" ") : wxString::Format("%6.1f %s ", m_ra_minmove_rec / maxRateRA, _("s")));
 
     LogResults(); // Dump the raw statistics
 
@@ -1382,12 +1398,17 @@ void GuidingAsstWin::MakeRecommendations()
     m_exposure_msg = AddRecommendationMsg(msg);
     Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     // Binning opportunity if image scale is < 0.5
-    if (pxscale <= 0.5 && pCamera->Binning == 1 && pCamera->MaxBinning > 1)
+    double currBinning = pCamera->GetBinning();
+    if (pxscale < 0.5 && currBinning < pCamera->MaxCombinedBinning())
     {
-        wxString msg = _("Try binning your guide camera");
+        wxString msg;
+        int recBinning = RecommendedBinning(pxscale, currBinning, 0.5);
+        msg = wxString::Format(_("Make a new profile and set binning to %d. Use software binning if necessary"), recBinning);
         allRecommendations += "Bin:" + msg + "\n";
         m_binning_msg = AddRecommendationMsg(msg);
-        Debug.Write(wxString::Format("Recommendation: %s\n", msg));
+        logStr = wxString::Format("Recommendation: %s\n", msg);
+        Debug.Write(logStr);
+        GuideLog.NotifyGAResult(logStr);
     }
     // Previous calibration alert
     if (m_suspectCalibration)

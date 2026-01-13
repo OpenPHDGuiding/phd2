@@ -12,7 +12,16 @@ zip=$(cd $(dirname "$zip"); /bin/pwd)/$(basename "$zip")
 SRC=$(cd $(dirname "$0")/..; /bin/pwd)
 
 TMP=/tmp/altaircamsdk.$$
-trap "rm -rf $TMP" INT TERM QUIT EXIT
+success=
+
+cleanup () {
+    rm -r "$TMP"
+    if [[ ! $success ]]; then
+        echo "Failed!"
+        exit 1
+    fi
+}
+trap cleanup INT TERM QUIT EXIT
 
 mkdir -p $TMP
 cd $TMP
@@ -40,10 +49,19 @@ fi
 )
 
 # includes
-cp ./inc/altaircam.h "$SRC"/cameras/
+cp ./inc/altaircam.h "$SRC"/cameras/altair/include/
 
-# libs
-cp ./win/x86/altaircam.dll "$SRC"/WinLibs/
-cp ./win/x86/altaircam.lib "$SRC"/cameras/
+# windows libs
+cp ./win/x86/altaircam.dll "$SRC"/cameras/altair/win/x86/
+cp ./win/x86/altaircam.lib "$SRC"/cameras/altair/win/x86/
+cp ./win/x64/altaircam.dll "$SRC"/cameras/altair/win/x64/
+cp ./win/x64/altaircam.lib "$SRC"/cameras/altair/win/x64/
 
-# TODO: linux, Mac
+# mac lib
+cp ./mac/libaltaircam.dylib "$SRC"/cameras/altair/mac/
+
+# linux libs
+cp -r ./linux/{arm64,armel,armhf,x86,x64} "$SRC"/cameras/altair/linux/
+
+success=1
+echo "Done"

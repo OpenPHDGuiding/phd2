@@ -323,21 +323,21 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         hdr.write("CREATOR", wxString(APPNAME _T(" ") FULLVER).c_str(), "Capture software");
         hdr.write("PHDPROFI", pConfig->GetCurrentProfile().c_str(), "PHD2 Equipment Profile");
 
+        unsigned int b = this->Binning;
+        hdr.write("XBINNING", b, "Camera X Bin");
+        hdr.write("YBINNING", b, "Camera Y Bin");
+        hdr.write("CCDXBIN", b, "Camera X Bin");
+        hdr.write("CCDYBIN", b, "Camera Y Bin");
+        unsigned int bpp = this->BitsPerPixel;
+        hdr.write("CAMBPP", bpp, "Camera resolution, bits per pixel");
+        unsigned int g = (unsigned int) this->Gain;
+        hdr.write("GAIN", g, "PHD Gain Value (0-100)");
         if (pCamera)
         {
             hdr.write("INSTRUME", pCamera->Name.c_str(), "Instrument name");
-            unsigned int b = pCamera->Binning;
-            hdr.write("XBINNING", b, "Camera X Bin");
-            hdr.write("YBINNING", b, "Camera Y Bin");
-            hdr.write("CCDXBIN", b, "Camera X Bin");
-            hdr.write("CCDYBIN", b, "Camera Y Bin");
             float sz = b * pCamera->GetCameraPixelSize();
             hdr.write("XPIXSZ", sz, "pixel size in microns (with binning)");
             hdr.write("YPIXSZ", sz, "pixel size in microns (with binning)");
-            unsigned int g = (unsigned int) pCamera->GuideCameraGain;
-            hdr.write("GAIN", g, "PHD Gain Value (0-100)");
-            unsigned int bpp = pCamera->BitsPerPixel();
-            hdr.write("CAMBPP", bpp, "Camera resolution, bits per pixel");
         }
 
         if (pPointingSource)
@@ -496,6 +496,10 @@ bool usImage::Load(const wxString& fname)
             int saturate;
             if (fhdr_int(fptr, "SATURATE", &saturate))
                 BitsPerPixel = saturate > 255 ? 16 : 8;
+
+            int gain;
+            if (fhdr_int(fptr, "GAIN", &gain))
+                Gain = gain;
 
             wxRect subf;
             bool ok = fhdr_int(fptr, "PHDSUBFX", &subf.x);

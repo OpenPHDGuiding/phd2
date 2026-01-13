@@ -38,7 +38,6 @@ CameraOpticstarPL130::CameraOpticstarPL130()
     FrameSize = wxSize(1280, 1024);
     m_hasGuideOutput = false;
     HasGainControl = false;
-    Color = false;
 }
 
 wxByte CameraOpticstarPL130::BitsPerPixel()
@@ -53,7 +52,7 @@ bool CameraOpticstarPL130::Connect(const wxString& camId)
     if (!DLLExists("OSPL130RT.dll"))
         return CamConnectFailed(_("Cannot find OSPL130RT.dll"));
 
-    int retval = OSPL130_Initialize((int) Color, false, 0, 2);
+    int retval = OSPL130_Initialize((int) HasBayer, false, 0, 2);
     if (retval)
         return CamConnectFailed(_("Cannot init camera"));
 
@@ -69,11 +68,14 @@ bool CameraOpticstarPL130::Disconnect()
     return false;
 }
 
-bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraOpticstarPL130::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool still_going = true;
 
-    int mode = 3 * (int) Color;
+    int mode = 3 * (int) HasBayer;
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
@@ -105,7 +107,7 @@ bool CameraOpticstarPL130::Capture(int duration, usImage& img, int options, cons
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

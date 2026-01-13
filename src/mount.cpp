@@ -1255,7 +1255,7 @@ void Mount::AdjustCalibrationForScopePointing()
     double newDeclination = pPointingSource->GetDeclinationRadians();
     PierSide newPierSide = pPointingSource->SideOfPier();
     double newRotatorAngle = Rotator::RotatorPosition();
-    unsigned short binning = pCamera->Binning;
+    unsigned short binning = pCamera->GetBinning();
 
     Debug.AddLine(wxString::Format(
         "AdjustCalibrationForScopePointing (%s): current dec=%s pierSide=%d, cal dec=%s pierSide=%d rotAngle=%s bin=%hu",
@@ -1622,7 +1622,7 @@ void Mount::SaveCalibrationDetails(const CalibrationDetails& calDetails) const
         Debug.Write("Bogus guide speeds over-written in SaveCalibrationDetails\n");
     }
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
-    pConfig->Profile.SetDouble(prefix + "orig_binning", calDetails.origBinning);
+    pConfig->Profile.SetInt(prefix + "orig_binning", calDetails.origBinning);
     pConfig->Profile.SetString(prefix + "orig_timestamp", calDetails.origTimestamp);
     pConfig->Profile.SetInt(prefix + "orig_pierside", calDetails.origPierSide);
 
@@ -1789,7 +1789,7 @@ void Mount::LoadCalibrationDetails(CalibrationDetails *details) const
     details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0.0);
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
-    details->origBinning = pConfig->Profile.GetDouble(prefix + "orig_binning", 1.0);
+    details->origBinning = pConfig->Profile.GetInt(prefix + "orig_binning", 1);
     details->lastIssue = (CalibrationIssueType) pConfig->Profile.GetInt(prefix + "last_issue", 0);
     details->origTimestamp = pConfig->Profile.GetString(prefix + "orig_timestamp", "Unknown");
     details->origPierSide = pier_side(pConfig->Profile.GetInt(prefix + "orig_pierside", PIER_SIDE_UNKNOWN));

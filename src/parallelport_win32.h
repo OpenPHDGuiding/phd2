@@ -44,8 +44,6 @@ public:
     ParallelPortWin32(void);
     virtual ~ParallelPortWin32(void);
 
-    virtual wxString ChooseParallelPort(const wxString& dflt);
-
     virtual bool Connect(const wxString& portName);
     virtual bool Disconnect(void);
 

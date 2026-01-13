@@ -68,12 +68,10 @@ class CameraASCOM : public GuideCamera
     double m_driverPixelSize;
 
 public:
-    bool Color;
-
     CameraASCOM(const wxString& choice);
     ~CameraASCOM();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
@@ -431,7 +429,6 @@ CameraASCOM::CameraASCOM(const wxString& choice)
     HasGainControl = false;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
-    Color = false;
     DriverVersion = 1;
     m_bitsPerPixel = 0;
 }
@@ -662,7 +659,7 @@ bool CameraASCOM::Connect(const wxString& camId)
     if (DriverVersion > 1 && // We can check the color sensor status of the cam
         driver.GetProp(&vRes, L"SensorType") && vRes.iVal > 1)
     {
-        Color = true;
+        HasBayer = true;
     }
 
     // Get pixel size in micons
@@ -688,11 +685,11 @@ bool CameraASCOM::Connect(const wxString& camId)
         maxBinX = vRes.iVal;
     if (driver.GetProp(&vRes, L"MaxBinY"))
         maxBinY = vRes.iVal;
-    MaxBinning = wxMin(maxBinX, maxBinY);
-    Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxBinning));
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
-    m_curBin = Binning;
+    MaxHwBinning = wxMin(maxBinX, maxBinY);
+    Debug.Write(wxString::Format("ASCOM camera: MaxBinning is %hu\n", MaxHwBinning));
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
+    m_curBin = HwBinning;
 
     HasCooler = false;
     if (driver.GetProp(&vRes, L"CoolerOn"))
@@ -781,17 +778,17 @@ bool CameraASCOM::Connect(const wxString& camId)
 
     // Program some defaults -- full size and binning
     ExcepInfo excep;
-    if (ASCOM_SetBin(driver.IDisp(), Binning, &excep))
+    if (ASCOM_SetBin(driver.IDisp(), HwBinning, &excep))
     {
         // only make this error fatal if the camera supports binning > 1
-        if (MaxBinning > 1)
+        if (MaxHwBinning > 1)
         {
             return CamConnectFailed(_("The ASCOM camera failed to set binning. See the debug log for more information."));
         }
     }
 
     // defer defining FrameSize since it is not simply derivable from max size and binning
-    // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
     FrameSize = UNDEFINED_FRAME_SIZE;
     m_roi = wxRect(); // reset ROI state in case we're reconnecting
 
@@ -986,11 +983,14 @@ bool CameraASCOM::AbortExposure()
     }
 }
 
-bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraASCOM::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool retval = false;
     bool takeSubframe = UseSubframes;
-    wxRect roi(subframeArg);
+    wxRect roi(captureParams.subframe);
 
     if (roi.width <= 0 || roi.height <= 0)
     {
@@ -998,11 +998,11 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
     }
 
     bool binning_changed = false;
-    if (Binning != m_curBin)
+    if (HwBinning != m_curBin)
     {
         binning_changed = true;
         takeSubframe = false; // subframe may be out of bounds now
-        if (Binning == 1)
+        if (HwBinning == 1)
             FrameSize.Set(m_maxSize.x, m_maxSize.y);
         else
             FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
@@ -1029,7 +1029,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
             // the max size divided by the binning may be larger than
             // the actual frame, but setting a larger size should
             // request the full binned frame which we want
-            sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            sz.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
         }
         roi = wxRect(sz);
     }
@@ -1040,12 +1040,12 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
 
     if (binning_changed)
     {
-        if (ASCOM_SetBin(cam.IDisp(), Binning, &excep))
+        if (ASCOM_SetBin(cam.IDisp(), HwBinning, &excep))
         {
             pFrame->Alert(_("The ASCOM camera failed to set binning. See the debug log for more information."));
             return true;
         }
-        m_curBin = Binning;
+        m_curBin = HwBinning;
     }
 
     if (roi != m_roi)
@@ -1110,7 +1110,7 @@ bool CameraASCOM::Capture(int duration, usImage& img, int options, const wxRect&
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

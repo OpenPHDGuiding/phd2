@@ -123,8 +123,11 @@ bool CameraINovaPLC::Disconnect()
     return false;
 }
 
-bool CameraINovaPLC::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraINovaPLC::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     int xsize = FrameSize.GetWidth();
     int ysize = FrameSize.GetHeight();
     DS_CAMERA_STATUS rval;

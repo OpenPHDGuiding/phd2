@@ -44,7 +44,6 @@
 static const int DefaultGuideCameraGain = 95;
 static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
-static const int DefaultReadDelay = 150;
 
 const double GuideCamera::UnknownPixelSize = 0.0;
 
@@ -214,24 +213,23 @@ GuideCamera::GuideCamera()
     Connected = false;
     m_hasGuideOutput = false;
     PropertyDialogType = PROPDLG_NONE;
-    HasPortNum = false;
-    HasDelayParam = false;
     HasGainControl = false;
     HasShutter = false;
     ShutterClosed = false;
     HasSubframes = false;
     HasFrameLimiting = false;
     HasCooler = false;
+    HasBayer = false;
     FrameSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
-    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
     m_saturationADU = (unsigned short) wxMin(pConfig->Profile.GetInt("/camera/SaturationADU", 0), 65535);
     m_saturationByADU = pConfig->Profile.GetBoolean("/camera/SaturationByADU", true);
     m_pixelSize = GetProfilePixelSize();
-    MaxBinning = 1;
-    Binning = pConfig->Profile.GetInt("/camera/binning", 1);
+    MaxHwBinning = 1;
+    HwBinning = pConfig->Profile.GetInt("/camera/binning", 1);
+    SwBinning = wxClip(pConfig->Profile.GetInt("/camera/SoftwareBinning", 1), 1, (int) GuideCamera::MAX_SOFTWARE_BINNING);
     CurrentDarkFrame = nullptr;
     CurrentDefectMap = nullptr;
 }
@@ -687,8 +685,9 @@ bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
         return err;
     if (camera->HasFrameLimiting)
     {
-        wxRect roi = pConfig->Profile.GetRect("/camera/LimitFrame");
-        err = camera->SetLimitFrame(roi);
+        // restore the saved limit frame (if any)
+        auto binning = camera->GetBinning();
+        camera->LoadLimitFrame(binning);
     }
     return err;
 }
@@ -744,38 +743,68 @@ int GuideCamera::GetDefaultCameraGain()
 
 bool GuideCamera::SetBinning(int binning)
 {
-    if (binning < 1)
-        binning = 1;
-    if (binning > MaxBinning)
-        binning = MaxBinning;
+    auto hwSwBin = GetHwAndSwBinning(binning);
+    auto hwBin = hwSwBin.first;
+    auto swBin = hwSwBin.second;
+    return SetBinning(hwBin, swBin);
+}
 
-    Debug.Write(wxString::Format("camera: set binning = %u\n", (unsigned int) binning));
+bool GuideCamera::SetBinning(int hwBinning, int swBinning)
+{
+    HwBinning = wxClip(hwBinning, 1, MaxHwBinning);
+    SwBinning = wxClip(swBinning, 1, (int) MAX_SOFTWARE_BINNING);
 
-    Binning = binning;
-    pConfig->Profile.SetInt("/camera/binning", binning);
+    auto binning = GetBinning();
+    Debug.Write(wxString::Format("camera: set binning = %u (hw = %u, sw = %u)\n", (unsigned int) binning,
+                                 (unsigned int) HwBinning, (unsigned int) SwBinning));
+
+    pConfig->Profile.SetInt("/camera/binning", HwBinning);
+    pConfig->Profile.SetInt("/camera/SoftwareBinning", SwBinning);
 
     // if a Limit Frame ROI is in use, adjust it for the new binning
-    if (HasFrameLimiting && !LimitFrame.IsEmpty() && binning != LimitFrameBinning)
+    if (HasFrameLimiting)
     {
-        SetLimitFrame(wxRect(LimitFrame.x * binning / LimitFrameBinning, LimitFrame.y * binning / LimitFrameBinning,
-                             LimitFrame.width * binning / LimitFrameBinning, LimitFrame.height * binning / LimitFrameBinning));
+        // restore the saved limit frame for this binning (if any)
+        LoadLimitFrame(binning);
     }
 
     return false;
 }
 
-bool GuideCamera::SetLimitFrame(const wxRect& roi)
+bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning, wxString *errorMessage)
 {
-    LimitFrame = ConstrainLimitFrame(roi);
-    LimitFrameBinning = Binning;
+    if (pFrame->pGuider->IsCalibratingOrGuiding())
+    {
+        *errorMessage = "Cannot set the frame limit ROI while calibrating or guiding.";
+        return true;
+    }
 
-    pConfig->Profile.SetRect("/camera/LimitFrame", LimitFrame);
-    pConfig->Profile.SetInt("/camera/LimitFrameBinning", LimitFrameBinning);
+    // Construct and store limit frames for all available binning values. This allows
+    // accurate binning switching without rounding errors when switching from a higher
+    // binning to a lower binning.  For example, if we have a limit frame coordinate
+    // value of 101 at bin 1, after switching to bin 2 the coordinate will be 50; and
+    // switching back to bin 1 we can recover the inital value of 101.
+    for (auto choice : GetBinningChoices())
+    {
+        auto new_bin = choice.first;
+        wxRect const limit_frame(roi.x * binning / new_bin, roi.y * binning / new_bin, roi.width * binning / new_bin,
+                                 roi.height * binning / new_bin);
+        wxString const key = wxString::Format("/camera/LimitFrameBin%d", new_bin);
+        pConfig->Profile.SetRect(key, limit_frame);
+    }
 
+    // load the limit frame for the requested binning
+    LoadLimitFrame(binning);
+
+    return false; // no error
+}
+
+void GuideCamera::LoadLimitFrame(int binning)
+{
+    wxString const key = wxString::Format("/camera/LimitFrameBin%d", binning);
+    LimitFrame = pConfig->Profile.GetRect(key);
     Debug.Write(wxString::Format("camera: updated LimitFrame => (%d,%d),(%dx%d)\n", LimitFrame.x, LimitFrame.y,
                                  LimitFrame.width, LimitFrame.height));
-
-    return false;
 }
 
 void GuideCamera::SetTimeoutMs(int ms)
@@ -885,60 +914,54 @@ static void MakeBold(wxControl *ctrl)
     ctrl->SetFont(font);
 }
 
+static void FillChoiceItems(wxChoice *listBox, const wxArrayString& opts)
+{
+    listBox->Clear();
+    listBox->Append(opts);
+}
+
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
-    wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 5, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szNoiseReduction));
     pTopline->Add(GetSizerCtrl(CtrlMap, AD_szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
-    pGenGroup->Add(pTopline, def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
+    this->Add(pTopline, def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szVariableExposureDelay), def_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
 
-    pGenGroup->Layout();
+    this->Layout();
 
     // Specific controls
-    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-Specific Properties"));
+    wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
     if (pCamera)
     {
-        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer(6, 3, 15, 15); // Will auto-shrink to fit
+
         // Create all possible property controls then disable individual controls later if camera doesn't support them.  This is
-        // safer for "omnibus" style drivers that handle many cameras with different capabilities.  Exceptions are 'port' and
-        // 'LE-delay' which will be created conditionally
-        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand();
+        // safer for "omnibus" style drivers that handle many cameras with different capabilities.
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain), wxSizerFlags(0).Border(wxLEFT, 45));
+        pDetailsSizer->AddSpacer(20);
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szBinning));
-        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags().Border(wxTOP, 3));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCooler));
-        if (pCamera->HasDelayParam)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
-        if (pCamera->HasPortNum)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
-        pSpecGroup->Add(pDetailsSizer, spec_flags);
-        pSpecGroup->Layout();
+        pDetailsSizer->AddSpacer(20);
+        pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames), wxSizerFlags(0).Border(wxTOP, 3));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout), wxSizerFlags(0).Border(wxLEFT, 20));
+        this->Layout();
     }
     else
     {
         wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
-        pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
-        pSpecGroup->Layout();
+        this->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
+        Layout();
     }
     if (pCamera)
-        pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
-    this->Add(pGenGroup, def_flags);
-    if (pCamera && !pCamera->Connected)
     {
-        wxStaticText *pNotConnected = new wxStaticText(
-            m_pParent, wxID_ANY, _("Camera is not connected.  Property controls may change if you connect to it first."));
-        MakeBold(pNotConnected);
-        this->Add(pNotConnected, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 10));
+        this->Add(GetSizerCtrl(CtrlMap, AD_szSaturationOptions), wxSizerFlags(0).Border(wxALL, 2).Expand());
+        this->Add(pDetailsSizer, wxSizerFlags(0).Border(wxALL, 10).Align(wxVERTICAL).Expand());
     }
 
-    this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
     this->Layout();
     Fit(m_pParent);
 }
@@ -987,41 +1010,32 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
     AddGroup(CtrlMap, AD_szGain, sizer);
 
     // Binning
-    m_binning = 0;
     wxArrayString opts;
-    m_pCamera->GetBinningOpts(&opts);
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_pCamera->GetBinningOpts(&opts, false); // Default initialization, will be overridden in LoadValues()
     int width = StringArrayWidth(opts);
+    wxStaticText *pLabel = new wxStaticText(GetParentWindow(AD_szBinning), wxID_ANY, _("Binning:"));
     m_binning = new wxChoice(GetParentWindow(AD_szBinning), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1), opts);
-    AddLabeledCtrl(CtrlMap, AD_szBinning, _("Binning"), m_binning, _("Camera pixel binning"));
+    m_binning->SetToolTip("Camera binning, used to optimize guider image scale or improve SNR for CCD cameras");
+    m_allowSwBinning = new wxCheckBox(GetParentWindow(AD_szBinning), wxID_ANY, _("Enable software binning"));
+    m_allowSwBinning->SetToolTip(_("Can be used to increase binning beyond camera hardware/driver limits. "
+                                   "Try to keep the guider image scale > 0.5 arc-sec/px."));
+    wxSizer *szB = new wxBoxSizer(wxHORIZONTAL);
+    szB->Add(pLabel, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL));
+    szB->Add(m_binning, wxSizerFlags(0).Border(wxLEFT, 2));
+    szB->Add(m_allowSwBinning, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 4));
+    m_allowSwBinning->SetValue(false); // May be overridden in LoadValues()
+    m_allowSwBinning->Enable(includeSwBinning);
 
-    // Delay parameter
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, 0, 250, 150);
-        AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-    }
-
-    // Port number
-    if (m_pCamera->HasPortNum)
-    {
-        wxString port_choices[] = {
-            _T("Port 378"), _T("Port 3BC"), _T("Port 278"), _T("COM1"),  _T("COM2"),  _T("COM3"),  _T("COM4"),
-            _T("COM5"),     _T("COM6"),     _T("COM7"),     _T("COM8"),  _T("COM9"),  _T("COM10"), _T("COM11"),
-            _T("COM12"),    _T("COM13"),    _T("COM14"),    _T("COM15"), _T("COM16"),
-        };
-
-        width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxDefaultPosition, wxSize(width + 35, -1),
-                                  WXSIZEOF(port_choices), port_choices);
-        AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
-    }
+    m_allowSwBinning->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &CameraConfigDialogCtrlSet::OnSwBinningChecked, this);
+    AddGroup(CtrlMap, AD_szBinning, szB);
 
     // Cooler
     wxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
     m_coolerOn = new wxCheckBox(GetParentWindow(AD_szCooler), wxID_ANY, _("Cooler On"));
     m_coolerOn->SetToolTip(_("Turn camera cooler on or off"));
     sz->Add(m_coolerOn, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT));
-    m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szDelay), textWidth, 5, -99, 99, 1);
+    m_coolerSetpt = NewSpinnerInt(GetParentWindow(AD_szCooler), textWidth, 5, -99, 99, 1);
     wxSizer *szt = MakeLabeledControl(AD_szCooler, _("Set Temperature"), m_coolerSetpt, _("Cooler setpoint temperature"));
     sz->Add(szt, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
     AddGroup(CtrlMap, AD_szCooler, sz);
@@ -1051,7 +1065,7 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 
     // Watchdog timeout
     m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), textWidth, 5, 5, 9999, 1);
-    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive          \ncamera after (seconds)"), m_timeoutVal,
+    AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive   \n camera after (seconds)"), m_timeoutVal,
                    wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
                                       "The default value, %d seconds, should be appropriate for most cameras."),
                                     DefaultGuideCameraTimeoutMs / 1000));
@@ -1060,6 +1074,18 @@ CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCam
 void CameraConfigDialogCtrlSet::OnSaturationChoiceChanged(wxCommandEvent& event)
 {
     m_camSaturationADU->Enable(m_SaturationByADU->GetValue());
+}
+
+void CameraConfigDialogCtrlSet::OnSwBinningChecked(wxCommandEvent& event)
+{
+    wxArrayString opts;
+    int currBinning = GetIntChoice(m_binning, 1);
+    m_pCamera->GetBinningOpts(&opts, event.IsChecked());
+    FillChoiceItems(m_binning, opts);
+    if (event.IsChecked())
+        SetIntChoice(m_binning, currBinning);
+    else
+        SetIntChoice(m_binning, wxMin(currBinning, m_pCamera->MaxHwBinning));
 }
 
 static unsigned short SaturationValFromBPP(GuideCamera *cam)
@@ -1091,16 +1117,26 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_resetGain->Enable(false);
     }
 
-    if (m_binning)
+    wxArrayString opts;
+    int binning = m_pCamera->GetBinning();
+    bool includeSwBinning = m_pCamera->GetOfferSwBinning();
+    m_allowSwBinning->Enable(includeSwBinning);
+    // Automatically show s/w binning options if they're likely to be needed
+    if (includeSwBinning && (pFrame->GetCameraPixelScale() < 1.0 || binning > m_pCamera->MaxHwBinning))
     {
-        int idx = m_pCamera->Binning - 1;
-        m_binning->Select(idx);
-        m_prevBinning = idx + 1;
-        // don't allow binning change when calibrating or guiding
-        m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
+        m_allowSwBinning->SetValue(true);
+        m_pCamera->GetBinningOpts(&opts, true);
     }
     else
-        m_binning->Enable(false);
+    {
+        m_allowSwBinning->SetValue(false);
+        m_pCamera->GetBinningOpts(&opts, false);
+    }
+    FillChoiceItems(m_binning, opts);
+    SetIntChoice(m_binning, binning);
+    m_prevBinning = binning;
+    // don't allow binning change when calibrating or guiding
+    m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
 
     m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
 
@@ -1131,77 +1167,6 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_SaturationByADU->Enable(false);
         m_SaturationByProfile->Enable(false);
         m_camSaturationADU->Enable(false);
-    }
-
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pDelay->SetValue(m_pCamera->ReadDelay);
-    }
-
-    if (m_pCamera->HasPortNum)
-    {
-        switch (m_pCamera->Port)
-        {
-        case 0x3BC:
-            m_pPortNum->SetSelection(1);
-            break;
-        case 0x278:
-            m_pPortNum->SetSelection(2);
-            break;
-        case 1: // COM1
-            m_pPortNum->SetSelection(3);
-            break;
-        case 2: // COM2
-            m_pPortNum->SetSelection(4);
-            break;
-        case 3: // COM3
-            m_pPortNum->SetSelection(5);
-            break;
-        case 4: // COM4
-            m_pPortNum->SetSelection(6);
-            break;
-        case 5: // COM5
-            m_pPortNum->SetSelection(7);
-            break;
-        case 6: // COM6
-            m_pPortNum->SetSelection(8);
-            break;
-        case 7: // COM7
-            m_pPortNum->SetSelection(9);
-            break;
-        case 8: // COM8
-            m_pPortNum->SetSelection(10);
-            break;
-        case 9: // COM9
-            m_pPortNum->SetSelection(11);
-            break;
-        case 10: // COM10
-            m_pPortNum->SetSelection(12);
-            break;
-        case 11: // COM11
-            m_pPortNum->SetSelection(13);
-            break;
-        case 12: // COM12
-            m_pPortNum->SetSelection(14);
-            break;
-        case 13: // COM13
-            m_pPortNum->SetSelection(15);
-            break;
-        case 14: // COM14
-            m_pPortNum->SetSelection(16);
-            break;
-        case 15: // COM15
-            m_pPortNum->SetSelection(17);
-            break;
-        case 16: // COM16
-            m_pPortNum->SetSelection(18);
-            break;
-        default:
-            m_pPortNum->SetSelection(0);
-            break;
-        }
-
-        m_pPortNum->Enable(!pFrame->CaptureActive);
     }
 
     double pxSize;
@@ -1270,50 +1235,13 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
-    if (m_binning)
-    {
-        int oldBin = m_pCamera->Binning;
-        int newBin = m_binning->GetSelection() + 1;
-        if (oldBin != newBin)
-            pFrame->pAdvancedDialog->FlagImageScaleChange();
-        m_pCamera->SetBinning(m_binning->GetSelection() + 1);
-    }
+    int oldBin = m_pCamera->GetBinning();
+    int newBin = GetIntChoice(m_binning, 1);
+    if (newBin != oldBin)
+        pFrame->pAdvancedDialog->FlagImageScaleChange();
+    m_pCamera->SetBinning(newBin);
 
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
-
-    if (m_pCamera->HasDelayParam)
-    {
-        m_pCamera->ReadDelay = m_pDelay->GetValue();
-        pConfig->Profile.SetInt("/camera/ReadDelay", m_pCamera->ReadDelay);
-    }
-
-    if (m_pCamera->HasPortNum)
-    {
-        switch (m_pPortNum->GetSelection())
-        {
-        case 0:
-            m_pCamera->Port = 0x378;
-            break;
-        case 1:
-            m_pCamera->Port = 0x3BC;
-            break;
-        case 2:
-            m_pCamera->Port = 0x278;
-            break;
-        case 3:
-            m_pCamera->Port = 1;
-            break;
-        case 4:
-            m_pCamera->Port = 2;
-            break;
-        case 5:
-            m_pCamera->Port = 3;
-            break;
-        case 6:
-            m_pCamera->Port = 4;
-            break;
-        }
-    }
 
     double oldPxSz = m_pCamera->GetCameraPixelSize();
     double newPxSz = m_pPixelSize->GetValue();
@@ -1368,19 +1296,71 @@ void CameraConfigDialogCtrlSet::SetPixelSize(double val)
 
 int CameraConfigDialogCtrlSet::GetBinning()
 {
-    return m_binning ? m_binning->GetSelection() + 1 : 1;
+    return GetIntChoice(m_binning, 1);
 }
 
 void CameraConfigDialogCtrlSet::SetBinning(int binning)
 {
-    if (m_binning)
-        m_binning->Select(binning - 1);
+    SetIntChoice(m_binning, binning);
 }
 
-void GuideCamera::GetBinningOpts(int maxBin, wxArrayString *opts)
+void GuideCamera::GetBinningOpts(wxArrayString *opts, int maxHwBinning, bool includeSwBinning)
 {
-    for (int i = 1; i <= maxBin; i++)
-        opts->Add(wxString::Format("%d", i));
+    for (auto choice : GetBinningChoices(maxHwBinning))
+    {
+        if (includeSwBinning || choice.second.second == 1)
+            opts->Add(wxString::Format("%d", choice.first));
+    }
+}
+
+// Get all the available binning choices for both hardware and software binning.
+// Hardware binning takes precedence over software binning.
+//
+// The max combined binning level is the camera's max binning or the software max
+// binning (4), whichever is greater.
+//
+// Example: maxHwBin = 2
+//    combined     hw     sw
+//         1        1      1
+//         2        2      1
+//         3        1      3
+//         4        2      2
+BinningChoices GuideCamera::GetBinningChoices(int maxHwBin)
+{
+    int maxSwBin = GuideCamera::MAX_SOFTWARE_BINNING;
+    int maxCombinedBin = wxMax(maxHwBin, maxSwBin);
+    BinningChoices choices;
+    for (int hwBin = 1; hwBin <= maxHwBin; hwBin++)
+        for (int swBin = 1; swBin <= maxSwBin; swBin++)
+        {
+            auto combined = hwBin * swBin;
+            if (combined > maxCombinedBin)
+                continue;
+            auto it = choices.find(combined);
+            if (it == choices.end() || hwBin > it->second.first)
+                choices[combined] = std::make_pair(hwBin, swBin);
+        }
+    return choices;
+}
+
+// Get the hardware and software binning levels for a given combined binning level and
+// maximum hardware binning level.
+//
+// Uses GuideCamera::GetBinningChoices() to generate the list of valid choices, then
+// selects the closest match having a combined binning value less than or equal to the
+// requested value.
+std::pair<int, int> GuideCamera::GetHwAndSwBinning(int maxHwBinning, int combinedBinning)
+{
+    auto prev = std::make_pair(1, 1);
+    for (auto choice : GetBinningChoices(maxHwBinning))
+    {
+        if (choice.first == combinedBinning)
+            return choice.second;
+        if (choice.first > combinedBinning)
+            return prev;
+        prev = choice.second;
+    }
+    return prev;
 }
 
 wxString GuideCamera::GetSettingsSummary()
@@ -1399,10 +1379,8 @@ wxString GuideCamera::GetSettingsSummary()
     else
         pixelSizeStr = wxString::Format(_("%0.1f um"), m_pixelSize);
 
-    return wxString::Format("Camera = %s%s%s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
-                            HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "",
-                            HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
-                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "", FrameSize.GetWidth(),
+    return wxString::Format("Camera = %s%s, full size = %d x %d, %s, %s, pixel size = %s\n", Name,
+                            HasGainControl ? wxString::Format(", gain = %d", GuideCameraGain) : "", FrameSize.GetWidth(),
                             FrameSize.GetHeight(), darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
                             CurrentDefectMap ? "defect map in use" : "no defect map", pixelSizeStr);
 }
@@ -1581,12 +1559,72 @@ void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconne
 
 void GuideCamera::InitCapture() { }
 
-bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe)
+// convert a rectangle from binned coordinates to un-binned coordinates
+inline static wxRect unbinned_rect(const wxRect& binnedRect, int binning)
 {
+    auto x = binnedRect.GetLeft() * binning;
+    auto y = binnedRect.GetTop() * binning;
+    auto width = binnedRect.GetWidth() * binning;
+    auto heigth = binnedRect.GetHeight() * binning;
+    return wxRect(x, y, width, heigth);
+}
+
+// convert a rectangle from un-binned coordinates to binned coordinates
+inline static wxRect binned_rect(const wxRect& unbinnedRect, int binning)
+{
+    auto x = unbinnedRect.GetLeft() / binning;
+    auto y = unbinnedRect.GetTop() / binning;
+    auto width = unbinnedRect.GetWidth() / binning;
+    auto heigth = unbinnedRect.GetHeight() / binning;
+    return wxRect(x, y, width, heigth);
+}
+
+inline static wxSize binned_size(const wxSize& unbinnedSize, int binning)
+{
+    return wxSize(unbinnedSize.x / binning, unbinnedSize.y / binning);
+}
+
+bool GuideCamera::Capture(GuideCamera *camera, usImage& img, const CaptureParams& captureParams)
+{
+    // The subframe and LimitFrame are in software-binned coordinates, but the camera
+    // subclass Capture methods work with hardware coordinates.
+    int swBinning = captureParams.swBinning;
+    CaptureParams cameraParams(captureParams);
+    if (swBinning > 1)
+    {
+        cameraParams.limitFrame = unbinned_rect(captureParams.limitFrame, swBinning);
+        cameraParams.subframe = unbinned_rect(captureParams.subframe, swBinning);
+    }
+
     img.InitImgStartTime();
-    img.BitsPerPixel = camera->BitsPerPixel();
-    img.ImgExpDur = duration;
-    bool err = camera->Capture(duration, img, captureOptions, subframe);
+    img.LimitFrame = captureParams.limitFrame;
+    img.Binning = captureParams.hwBinning;
+    img.BitsPerPixel = captureParams.bpp;
+    img.Gain = captureParams.gain;
+    img.ImgExpDur = captureParams.duration;
+
+    bool err = camera->Capture(img, cameraParams);
+    if (err)
+        return err;
+
+    // perform software binning if needed
+    if (swBinning > 1)
+    {
+        usImage binnedImage;
+        if (binnedImage.Init(binned_size(img.Size, swBinning)))
+        {
+            camera->DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+        BinPixels(binnedImage.ImageData, img.ImageData, img.Size, swBinning);
+        img.SwapImageData(binnedImage);
+        img.Size = binnedImage.Size;
+        img.NPixels = binnedImage.NPixels;
+        img.Binning *= swBinning;
+        // scale the subframe from camera coords to binned coords
+        img.Subframe = binned_rect(img.Subframe, swBinning);
+    }
+
     return err;
 }
 

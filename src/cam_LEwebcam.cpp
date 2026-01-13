@@ -40,11 +40,13 @@
 
 # include "cam_wdm_base.h"
 
+static const int DefaultReadDelay = 150;
+
 CameraLEWebcam::CameraLEWebcam(void) : CameraWDM()
 {
     Name = _T("Generic LE Webcam");
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    HasDelayParam = true;
+    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 }
 
 CameraLEWebcam::~CameraLEWebcam(void) { }
@@ -80,8 +82,11 @@ bool CameraLEWebcam::Disconnect()
     return bError;
 }
 
-bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraLEWebcam::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     bool bError = false;
 
     try
@@ -118,19 +123,19 @@ bool CameraLEWebcam::Capture(int duration, usImage& img, int options, const wxRe
         // now record the frame.
         // Start by grabbing three frames
         usImage frame1;
-        if (CaptureOneFrame(frame1, options, subframe))
+        if (CaptureOneFrame(frame1, options))
         {
             throw ERROR_INFO("CaptureOneFrame(frame1) failed");
         }
 
         usImage frame2;
-        if (CaptureOneFrame(frame2, options, subframe))
+        if (CaptureOneFrame(frame2, options))
         {
             throw ERROR_INFO("CaptureOneFrame(frame2) failed");
         }
 
         usImage frame3;
-        if (CaptureOneFrame(frame3, options, subframe))
+        if (CaptureOneFrame(frame3, options))
         {
             throw ERROR_INFO("CaptureOneFrame(frame3) failed");
         }

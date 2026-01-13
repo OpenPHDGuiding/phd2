@@ -133,7 +133,6 @@ private:
     double PixSizeY;
     wxSize m_maxSize;
     wxByte m_curBinning;
-    bool HasBayer;
     long INDIport;
     wxString INDIhost;
     wxString INDICameraName;
@@ -181,7 +180,7 @@ public:
     bool GetDevicePixelSize(double *pixSize) override;
     void ShowPropertyDialog() override;
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
 
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool ST4HasNonGuiMove() override;
@@ -377,17 +376,17 @@ void CameraINDI::updateProperty(INDI::Property property)
             m_maxSize.x = IUFindNumber(ccdinfo_prop, "CCD_MAX_X")->value;
             m_maxSize.y = IUFindNumber(ccdinfo_prop, "CCD_MAX_Y")->value;
             // defer defining FrameSize since it is not simply derivable from max size and binning
-            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
             m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
         }
         else if (nvp == binning_prop)
         {
-            MaxBinning = wxMin(binning_x->max, binning_y->max);
+            MaxHwBinning = wxMin(binning_x->max, binning_y->max);
             m_curBinning = wxMin(binning_x->value, binning_y->value);
-            if (Binning > MaxBinning)
-                Binning = MaxBinning;
+            if (HwBinning > MaxHwBinning)
+                HwBinning = MaxHwBinning;
             // defer defining FrameSize since it is not simply derivable from max size and binning
-            // no: FrameSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+            // no: FrameSize = wxSize(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
         }
         else if (nvp == pulseGuideEW_prop || nvp == pulseGuideNS_prop)
         {
@@ -976,29 +975,31 @@ bool CameraINDI::StackStream(CapturedFrame *cf)
 
 void CameraINDI::SendBinning()
 {
-    binning_x->value = Binning;
-    binning_y->value = Binning;
-    Debug.Write(wxString::Format("INDI Camera: send binning %u\n", Binning));
+    binning_x->value = HwBinning;
+    binning_y->value = HwBinning;
+    Debug.Write(wxString::Format("INDI Camera: send binning %u\n", HwBinning));
     sendNewNumber(binning_prop);
-    m_curBinning = Binning;
+    m_curBinning = HwBinning;
 }
 
-bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
 {
     if (!Connected)
         return true;
 
     bool takeSubframe = UseSubframes;
-    wxRect subframe(subframeArg);
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    wxRect subframe(captureParams.subframe);
 
     // we can set the exposure time directly in the camera
     if (expose_prop && !INDICameraForceVideo)
     {
-        if (binning_prop && Binning != m_curBinning)
+        if (binning_prop && HwBinning != m_curBinning)
         {
             SendBinning();
             takeSubframe = false; // subframe may be out of bounds now
-            if (Binning == 1)
+            if (HwBinning == 1)
                 FrameSize.Set(m_maxSize.x, m_maxSize.y);
             else
                 FrameSize = UNDEFINED_FRAME_SIZE; // we don't know the binned size until we get a frame
@@ -1030,17 +1031,17 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 // the max size divided by the binning may be larger than
                 // the actual frame, but setting a larger size should
                 // request the full binned frame which we want
-                sz.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+                sz.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
             }
             subframe = wxRect(sz);
         }
 
         if (frame_prop && subframe != m_roi)
         {
-            frame_x->value = subframe.x * Binning;
-            frame_y->value = subframe.y * Binning;
-            frame_width->value = subframe.width * Binning;
-            frame_height->value = subframe.height * Binning;
+            frame_x->value = subframe.x * HwBinning;
+            frame_y->value = subframe.y * HwBinning;
+            frame_width->value = subframe.width * HwBinning;
+            frame_height->value = subframe.height * HwBinning;
             sendNewNumber(frame_prop);
             m_roi = subframe;
         }
@@ -1101,7 +1102,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                         wxString::Format(_("Camera  %s, exposure error. Trying to use streaming instead."), INDICameraName));
                     INDICameraForceVideo = true;
                     first_frame = false;
-                    return Capture(duration, img, options, subframeArg);
+                    return Capture(img, captureParams);
                 }
                 else
                 {
@@ -1129,10 +1130,10 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
                 delete frame;
                 if (options & CAPTURE_SUBTRACT_DARK)
                     SubtractDark(img);
-                if (HasBayer && Binning == 1 && (options & CAPTURE_RECON))
-                    QuickLRecon(img);
                 if (options & CAPTURE_RECON)
                 {
+                    if (HasBayer && captureParams.CombinedBinning() == 1)
+                        QuickLRecon(img);
                     if (PixSizeX != PixSizeY)
                         SquarePixels(img, PixSizeX, PixSizeY);
                 }
@@ -1153,7 +1154,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
 
         first_frame = false;
 
-        if (binning_prop && Binning != m_curBinning)
+        if (binning_prop && HwBinning != m_curBinning)
         {
             SendBinning();
         }
@@ -1161,7 +1162,7 @@ bool CameraINDI::Capture(int duration, usImage& img, int options, const wxRect& 
         // for video streaming we do not get the frame size so we have to
         // derive it from the full frame size and the binning
 
-        FrameSize.Set(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        FrameSize.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
 
         if (img.Init(FrameSize))
         {

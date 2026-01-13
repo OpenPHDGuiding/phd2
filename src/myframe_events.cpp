@@ -417,7 +417,7 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
     // initiate a single exposure with the requested parameters. Returns true on success.
     // Parameters:
     //   duration - the exposure duration in milliseconds
-    //   binning - the camera binning
+    //   binning - the camera binning level - combined hardware + software binning
     //   gain - the camera gain value (phd2 gain units 0..100)
     //   subframe - the requested ROI; an empty wxRect means to use the full frame
     //   save - whether to automatically save the image when the exposure completes
@@ -426,8 +426,13 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
 
     this->duration = duration;
 
-    prev_binning = pCamera->Binning;
-    error = pCamera->SetBinning(binning);
+    auto hwSwBinning = pCamera->GetHwAndSwBinning(binning);
+    auto hwBinning = hwSwBinning.first;
+    auto swBinning = hwSwBinning.second;
+
+    prev_hw_binning = pCamera->HwBinning;
+    prev_sw_binning = pCamera->SwBinning;
+    error = pCamera->SetBinning(hwBinning, swBinning);
     if (error)
         return false;
 
@@ -437,9 +442,6 @@ bool SingleExposure::Activate(int duration, wxByte binning, int gain, const wxRe
         return false;
 
     this->subframe = subframe;
-    if (!this->subframe.IsEmpty())
-        subframe.Intersect(wxRect(pCamera->FrameSize));
-
     this->save = save;
     this->path = path;
 
@@ -473,8 +475,8 @@ void SingleExposure::Complete(bool succeeded, const wxString& errorMsgArg)
 
     EvtServer.NotifySingleFrameComplete(succeeded, errorMsg, *this);
 
-    if (pCamera->Binning != prev_binning)
-        pCamera->SetBinning(prev_binning);
+    if (pCamera->HwBinning != prev_hw_binning || pCamera->SwBinning != prev_sw_binning)
+        pCamera->SetBinning(prev_hw_binning, prev_sw_binning);
     if (pCamera->GuideCameraGain != prev_gain)
         pCamera->SetCameraGain(prev_gain);
     enabled = false;
@@ -494,6 +496,10 @@ static void WarnRawImageMode(void)
 {
     if (pCamera->FrameSize != pCamera->DarkFrameSize())
     {
+        if (!pCamera->LimitFrame.IsEmpty())
+            // If a limited ROI is in effect, the camera's frame size may not match the
+            // full frame size
+            return;
         pFrame->SuppressibleAlert(RawModeWarningKey(),
                                   _("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a "
                                     "different size from ordinary guide frames for this camera."),

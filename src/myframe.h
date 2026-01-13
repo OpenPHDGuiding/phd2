@@ -116,7 +116,8 @@ struct SingleExposure
     wxRect subframe;
     bool save;
     wxString path;
-    wxByte prev_binning;
+    wxByte prev_hw_binning;
+    wxByte prev_sw_binning;
     int prev_gain;
 
     SingleExposure();
@@ -787,5 +788,11 @@ inline int MyFrame::GetFocalLength() const
 {
     return m_focalLength;
 }
+
+// utility function to get an integer value from a wxChoice control
+extern int GetIntChoice(wxChoice *choice, int dflt);
+
+// utility function to set an integer value in a wxChoice control
+extern void SetIntChoice(wxChoice *choice, int value);
 
 #endif /* MYFRAME_H_INCLUDED */
