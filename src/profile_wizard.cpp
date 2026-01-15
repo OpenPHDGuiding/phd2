@@ -102,6 +102,7 @@ private:
     wxCheckBox *m_pLaunchDarks;
     wxCheckBox *m_pAutoRestore;
     wxStatusBar *m_pStatusBar;
+    wxStaticText *m_pStatusBarText;
     wxHyperlinkCtrl *m_EqLink;
 
     wxString m_SelectedCamera;
@@ -256,6 +257,11 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     // Status bar for error messages
     m_pStatusBar = new wxStatusBar(this, -1);
     m_pStatusBar->SetFieldsCount(1);
+    // Add a text field to the status bar in order to control its font properties
+    m_pStatusBarText = new wxStaticText(m_pStatusBar, wxID_ANY, wxEmptyString, wxPoint(10, 5));
+    font = m_pStatusBarText->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    m_pStatusBarText->SetFont(font);
 
     // Gear label and combo box
     m_pGearGrid = new wxFlexGridSizer(2, 2, 5, 15);
@@ -517,9 +523,10 @@ void ProfileWizard::ShowHelp(DialogState state)
 void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
 {
     if (appending)
-        m_pStatusBar->SetStatusText(m_pStatusBar->GetStatusText() + " " + msg);
+        m_pStatusBarText->SetLabel(m_pStatusBar->GetStatusText() + " " + msg);
     else
-        m_pStatusBar->SetStatusText(msg);
+        m_pStatusBarText->SetLabel(msg);
+    m_pStatusBarText->Show(true);
 }
 enum ConfigSuggestionResults
 {
@@ -650,7 +657,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
         case STATE_CAMERA:
             bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && m_SelectedCamera != _("None"));
             if (!bOk)
-                ShowStatus(_("Please specify camera type, guider focal length, camera bit-depth, and guide camera pixel size"));
+                ShowStatus(_("Specify camera, guider focal length, and guide camera pixel size"));
             break;
         case STATE_MOUNT:
             bOk = (m_SelectedMount.Length() > 0 && m_SelectedMount != _("None"));
@@ -676,7 +683,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
                 }
             }
             else
-                ShowStatus(_("Please select a mount type to handle guider commands"));
+                ShowStatus(_("Select a mount type to handle guide commands"));
             break;
         case STATE_AUXMOUNT:
         {
@@ -707,11 +714,11 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             m_ProfileName = m_pProfileName->GetValue();
             bOk = m_ProfileName.length() > 0;
             if (!bOk)
-                ShowStatus(_("Please specify a name for the profile."));
+                ShowStatus(_("Specify a name for the profile."));
             if (pConfig->GetProfileId(m_ProfileName) > 0)
             {
                 bOk = false;
-                ShowStatus(_("There is already a profile with that name. Please choose a different name."));
+                ShowStatus(_("Duplicate profile name, choose a different one."));
             }
             break;
         case STATE_DONE:
