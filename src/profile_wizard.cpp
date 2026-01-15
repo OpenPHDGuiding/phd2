@@ -1445,6 +1445,7 @@ void ProfileWizard::OnSwBinningChecked(wxCommandEvent& evt)
     {
         m_pBinningLevel->Set(m_hwBinningChoices);
         SetIntChoice(m_pBinningLevel, wxMin(currBinning, m_hwBinningChoices.GetCount()));
+        UpdatePixelScale(true); // Repeat check for adequate image scale
     }
 }
 
@@ -1486,8 +1487,16 @@ void ProfileWizard::UpdatePixelScale(bool binningChanged)
     {
         if (!binningChanged)
         {
-            int bestBinning = RecommendedBinning(scale, binning, 0.5);
+            int bestBinning = RecommendedBinning(scale, binning, MIN_SCALE);
+            if (!m_pShowSWBinning->IsChecked())
+            {
+                m_pShowSWBinning->SetValue(true);
+                m_pBinningLevel->Set(m_allBinningChoices);
+            }
             SetIntChoice(m_pBinningLevel, bestBinning);
+            binning = bestBinning;
+            scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+            m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
             ShowStatus(_("Binning has been increased to achieve pixel scale > 0.5"));
         }
         else
