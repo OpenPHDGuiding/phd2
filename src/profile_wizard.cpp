@@ -1443,6 +1443,7 @@ void ProfileWizard::OnSwBinningChecked(wxCommandEvent& evt)
     }
     else
     {
+        // Insure binning value is visible in listbox
         m_pBinningLevel->Set(m_hwBinningChoices);
         SetIntChoice(m_pBinningLevel, wxMin(currBinning, m_hwBinningChoices.GetCount()));
         UpdatePixelScale(true); // Repeat check for adequate image scale
@@ -1487,6 +1488,7 @@ void ProfileWizard::UpdatePixelScale(bool binningChanged)
     {
         if (!binningChanged)
         {
+            // Do auto-correction unless user has explicitly changed binning value
             int bestBinning = RecommendedBinning(scale, binning, MIN_SCALE);
             if (!m_pShowSWBinning->IsChecked())
             {
