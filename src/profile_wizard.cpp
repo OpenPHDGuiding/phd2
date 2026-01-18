@@ -718,7 +718,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             if (pConfig->GetProfileId(m_ProfileName) > 0)
             {
                 bOk = false;
-                ShowStatus(_("Duplicate profile name, choose a different one."));
+                ShowStatus(_("Choose a profile name not already in use "));
             }
             break;
         case STATE_DONE:
