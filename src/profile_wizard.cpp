@@ -496,11 +496,11 @@ void ProfileWizard::ShowHelp(DialogState state)
                   "both interfaces will be handled automatically.");
         break;
     case STATE_ROTATOR:
-        hText =
-            _("If you have a rotator device that rotates the guide camera or OAG, you can select it here. This will allow "
-              "PHD2 to automatically adjust calibration when the rotator "
-              "is moved. Otherwise, any change in rotator position will require a re-calibration in PHD2. PHD2 NEVER "
-              "sets options in the rotator software or changes the rotator position.");
+        hText = _("If you have a rotator device that rotates the guide camera or OAG, you can select it here. This will "
+                  "allow PHD2 to automatically adjust "
+                  "calibration when the rotator is moved.  Otherwise any change in rotator position will require a "
+                  "re-calibration in PHD2. PHD2 NEVER "
+                  "sets options in the rotator software or changes the rotator position.");
         break;
     case STATE_WRAPUP:
         hText = _(
