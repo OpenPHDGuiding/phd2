@@ -63,6 +63,7 @@ public:
         ID_DETECT_GUIDESPEED,
         ID_FOCALLENGTH,
         ID_BINNING,
+        ID_SW_BINNING,
         ID_GUIDESPEED,
         ID_PREV,
         ID_HELP,
@@ -84,6 +85,7 @@ private:
     wxStaticBitmap *m_scaleIcon;
     wxStaticText *m_pixelScale;
     wxChoice *m_pBinningLevel;
+    wxCheckBox *m_pShowSWBinning;
     wxSpinCtrlDouble *m_pFocalLength;
     wxStaticText *m_pFocalLengthWarning;
     wxSpinCtrlDouble *m_pGuideSpeed;
@@ -100,6 +102,7 @@ private:
     wxCheckBox *m_pLaunchDarks;
     wxCheckBox *m_pAutoRestore;
     wxStatusBar *m_pStatusBar;
+    wxStaticText *m_pStatusBarText;
     wxHyperlinkCtrl *m_EqLink;
 
     wxString m_SelectedCamera;
@@ -124,8 +127,9 @@ private:
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthText(wxCommandEvent& evt);
     void OnBinningChange(wxCommandEvent& evt);
+    void OnSwBinningChecked(wxCommandEvent& event);
     void OnMenuSelectCamera(wxCommandEvent& event);
-    void UpdatePixelScale();
+    void UpdatePixelScale(bool binningChanged);
     void OnGuideSpeedChange(wxSpinDoubleEvent& evt);
     void OnContextHelp(wxCommandEvent& evt);
     void ShowStatus(const wxString& msg, bool appending = false);
@@ -141,6 +145,8 @@ private:
     bool m_useMount;
     bool m_useAuxMount;
     bool m_autoRestore;
+    wxArrayString m_hwBinningChoices;
+    wxArrayString m_allBinningChoices;
 
 public:
     bool m_launchDarks;
@@ -164,6 +170,7 @@ wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
     EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
     EVT_TEXT(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthText)
     EVT_CHOICE(ID_BINNING, ProfileWizard::OnBinningChange)
+    EVT_CHECKBOX(ID_SW_BINNING, ProfileWizard::OnSwBinningChecked)
     EVT_SPINCTRLDOUBLE(ID_GUIDESPEED, ProfileWizard::OnGuideSpeedChange)
     EVT_BUTTON(ID_HELP, ProfileWizard::OnContextHelp)
 wxEND_EVENT_TABLE();
@@ -250,6 +257,11 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     // Status bar for error messages
     m_pStatusBar = new wxStatusBar(this, -1);
     m_pStatusBar->SetFieldsCount(1);
+    // Add a text field to the status bar in order to control its font properties
+    m_pStatusBarText = new wxStaticText(m_pStatusBar, wxID_ANY, wxEmptyString, wxPoint(10, 5));
+    font = m_pStatusBarText->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    m_pStatusBarText->SetFont(font);
 
     // Gear label and combo box
     m_pGearGrid = new wxFlexGridSizer(2, 2, 5, 15);
@@ -279,17 +291,21 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
 
     // Binning
     wxArrayString opts;
-    bool includeSwBinning = false; // TODO: SW binning UI
-    GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
+    GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, true);
     m_pBinningLevel = new wxChoice(this, ID_BINNING, wxDefaultPosition, wxDefaultSize, opts);
     m_pBinningLevel->SetToolTip(_("If your camera supports binning (many do not), you can choose a binning value > 1.  "
-                                  "With long focal length guide scopes and OAGs, binning can allow use of fainter guide "
-                                  "stars.  For more common setups, it's better to leave binning at 1."));
+                                  "Binning can keep your guider image scale above 0.5 arc-sec/px and with CCD-based   "
+                                  "guide cameras, may allow use of fainter guide stars."));
     m_pBinningLevel->SetSelection(0);
+    m_pShowSWBinning = new wxCheckBox(this, ID_SW_BINNING, _("Show software binning"));
+    m_pShowSWBinning->SetValue(true);
+    m_pShowSWBinning->SetToolTip(_("Show options for binning beyond camera hardware/driver limits. "
+                                   "Try to keep the guider image scale > 0.5 arc-sec/px."));
 
     wxBoxSizer *sz = new wxBoxSizer(wxHORIZONTAL);
     sz->Add(Label(this, _("Binning level")), 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     sz->Add(m_pBinningLevel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sz->Add(m_pShowSWBinning, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL).Border(wxLEFT, 4));
     m_pUserProperties->Add(sz, wxGBPosition(1, 1), wxDefaultSpan, 0, 0);
 
     // Focal length
@@ -327,7 +343,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool showGreeting)
     m_pixelScale->SetToolTip(_("The pixel scale of your guide configuration, arc-seconds per pixel"));
     m_pUserProperties->Add(m_pixelScale, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 4);
 
-    UpdatePixelScale();
+    UpdatePixelScale(false);
 
     // controls for the mount pane
     wxBoxSizer *mtSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -480,9 +496,11 @@ void ProfileWizard::ShowHelp(DialogState state)
                   "both interfaces will be handled automatically.");
         break;
     case STATE_ROTATOR:
-        hText = _("If you have an ASCOM or INDI-compatible rotator device, you can select it here.  This will allow PHD2 to "
-                  "automatically adjust calibration when the rotator "
-                  "is moved. Otherwise, any change in rotator position will require a re-calibration in PHD2");
+        hText = _("If you have a rotator device that rotates the guide camera or OAG, you can select it here. This will "
+                  "allow PHD2 to automatically adjust "
+                  "calibration when the rotator is moved.  Otherwise any change in rotator position will require a "
+                  "re-calibration in PHD2. PHD2 NEVER "
+                  "sets options in the rotator software or changes the rotator position.");
         break;
     case STATE_WRAPUP:
         hText = _(
@@ -507,9 +525,10 @@ void ProfileWizard::ShowHelp(DialogState state)
 void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
 {
     if (appending)
-        m_pStatusBar->SetStatusText(m_pStatusBar->GetStatusText() + " " + msg);
+        m_pStatusBarText->SetLabel(m_pStatusBar->GetStatusText() + " " + msg);
     else
-        m_pStatusBar->SetStatusText(msg);
+        m_pStatusBarText->SetLabel(msg);
+    m_pStatusBarText->Show(true);
 }
 enum ConfigSuggestionResults
 {
@@ -640,7 +659,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
         case STATE_CAMERA:
             bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && m_SelectedCamera != _("None"));
             if (!bOk)
-                ShowStatus(_("Please specify camera type, guider focal length, camera bit-depth, and guide camera pixel size"));
+                ShowStatus(_("Specify camera, guider focal length, and guide camera pixel size"));
             break;
         case STATE_MOUNT:
             bOk = (m_SelectedMount.Length() > 0 && m_SelectedMount != _("None"));
@@ -666,7 +685,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
                 }
             }
             else
-                ShowStatus(_("Please select a mount type to handle guider commands"));
+                ShowStatus(_("Select a mount type to handle guide commands"));
             break;
         case STATE_AUXMOUNT:
         {
@@ -697,11 +716,11 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             m_ProfileName = m_pProfileName->GetValue();
             bOk = m_ProfileName.length() > 0;
             if (!bOk)
-                ShowStatus(_("Please specify a name for the profile."));
+                ShowStatus(_("Specify a name for the profile."));
             if (pConfig->GetProfileId(m_ProfileName) > 0)
             {
                 bOk = false;
-                ShowStatus(_("There is already a profile with that name. Please choose a different name."));
+                ShowStatus(_("Choose a profile name not already in use "));
             }
             break;
         case STATE_DONE:
@@ -1288,7 +1307,10 @@ static double GetPixelSize(GuideCamera *cam)
 
 void ProfileWizard::InitCameraProps(bool tryConnect)
 {
-    bool includeSwBinning = false; // TODO: SW binning UI
+    // Get default values for cases where cam connection isn't requested or fails
+    m_allBinningChoices.Clear();
+    GuideCamera::GetBinningOpts(&m_allBinningChoices, DefaultMaxHwBinning, true);
+    m_pShowSWBinning->Enable(false); // Adjust if hw info is available
     if (tryConnect)
     {
         // Pixel size
@@ -1301,19 +1323,32 @@ void ProfileWizard::InitCameraProps(bool tryConnect)
         wxSpinDoubleEvent dummy;
         OnPixelSizeChange(dummy);
         // Binning
-        wxArrayString opts;
         if (cam)
-            cam->GetBinningOpts(&opts, includeSwBinning);
+        {
+            m_hwBinningChoices.Clear();
+            cam->GetBinningOpts(&m_hwBinningChoices, false);
+            if (cam->GetOfferSwBinning())
+            {
+                m_pShowSWBinning->SetValue(true);
+                m_pBinningLevel->Set(m_allBinningChoices);
+            }
+            else
+            {
+                m_pShowSWBinning->SetValue(false);
+                m_pBinningLevel->Set(m_hwBinningChoices);
+            }
+            m_pShowSWBinning->Enable(true);
+        }
         else
-            GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
-        m_pBinningLevel->Set(opts);
+        {
+            m_pBinningLevel->Set(m_allBinningChoices);
+        }
         m_pBinningLevel->SetSelection(0);
     }
     else
     {
-        wxArrayString opts;
-        GuideCamera::GetBinningOpts(&opts, DefaultMaxHwBinning, includeSwBinning);
-        m_pBinningLevel->Set(opts);
+
+        m_pBinningLevel->Set(m_allBinningChoices);
         m_pBinningLevel->SetSelection(0);
         m_pPixelSize->SetValue(0.);
         m_pPixelSize->Enable(true);
@@ -1370,7 +1405,7 @@ void ProfileWizard::InitMountProps(Scope *theScope)
 void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
 {
     m_PixelSize = m_pPixelSize->GetValue();
-    UpdatePixelScale();
+    UpdatePixelScale(false);
 }
 
 void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
@@ -1381,7 +1416,7 @@ void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
         m_pFocalLengthWarning->Show(true);
     else
         m_pFocalLengthWarning->Show(false);
-    UpdatePixelScale();
+    UpdatePixelScale(false);
     SetSizerAndFit(m_pvSizer); // Show/hide of focal length warning alters layout of GridBagSizer
 }
 
@@ -1391,13 +1426,30 @@ void ProfileWizard::OnFocalLengthText(wxCommandEvent& evt)
     if (evt.GetString().ToULong(&val) && val >= AdvancedDialog::MIN_FOCAL_LENGTH && val <= AdvancedDialog::MAX_FOCAL_LENGTH)
     {
         m_FocalLength = val;
-        UpdatePixelScale();
+        UpdatePixelScale(false);
     }
 }
 
 void ProfileWizard::OnBinningChange(wxCommandEvent& evt)
 {
-    UpdatePixelScale();
+    UpdatePixelScale(true);
+}
+
+void ProfileWizard::OnSwBinningChecked(wxCommandEvent& evt)
+{
+    int currBinning = GetIntChoice(m_pBinningLevel, 1);
+    if (evt.IsChecked())
+    {
+        m_pBinningLevel->Set(m_allBinningChoices);
+        SetIntChoice(m_pBinningLevel, currBinning);
+    }
+    else
+    {
+        // Insure binning value is visible in listbox
+        m_pBinningLevel->Set(m_hwBinningChoices);
+        SetIntChoice(m_pBinningLevel, wxMin(currBinning, m_hwBinningChoices.GetCount()));
+        UpdatePixelScale(true); // Repeat check for adequate image scale
+    }
 }
 
 inline static double round2(double x)
@@ -1406,7 +1458,21 @@ inline static double round2(double x)
     return floor(x * 100. + 0.5) / 100.;
 }
 
-void ProfileWizard::UpdatePixelScale()
+// Compute binning level needed to meet or exceed the requested minimum image scale
+static int RecommendedBinning(double currScale, int currBinning, double targetScale)
+{
+    double bin1scale = currScale / currBinning;
+    for (auto choice : pCamera->GetBinningChoices())
+    {
+        auto binning = choice.first;
+        double scale = bin1scale * binning;
+        if (scale >= targetScale)
+            return binning;
+    }
+    return pCamera->MaxCombinedBinning();
+}
+
+void ProfileWizard::UpdatePixelScale(bool binningChanged)
 {
     int binning = GetIntChoice(m_pBinningLevel, 1);
 
@@ -1422,20 +1488,38 @@ void ProfileWizard::UpdatePixelScale()
     static const double MIN_SCALE = 0.50;
     if (scale != 0.0 && round2(scale) < MIN_SCALE)
     {
-        if (!m_scaleIcon->GetClientData())
+        if (!binningChanged)
         {
-            m_scaleIcon->SetClientData((void *) -1); // so we only do this once
-#include "icons/alert24.png.h"
-            wxBitmap alert(wxBITMAP_PNG_FROM_DATA(alert24));
-            m_scaleIcon->SetBitmap(alert);
-            m_scaleIcon->SetToolTip(_("Guide star identification works best when the pixel scale is above 0.5\"/px. "
-                                      "Select binning level 2 to increase the pixel scale."));
-            m_scaleIcon->Hide();
+            // Do auto-correction unless user has explicitly changed binning value
+            int bestBinning = RecommendedBinning(scale, binning, MIN_SCALE);
+            if (!m_pShowSWBinning->IsChecked())
+            {
+                m_pShowSWBinning->SetValue(true);
+                m_pBinningLevel->Set(m_allBinningChoices);
+            }
+            SetIntChoice(m_pBinningLevel, bestBinning);
+            binning = bestBinning;
+            scale = MyFrame::GetPixelScale(m_PixelSize, m_FocalLength, binning);
+            m_pixelScale->SetLabel(wxString::Format(_("Pixel scale: %8.2f\"/px"), scale));
+            ShowStatus(_("Binning has been increased to achieve pixel scale > 0.5"));
         }
-        if (!m_scaleIcon->IsShown())
+        else
         {
-            m_scaleIcon->ShowWithEffect(wxSHOW_EFFECT_BLEND, 2000);
-            ShowStatus(_("Low pixel scale"));
+            if (!m_scaleIcon->GetClientData())
+            {
+                m_scaleIcon->SetClientData((void *) -1); // so we only do this once
+#include "icons/alert24.png.h"
+                wxBitmap alert(wxBITMAP_PNG_FROM_DATA(alert24));
+                m_scaleIcon->SetBitmap(alert);
+                m_scaleIcon->SetToolTip(_("Guide star identification works best when the pixel scale is above 0.5\"/px. "
+                                          "Select binning level 2 to increase the pixel scale."));
+                m_scaleIcon->Hide();
+            }
+            if (!m_scaleIcon->IsShown())
+            {
+                m_scaleIcon->ShowWithEffect(wxSHOW_EFFECT_BLEND, 2000);
+                ShowStatus(_("Low pixel scale"));
+            }
         }
     }
     else
