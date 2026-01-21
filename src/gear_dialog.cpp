@@ -456,7 +456,11 @@ void GearDialog::LoadGearChoices()
     LoadRotators(m_pRotators);
 
     wxCommandEvent dummyEvent;
-    m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", _("None"));
+    m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", wxEmptyString);
+    if (m_lastCamera.IsEmpty())
+        m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+    if (m_lastCamera.IsEmpty())
+        m_lastCamera = _("None");
     SetMatchingSelection(m_pCameras, m_lastCamera);
     OnChoiceCamera(dummyEvent);
 
@@ -936,6 +940,11 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
     try
     {
         wxString choice = m_pCameras->GetStringSelection();
+        if (choice.IsEmpty() && m_pCameras->GetCount() > 0)
+        {
+            m_pCameras->SetSelection(0);
+            choice = m_pCameras->GetStringSelection();
+        }
 
         delete m_pCamera;
         m_pCamera = nullptr;
@@ -1895,7 +1904,11 @@ void GearDialog::ShowProfileWizard(wxCommandEvent& evt)
 
 bool GearDialog::IsEmptyProfile()
 {
-    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", _("None"));
+    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", wxEmptyString);
+    if (lastCamera.IsEmpty())
+        lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+    if (lastCamera.IsEmpty())
+        lastCamera = _("None");
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
     return lastCamera == _("None") && lastScope == _("None");
 }

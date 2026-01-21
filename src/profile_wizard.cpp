@@ -40,6 +40,16 @@
 #include <wx/gbsizer.h>
 #include <wx/hyperlink.h>
 
+namespace
+{
+    bool s_profileWizardActive = false;
+}
+
+bool IsProfileWizardActive()
+{
+    return s_profileWizardActive;
+}
+
 class ProfileWizard : public wxDialog
 {
 public:
@@ -1027,7 +1037,7 @@ void ProfileWizard::WrapUp()
     }
 
     // populate the profile. The caller will load the profile.
-    pConfig->Profile.SetString("/camera/LastMenuchoice", m_SelectedCamera);
+    pConfig->Profile.SetString("/camera/LastMenuChoice", m_SelectedCamera);
     pConfig->Profile.SetString("/scope/LastMenuChoice", m_SelectedMount);
     pConfig->Profile.SetString("/scope/LastAuxMenuChoice", m_SelectedAuxMount);
     pConfig->Profile.SetString("/stepguider/LastMenuChoice", m_SelectedAO);
@@ -1638,6 +1648,12 @@ void ConnectDialog::OnCancelButton(wxCommandEvent& evt)
 
 bool EquipmentProfileWizard::ShowModal(wxWindow *parent, bool showGreeting, bool *darks_requested)
 {
+    struct WizardScope
+    {
+        WizardScope() { s_profileWizardActive = true; }
+        ~WizardScope() { s_profileWizardActive = false; }
+    } wizardScope;
+
     ProfileWizard wiz(parent, showGreeting);
     if (wiz.ShowModal() != wxOK)
         return false;

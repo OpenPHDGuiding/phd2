@@ -458,27 +458,18 @@ wxArrayString ASCOMCameraFactory::EnumAscomCameras()
     {
         DispatchObj profile;
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
-        {
-            Debug.Write("ASCOM Camera: ASCOM.Utilities.Profile not available, skipping ASCOM camera enumeration\n");
-            return list;
-        }
+            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class");
 
         Variant res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Camera"))
-        {
-            Debug.Write("ASCOM Camera: could not query registered camera devices\n");
-            return list;
-        }
+            throw ERROR_INFO("ASCOM Camera: could not query registered camera devices");
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
         Variant vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
-        {
-            Debug.Write("ASCOM Camera: could not query registered cameras\n");
-            return list;
-        }
+            throw ERROR_INFO("ASCOM Camera: could not query registered cameras");
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;

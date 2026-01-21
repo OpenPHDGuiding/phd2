@@ -2,7 +2,7 @@
  *  alpaca_client.h
  *  PHD Guiding
  *
- *  Created for Alpaca Server support
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -37,6 +37,8 @@
 #include "phd.h"
 #include "json_parser.h"
 #include <curl/curl.h>
+#include <atomic>
+#include <wx/thread.h>
 #include <sstream>
 
 class AlpacaClient
@@ -46,16 +48,22 @@ private:
     wxString m_host;
     long m_port;
     long m_deviceNumber;
+    long m_clientId;
+    std::atomic<long> m_clientTransactionId;
     std::stringstream m_response;
+    wxMutex m_mutex;
 
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
     wxString BuildRequestUrl(const wxString& endpoint) const;
+    long NextClientTransactionId();
+    wxString AppendClientInfo(const wxString& url, const wxString& params);
 
 public:
     AlpacaClient(const wxString& host, long port, long deviceNumber);
     ~AlpacaClient();
 
     bool Get(const wxString& endpoint, JsonParser& parser, long *errorCode = nullptr);
+    bool GetRaw(const wxString& endpoint, const wxString& acceptHeader, std::string *response, std::string *contentType, long *errorCode = nullptr);
     bool Put(const wxString& endpoint, const wxString& params, JsonParser& parser, long *errorCode = nullptr);
     bool GetDouble(const wxString& endpoint, double *value, long *errorCode = nullptr);
     bool GetInt(const wxString& endpoint, int *value, long *errorCode = nullptr);

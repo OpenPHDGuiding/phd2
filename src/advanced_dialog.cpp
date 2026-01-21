@@ -610,6 +610,13 @@ double AdvancedDialog::PercentChange(double oldVal, double newVal)
 // cleared, MinMoves are set to defaults based on new image scale
 void AdvancedDialog::MakeImageScaleAdjustments()
 {
+    Scope *scope = TheScope();
+    if (!scope || !pCamera)
+    {
+        Debug.Write("Image scale changed but scope/camera unavailable; skipping adjustments\n");
+        return;
+    }
+
     auto binning = pCamera->GetBinning();
     auto focalLength = pFrame->GetFocalLength();
     auto pixelSize = pCamera->GetCameraPixelSize();
@@ -621,10 +628,10 @@ void AdvancedDialog::MakeImageScaleAdjustments()
     guideSpeedX = DetermineGuideSpeed();
     int calibrationStep;
     int recDistance = CalstepDialog::GetCalibrationDistance(focalLength, pixelSize, binning);
-    int oldStepSize = TheScope()->GetCalibrationDuration();
+    int oldStepSize = scope->GetCalibrationDuration();
     CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, guideSpeedX, CalstepDialog::DEFAULT_STEPS, 0,
                                           recDistance, nullptr, &calibrationStep);
-    TheScope()->SetCalibrationDuration(calibrationStep);
+    scope->SetCalibrationDuration(calibrationStep);
     Debug.Write(wxString::Format("Cal step-size changed from %d ms to %d ms\n", oldStepSize, calibrationStep));
     // Clear the calibration to force a new one and reset the min-move values
     if (pMount)

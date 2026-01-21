@@ -2,7 +2,7 @@
  *  scope_alpaca.cpp
  *  PHD Guiding
  *
- *  Created for Alpaca Server support
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license

@@ -2,7 +2,7 @@
  *  cam_alpaca.cpp
  *  PHD Guiding
  *
- *  Created for Alpaca Server support
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -43,6 +43,52 @@
 #include <wx/stopwatch.h>
 #include <sstream>
 #include <vector>
+#include <algorithm>
+#include <cstdint>
+#include <cctype>
+
+namespace {
+constexpr std::uint32_t kImageBytesMetadataVersion = 1;
+constexpr std::size_t kImageBytesMetadataSize = 11 * sizeof(std::uint32_t);
+
+constexpr std::uint32_t kImageTypeInt16 = 1;
+constexpr std::uint32_t kImageTypeInt32 = 2;
+constexpr std::uint32_t kImageTypeDouble = 3;
+constexpr std::uint32_t kImageTypeSingle = 4;
+constexpr std::uint32_t kImageTypeUInt64 = 5;
+constexpr std::uint32_t kImageTypeByte = 6;
+constexpr std::uint32_t kImageTypeInt64 = 7;
+constexpr std::uint32_t kImageTypeUInt16 = 8;
+constexpr std::uint32_t kImageTypeUInt32 = 9;
+
+bool ReadUInt32LE(const std::string& data, std::size_t offset, std::uint32_t *value)
+{
+    if (offset + sizeof(std::uint32_t) > data.size())
+        return false;
+    const unsigned char *ptr = reinterpret_cast<const unsigned char *>(data.data() + offset);
+    *value = static_cast<std::uint32_t>(ptr[0]) |
+             (static_cast<std::uint32_t>(ptr[1]) << 8) |
+             (static_cast<std::uint32_t>(ptr[2]) << 16) |
+             (static_cast<std::uint32_t>(ptr[3]) << 24);
+    return true;
+}
+
+bool IsContentTypeImageBytes(const std::string& contentType)
+{
+    std::string lower;
+    lower.resize(contentType.size());
+    std::transform(contentType.begin(), contentType.end(), lower.begin(), ::tolower);
+    return lower.find("application/imagebytes") != std::string::npos;
+}
+
+bool IsContentTypeJson(const std::string& contentType)
+{
+    std::string lower;
+    lower.resize(contentType.size());
+    std::transform(contentType.begin(), contentType.end(), lower.begin(), ::tolower);
+    return lower.find("application/json") != std::string::npos;
+}
+} // namespace
 
 CameraAlpaca::CameraAlpaca()
 {
@@ -215,19 +261,36 @@ bool CameraAlpaca::Connect(const wxString& camId)
         }
         if (!nowConnected)
         {
-            wxString errorMsg;
-            if (verifyErrorCode != 0)
+            int cameraState = 0;
+            long stateErrorCode = 0;
+            wxString stateEndpoint = wxString::Format("camera/%ld/camerastate", m_deviceNumber);
+            if (m_client->GetInt(stateEndpoint, &cameraState, &stateErrorCode))
             {
-                errorMsg = wxString::Format(_("Alpaca Camera: Device %ld did not report connected (error %ld) on %s:%ld"),
-                                            m_deviceNumber, verifyErrorCode, m_host, m_port);
+                Debug.Write(wxString::Format("Alpaca Camera: Connected property did not update, but CameraState=%d; continuing\n",
+                                             cameraState));
+                nowConnected = true;
             }
             else
             {
-                errorMsg = wxString::Format(_("Alpaca Camera: Timed out waiting for device %ld to connect on %s:%ld"),
-                                            m_deviceNumber, m_host, m_port);
+                wxString errorMsg;
+                if (stateErrorCode != 0)
+                {
+                    errorMsg = wxString::Format(_("Alpaca Camera: Device %ld did not report connected and CameraState failed (error %ld) on %s:%ld"),
+                                                m_deviceNumber, stateErrorCode, m_host, m_port);
+                }
+                else if (verifyErrorCode != 0)
+                {
+                    errorMsg = wxString::Format(_("Alpaca Camera: Device %ld did not report connected (error %ld) on %s:%ld"),
+                                                m_deviceNumber, verifyErrorCode, m_host, m_port);
+                }
+                else
+                {
+                    errorMsg = wxString::Format(_("Alpaca Camera: Timed out waiting for device %ld to connect on %s:%ld"),
+                                                m_deviceNumber, m_host, m_port);
+                }
+                Debug.Write(errorMsg + "\n");
+                return CamConnectFailed(errorMsg);
             }
-            Debug.Write(errorMsg + "\n");
-            return CamConnectFailed(errorMsg);
         }
     }
 
@@ -747,120 +810,366 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& captureParams)
 
     // Get image array
     wxString imageArrayEndpoint = wxString::Format("camera/%ld/imagearray", m_deviceNumber);
-    JsonParser parser;
-    if (!m_client->Get(imageArrayEndpoint, parser, &errorCode))
+    std::string responseBody;
+    std::string contentType;
+    if (!m_client->GetRaw(imageArrayEndpoint, "application/imagebytes, application/json", &responseBody, &contentType, &errorCode))
     {
         Debug.Write(wxString::Format("Alpaca Camera: Failed to get image array, HTTP %ld\n", errorCode));
         pFrame->Alert(_("Error reading image"));
         return true;
     }
+    Debug.Write(wxString::Format("Alpaca Camera: imagearray response content-type '%s', %lu bytes\n",
+                                 contentType.c_str(), static_cast<unsigned long>(responseBody.size())));
 
-    // Parse image array from JSON
-    const json_value *root = parser.Root();
-    if (!root || root->type != JSON_OBJECT)
+    auto decode_imagebytes = [&](const std::string& payload) -> bool
     {
-        Debug.Write("Alpaca Camera: Invalid image array response\n");
-        pFrame->Alert(_("Error reading image"));
-        return true;
-    }
-
-    // Find the Value array in the response
-    const json_value *valueArray = nullptr;
-    json_for_each(n, root)
-    {
-        if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_ARRAY)
+        if (payload.size() < kImageBytesMetadataSize)
         {
-            valueArray = n;
-            break;
-        }
-    }
-
-    if (!valueArray)
-    {
-        Debug.Write("Alpaca Camera: No Value array in response\n");
-        pFrame->Alert(_("Error reading image"));
-        return true;
-    }
-
-    // Get image dimensions from the array structure
-    // Alpaca returns a 2D array: [[row1], [row2], ...]
-    int imageHeight = 0;
-    int imageWidth = 0;
-
-    const json_value *firstRow = valueArray->first_child;
-    if (firstRow && firstRow->type == JSON_ARRAY)
-    {
-        imageHeight = 0;
-        const json_value *row = firstRow;
-        while (row)
-        {
-            imageHeight++;
-            if (imageHeight == 1)
-            {
-                // Count elements in first row
-                const json_value *elem = row->first_child;
-                while (elem)
-                {
-                    imageWidth++;
-                    elem = elem->next_sibling;
-                }
-            }
-            row = row->next_sibling;
-        }
-    }
-
-    if (imageWidth == 0 || imageHeight == 0)
-    {
-        Debug.Write("Alpaca Camera: Invalid image dimensions\n");
-        pFrame->Alert(_("Error reading image"));
-        return true;
-    }
-
-    // Check for axis swapping
-    if (!takeSubframe && !m_swapAxes && imageWidth < imageHeight && m_maxSize.x > m_maxSize.y)
-    {
-        Debug.Write(wxString::Format("Alpaca camera: array axes are flipped (%dx%d) vs (%dx%d)\n", imageWidth, imageHeight, m_maxSize.x, m_maxSize.y));
-        m_swapAxes = true;
-    }
-
-    if (m_swapAxes)
-        std::swap(imageWidth, imageHeight);
-
-    if (takeSubframe)
-    {
-        if (FrameSize == UNDEFINED_FRAME_SIZE)
-        {
-            // should never happen since we arranged not to take a subframe
-            // unless full frame size is known
-            Debug.Write("internal error: taking subframe before full frame\n");
+            Debug.Write("Alpaca Camera: ImageBytes response too small for metadata\n");
             pFrame->Alert(_("Error reading image"));
             return true;
         }
 
-        if (img.Init(FrameSize))
+        std::uint32_t metadataVersion = 0;
+        std::uint32_t errorNumber = 0;
+        std::uint32_t dataStart = 0;
+        std::uint32_t transmissionType = 0;
+        std::uint32_t rank = 0;
+        std::uint32_t width = 0;
+        std::uint32_t height = 0;
+
+        if (!ReadUInt32LE(payload, 0, &metadataVersion) ||
+            !ReadUInt32LE(payload, 4, &errorNumber) ||
+            !ReadUInt32LE(payload, 16, &dataStart) ||
+            !ReadUInt32LE(payload, 24, &transmissionType) ||
+            !ReadUInt32LE(payload, 28, &rank) ||
+            !ReadUInt32LE(payload, 32, &width) ||
+            !ReadUInt32LE(payload, 36, &height))
         {
-            pFrame->Alert(_("Memory allocation error"));
+            Debug.Write("Alpaca Camera: Failed reading ImageBytes metadata\n");
+            pFrame->Alert(_("Error reading image"));
             return true;
         }
 
-        img.Clear();
-        img.Subframe = roi;
-
-        // Copy image data from JSON array - subframe case
-        // Iterate over ROI region in the full image
-        const json_value *row = valueArray->first_child;
-        int y = 0;
-        while (row && y < imageHeight)
+        if (metadataVersion != kImageBytesMetadataVersion)
         {
-            if (y >= roi.y && y < roi.y + roi.height && row->type == JSON_ARRAY)
+            Debug.Write(wxString::Format("Alpaca Camera: ImageBytes metadata version %u not supported\n", metadataVersion));
+        }
+
+        if (errorNumber != 0)
+        {
+            wxString errorMessage;
+            if (dataStart < payload.size())
             {
-                const json_value *elem = row->first_child;
-                int x = 0;
-                unsigned short *dataptr = img.ImageData + (y - roi.y + roi.y) * img.Size.GetWidth() + roi.x;
-                while (elem && x < imageWidth)
+                errorMessage = wxString(payload.substr(dataStart).c_str(), wxConvUTF8);
+            }
+            Debug.Write(wxString::Format("Alpaca Camera: ImageBytes error %u: %s\n", errorNumber, errorMessage));
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        if (rank != 2 || width == 0 || height == 0)
+        {
+            Debug.Write("Alpaca Camera: ImageBytes unsupported rank or dimensions\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        std::size_t bytesPerElement = 0;
+        switch (transmissionType)
+        {
+        case kImageTypeByte:
+            bytesPerElement = 1;
+            break;
+        case kImageTypeUInt16:
+        case kImageTypeInt16:
+            bytesPerElement = 2;
+            break;
+        case kImageTypeInt32:
+            bytesPerElement = 4;
+            break;
+        default:
+            Debug.Write(wxString::Format("Alpaca Camera: ImageBytes unsupported transmission type %u\n", transmissionType));
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        std::size_t pixelCount = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
+        std::size_t requiredBytes = dataStart + pixelCount * bytesPerElement;
+        if (dataStart < kImageBytesMetadataSize || requiredBytes > payload.size())
+        {
+            Debug.Write("Alpaca Camera: ImageBytes payload truncated\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        if (takeSubframe)
+        {
+            if (FrameSize == UNDEFINED_FRAME_SIZE)
+            {
+                Debug.Write("internal error: taking subframe before full frame\n");
+                pFrame->Alert(_("Error reading image"));
+                return true;
+            }
+
+            if (img.Init(FrameSize))
+            {
+                pFrame->Alert(_("Memory allocation error"));
+                return true;
+            }
+
+            img.Clear();
+            img.Subframe = roi;
+        }
+        else
+        {
+            FrameSize.Set(width, height);
+            if (img.Init(FrameSize))
+            {
+                pFrame->Alert(_("Memory allocation error"));
+                return true;
+            }
+        }
+
+        const unsigned char *ptr = reinterpret_cast<const unsigned char *>(payload.data() + dataStart);
+        for (std::uint32_t x = 0; x < width; ++x)
+        {
+            for (std::uint32_t y = 0; y < height; ++y)
+            {
+                int value = 0;
+                switch (transmissionType)
                 {
-                    if (x >= roi.x && x < roi.x + roi.width)
+                case kImageTypeByte:
+                    value = static_cast<int>(*ptr);
+                    ptr += 1;
+                    break;
+                case kImageTypeUInt16:
+                {
+                    std::uint16_t v = static_cast<std::uint16_t>(ptr[0]) |
+                                      (static_cast<std::uint16_t>(ptr[1]) << 8);
+                    value = static_cast<int>(v);
+                    ptr += 2;
+                    break;
+                }
+                case kImageTypeInt16:
+                {
+                    std::int16_t v = static_cast<std::int16_t>(ptr[0] | (ptr[1] << 8));
+                    value = static_cast<int>(v);
+                    ptr += 2;
+                    break;
+                }
+                case kImageTypeInt32:
+                default:
+                    value = static_cast<int>(ptr[0]) |
+                            (static_cast<int>(ptr[1]) << 8) |
+                            (static_cast<int>(ptr[2]) << 16) |
+                            (static_cast<int>(ptr[3]) << 24);
+                    ptr += 4;
+                    break;
+                }
+
+                if (takeSubframe)
+                {
+                    if (y >= static_cast<std::uint32_t>(roi.y) &&
+                        y < static_cast<std::uint32_t>(roi.y + roi.height) &&
+                        x >= static_cast<std::uint32_t>(roi.x) &&
+                        x < static_cast<std::uint32_t>(roi.x + roi.width))
                     {
+                        unsigned short *dataptr = img.ImageData + y * img.Size.GetWidth() + x;
+                        *dataptr = static_cast<unsigned short>(value);
+                    }
+                }
+                else
+                {
+                    unsigned short *dataptr = img.ImageData + y * img.Size.GetWidth() + x;
+                    *dataptr = static_cast<unsigned short>(value);
+                }
+            }
+        }
+
+        return false;
+    };
+
+    bool imageBytesDecoded = false;
+    if (IsContentTypeImageBytes(contentType))
+    {
+        Debug.Write("Alpaca Camera: ImageBytes response detected, decoding\n");
+        if (decode_imagebytes(responseBody))
+            return true;
+        Debug.Write("Alpaca Camera: ImageBytes decode successful\n");
+        imageBytesDecoded = true;
+    }
+
+    if (!imageBytesDecoded)
+    {
+        bool looksJson = IsContentTypeJson(contentType);
+        if (!looksJson && !responseBody.empty())
+        {
+            char c = responseBody[0];
+            looksJson = (c == '{' || c == '[');
+        }
+        if (!looksJson)
+        {
+            Debug.Write("Alpaca Camera: Unexpected response content type\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        Debug.Write("Alpaca Camera: Using JSON ImageArray response\n");
+        JsonParser parser;
+        if (!parser.Parse(responseBody))
+        {
+            Debug.Write(wxString::Format("Alpaca Camera: JSON parse error: %s\n", parser.ErrorDesc()));
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        // Parse image array from JSON
+        const json_value *root = parser.Root();
+        if (!root || root->type != JSON_OBJECT)
+        {
+            Debug.Write("Alpaca Camera: Invalid image array response\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        // Find the Value array in the response
+        const json_value *valueArray = nullptr;
+        json_for_each(n, root)
+        {
+            if (n->name && strcmp(n->name, "Value") == 0 && n->type == JSON_ARRAY)
+            {
+                valueArray = n;
+                break;
+            }
+        }
+
+        if (!valueArray)
+        {
+            Debug.Write("Alpaca Camera: No Value array in response\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        // Get image dimensions from the array structure
+        // Alpaca returns a 2D array: [[row1], [row2], ...]
+        int imageHeight = 0;
+        int imageWidth = 0;
+
+        const json_value *firstRow = valueArray->first_child;
+        if (firstRow && firstRow->type == JSON_ARRAY)
+        {
+            imageHeight = 0;
+            const json_value *row = firstRow;
+            while (row)
+            {
+                imageHeight++;
+                if (imageHeight == 1)
+                {
+                    // Count elements in first row
+                    const json_value *elem = row->first_child;
+                    while (elem)
+                    {
+                        imageWidth++;
+                        elem = elem->next_sibling;
+                    }
+                }
+                row = row->next_sibling;
+            }
+        }
+
+        if (imageWidth == 0 || imageHeight == 0)
+        {
+            Debug.Write("Alpaca Camera: Invalid image dimensions\n");
+            pFrame->Alert(_("Error reading image"));
+            return true;
+        }
+
+        // Check for axis swapping
+        if (!takeSubframe && !m_swapAxes && imageWidth < imageHeight && m_maxSize.x > m_maxSize.y)
+        {
+            Debug.Write(wxString::Format("Alpaca camera: array axes are flipped (%dx%d) vs (%dx%d)\n", imageWidth, imageHeight, m_maxSize.x, m_maxSize.y));
+            m_swapAxes = true;
+        }
+
+        if (m_swapAxes)
+            std::swap(imageWidth, imageHeight);
+
+        if (takeSubframe)
+        {
+            if (FrameSize == UNDEFINED_FRAME_SIZE)
+            {
+                // should never happen since we arranged not to take a subframe
+                // unless full frame size is known
+                Debug.Write("internal error: taking subframe before full frame\n");
+                pFrame->Alert(_("Error reading image"));
+                return true;
+            }
+
+            if (img.Init(FrameSize))
+            {
+                pFrame->Alert(_("Memory allocation error"));
+                return true;
+            }
+
+            img.Clear();
+            img.Subframe = roi;
+
+            // Copy image data from JSON array - subframe case
+            // Iterate over ROI region in the full image
+            const json_value *row = valueArray->first_child;
+            int y = 0;
+            while (row && y < imageHeight)
+            {
+                if (y >= roi.y && y < roi.y + roi.height && row->type == JSON_ARRAY)
+                {
+                    const json_value *elem = row->first_child;
+                    int x = 0;
+                    unsigned short *dataptr = img.ImageData + (y - roi.y + roi.y) * img.Size.GetWidth() + roi.x;
+                    while (elem && x < imageWidth)
+                    {
+                        if (x >= roi.x && x < roi.x + roi.width)
+                        {
+                            if (elem->type == JSON_INT)
+                            {
+                                *dataptr = static_cast<unsigned short>(elem->int_value);
+                            }
+                            else if (elem->type == JSON_FLOAT)
+                            {
+                                *dataptr = static_cast<unsigned short>(elem->float_value);
+                            }
+                            dataptr++;
+                        }
+                        elem = elem->next_sibling;
+                        x++;
+                    }
+                }
+                row = row->next_sibling;
+                y++;
+            }
+        }
+        else
+        {
+            FrameSize.Set(imageWidth, imageHeight);
+
+            if (img.Init(FrameSize))
+            {
+                pFrame->Alert(_("Memory allocation error"));
+                return true;
+            }
+
+            // Copy image data from JSON array
+            const json_value *row = valueArray->first_child;
+            int y = 0;
+            while (row && y < imageHeight)
+            {
+                if (row->type == JSON_ARRAY)
+                {
+                    const json_value *elem = row->first_child;
+                    int x = 0;
+                    while (elem && x < imageWidth)
+                    {
+                        unsigned short *dataptr = img.ImageData + y * imageWidth + x;
                         if (elem->type == JSON_INT)
                         {
                             *dataptr = static_cast<unsigned short>(elem->int_value);
@@ -869,52 +1178,13 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& captureParams)
                         {
                             *dataptr = static_cast<unsigned short>(elem->float_value);
                         }
-                        dataptr++;
+                        elem = elem->next_sibling;
+                        x++;
                     }
-                    elem = elem->next_sibling;
-                    x++;
                 }
+                row = row->next_sibling;
+                y++;
             }
-            row = row->next_sibling;
-            y++;
-        }
-    }
-    else
-    {
-        FrameSize.Set(imageWidth, imageHeight);
-
-        if (img.Init(FrameSize))
-        {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
-
-        // Copy image data from JSON array
-        const json_value *row = valueArray->first_child;
-        int y = 0;
-        while (row && y < imageHeight)
-        {
-            if (row->type == JSON_ARRAY)
-            {
-                const json_value *elem = row->first_child;
-                int x = 0;
-                while (elem && x < imageWidth)
-                {
-                    unsigned short *dataptr = img.ImageData + y * imageWidth + x;
-                    if (elem->type == JSON_INT)
-                    {
-                        *dataptr = static_cast<unsigned short>(elem->int_value);
-                    }
-                    else if (elem->type == JSON_FLOAT)
-                    {
-                        *dataptr = static_cast<unsigned short>(elem->float_value);
-                    }
-                    elem = elem->next_sibling;
-                    x++;
-                }
-            }
-            row = row->next_sibling;
-            y++;
         }
     }
 

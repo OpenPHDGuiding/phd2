@@ -2,7 +2,7 @@
  *  alpaca_client.cpp
  *  PHD Guiding
  *
- *  Created for Alpaca Server support
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -81,8 +81,17 @@ size_t AlpacaClient::WriteCallback(void *contents, size_t size, size_t nmemb, vo
 }
 
 AlpacaClient::AlpacaClient(const wxString& host, long port, long deviceNumber)
-    : m_curl(nullptr), m_host(host), m_port(port), m_deviceNumber(deviceNumber)
+    : m_curl(nullptr),
+      m_host(host),
+      m_port(port),
+      m_deviceNumber(deviceNumber),
+      m_clientId(static_cast<long>(wxGetProcessId())),
+      m_clientTransactionId(0)
 {
+    if (m_clientId <= 0)
+    {
+        m_clientId = 1;
+    }
     m_curl = curl_easy_init();
     if (m_curl)
     {
@@ -160,6 +169,24 @@ wxString AlpacaClient::BuildRequestUrl(const wxString& endpoint) const
     return GetBaseUrl() + "/" + relative;
 }
 
+long AlpacaClient::NextClientTransactionId()
+{
+    return ++m_clientTransactionId;
+}
+
+wxString AlpacaClient::AppendClientInfo(const wxString& url, const wxString& params)
+{
+    wxString full = url;
+    wxString separator = full.Contains("?") ? "&" : "?";
+    full += wxString::Format("%sClientID=%ld&ClientTransactionID=%ld",
+                             separator, m_clientId, NextClientTransactionId());
+    if (!params.IsEmpty())
+    {
+        full += wxString::Format("&%s", params);
+    }
+    return full;
+}
+
 bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *errorCode)
 {
     if (!m_curl)
@@ -167,6 +194,8 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
         Debug.Write("AlpacaClient: curl not initialized\n");
         return false;
     }
+
+    wxMutexLocker lock(m_mutex);
 
     m_response.str("");
     m_response.clear();
@@ -183,11 +212,7 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
     curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
     curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
     
-    wxString url = BuildRequestUrl(endpoint);
-    if (!endpoint.Contains("?"))
-    {
-        url += wxString::Format("?ClientID=0&ClientTransactionID=0");
-    }
+    wxString url = AppendClientInfo(BuildRequestUrl(endpoint), wxString());
 
     Debug.Write(wxString::Format("AlpacaClient GET: %s\n", url));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
@@ -359,6 +384,139 @@ bool AlpacaClient::Get(const wxString& endpoint, JsonParser& parser, long *error
     return true;
 }
 
+bool AlpacaClient::GetRaw(const wxString& endpoint, const wxString& acceptHeader, std::string *response, std::string *contentType, long *errorCode)
+{
+    if (!m_curl)
+    {
+        Debug.Write("AlpacaClient: curl not initialized\n");
+        return false;
+    }
+
+    wxMutexLocker lock(m_mutex);
+
+    m_response.str("");
+    m_response.clear();
+
+    // Reset curl options for GET request
+    curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, nullptr);
+    curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, 0);
+    curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, nullptr);
+    curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, nullptr);
+    curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+    curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
+
+    wxString url = AppendClientInfo(BuildRequestUrl(endpoint), wxString());
+
+    Debug.Write(wxString::Format("AlpacaClient GET raw: %s\n", url));
+    curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
+
+    struct curl_slist *headers = nullptr;
+    headers = curl_slist_append(headers, "Connection: close");
+    if (!acceptHeader.IsEmpty())
+    {
+        std::string acceptLine = "Accept: " + std::string(acceptHeader.mb_str(wxConvUTF8));
+        headers = curl_slist_append(headers, acceptLine.c_str());
+    }
+    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
+
+    CURLcode res;
+    int retries = 3;
+    for (int retry = 0; retry < retries; retry++)
+    {
+        res = curl_easy_perform(m_curl);
+
+        if (res == CURLE_OK || (res != CURLE_GOT_NOTHING && res != CURLE_RECV_ERROR))
+        {
+            break;
+        }
+
+        if (retry < retries - 1)
+        {
+            Debug.Write(wxString::Format("AlpacaClient GET raw: Connection closed by server (curl error %d), retrying (%d/%d)...\n", res, retry + 1, retries));
+            curl_easy_setopt(m_curl, CURLOPT_FRESH_CONNECT, 1L);
+            curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1L);
+            int delayMs = (retry == 0) ? 50 : (retry == 1) ? 100 : 200;
+            wxMilliSleep(delayMs);
+            m_response.str("");
+            m_response.clear();
+            if (headers)
+            {
+                curl_slist_free_all(headers);
+            }
+            headers = curl_slist_append(nullptr, "Connection: close");
+            if (!acceptHeader.IsEmpty())
+            {
+                std::string acceptLine = "Accept: " + std::string(acceptHeader.mb_str(wxConvUTF8));
+                headers = curl_slist_append(headers, acceptLine.c_str());
+            }
+            curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headers);
+        }
+    }
+
+    if (headers)
+    {
+        curl_slist_free_all(headers);
+        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, nullptr);
+    }
+
+    std::string responseStr = m_response.str();
+
+    if (res != CURLE_OK)
+    {
+        if (res == CURLE_PARTIAL_FILE && !responseStr.empty())
+        {
+            Debug.Write(wxString::Format("AlpacaClient GET raw: Partial file error but received %ld bytes, attempting to use response\n", responseStr.length()));
+        }
+        else
+        {
+            Debug.Write(wxString::Format("AlpacaClient GET raw failed after %d retries: %s (curl error %d)\n",
+                                         retries, curl_easy_strerror(res), res));
+            if (errorCode)
+            {
+                *errorCode = 0;
+            }
+            return false;
+        }
+    }
+
+    long httpCode = 0;
+    curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &httpCode);
+    if (errorCode)
+    {
+        *errorCode = httpCode;
+    }
+
+    const char *contentTypeRaw = nullptr;
+    curl_easy_getinfo(m_curl, CURLINFO_CONTENT_TYPE, &contentTypeRaw);
+    if (contentType)
+    {
+        *contentType = contentTypeRaw ? std::string(contentTypeRaw) : std::string();
+    }
+
+    if (httpCode != 200)
+    {
+        Debug.Write(wxString::Format("AlpacaClient GET raw returned HTTP %ld\n", httpCode));
+        return false;
+    }
+
+    if (response)
+    {
+        *response = std::move(responseStr);
+    }
+
+    if (contentType && !contentType->empty() &&
+        contentType->find("application/json") != std::string::npos &&
+        response && response->find("\"status\": \"success\"") != std::string::npos &&
+        response->find("\"message\": \"authenticated user\"") != std::string::npos)
+    {
+        Debug.Write("AlpacaClient GET raw: Received authentication response instead of API response.\n");
+        return false;
+    }
+
+    return true;
+}
+
 bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonParser& parser, long *errorCode)
 {
     if (!m_curl)
@@ -367,29 +525,24 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
         return false;
     }
 
+    wxMutexLocker lock(m_mutex);
+
     m_response.str("");
     m_response.clear();
 
-    wxString url = BuildRequestUrl(endpoint);
-    if (!params.IsEmpty())
-    {
-        // Some Alpaca servers only read parameters from the query string.
-        url += wxString::Format("?ClientID=0&ClientTransactionID=0&%s", params);
-    }
-    else
-    {
-        url += wxString::Format("?ClientID=0&ClientTransactionID=0");
-    }
+    wxString url = AppendClientInfo(BuildRequestUrl(endpoint), params);
 
     Debug.Write(wxString::Format("AlpacaClient PUT: %s, params: %s\n", url, params));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
     curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, "PUT");
-    
+    curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 0L);
+
     // Send parameters in request body, not URL
     struct curl_slist *headers = nullptr;
+    std::string postData;
     if (!params.IsEmpty())
     {
-        std::string postData = std::string(params.mb_str(wxConvUTF8));
+        postData = std::string(params.mb_str(wxConvUTF8));
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, postData.c_str());
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, postData.length());
         
@@ -476,6 +629,19 @@ bool AlpacaClient::Put(const wxString& endpoint, const wxString& params, JsonPar
     if (!parser.Parse(responseStr))
     {
         Debug.Write(wxString::Format("AlpacaClient: JSON parse error: %s\n", parser.ErrorDesc()));
+        return false;
+    }
+
+    int alpacaErrorNumber = 0;
+    wxString alpacaErrorMessage;
+    if (ExtractAlpacaError(parser.Root(), &alpacaErrorNumber, &alpacaErrorMessage))
+    {
+        Debug.Write(wxString::Format("AlpacaClient PUT: Alpaca API error for %s: ErrorNumber=%d, ErrorMessage=%s\n",
+                                     endpoint, alpacaErrorNumber, alpacaErrorMessage));
+        if (errorCode)
+        {
+            *errorCode = alpacaErrorNumber;
+        }
         return false;
     }
 
@@ -1021,29 +1187,24 @@ bool AlpacaClient::PutAction(const wxString& endpoint, const wxString& action, c
         return false;
     }
 
+    wxMutexLocker lock(m_mutex);
+
     m_response.str("");
     m_response.clear();
 
-    wxString url = BuildRequestUrl(endpoint);
-    if (!params.IsEmpty())
-    {
-        // Some Alpaca servers only read parameters from the query string.
-        url += wxString::Format("?ClientID=0&ClientTransactionID=0&%s", params);
-    }
-    else
-    {
-        url += wxString::Format("?ClientID=0&ClientTransactionID=0");
-    }
+    wxString url = AppendClientInfo(BuildRequestUrl(endpoint), params);
 
     Debug.Write(wxString::Format("AlpacaClient PutAction: %s, params: %s\n", url, params));
     curl_easy_setopt(m_curl, CURLOPT_URL, static_cast<const char *>(url.mb_str(wxConvUTF8)));
     curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 0L);
     
     // Send parameters in request body, not URL
     struct curl_slist *headers = nullptr;
+    std::string postData;
     if (!params.IsEmpty())
     {
-        std::string postData = std::string(params.mb_str(wxConvUTF8));
+        postData = std::string(params.mb_str(wxConvUTF8));
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, postData.c_str());
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, postData.length());
         

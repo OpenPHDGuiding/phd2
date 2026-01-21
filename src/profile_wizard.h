@@ -43,4 +43,6 @@ public:
     static bool ShowModal(wxWindow *parent, bool showGreeting, bool *darks_requested);
 };
 
+bool IsProfileWizardActive();
+
 #endif

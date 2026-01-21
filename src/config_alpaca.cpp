@@ -2,7 +2,7 @@
  *  config_alpaca.cpp
  *  PHD Guiding
  *
- *  Created for Alpaca Server support
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -38,6 +38,7 @@
 #include "config_alpaca.h"
 #include "alpaca_discovery.h"
 #include "alpaca_client.h"
+#include "profile_wizard.h"
 #include "json_parser.h"
 #include <wx/sizer.h>
 #include <wx/gbsizer.h>
@@ -178,59 +179,82 @@ AlpacaConfig::~AlpacaConfig()
 
 void AlpacaConfig::SetSettings()
 {
-    host->SetValue(m_host);
-    port->SetValue(wxString::Format("%ld", m_port));
-    
-    // If we have a saved host and port, populate the server list with it
-    if (!m_host.IsEmpty() && m_port > 0)
+    if (IsProfileWizardActive())
     {
-        wxString serverStr = wxString::Format("%s:%ld", m_host, m_port);
-        serverList->Clear();
-        serverList->Append(serverStr);
-        serverList->SetSelection(0);
+        host->SetValue(wxEmptyString);
+        port->SetValue(wxEmptyString);
+        if (serverList)
+        {
+            serverList->Clear();
+        }
+    }
+    else
+    {
+        host->SetValue(m_host);
+        port->SetValue(wxString::Format("%ld", m_port));
+
+        // If we have a saved host and port, populate the server list with it
+        if (!m_host.IsEmpty() && m_port > 0)
+        {
+            wxString serverStr = wxString::Format("%s:%ld", m_host, m_port);
+            serverList->Clear();
+            serverList->Append(serverStr);
+            serverList->SetSelection(0);
+        }
     }
     
     wxComboBox *camCombo = wxDynamicCast(deviceNumber, wxComboBox);
     if (camCombo)
     {
-        // Just set the device number as text initially
-        // Device query will happen when dialog is shown (in Show() override)
-        camCombo->SetValue(wxString::Format("%ld", m_deviceNumber));
+        if (IsProfileWizardActive())
+        {
+            camCombo->Clear();
+            camCombo->SetValue(wxEmptyString);
+        }
+        else
+        {
+            // Just set the device number as text initially
+            // Device query will happen when dialog is shown (in Show() override)
+            camCombo->SetValue(wxString::Format("%ld", m_deviceNumber));
+        }
     }
 }
 
 bool AlpacaConfig::Show(bool show)
 {
     bool result = wxDialog::Show(show);
-    
-    // When dialog is shown, automatically discover servers and query devices (like NINA does)
-    if (show)
+
+    // Wizard requires explicit discovery to populate fields.
+    if (!show || IsProfileWizardActive())
     {
-        // Use CallAfter to ensure dialog is fully shown before discovery
-        CallAfter([this]() {
-            // Auto-discover servers if server list is empty
-            if (serverList && serverList->GetCount() == 0)
-            {
-                Debug.Write("AlpacaConfig::Show: Auto-discovering servers\n");
-                // Perform discovery directly
-                wxCommandEvent evt;
-                OnDiscover(evt);
-            }
-            // If we already have a server selected and it's a camera/telescope dialog, query devices
-            else if ((m_devType == ALPACA_TYPE_CAMERA || m_devType == ALPACA_TYPE_TELESCOPE || m_devType == ALPACA_TYPE_ROTATOR) &&
-                     !m_host.IsEmpty() && m_port > 0)
-            {
-                wxComboBox *camCombo = wxDynamicCast(deviceNumber, wxComboBox);
-                if (camCombo && camCombo->GetCount() == 0)
-                {
-                    Debug.Write(wxString::Format("AlpacaConfig::Show: Auto-querying devices from %s:%ld\n", m_host, m_port));
-                    // Only query if device list is empty (not already populated)
-                    QueryDevices(m_host, m_port);
-                }
-            }
-        });
+        return result;
     }
-    
+
+    // When dialog is shown, automatically discover servers and query devices (like NINA does)
+    // Use CallAfter to ensure dialog is fully shown before discovery
+    CallAfter([this]() {
+        // Auto-discover servers if server list is empty
+        if (serverList && serverList->GetCount() == 0)
+        {
+            Debug.Write("AlpacaConfig::Show: Auto-discovering servers\n");
+            // Perform discovery directly
+            wxCommandEvent evt;
+            OnDiscover(evt);
+        }
+        // If we already have a server selected and it's a camera/telescope dialog, query devices
+        else if ((m_devType == ALPACA_TYPE_CAMERA || m_devType == ALPACA_TYPE_TELESCOPE || m_devType == ALPACA_TYPE_ROTATOR) &&
+                 !m_host.IsEmpty() && m_port > 0)
+        {
+            wxComboBox *camCombo = wxDynamicCast(deviceNumber, wxComboBox);
+            if (camCombo && camCombo->GetCount() == 0)
+            {
+                Debug.Write(wxString::Format("AlpacaConfig::Show: Auto-querying devices from %s:%ld\n", m_host, m_port));
+                // Only query if device list is empty (not already populated)
+                QueryDevices(m_host, m_port);
+            }
+        }
+    });
+
     return result;
 }
 
@@ -322,6 +346,46 @@ wxEND_EVENT_TABLE();
 
 void AlpacaConfig::OnOK(wxCommandEvent& evt)
 {
+    wxComboBox *camCombo = wxDynamicCast(deviceNumber, wxComboBox);
+    if (camCombo)
+    {
+        const wxString queryingLabel = QueryingLabel(m_devType);
+        const wxString failedQueryLabel = FailedQueryLabel(m_devType);
+        const wxString noDevicesLabel = NoDevicesLabel(m_devType);
+        const wxString errorQueryLabel = ErrorQueryLabel(m_devType);
+        wxString value = camCombo->GetValue();
+
+        bool valid = true;
+        if (value.IsEmpty() ||
+            value == queryingLabel ||
+            value == failedQueryLabel ||
+            value == _("Invalid response from server") ||
+            value == noDevicesLabel ||
+            value == errorQueryLabel ||
+            value == _("Invalid server address"))
+        {
+            valid = false;
+        }
+        else
+        {
+            int selection = camCombo->GetSelection();
+            long devNum = 0;
+            if (selection == wxNOT_FOUND && !value.ToLong(&devNum))
+            {
+                valid = false;
+            }
+        }
+
+        if (!valid)
+        {
+            wxString deviceLabel = DeviceLabel(m_devType);
+            wxMessageBox(wxString::Format(_("Please select a valid %s device before continuing."), deviceLabel),
+                         _("Invalid Selection"), wxOK | wxICON_WARNING, this);
+            camCombo->SetFocus();
+            return;
+        }
+    }
+
     SaveSettings();
     evt.Skip();
 }
@@ -445,6 +509,8 @@ void AlpacaConfig::OnServerSelected(wxCommandEvent& evt)
         Debug.Write(wxString::Format("AlpacaConfig::OnServerSelected: Failed to parse server string '%s'\n", serverStr));
         return;
     }
+
+    bool serverChanged = (hostStr != m_host || portVal != m_port);
     
     // Update both the UI controls and member variables
     if (host)
@@ -459,6 +525,17 @@ void AlpacaConfig::OnServerSelected(wxCommandEvent& evt)
     // Update member variables so they're saved correctly
     m_host = hostStr;
     m_port = portVal;
+
+    if (serverChanged)
+    {
+        m_deviceNumber = 0;
+        wxComboBox *devCombo = wxDynamicCast(deviceNumber, wxComboBox);
+        if (devCombo)
+        {
+            devCombo->Clear();
+            devCombo->SetValue(wxEmptyString);
+        }
+    }
     
     // For cameras/telescopes, query the server for available devices
     // But only if the dialog is shown and ready
@@ -736,4 +813,3 @@ void AlpacaConfig::QueryDevices(const wxString& host, long port)
 }
 
 #endif // ALPACA_CAMERA || GUIDE_ALPACA || ROTATOR_ALPACA
-

@@ -167,7 +167,11 @@ void CamCalImportDialog::OnDarkProfileChoice(wxCommandEvent& evt)
     {
         pConfig->SetCurrentProfile(selProfile);
         m_sourceDarksProfileId = pConfig->GetCurrentProfileId();
-        wxString thatCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+        wxString thatCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", wxEmptyString);
+        if (thatCamera.IsEmpty())
+            thatCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+        if (thatCamera.IsEmpty())
+            thatCamera = _("None");
         m_darkCameraChoice->SetLabelText(thatCamera);
         pConfig->SetCurrentProfile(m_activeProfileName);
     }
@@ -185,7 +189,11 @@ void CamCalImportDialog::OnBPMProfileChoice(wxCommandEvent& evt)
     {
         pConfig->SetCurrentProfile(selProfile);
         m_sourceBpmProfileId = pConfig->GetCurrentProfileId();
-        wxString thatCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+        wxString thatCamera = pConfig->Profile.GetString("/camera/LastMenuChoice", wxEmptyString);
+        if (thatCamera.IsEmpty())
+            thatCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+        if (thatCamera.IsEmpty())
+            thatCamera = _("None");
         m_bpmCameraChoice->SetLabelText(thatCamera);
         pConfig->SetCurrentProfile(m_activeProfileName);
     }
