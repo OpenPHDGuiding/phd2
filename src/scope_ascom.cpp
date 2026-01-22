@@ -92,27 +92,19 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     {
         DispatchObj profile;
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
-        {
-            Debug.Write("ASCOM Scope: ASCOM.Utilities.Profile not available, skipping ASCOM scope enumeration\n");
-            return list;
-        }
+            throw ERROR_INFO(
+                "ASCOM Scope: could not instantiate ASCOM profile class ASCOM.Utilities.Profile. Is ASCOM installed?");
 
         Variant res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Telescope"))
-        {
-            Debug.Write("ASCOM Scope: could not query registered telescope devices\n");
-            return list;
-        }
+            throw ERROR_INFO("ASCOM Scope: could not query registered telescope devices: " + ExcepMsg(profile.Excep()));
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
         Variant vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
-        {
-            Debug.Write("ASCOM Scope: could not query registered telescopes\n");
-            return list;
-        }
+            throw ERROR_INFO("ASCOM Scope: could not query registered telescopes: " + ExcepMsg(ilist.Excep()));
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
