@@ -766,7 +766,7 @@ bool Camera_ZWO::Capture(usImage& img, const CaptureParams& captureParams)
         binning_change = true;
     }
 
-    wxRect const limit_frame = options & CAPTURE_IGNORE_FRAME_LIMIT ? wxRect() : LimitFrame;
+    wxRect const limit_frame = options & CAPTURE_IGNORE_FRAME_LIMIT ? wxRect() : captureParams.limitFrame;
 
     // always update the frame size in case the limit frame or binning changed
     wxSize const binned_frame_size(BinnedFrameSize(HwBinning));
