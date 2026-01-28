@@ -184,9 +184,11 @@ bool WorkerThread::HandleExpose(EXPOSE_REQUEST *req)
         const CaptureParams& params = req->captureParams;
         if (pCamera->HasNonGuiCapture())
         {
-            Debug.Write(wxString::Format("Handling exposure in thread, d=%d o=%x r=(%d,%d,%d,%d)\n", params.duration,
-                                         params.captureOptions, params.subframe.x, params.subframe.y, params.subframe.width,
-                                         params.subframe.height));
+            Debug.Write(
+                wxString::Format("Handling exposure in thread, d=%d o=%x b=%u g=%d bpp=%u r=(%d,%d,%d,%d) l=(%d,%d,%d,%d)\n",
+                                 params.duration, params.captureOptions, params.hwBinning, params.gain, params.bpp,
+                                 params.subframe.x, params.subframe.y, params.subframe.width, params.subframe.height,
+                                 params.limitFrame.x, params.limitFrame.y, params.limitFrame.width, params.limitFrame.height));
 
             if (GuideCamera::Capture(pCamera, *req->pImage, params))
             {
