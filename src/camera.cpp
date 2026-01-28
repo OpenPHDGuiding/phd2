@@ -772,7 +772,8 @@ bool GuideCamera::SetLimitFrame(const wxRect& roi, int binning, wxString *errorM
         pConfig->Profile.SetRect(key, limit_frame);
     }
 
-    // load the limit frame for the requested binning
+    // load the limit frame for the current camera binning level
+    binning = GetBinning();
     LoadLimitFrame(binning);
 
     return false; // no error
