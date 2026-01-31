@@ -1027,7 +1027,7 @@ void ProfileWizard::WrapUp()
     }
 
     // populate the profile. The caller will load the profile.
-    pConfig->Profile.SetString("/camera/LastMenuchoice", m_SelectedCamera);
+    pConfig->Profile.SetString("/camera/LastMenuChoice", m_SelectedCamera);
     pConfig->Profile.SetString("/scope/LastMenuChoice", m_SelectedMount);
     pConfig->Profile.SetString("/scope/LastAuxMenuChoice", m_SelectedAuxMount);
     pConfig->Profile.SetString("/stepguider/LastMenuChoice", m_SelectedAO);
