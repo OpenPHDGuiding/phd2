@@ -985,7 +985,7 @@ static void GetBLTHistory(const std::vector<wxString>& Timestamps, int *oldestBL
     int bltCount = 0;
     for (int inx = 0; inx < Timestamps.size(); inx++)
     {
-        wxString northBLT = "/GA/" + Timestamps[inx] + "/BLT_north";
+        wxString northBLT = "/GA/" + Timestamps[inx] + "/BLT_North";
         if (pConfig->Profile.GetString(northBLT, wxEmptyString) != wxEmptyString)
         {
             bltCount++;
@@ -1069,7 +1069,7 @@ void GuidingAsstWin::SaveGAResults(const wxString *AllRecommendations)
             stepStr += wxString::Format("%0.1f,", *it);
         }
         stepStr = stepStr.Left(stepStr.length() - 2);
-        pConfig->Profile.SetString(prefix + "/BLT_north", stepStr);
+        pConfig->Profile.SetString(prefix + "/BLT_North", stepStr);
 
         stepStr = "";
 
