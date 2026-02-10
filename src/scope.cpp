@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#include "event_server.h"
 
 #include "backlash_comp.h"
 #include "calreview_dialog.h"

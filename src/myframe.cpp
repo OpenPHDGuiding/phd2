@@ -36,6 +36,7 @@
 
 #include "phd.h"
 
+#include "event_server.h"
 #include "aui_controls.h"
 #include "comet_tool.h"
 #include "config_indi.h"
