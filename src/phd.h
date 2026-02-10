@@ -183,7 +183,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "myframe.h"
 #include "debuglog.h"
 #include "worker_thread.h"
-#include "event_server.h"
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
 #include "runinbg.h"
