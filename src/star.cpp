@@ -36,6 +36,7 @@
  */
 
 #include "phd.h"
+#include "event_server.h"
 #include <algorithm>
 
 Star::Star()
