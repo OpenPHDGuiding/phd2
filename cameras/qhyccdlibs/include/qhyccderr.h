@@ -53,6 +53,10 @@
  * Other error */
 #define QHYCCD_ERROR                    0xFFFFFFFF
 
+#define QHYCCD_ERROR_IMAGESHIFT          -2
+
+#define QHYCCD_ERROR_DEVICELOSE          -3
+
 #if 0
 /**
  * There is no camera connected */
