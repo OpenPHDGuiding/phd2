@@ -34,6 +34,7 @@
 
 #include "phd.h"
 
+#include "event_server.h"
 #include "about_dialog.h"
 #include "aui_controls.h"
 #include "camcal_import_dialog.h"
