@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+TOP=$(git rev-parse --show-toplevel)
+cd "$TOP"
+
+SRCDIRS=(
+  src
+  contributions/MPI_IS_gaussian_process
+)
+readarray -t files < <(find "${SRCDIRS[@]}" -name '*.cpp' -o -name '*.h')
+
+clang-format -i "${files[@]}"
