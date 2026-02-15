@@ -10,6 +10,15 @@ die () {
     exit 1
 }
 
+cleanup () {
+    rm -rf "$TMP"
+    if [[ "$ok" ]]; then
+        echo "Success."
+    else
+        echo >&2 "Failed!"
+    fi
+}
+
 # === main ===
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
@@ -22,6 +31,8 @@ set -o pipefail
 linux=
 mac=
 win=
+
+ok=
 
 for file in "$@"; do
     case $file in
@@ -36,18 +47,23 @@ if [[ ! -f $linux || ! -f $mac || ! -f $win ]]; then
     exit 1
 fi
 
+INSTALL=install
+if which ginstall >&/dev/null; then
+    INSTALL=ginstall
+fi
+
 top=$(cd "$SCRIPT_DIR" && git rev-parse --show-toplevel)
 dest=$top/cameras/playerone
 
 TMP=$(mktemp -d)
-trap 'rm -rf "$TMP"' EXIT
+trap cleanup EXIT
 
 # linux + include
 tar xf "$linux" -C "$TMP"
 (
     cd "$TMP"/*_Linux_*
-    install -d -m 0755 "$dest"/include/ "$dest"/linux
-    install -m 0644 include/PlayerOneCamera.h "$dest"/include/
+    "$INSTALL" -d -m 0755 "$dest"/include/ "$dest"/linux
+    "$INSTALL" -m 0644 include/PlayerOneCamera.h "$dest"/include/
     cd lib
     # include shared lib symlinks
     tar cf - . | tar xf - -C "$dest"/linux
@@ -57,8 +73,8 @@ tar xf "$linux" -C "$TMP"
 tar xf "$mac" -C "$TMP"
 (
     cd "$TMP"/*_MacOS_*
-    install -d -m 0755 "$dest"/mac
-    install -m 0755 lib/libPlayerOneCamera.dylib "$dest"/mac/
+    "$INSTALL" -d -m 0755 "$dest"/mac
+    "$INSTALL" -m 0755 lib/libPlayerOneCamera.dylib "$dest"/mac/
 )
 
 # windows
@@ -66,7 +82,13 @@ mkdir "$TMP/win"
 unzip -d "$TMP/win" "$win"
 (
     cd "$TMP"/win
-    install -d -m 0755 "$dest"/win
-    install -m 0644 lib/x86/PlayerOneCamera.lib "$dest"/win/
-    install -m 0755 lib/x86/PlayerOneCamera.dll "$dest"/win/
+    "$INSTALL" -d -m 0755 "$dest"/win/x86
+    "$INSTALL" -m 0644 lib/x86/PlayerOneCamera.lib "$dest"/win/x86/
+    "$INSTALL" -m 0755 lib/x86/PlayerOneCamera.dll "$dest"/win/x86/
+
+    "$INSTALL" -d -m 0755 "$dest"/win/x64
+    "$INSTALL" -m 0644 lib/x64/PlayerOneCamera.lib "$dest"/win/x64/
+    "$INSTALL" -m 0755 lib/x64/PlayerOneCamera.dll "$dest"/win/x64/
 )
+
+ok=1
