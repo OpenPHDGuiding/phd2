@@ -33,7 +33,7 @@
  */
 
 #include "phd.h"
-
+#include "event_server.h"
 enum State
 {
     STATE_IDLE = 0,

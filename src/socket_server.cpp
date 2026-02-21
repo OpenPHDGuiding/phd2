@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "event_server.h"
 
 #include "socket_server.h"
 #include "gear_simulator.h"
