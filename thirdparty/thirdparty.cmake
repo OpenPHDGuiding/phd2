@@ -568,6 +568,7 @@ if(WIN32)
       ${VCPKG_DEBUG_LIB}/opencv_core4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_videoio4d.lib
       ${VCPKG_DEBUG_LIB}/opencv_imgcodecs4d.lib
+      ${VCPKG_DEBUG_LIB}/opencv_features2d4d.lib
   )
   list(APPEND PHD_LINK_EXTERNAL_RELEASE
       ${VCPKG_RELEASE_LIB}/opencv_imgproc4.lib
@@ -575,6 +576,7 @@ if(WIN32)
       ${VCPKG_RELEASE_LIB}/opencv_core4.lib
       ${VCPKG_RELEASE_LIB}/opencv_videoio4.lib
       ${VCPKG_RELEASE_LIB}/opencv_imgcodecs4.lib
+      ${VCPKG_DEBUG_LIB}/opencv_features2d4d.lib
   )
   list(APPEND PHD_COPY_EXTERNAL_DBG
       ${VCPKG_DEBUG_BIN}/opencv_imgproc4d.dll
@@ -582,6 +584,8 @@ if(WIN32)
       ${VCPKG_DEBUG_BIN}/opencv_core4d.dll
       ${VCPKG_DEBUG_BIN}/opencv_videoio4d.dll
       ${VCPKG_DEBUG_BIN}/opencv_imgcodecs4d.dll
+      ${VCPKG_DEBUG_BIN}/opencv_features2d4d.dll
+      ${VCPKG_DEBUG_BIN}/opencv_flann4d.dll
       ${VCPKG_DEBUG_BIN}/jpeg62.dll
       ${VCPKG_DEBUG_BIN}/libpng16d.dll
       ${VCPKG_DEBUG_BIN}/tiffd.dll
@@ -596,6 +600,8 @@ if(WIN32)
       ${VCPKG_RELEASE_BIN}/opencv_core4.dll
       ${VCPKG_RELEASE_BIN}/opencv_videoio4.dll
       ${VCPKG_RELEASE_BIN}/opencv_imgcodecs4.dll
+      ${VCPKG_RELEASE_BIN}/opencv_features2d4.dll
+      ${VCPKG_RELEASE_BIN}/opencv_flann4.dll
       ${VCPKG_RELEASE_BIN}/jpeg62.dll
       ${VCPKG_RELEASE_BIN}/libpng16.dll
       ${VCPKG_RELEASE_BIN}/tiff.dll

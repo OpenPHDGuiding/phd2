@@ -38,6 +38,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <opencv2/features2d.hpp>
 
 #if ((wxMAJOR_VERSION < 3) && (wxMINOR_VERSION < 9))
 # define wxPENSTYLE_DOT wxDOT
@@ -156,6 +157,25 @@ void SolarSystemObject::RestoreDetectionParams()
     m_paramHighThreshold = pConfig->Profile.GetInt("/PlanetTool/high_threshold", PT_HIGH_THRESHOLD_DEFAULT);
     m_paramHighThreshold = wxMax(PT_THRESHOLD_MIN, wxMin(PT_HIGH_THRESHOLD_MAX, m_paramHighThreshold));
 }
+
+void SolarSystemObject::Set_minBlobDiameter(double val)
+{
+    m_paramMinBlobDiameter = val;
+    pConfig->Profile.SetInt("/PlanetTool/min_blob_radius", val);
+}
+
+void SolarSystemObject::Set_maxBlobDiameter(double val)
+{
+    m_paramMaxBlobDiameter = val;
+    pConfig->Profile.SetInt("/PlanetTool/max_blob_radius", val);
+}
+
+void SolarSystemObject::Set_blobThreshold(double val)
+{
+    m_paramBlobThreshold = val;
+    pConfig->Profile.SetInt("/PlanetTool/blob_Threshold", val);
+}
+
 void SolarSystemObject::Set_minRadius(double val)
 {
     m_paramMinRadius = val;
@@ -310,7 +330,13 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
         m_syncLock.Lock();
 
         // Draw contour points in solar/planetary mode
-        if (m_diskContour.size())
+        if (m_blobContour.size() > 0)
+        {
+            dc.SetPen(wxPen(wxColour(255, 255, 0), 2, wxPENSTYLE_SOLID));
+            for (const Point2f& contourPoint : m_blobContour)
+                dc.DrawCircle((contourPoint.x + m_roiRect.x) * scaleFactor, (contourPoint.y + m_roiRect.y) * scaleFactor, 2);
+        }
+        else if (m_diskContour.size())
         {
             dc.SetPen(wxPen(wxColour(230, 0, 0), 2, wxPENSTYLE_SOLID));
             for (const Point2f& contourPoint : m_diskContour)
@@ -748,6 +774,50 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
     }
 }
 
+bool SolarSystemObject::FindBlobCenter(Mat testMat, float& blobX, float& blobY, std::vector<cv::Point>& blobContour)
+{
+
+    SimpleBlobDetector::Params params;
+    Mat threshMat;
+    cv::threshold(testMat, threshMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
+
+    params.filterByCircularity = false;
+    params.filterByConvexity = false;
+    params.filterByInertia = false;
+    // Filter by Area.
+    params.filterByArea = true;
+    params.minArea = m_paramMinBlobDiameter * m_paramMinBlobDiameter;
+    params.maxArea = m_paramMaxBlobDiameter * m_paramMaxBlobDiameter;
+    // Filter by Color.
+    params.filterByColor = true;
+    params.blobColor = 255;
+    // Save the contours for possible display
+    params.collectContours = true;
+    // Storage for single keypoint which contains centroid and size info
+    std::vector<KeyPoint> keypoints;
+
+    // Set up detector with params
+    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+
+    // Detect blobs
+    blobContour.clear();
+    detector->detect(threshMat, keypoints);
+    if (keypoints.size() == 1)
+    {
+        blobX = keypoints[0].pt.x;
+        blobY = keypoints[0].pt.y;
+        std::vector<std::vector<cv::Point>> contours;
+        contours = detector->getBlobContours();
+        blobContour = contours.front();
+    }
+    else
+    {
+        blobX = -1.0;
+        blobY = -1.0;
+    }
+    return blobX != -1.0;
+}
+
 // Find orb center using circle matching with contours
 bool SolarSystemObject::FindOrbisCenter(Mat img8, int minRadius, int maxRadius, bool roiActive, Point2f& clickedPoint,
                                         Rect& roiRect, bool activeRoiLimits, float distanceRoiMax)
@@ -755,6 +825,10 @@ bool SolarSystemObject::FindOrbisCenter(Mat img8, int minRadius, int maxRadius, 
     int LowThreshold = Get_lowThreshold();
     int HighThreshold = Get_highThreshold();
 
+    // Try simple blob detection
+    float blobX;
+    float blobY;
+    bool blobRslt = FindBlobCenter(img8, blobX, blobY, m_blobContour);
     // Apply Canny edge detection
     Debug.Write(wxString::Format("Start detection of solar system object (roi:%d "
                                  "low_tr=%d,high_tr=%d,minr=%d,maxr=%d)\n",
@@ -856,6 +930,9 @@ bool SolarSystemObject::FindOrbisCenter(Mat img8, int minRadius, int maxRadius, 
                                  m_SolarSystemObjWatchdog.Time(), bestDiskCenter.radius, roiRect.x + bestDiskCenter.x,
                                  roiRect.y + bestDiskCenter.y, bestScore, contourMatchingCount, contourAllCount,
                                  maxThreadsCount));
+
+    Debug.Write(wxString::Format("Centroids:,%0.2f,%0.2f,%0.2f,%0.2f\n", blobX, blobY, bestDiskCenter.x, bestDiskCenter.y));
+
     PlanetTool::UpdateCentroidInfoStats(bestDiskCenter.x, bestDiskCenter.y, bestDiskCenter.radius);
     PlanetTool::UpdateContourInfoStats(contourMatchingCount, bestContour.size());
     PlanetTool::UpdateScoreStats(bestScore);
@@ -1071,6 +1148,7 @@ double SolarSystemObject::CalcPlanetMetrics(const usImage *pImg, int center_x, i
         signalThreshold, meanSignal, meanNoise, noiseStdDev, snr));
     return snr;
 }
+
 // Find object in the given image
 bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSelect)
 {

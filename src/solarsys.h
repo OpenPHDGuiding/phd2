@@ -68,6 +68,7 @@ private:
     cv::Point2f m_prevClickedPoint;
 
     std::vector<cv::Point2f> m_diskContour;
+    std::vector<cv::Point> m_blobContour;
     int m_centoid_x;
     int m_centoid_y;
     int m_sm_circle_x;
@@ -83,6 +84,9 @@ public:
     int m_radius;
     int m_searchRegion;
     float m_prevSearchRegion;
+    double m_paramMinBlobDiameter;
+    double m_paramMaxBlobDiameter;
+    double m_paramBlobThreshold;
 
     bool m_roiActive;
     cv::Rect m_roiRect;
@@ -120,6 +124,12 @@ public:
     void Set_SolarSystemObjMode(bool enabled) { m_paramEnabled = enabled; }
     bool GetDetectionPausedState() { return m_paramDetectionPaused; }
     void SetDetectionPausedState(bool paused) { m_paramDetectionPaused = paused; }
+    double Get_minBlobDiameter() { return m_paramMinBlobDiameter; }
+    double Get_maxBlobDiameter() { return m_paramMaxBlobDiameter; }
+    double Get_blobThreshold() { return m_paramBlobThreshold; }
+    void Set_minBlobDiameter(double val);
+    void Set_maxBlobDiameter(double val);
+    void Set_blobThreshold(double val);
     void Set_minRadius(double val);
     double Get_minRadius() { return m_paramMinRadius; }
     void Set_maxRadius(double val);
@@ -179,6 +189,7 @@ private:
                      int maxRadius);
     bool FindOrbisCenter(cv::Mat img8, int minRadius, int maxRadius, bool roiActive, cv::Point2f& clickedPoint,
                          cv::Rect& roiRect, bool activeRoiLimits, float distanceRoiMax);
+    bool FindBlobCenter(cv::Mat testMat, float& blobX, float& blobY, std::vector<cv::Point>& blobContour);
 };
 
 #endif // PLANETARY_INCLUDED
