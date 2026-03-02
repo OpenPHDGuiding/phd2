@@ -509,8 +509,8 @@ void MyFrame::SetupMenuBar()
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
-    m_PlanetaryMenuItem =
-        tools_menu->AppendCheckItem(MENU_SOLAR_SYSTEM_TOOL, _("Solar/Lunar Guiding"), _("Guide on a solar/lunar disk"));
+    m_PlanetaryMenuItem = tools_menu->AppendCheckItem(MENU_SOLAR_SYSTEM_TOOL, _("Solar System Guiding"),
+                                                      _("Guide on a solar,lunar, or planetary disk"));
     tools_menu->Append(MENU_STARCROSS_TEST, _("Star-Cross Test"), _("Run a star-cross test for mount diagnostics"));
     tools_menu->Append(MENU_PIERFLIP_TOOL, _("Calibrate meridian flip"),
                        _("Automatically determine the correct meridian flip settings"));

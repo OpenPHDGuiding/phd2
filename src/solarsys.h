@@ -39,6 +39,13 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+enum DetectionModes
+{
+    modeBlob = 1,
+    modeContours = 2,
+    modeEither = 3
+};
+
 // Solar, lunar and planetary detection state and control class
 class SolarSystemObject
 {
@@ -71,10 +78,9 @@ private:
     std::vector<cv::Point> m_blobContour;
     int m_centoid_x;
     int m_centoid_y;
-    int m_sm_circle_x;
-    int m_sm_circle_y;
     int m_frameWidth;
     int m_frameHeight;
+    DetectionModes m_detectionMode;
 
 public:
     wxString m_statusMsg;
@@ -87,6 +93,7 @@ public:
     double m_paramMinBlobDiameter;
     double m_paramMaxBlobDiameter;
     double m_paramBlobThreshold;
+    bool m_paramInvertBlob;
 
     bool m_roiActive;
     cv::Rect m_roiRect;
@@ -120,6 +127,8 @@ public:
     void GetDetectionStatus(wxString& statusMsg);
     bool UpdateCaptureState(bool CaptureActive);
 
+    DetectionModes GetDetectionMode() { return m_detectionMode; }
+    void SetDetectionMode(DetectionModes mode);
     bool Get_SolarSystemObjMode() { return m_paramEnabled; }
     void Set_SolarSystemObjMode(bool enabled) { m_paramEnabled = enabled; }
     bool GetDetectionPausedState() { return m_paramDetectionPaused; }
@@ -130,6 +139,7 @@ public:
     void Set_minBlobDiameter(double val);
     void Set_maxBlobDiameter(double val);
     void Set_blobThreshold(double val);
+    void Set_blobInversion(bool val);
     void Set_minRadius(double val);
     double Get_minRadius() { return m_paramMinRadius; }
     void Set_maxRadius(double val);
