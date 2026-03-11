@@ -595,7 +595,13 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
         {
             int blevel = m_pCurrentImage->FiltMin;
             int wlevel = m_pCurrentImage->FiltMax;
-            m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
+            if (m_SolarSystemObject->ShowPreProcessedImage() && m_SolarSystemObject->PreProcessedImageValid())
+            {
+                usImage *preProc = m_SolarSystemObject->GetPreProcessedImage();
+                preProc->CopyToImage(&m_displayedImage, 0, wlevel, pFrame->Stretch_gamma);
+            }
+            else
+                m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
         }
 
         int imageWidth = m_displayedImage->GetWidth();

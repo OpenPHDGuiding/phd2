@@ -66,6 +66,7 @@ SolarSystemObject::SolarSystemObject()
     m_measuringSharpnessMode = false;
     m_unknownHFD = true;
     m_focusSharpness = 0;
+    m_paramShowPreProcessed = false;
 
     m_center_x = m_center_y = 0;
 
@@ -104,10 +105,13 @@ SolarSystemObject::SolarSystemObject()
 
     // Remove the alert dialog setting for pausing solar/planetary detection
     pConfig->Global.DeleteEntry(PausePlanetDetectionAlertEnabledKey());
+    m_preProcessedImage = new usImage(); // so we always have one
+    m_preProcessedImageValid = false;
 }
 
 SolarSystemObject::~SolarSystemObject()
 {
+    delete m_preProcessedImage;
     // Save all detection parameters
     pConfig->Profile.SetInt("/PlanetTool/min_radius", Get_minRadius());
     pConfig->Profile.SetInt("/PlanetTool/max_radius", Get_maxRadius());
@@ -184,6 +188,11 @@ void SolarSystemObject::Set_blobThreshold(double val)
 void SolarSystemObject::Set_blobInversion(bool val)
 {
     m_paramInvertBlob = val;
+}
+
+void SolarSystemObject::Set_ShowPreProcessedImage(bool val)
+{
+    m_paramShowPreProcessed = val;
 }
 
 void SolarSystemObject::Set_minRadius(double val)
@@ -385,8 +394,18 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
                 y = pImg->GetHeight() / 2;
             }
             int radius = int(m_radius * scaleFactor + 0.5);
-            float minRadius = Get_minRadius() * scaleFactor;
-            float maxRadius = Get_maxRadius() * scaleFactor;
+            float minRadius;
+            float maxRadius;
+            if (m_detectionMode == DetectionModes::modeBlob)
+            {
+                minRadius = Get_minBlobDiameter() / 2.0;
+                maxRadius = Get_maxBlobDiameter() / 2.0;
+            }
+            else
+            {
+                minRadius = Get_minRadius() * scaleFactor;
+                maxRadius = Get_maxRadius() * scaleFactor;
+            }
             int minRadius_x = x + minRadius;
             int maxRadius_x = x + maxRadius;
             int lineMin_x = x;
@@ -785,7 +804,7 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
 }
 
 // Find center of object using blob searching
-bool SolarSystemObject::FindBlobCenter(Mat img8, float& blobX, float& blobY, std::vector<cv::Point>& blobContour)
+bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo, std::vector<cv::Point>& blobContour)
 {
 
     SimpleBlobDetector::Params params;
@@ -814,37 +833,47 @@ bool SolarSystemObject::FindBlobCenter(Mat img8, float& blobX, float& blobY, std
     // Detect blobs
     blobContour.clear();
     detector->detect(preppedMat, keypoints);
+    centroidInfo.mode = DetectionModes::modeBlob;
     if (keypoints.size() == 1)
     {
-        blobX = keypoints[0].pt.x;
-        blobY = keypoints[0].pt.y;
+        centroidInfo.centroidX = keypoints[0].pt.x;
+        centroidInfo.centroidY = keypoints[0].pt.y;
+        centroidInfo.objectSize = keypoints[0].size;
         std::vector<std::vector<cv::Point>> contours;
         contours = detector->getBlobContours();
         blobContour = contours.front();
     }
     else
     {
-        blobX = -1.0;
-        blobY = -1.0;
+        centroidInfo.centroidX = -1.0;
+        centroidInfo.centroidY = -1.0;
     }
-    return blobX != -1.0;
+    // Optionally keep a re-scaled version of the pre-processed image for diagnostic/tuning purposes
+    if (m_paramShowPreProcessed)
+    {
+        Mat rescaled;
+        preppedMat.convertTo(rescaled, CV_16U, 1 << 8);
+        int width = rescaled.cols;
+        int height = rescaled.rows;
+        int dataSize = width * height * 2;
+        m_preProcessedImage->Init(width, height); // no cost if dimensions don't change
+        memcpy(m_preProcessedImage->ImageData, rescaled.data, dataSize);
+        m_preProcessedImageValid = true;
+    }
+    else
+        m_preProcessedImageValid = false;
+    return centroidInfo.centroidX != -1.0;
 }
 
 // Find disk center using circle matching with contours
-bool SolarSystemObject::FindOrbisCenter(Mat img8, int minRadius, int maxRadius, bool roiActive, Point2f& clickedPoint,
-                                        Rect& roiRect, bool activeRoiLimits, float distanceRoiMax)
+bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& clickedPoint, Rect& roiRect,
+                                             bool activeRoiLimits, float distanceRoiMax, CentroidResult& centroidResult)
 {
     int LowThreshold = Get_lowThreshold();
     int HighThreshold = Get_highThreshold();
+    int minRadius = Get_minRadius();
+    int maxRadius = Get_maxRadius();
 
-    // Try simple blob detection
-    float blobX;
-    float blobY;
-    bool blobRslt;
-    if (m_detectionMode != DetectionModes::modeContours)
-        blobRslt = FindBlobCenter(img8, blobX, blobY, m_blobContour);
-    else
-        blobRslt = false;
     // Apply Canny edge detection
     Debug.Write(wxString::Format("Start detection of solar system object (roi:%d "
                                  "low_tr=%d,high_tr=%d,minr=%d,maxr=%d)\n",
@@ -948,30 +977,22 @@ bool SolarSystemObject::FindOrbisCenter(Mat img8, int minRadius, int maxRadius, 
                                  maxThreadsCount));
 
     // Debug.Write(wxString::Format("Centroids:,%0.2f,%0.2f,%0.2f,%0.2f\n", blobX, blobY, bestDiskCenter.x, bestDiskCenter.y));
+    // //testing only
 
-    PlanetTool::UpdateCentroidInfoStats(bestDiskCenter.x, bestDiskCenter.y, bestDiskCenter.radius);
     PlanetTool::UpdateContourInfoStats(contourMatchingCount, bestContour.size());
     PlanetTool::UpdateScoreStats(bestScore);
 
-    // For use by visual aid for parameter tuning
-    if (VisualElementsEnabled())
-    {
-        m_syncLock.Lock();
-        m_roiRect = roiRect;
-        m_diskContour = bestContour;
-        m_centoid_x = bestCentroid.x;
-        m_centoid_y = bestCentroid.y;
-        m_syncLock.Unlock();
-    }
-
     if (bestDiskCenter.radius > 0)
     {
-        m_center_x = roiRect.x + bestDiskCenter.x;
-        m_center_y = roiRect.y + bestDiskCenter.y;
-        m_radius = cvRound(bestDiskCenter.radius);
-        m_searchRegion = m_radius;
+        centroidResult.mode = DetectionModes::modeContours;
+        centroidResult.centroidX = bestDiskCenter.x;
+        centroidResult.centroidY = bestDiskCenter.y;
+        centroidResult.objectSize = cvRound(bestDiskCenter.radius);
+        m_diskContour = bestContour;
         return true;
     }
+
+    m_preProcessedImageValid = false; // Pre-processed images isn't useful for contour detection
 
     return false;
 }
@@ -1242,9 +1263,6 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
                                      pImage->Size.GetHeight(), pImage->FrameNum));
     }
 
-    // m_searchRegion,
-    //                                  base_x, base_y, mode, pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width,
-    //                                  pImg->Subframe.height, minHFD, maxHFD, maxADU, pImg->FrameNum));
     //
     // Make sure to use 8-bit gray image for feature detection
     // pImage always has 16-bit pixels, but depending on camera bpp
@@ -1269,9 +1287,35 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
         GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
 
         // Find object depending on the selected detection mode
-        detectionResult = FindOrbisCenter(imgFiltered, minRadius, maxRadius, roiActive, clickedPoint, roiRect, activeRoiLimits,
-                                          distanceRoiMax);
-
+        CentroidResult centroidInfo;
+        if (m_detectionMode != DetectionModes::modeContours)
+        {
+            detectionResult = FindBlobCentroid(img8, centroidInfo, m_blobContour);
+        }
+        if ((!detectionResult && m_detectionMode == DetectionModes::modeEither) ||
+            m_detectionMode == DetectionModes::modeContours)
+        {
+            detectionResult = FindContoursCentroid(imgFiltered, roiActive, clickedPoint, roiRect, activeRoiLimits,
+                                                   distanceRoiMax, centroidInfo);
+        }
+        if (detectionResult)
+        {
+            m_center_x = roiRect.x + centroidInfo.centroidX;
+            m_center_y = roiRect.y + centroidInfo.centroidY;
+            if (centroidInfo.mode == DetectionModes::modeBlob)
+                m_radius = cvRound(centroidInfo.objectSize / 2.0);
+            else
+                m_radius = cvRound(centroidInfo.objectSize);
+            m_searchRegion = m_radius;
+            PlanetTool::UpdateCentroidInfoStats(centroidInfo.centroidX, centroidInfo.centroidY, m_radius);
+        }
+        // For use by visual aid for parameter tuning
+        if (VisualElementsEnabled())
+        {
+            m_syncLock.Lock();
+            m_roiRect = roiRect;
+            m_syncLock.Unlock();
+        }
         // Calculate sharpness of the image
         if (m_measuringSharpnessMode)
             m_focusSharpness = CalcSharpness(FullFrame, clickedPoint, detectionResult);

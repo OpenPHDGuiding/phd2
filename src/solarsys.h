@@ -45,7 +45,13 @@ enum DetectionModes
     modeContours = 2,
     modeEither = 3
 };
-
+struct CentroidResult
+{
+    DetectionModes mode;
+    float centroidX;
+    float centroidY;
+    int objectSize;
+};
 // Solar, lunar and planetary detection state and control class
 class SolarSystemObject
 {
@@ -54,7 +60,9 @@ private:
     bool m_paramEnabled;
     bool m_paramDetectionPaused;
     bool m_paramRoiEnabled;
-
+    usImage *m_preProcessedImage;
+    bool m_preProcessedImageValid;
+    bool m_paramShowPreProcessed;
     double m_paramMinRadius;
     double m_paramMaxRadius;
     int m_paramLowThreshold;
@@ -76,8 +84,6 @@ private:
 
     std::vector<cv::Point2f> m_diskContour;
     std::vector<cv::Point> m_blobContour;
-    int m_centoid_x;
-    int m_centoid_y;
     int m_frameWidth;
     int m_frameHeight;
     DetectionModes m_detectionMode;
@@ -136,11 +142,15 @@ public:
     double Get_minBlobDiameter() { return m_paramMinBlobDiameter; }
     double Get_maxBlobDiameter() { return m_paramMaxBlobDiameter; }
     double Get_blobThreshold() { return m_paramBlobThreshold; }
+    usImage *GetPreProcessedImage() { return m_preProcessedImage; }
+    bool PreProcessedImageValid() { return m_preProcessedImageValid; }
+    bool ShowPreProcessedImage() { return m_paramShowPreProcessed; }
     void Set_minBlobDiameter(double val);
     void Set_maxBlobDiameter(double val);
     void Set_blobThreshold(double val);
     void Set_blobInversion(bool val);
     void Set_minRadius(double val);
+    void Set_ShowPreProcessedImage(bool val);
     double Get_minRadius() { return m_paramMinRadius; }
     void Set_maxRadius(double val);
     double Get_maxRadius() { return m_paramMaxRadius; }
@@ -197,9 +207,9 @@ private:
     void FindCenters(cv::Mat image, const std::vector<cv::Point>& contour, CircleDescriptor& bestCentroid,
                      CircleDescriptor& smallestCircle, std::vector<cv::Point2f>& bestContour, cv::Moments& mu, int minRadius,
                      int maxRadius);
-    bool FindOrbisCenter(cv::Mat img8, int minRadius, int maxRadius, bool roiActive, cv::Point2f& clickedPoint,
-                         cv::Rect& roiRect, bool activeRoiLimits, float distanceRoiMax);
-    bool FindBlobCenter(cv::Mat testMat, float& blobX, float& blobY, std::vector<cv::Point>& blobContour);
+    bool FindContoursCentroid(cv::Mat img8, bool roiActive, cv::Point2f& clickedPoint, cv::Rect& roiRect, bool activeRoiLimits,
+                              float distanceRoiMax, CentroidResult& rslt);
+    bool FindBlobCentroid(cv::Mat testMat, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
 };
 
 #endif // PLANETARY_INCLUDED

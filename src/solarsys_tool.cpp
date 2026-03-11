@@ -81,6 +81,7 @@ struct SolarSysToolWin : public wxDialog
     wxCheckBox *m_RoiCheckBox;
     wxCheckBox *m_ShowContours;
     wxCheckBox *m_ShowDiameters;
+    wxCheckBox *m_ShowDiagnosticImage;
     bool m_MouseHoverFlag;
     int m_windowPosX;
     int m_windowPosY;
@@ -112,6 +113,7 @@ struct SolarSysToolWin : public wxDialog
     void OnRoiModeClick(wxCommandEvent& event);
     void OnShowContoursClick(wxCommandEvent& event);
     void OnShowDiameters(wxCommandEvent& event);
+    void OnShowDiagnosticImage(wxCommandEvent& event);
     void OnMountTrackingRateClick(wxCommandEvent& event);
     void OnTrackingRateMouseWheel(wxMouseEvent& event);
 
@@ -342,18 +344,23 @@ SolarSysToolWin::SolarSysToolWin()
     m_statsGrid->DisableDragGridSize();
 
     // Show/hide detected elements
-    wxStaticBoxSizer *pVisElements = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Display Details"));
-    m_ShowContours = new wxCheckBox(this, wxID_ANY, _("Display contour edges"));
+    wxStaticBoxSizer *pVisElements = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Diagnostic Options"));
+    m_ShowContours = new wxCheckBox(this, wxID_ANY, _("Contour edges"));
     m_ShowContours->SetToolTip(_("Toggle the visibility of internally detected contour edges and adjust "
                                  "detection parameters to "
                                  "maintain a smooth contour closely aligned with the object limb."));
-    m_ShowDiameters = new wxCheckBox(this, wxID_ANY, _("Display bounding diameters"));
+    m_ShowDiameters = new wxCheckBox(this, wxID_ANY, _("Bounding diameters"));
     m_ShowDiameters->SetToolTip(_("Show the min/max search region being used to identify the target. "
                                   "Use this option to adjust the sizes if the target object isn't being selected."));
+    m_ShowDiagnosticImage = new wxCheckBox(this, wxID_ANY, _("Processed image"));
+    m_ShowDiagnosticImage->SetToolTip(_("Show the pre-processed image being used internally for detecting features. "
+                                        "Can be helpful in adjusting detection parameters such as threshold values."));
 
     pVisElements->Add(m_ShowContours, 0, wxLEFT | wxTOP, 10);
     pVisElements->AddSpacer(20);
     pVisElements->Add(m_ShowDiameters, 0, wxLEFT | wxTOP, 10);
+    pVisElements->AddSpacer(20);
+    pVisElements->Add(m_ShowDiagnosticImage, 0, wxLEFT | wxTOP, 10);
 
     // Mount settings group
     wxFlexGridSizer *pMountTable = new wxFlexGridSizer(1, 6, 10, 10);
@@ -426,11 +433,11 @@ SolarSysToolWin::SolarSysToolWin()
     detectionModeBox->AddSpacer(5);
     detectionModeBox->Add(m_detectionEither, 0, wxLEFT | wxTOP, 10);
     topControls->Add(m_RoiCheckBox, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
-    topControls->AddSpacer(65);
+    topControls->AddSpacer(5);
     topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 20).Border(wxTOP, 2));
     topSizer->AddSpacer(5);
     topSizer->Add(topControls, 0, wxLEFT, 10);
-    topSizer->AddSpacer(5);
+    topSizer->AddSpacer(35);
     topSizer->Add(m_tabs, 0, wxEXPAND | wxALL, 5);
     topSizer->AddSpacer(5);
     topSizer->Add(pVisElements, 0, wxLEFT | wxALIGN_LEFT, 5);
@@ -453,6 +460,7 @@ SolarSysToolWin::SolarSysToolWin()
     m_RoiCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnRoiModeClick, this);
     m_ShowContours->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowContoursClick, this);
     m_ShowDiameters->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiameters, this);
+    m_ShowDiagnosticImage->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiagnosticImage, this);
     Bind(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(SolarSysToolWin::OnClose), this);
 
     m_minDiameter->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_minDiameter), NULL, this);
@@ -461,6 +469,8 @@ SolarSysToolWin::SolarSysToolWin()
                                NULL, this);
     m_maxBlobDiameter->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_maxBlobDiameter),
                                NULL, this);
+    m_blobThreshold->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_blobThreshold), NULL,
+                             this);
     m_thresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnThresholdChanged, this);
     m_detectionBlob->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_detectionContours->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
@@ -577,14 +587,20 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
     if (m_detectionBlob->GetValue())
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeBlob);
+        m_tabs->SetSelection(0);
+        m_ShowDiagnosticImage->Enable(true);
     }
     else if (m_detectionContours->GetValue())
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeContours);
+        m_tabs->SetSelection(1);
+        m_ShowDiagnosticImage->Enable(false);
     }
     else
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeEither);
+        m_tabs->SetSelection(1); // Intentional, 3rd tab is "stats"
+        m_ShowDiagnosticImage->Enable(false);
     }
 }
 void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
@@ -648,7 +664,12 @@ void SolarSysToolWin::OnShowContoursClick(wxCommandEvent& event)
 
 void SolarSysToolWin::OnShowDiameters(wxCommandEvent& event)
 {
-    m_solarSystemObj->m_showMinMaxDiameters = m_ShowDiameters->GetValue();
+    m_solarSystemObj->m_showMinMaxDiameters = m_ShowDiameters->IsChecked();
+}
+
+void SolarSysToolWin::OnShowDiagnosticImage(wxCommandEvent& event)
+{
+    m_solarSystemObj->Set_ShowPreProcessedImage(m_ShowDiagnosticImage->IsChecked());
 }
 
 void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
