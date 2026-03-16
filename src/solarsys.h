@@ -100,6 +100,7 @@ public:
     double m_paramMaxBlobDiameter;
     double m_paramBlobThreshold;
     bool m_paramInvertBlob;
+    bool m_paramAutoThreshold;
 
     bool m_roiActive;
     cv::Rect m_roiRect;
@@ -149,6 +150,7 @@ public:
     void Set_maxBlobDiameter(double val);
     void Set_blobThreshold(double val);
     void Set_blobInversion(bool val);
+    void Set_autoThreshold(bool val);
     void Set_minRadius(double val);
     void Set_ShowPreProcessedImage(bool val);
     double Get_minRadius() { return m_paramMinRadius; }

@@ -55,12 +55,11 @@ struct SolarSysToolWin : public wxDialog
     wxSpinCtrlDouble *m_maxBlobDiameter;
     wxSpinCtrlDouble *m_blobThreshold;
     wxCheckBox *m_blobInvert;
+    wxCheckBox *m_useAutoThresh;
 
     // Contour search controls
     wxSpinCtrlDouble *m_minDiameter;
     wxSpinCtrlDouble *m_maxDiameter;
-    wxSlider *m_diameter_min_slider;
-    wxSlider *m_radius_max_slider;
     wxSlider *m_thresholdSlider;
     wxGrid *m_statsGrid;
 
@@ -102,11 +101,9 @@ struct SolarSysToolWin : public wxDialog
     void OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event);
     void OnSpinCtrl_blobThreshold(wxSpinDoubleEvent& event);
     void OnBlobInvertClick(wxCommandEvent& event);
+    void OnAutoThreshClick(wxCommandEvent& event);
 
     void OnThresholdChanged(wxCommandEvent& event);
-    void OnMinDiameterSliderChanged(wxCommandEvent& event);
-    void OnMaxDiameterSliderChanged(wxCommandEvent& event);
-
     void OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event);
     void OnSpinCtrl_maxRadius(wxSpinDoubleEvent& event);
 
@@ -223,7 +220,11 @@ SolarSysToolWin::SolarSysToolWin()
     m_blobInvert->SetToolTip(_("Check this for dark objects against a brighter background."));
     m_blobInvert->SetValue(false);
     m_blobInvert->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnBlobInvertClick, this);
+    m_useAutoThresh = new wxCheckBox(m_basic_tab, wxID_ANY, _("Use auto-threshold"));
+    m_useAutoThresh->SetValue(true);
+    m_useAutoThresh->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnAutoThreshClick, this);
 
+    blobSizer1->AddSpacer(20);
     blobSizer1->Add(minBlobDiameter_Label, wxSizerFlags().Border(wxLEFT, 4));
     blobSizer1->Add(m_minBlobDiameter, wxSizerFlags().Border(wxLEFT, 12));
     blobSizer1->AddSpacer(10);
@@ -235,6 +236,8 @@ SolarSysToolWin::SolarSysToolWin()
     blobSizer2->Add(m_blobThreshold, wxSizerFlags().Border(wxLEFT, 4));
     blobSizer2->AddSpacer(10);
     blobSizer2->Add(m_blobInvert, wxSizerFlags().Border(wxLEFT, 10));
+    blobSizer2->AddSpacer(10);
+    blobSizer2->Add(m_useAutoThresh, wxSizerFlags().Border(wxLEFT, 10));
 
     blob_vSizer->AddSpacer(20);
     blob_vSizer->Add(blobSizer1);
@@ -246,42 +249,26 @@ SolarSysToolWin::SolarSysToolWin()
 
     // Expert detection, contour searching.  SolarSystemObject deals with radius values but we will use diameters just in the UI
     // for consistency with blobs
-    wxStaticText *minDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("min diameter:"));
+    wxStaticText *minDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("Min Diameter:"));
     m_minDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
                                          wxSP_ARROW_KEYS, PT_RADIUS_MIN, PT_RADIUS_MAX, PT_MIN_RADIUS_DEFAULT, 10.0);
     minDiameter_Label->SetToolTip(_("Minimum object diameter in pixels. Set this a few pixels lower than "
                                     "the actual object diameter. ") +
                                   radiusTooltip);
 
-    wxStaticText *maxDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("max diameter:"));
+    wxStaticText *maxDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("Max Diameter:"));
     m_maxDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
                                          wxSP_ARROW_KEYS, PT_RADIUS_MIN, PT_RADIUS_MAX, PT_MAX_RADIUS_DEFAULT, 10.0);
     maxDiameter_Label->SetToolTip(_("Maximum object diameter in pixels. Set this a few pixels higher than "
                                     "the actual object diameter. ") +
                                   radiusTooltip);
-    m_diameter_min_slider = new wxSlider(m_expert_tab, wxID_ANY, 200, PT_RADIUS_MIN, PT_RADIUS_MAX, wxPoint(20, 20),
-                                         wxSize(180, -1), wxSL_HORIZONTAL | wxSL_LABELS);
-    m_diameter_min_slider->SetToolTip(
-        _("Use this to make large changes to the minimum diameter control. "
-          "This can be useful for first-time setup when the target object diameter is very different from the default value."));
-    m_diameter_min_slider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnMinDiameterSliderChanged, this);
-    m_radius_max_slider = new wxSlider(m_expert_tab, wxID_ANY, 500, PT_RADIUS_MIN, PT_RADIUS_MAX, wxPoint(20, 20),
-                                       wxSize(180, -1), wxSL_HORIZONTAL | wxSL_LABELS);
-    m_radius_max_slider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnMaxDiameterSliderChanged, this);
-    m_radius_max_slider->SetToolTip(
-        _("Use this to make large changes to the maximum diameter control. "
-          "This can be useful for first-time setup when the target object diameter is very different from the default value."));
-    wxBoxSizer *min_radii = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer *max_radii = new wxBoxSizer(wxHORIZONTAL);
-    min_radii->Add(minDiameter_Label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
-    min_radii->Add(m_minDiameter, 0, wxALIGN_CENTER_VERTICAL, 5);
-    min_radii->AddSpacer(10);
-    min_radii->Add(m_diameter_min_slider, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
-    max_radii->Add(maxDiameter_Label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
-    max_radii->Add(m_maxDiameter, 0, wxALIGN_CENTER_VERTICAL, 5);
-    max_radii->AddSpacer(10);
-    max_radii->Add(m_radius_max_slider, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
 
+    wxBoxSizer *radiusSizer = new wxBoxSizer(wxHORIZONTAL);
+    radiusSizer->Add(minDiameter_Label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+    radiusSizer->Add(m_minDiameter, 0, wxALIGN_CENTER_VERTICAL, 5);
+    radiusSizer->AddSpacer(40);
+    radiusSizer->Add(maxDiameter_Label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+    radiusSizer->Add(m_maxDiameter, 0, wxALIGN_CENTER_VERTICAL, 5);
     wxStaticText *ThresholdLabel =
         new wxStaticText(m_expert_tab, wxID_ANY, _("Contour Detection Threshold:"), wxDefaultPosition, wxDefaultSize, 0);
     m_thresholdSlider = new wxSlider(m_expert_tab, wxID_ANY, PT_HIGH_THRESHOLD_DEFAULT, PT_HIGH_THRESHOLD_MAX / 4,
@@ -291,10 +278,8 @@ SolarSysToolWin::SolarSysToolWin()
                                  "internal contour edges is enabled."));
     // Add all solar system object tab elements
     wxStaticBoxSizer *planetSizer = new wxStaticBoxSizer(new wxStaticBox(m_expert_tab, wxID_ANY, _("")), wxVERTICAL);
-    planetSizer->AddSpacer(10);
-    planetSizer->Add(min_radii, 0, wxEXPAND, 5);
-    planetSizer->AddSpacer(5);
-    planetSizer->Add(max_radii, 0, wxEXPAND, 5);
+    planetSizer->AddSpacer(20);
+    planetSizer->Add(radiusSizer, 0, wxEXPAND, 5);
     planetSizer->AddSpacer(10);
     planetSizer->Add(ThresholdLabel, 0, wxLEFT | wxTOP, 10);
     planetSizer->Add(m_thresholdSlider, 0, wxALL, 10);
@@ -486,8 +471,6 @@ SolarSysToolWin::SolarSysToolWin()
     m_minDiameter->SetValue(2.0 * m_solarSystemObj->Get_minRadius());
     m_maxDiameter->SetValue(2.0 * m_solarSystemObj->Get_maxRadius());
     m_solarSystemObj->Set_blobThreshold(m_blobThreshold->GetValue());
-    m_diameter_min_slider->SetValue(m_minDiameter->GetValue());
-    m_radius_max_slider->SetValue(m_maxDiameter->GetValue());
     m_solarSystemObj->Set_minBlobDiameter(m_minDiameter->GetValue());
     m_solarSystemObj->Set_blobInversion(false);
     m_thresholdSlider->SetValue(m_solarSystemObj->Get_highThreshold());
@@ -536,12 +519,10 @@ void SolarSysToolWin::RestoreProfileParameters()
     val = pConfig->Profile.GetInt("/PlanetTool/MinRadius", m_solarSystemObj->Get_minRadius());
     m_minDiameter->SetValue(2.0 * val);
     m_solarSystemObj->Set_minRadius(val);
-    m_diameter_min_slider->SetValue(m_minDiameter->GetValue());
 
     val = pConfig->Profile.GetInt("/PlanetTool/MaxRadius", m_solarSystemObj->Get_maxRadius());
     m_maxDiameter->SetValue(2.0 * val);
     m_solarSystemObj->Set_maxRadius(val);
-    m_radius_max_slider->SetValue(m_maxDiameter->GetValue());
 
     val = pConfig->Profile.GetInt("/PlanetTool/Threshold", m_solarSystemObj->Get_highThreshold());
     m_thresholdSlider->SetValue(val);
@@ -606,7 +587,6 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
 void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_minDiameter->GetValue();
-    m_diameter_min_slider->SetValue(v);
     m_solarSystemObj->Set_minRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
 }
@@ -614,7 +594,6 @@ void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
 void SolarSysToolWin::OnSpinCtrl_maxRadius(wxSpinDoubleEvent& event)
 {
     int v = m_maxDiameter->GetValue();
-    m_radius_max_slider->SetValue(v);
     m_solarSystemObj->Set_maxRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
 }
@@ -641,6 +620,12 @@ void SolarSysToolWin::OnBlobInvertClick(wxCommandEvent& event)
 {
     bool enabled = m_blobInvert->IsChecked();
     m_solarSystemObj->Set_blobInversion(enabled);
+}
+
+void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
+{
+    bool enabled = m_useAutoThresh->IsChecked();
+    m_solarSystemObj->Set_autoThreshold(enabled);
 }
 
 void SolarSysToolWin::OnRoiModeClick(wxCommandEvent& event)
@@ -787,19 +772,6 @@ void SolarSysToolWin::OnMouseLeaveCloseBtn(wxMouseEvent& event)
     event.Skip();
 }
 
-void SolarSysToolWin::OnMinDiameterSliderChanged(wxCommandEvent& event)
-{
-    m_minDiameter->SetValue(event.GetInt());
-    wxSpinDoubleEvent evt;
-    OnSpinCtrl_minDiameter(evt);
-}
-
-void SolarSysToolWin::OnMaxDiameterSliderChanged(wxCommandEvent& event)
-{
-    m_maxDiameter->SetValue(event.GetInt());
-    wxSpinDoubleEvent evt;
-    OnSpinCtrl_maxRadius(evt);
-}
 void SolarSysToolWin::OnThresholdChanged(wxCommandEvent& event)
 {
     int highThreshold = event.GetInt();

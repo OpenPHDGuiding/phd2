@@ -190,6 +190,11 @@ void SolarSystemObject::Set_blobInversion(bool val)
     m_paramInvertBlob = val;
 }
 
+void SolarSystemObject::Set_autoThreshold(bool val)
+{
+    m_paramAutoThreshold = val;
+}
+
 void SolarSystemObject::Set_ShowPreProcessedImage(bool val)
 {
     m_paramShowPreProcessed = val;
@@ -806,15 +811,13 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
 // Find center of object using blob searching
 bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo, std::vector<cv::Point>& blobContour)
 {
-
     SimpleBlobDetector::Params params;
     Mat preppedMat;
-    cv::threshold(img8, preppedMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
-    if (m_paramInvertBlob)
-        cv::bitwise_not(preppedMat, preppedMat);
+
     params.filterByCircularity = false;
     params.filterByConvexity = false;
     params.filterByInertia = false;
+    params.minRepeatability = 2;
     // Filter by Area.
     params.filterByArea = true;
     params.minArea = m_paramMinBlobDiameter * m_paramMinBlobDiameter;
@@ -822,6 +825,21 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo,
     // Filter by Color.
     params.filterByColor = true;
     params.blobColor = 255;
+    if (m_paramAutoThreshold)
+    {
+        // Apply auto-thresholding if enabled
+        params.minThreshold = 20;
+        params.maxThreshold = 220;
+        params.thresholdStep = 10;
+        preppedMat = img8;
+    }
+    else
+    {
+        cv::threshold(img8, preppedMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
+    }
+    if (m_paramInvertBlob)
+        cv::bitwise_not(preppedMat, preppedMat);
+
     // Save the contours for possible display
     params.collectContours = true;
     // Storage for single keypoint which contains centroid and size info
