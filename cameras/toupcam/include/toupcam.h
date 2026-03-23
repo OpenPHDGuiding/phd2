@@ -1,7 +1,7 @@
 ﻿#ifndef __toupcam_h__
 #define __toupcam_h__
 
-/* Version: 59.30594.20260120 */
+/* Version: 59.31026.20260322 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -112,7 +112,7 @@ extern "C" {
 #define E_UNEXPECTED        (HRESULT)(0x8000ffff) /* Catastrophic failure */ /* Remark: Generally indicates that the conditions are not met, such as calling put_Option setting some options that do not support modification when the camera is running, and so on */
 #define E_NOTIMPL           (HRESULT)(0x80004001) /* Not supported or not implemented */ /* Remark: This feature is not supported on this model of camera */
 #define E_NOINTERFACE       (HRESULT)(0x80004002)
-#define E_ACCESSDENIED      (HRESULT)(0x80070005) /* Permission denied */ /* Remark: The program on Linux does not have permission to open the USB device, please enable udev rules file or run as root */
+#define E_ACCESSDENIED      (HRESULT)(0x80070005) /* Permission denied */ /* Remark: Insufficient permissions. This may be blocked by system security policies; on Linux, USB devices often require additional permission configuration, which can be resolved by setting up udev rules or running with root privileges */
 #define E_OUTOFMEMORY       (HRESULT)(0x8007000e) /* Out of memory */
 #define E_INVALIDARG        (HRESULT)(0x80070057) /* One or more arguments are not valid */
 #define E_POINTER           (HRESULT)(0x80004003) /* Pointer that is not valid */ /* Remark: Pointer is NULL */
@@ -278,10 +278,10 @@ typedef struct Toupcam_t { int unused; } *HToupcam, *HToupCam;
 #define TOUPCAM_ANTIBLOOMING_MIN          0       /* Anti Blooming */
 #define TOUPCAM_GVCP_RETRY_DEF            4       /* GVCP Retry */
 #define TOUPCAM_GVCP_RETRY_MIN            2
-#define TOUPCAM_GVCP_RETRY_MAX            16
-#define TOUPCAM_GVCP_TIMEOUT_DEF          15      /* GVCP Timeout */
-#define TOUPCAM_GVCP_TIMEOUT_MIN          5
-#define TOUPCAM_GVCP_TIMEOUT_MAX          150
+#define TOUPCAM_GVCP_RETRY_MAX            20
+#define TOUPCAM_GVCP_TIMEOUT_DEF          40      /* GVCP Timeout */
+#define TOUPCAM_GVCP_TIMEOUT_MIN          20
+#define TOUPCAM_GVCP_TIMEOUT_MAX          200
 #define TOUPCAM_GVSP_WAIT_PERCENT_DEF     1       /* GVSP wait percent */
 #define TOUPCAM_GVSP_WAIT_PERCENT_MIN     0
 #define TOUPCAM_GVSP_WAIT_PERCENT_MAX     100
@@ -329,7 +329,7 @@ typedef struct {
 } ToupcamDeviceV2; /* device instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 59.30594.20260120
+    get the version of this dll/so/dylib, which is: 59.31026.20260322
 */
 #if defined(_WIN32)
 TOUPCAM_API(const wchar_t*)   Toupcam_Version();
@@ -352,10 +352,10 @@ TOUPCAM_API(unsigned) Toupcam_EnumV2(ToupcamDeviceV2 arr[TOUPCAM_MAX]);
 
 /* use the camId of ToupcamDeviceV2, which is enumerated by Toupcam_EnumV2.
     if camId is NULL, Toupcam_Open will open the first enumerated camera.
-    For USB, GigE, CameraLink or CXP camera, the camId can also be specified as (case sensitive):
+    For USB, GigE, CameraLink or CXP camera, the camId can also be specified as (case sensitive, no spaces):
         (a) "sn:xxxxxxxxxxxx" (Use SN, such as sn:ZP250212241204105), or
         (b) "name:xxxxxx" (Use user-defined name, such as name:Camera1)
-    Moreover, for GigE camera, the camId can also be specified as (case sensitive):
+    Moreover, for GigE camera, the camId can also be specified as (case sensitive, no spaces):
         (a) "ip:xxx.xxx.xxx.xxx" (Use IP address, such as ip:192.168.1.100), or
         (b) "mac:xxxxxxxxxxxx" (Use MAC address, such as mac:d05f64ffff23)
     For the issue of opening the camera on Android, please refer to the documentation
@@ -1462,6 +1462,9 @@ TOUPCAM_API(HRESULT)  Toupcam_CtiEnable(PTOUPCAM_HOTPLUG funHotPlug, void* ctxHo
 #else
 TOUPCAM_API(HRESULT)  Toupcam_CtiEnable(PTOUPCAM_HOTPLUG funHotPlug, void* ctxHotPlug, const char* ctiPath[]);
 #endif
+
+TOUPCAM_API(HRESULT) Toupcam_readPtr(HToupcam h, const char* key, int len, void* pData);
+TOUPCAM_API(HRESULT) Toupcam_writePtr(HToupcam h, const char* key, int len, const void* pData);
 
 /*
  filePath:
