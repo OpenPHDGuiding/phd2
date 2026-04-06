@@ -1,7 +1,7 @@
 ﻿#ifndef __toupcam_h__
 #define __toupcam_h__
 
-/* Version: 59.30594.20260120 */
+/* Version: 59.31131.20260405 */
 /*
    Platform & Architecture:
        (1) Win32:
@@ -112,7 +112,7 @@ extern "C" {
 #define E_UNEXPECTED        (HRESULT)(0x8000ffff) /* Catastrophic failure */ /* Remark: Generally indicates that the conditions are not met, such as calling put_Option setting some options that do not support modification when the camera is running, and so on */
 #define E_NOTIMPL           (HRESULT)(0x80004001) /* Not supported or not implemented */ /* Remark: This feature is not supported on this model of camera */
 #define E_NOINTERFACE       (HRESULT)(0x80004002)
-#define E_ACCESSDENIED      (HRESULT)(0x80070005) /* Permission denied */ /* Remark: The program on Linux does not have permission to open the USB device, please enable udev rules file or run as root */
+#define E_ACCESSDENIED      (HRESULT)(0x80070005) /* Permission denied */ /* Remark: Insufficient permissions. This may be blocked by system security policies; on Linux, USB devices often require additional permission configuration, which can be resolved by setting up udev rules or running with root privileges */
 #define E_OUTOFMEMORY       (HRESULT)(0x8007000e) /* Out of memory */
 #define E_INVALIDARG        (HRESULT)(0x80070057) /* One or more arguments are not valid */
 #define E_POINTER           (HRESULT)(0x80004003) /* Pointer that is not valid */ /* Remark: Pointer is NULL */
@@ -130,7 +130,7 @@ extern "C" {
 typedef struct Toupcam_t { int unused; } *HToupcam, *HToupCam;
 
 #define TOUPCAM_MAX                       128
-                                         
+
 #define TOUPCAM_FLAG_CMOS                 0x00000001  /* cmos sensor */
 #define TOUPCAM_FLAG_CCD_PROGRESSIVE      0x00000002  /* progressive ccd sensor */
 #define TOUPCAM_FLAG_CCD_INTERLACED       0x00000004  /* interlaced ccd sensor */
@@ -278,10 +278,10 @@ typedef struct Toupcam_t { int unused; } *HToupcam, *HToupCam;
 #define TOUPCAM_ANTIBLOOMING_MIN          0       /* Anti Blooming */
 #define TOUPCAM_GVCP_RETRY_DEF            4       /* GVCP Retry */
 #define TOUPCAM_GVCP_RETRY_MIN            2
-#define TOUPCAM_GVCP_RETRY_MAX            16
-#define TOUPCAM_GVCP_TIMEOUT_DEF          15      /* GVCP Timeout */
-#define TOUPCAM_GVCP_TIMEOUT_MIN          5
-#define TOUPCAM_GVCP_TIMEOUT_MAX          150
+#define TOUPCAM_GVCP_RETRY_MAX            20
+#define TOUPCAM_GVCP_TIMEOUT_DEF          40      /* GVCP Timeout */
+#define TOUPCAM_GVCP_TIMEOUT_MIN          20
+#define TOUPCAM_GVCP_TIMEOUT_MAX          200
 #define TOUPCAM_GVSP_WAIT_PERCENT_DEF     1       /* GVSP wait percent */
 #define TOUPCAM_GVSP_WAIT_PERCENT_MIN     0
 #define TOUPCAM_GVSP_WAIT_PERCENT_MAX     100
@@ -329,7 +329,7 @@ typedef struct {
 } ToupcamDeviceV2; /* device instance for enumerating */
 
 /*
-    get the version of this dll/so/dylib, which is: 59.30594.20260120
+    get the version of this dll/so/dylib, which is: 59.31131.20260405
 */
 #if defined(_WIN32)
 TOUPCAM_API(const wchar_t*)   Toupcam_Version();
@@ -352,10 +352,10 @@ TOUPCAM_API(unsigned) Toupcam_EnumV2(ToupcamDeviceV2 arr[TOUPCAM_MAX]);
 
 /* use the camId of ToupcamDeviceV2, which is enumerated by Toupcam_EnumV2.
     if camId is NULL, Toupcam_Open will open the first enumerated camera.
-    For USB, GigE, CameraLink or CXP camera, the camId can also be specified as (case sensitive):
+    For USB, GigE, CameraLink or CXP camera, the camId can also be specified as (case sensitive, no spaces):
         (a) "sn:xxxxxxxxxxxx" (Use SN, such as sn:ZP250212241204105), or
         (b) "name:xxxxxx" (Use user-defined name, such as name:Camera1)
-    Moreover, for GigE camera, the camId can also be specified as (case sensitive):
+    Moreover, for GigE camera, the camId can also be specified as (case sensitive, no spaces):
         (a) "ip:xxx.xxx.xxx.xxx" (Use IP address, such as ip:192.168.1.100), or
         (b) "mac:xxxxxxxxxxxx" (Use MAC address, such as mac:d05f64ffff23)
     For the issue of opening the camera on Android, please refer to the documentation
@@ -404,7 +404,7 @@ TOUPCAM_API(void)     Toupcam_Close(HToupcam h);
 #define TOUPCAM_EVENT_FACTORY           0x8001    /* restore factory settings */
 
 #if defined(_WIN32)
-TOUPCAM_API(HRESULT)  Toupcam_StartPullModeWithWndMsg(HToupcam h, HWND hWnd, UINT nMsg);
+TOUPCAM_API(HRESULT)  Toupcam_StartPullModeWithWndMsg(HToupcam h, HWND hWnd, UINT msgWnd);
 #endif
 
 /* Do NOT call Toupcam_Close, Toupcam_Stop in this callback context, it deadlocks. */
@@ -503,6 +503,21 @@ TOUPCAM_API(HRESULT)  Toupcam_PullImageV4(HToupcam h, void* pImageData, int bSti
 TOUPCAM_API(HRESULT)  Toupcam_WaitImageV4(HToupcam h, unsigned nWaitMS, void* pImageData, int bStill, int bits, int rowPitch, ToupcamFrameInfoV4* pInfo);
 TOUPCAM_API(HRESULT)  Toupcam_PullImageV3(HToupcam h, void* pImageData, int bStill, int bits, int rowPitch, ToupcamFrameInfoV3* pInfo);
 TOUPCAM_API(HRESULT)  Toupcam_WaitImageV3(HToupcam h, unsigned nWaitMS, void* pImageData, int bStill, int bits, int rowPitch, ToupcamFrameInfoV3* pInfo);
+
+typedef struct {
+    unsigned id;
+    unsigned char infoVer;
+    unsigned char pixelFormat;
+    unsigned char bitDepth;
+    unsigned char snapR;
+    void* ptrInfo;
+    void* ptrRaw;
+    unsigned char* ptr8;
+    unsigned short* ptr16;
+} ToupcamImagePtr;
+
+TOUPCAM_API(HRESULT)  Toupcam_PullImagePtr(HToupcam h, int bStill, ToupcamImagePtr* ptrImage);
+TOUPCAM_API(HRESULT)  Toupcam_FreeImagePtr(HToupcam h, unsigned ptrId);
 
 typedef struct {
     unsigned            width;
@@ -1231,8 +1246,12 @@ TOUPCAM_API(HRESULT)  Toupcam_get_Option(HToupcam h, unsigned iOption, int* piVa
 #define TOUPCAM_OPTION_USER_SET               0x8a       /* [RW] user set */
 #define TOUPCAM_OPTION_DIGITAL_GAIN           0x1001     /* [RW] digital gain */
 #define TOUPCAM_OPTION_ANTI_BLOOMING          0x8b       /* [RW] Anti Blooming */
-#define TOUPCAM_OPTION_ANTI_BLOOMING_MAX      0x8c       /* [RO} Anti Blooming */
-#define TOUPCAM_OPTION_CDS_MAX                0x8d       /* [RO} Correlated Double Sampling */
+#define TOUPCAM_OPTION_ANTI_BLOOMING_MAX      0x8c       /* [RO] Anti Blooming */
+#define TOUPCAM_OPTION_CDS_MAX                0x8d       /* [RO] Correlated Double Sampling */
+#define TOUPCAM_OPTION_SCANTYPE               0x8e       /* [RW] Scan Type: 0(linescan), 1(areascan) */
+#define TOUPCAM_OPTION_OPERATIONMODE          0x8f       /* [RW] TDI Operation Mode: 1(area), 2(TDI) */
+#define TOUPCAM_OPTION_TDITRIGGERMODE         0x90       /* [RW] TDI Trigger Mode: 1(normal), 2(both) */
+#define TOUPCAM_OPTION_TDISTAGE               0x91       /* [RW] TDI Trigger Stage: sensor scan stage */
 
 /* pixel format */
 #define TOUPCAM_PIXELFORMAT_RAW8              0x00
@@ -1269,6 +1288,7 @@ TOUPCAM_API(HRESULT)     Toupcam_get_PixelFormatSupport(HToupcam h, char cmd, in
 * pixelFormat: TOUPCAM_PIXELFORMAT_XXXX
 */
 TOUPCAM_API(const char*) Toupcam_get_PixelFormatName(int pixelFormat);
+TOUPCAM_API(int)         Toupcam_get_PixelFormatBitdepth(int pixelFormat);
 
 /*
     xOffset, yOffset, xWidth, yHeight: must be even numbers
@@ -1462,6 +1482,9 @@ TOUPCAM_API(HRESULT)  Toupcam_CtiEnable(PTOUPCAM_HOTPLUG funHotPlug, void* ctxHo
 #else
 TOUPCAM_API(HRESULT)  Toupcam_CtiEnable(PTOUPCAM_HOTPLUG funHotPlug, void* ctxHotPlug, const char* ctiPath[]);
 #endif
+
+TOUPCAM_API(HRESULT) Toupcam_readPtr(HToupcam h, const char* key, int len, void* pData);
+TOUPCAM_API(HRESULT) Toupcam_writePtr(HToupcam h, const char* key, int len, const void* pData);
 
 /*
  filePath:
