@@ -98,11 +98,6 @@ SolarSystemObject::SolarSystemObject()
     // while restoring from configuration
     RestoreDetectionParams();
 
-    // Save PHD2 settings we change for solar system object guiding
-    m_phd2_MassChangeThresholdEnabled = pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", false);
-    m_phd2_UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", false);
-    m_phd2_MultistarEnabled = pConfig->Profile.GetBoolean("/guider/multistar/enabled", true);
-
     // Remove the alert dialog setting for pausing solar/planetary detection
     pConfig->Global.DeleteEntry(PausePlanetDetectionAlertEnabledKey());
     m_preProcessedImage = new usImage(); // so we always have one

@@ -112,12 +112,6 @@ public:
     bool m_simulationZeroOffset;
     bool m_cameraSimulationRefPointValid;
 
-    // PHD2 parameters saved before enabling solar system object mode and restored
-    // after disabling
-    bool m_phd2_MassChangeThresholdEnabled;
-    bool m_phd2_UseSubframes;
-    bool m_phd2_MultistarEnabled;
-
 public:
     SolarSystemObject();
     ~SolarSystemObject();
