@@ -34,6 +34,7 @@
 
 #include "log_uploader.h"
 #include "phd.h"
+#include "json_parser.h"
 
 #include <algorithm>
 #include <curl/curl.h>
