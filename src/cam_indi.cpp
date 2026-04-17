@@ -99,6 +99,7 @@ private:
     INumber *binning_x;
     INumber *binning_y;
     ISwitchVectorProperty *video_prop;
+    INumberVectorProperty *streaming_exposure_prop;
     ITextVectorProperty *camera_port;
     INDI::BaseDevice camera_device;
     INumberVectorProperty *pulseGuideNS_prop;
@@ -141,6 +142,7 @@ private:
     wxString INDICameraBlobName;
     bool INDICameraForceVideo;
     bool INDICameraForceExposure;
+    volatile bool INDICameraUseStreaming;  // streaming guide mode: use CCD_VIDEO_STREAM with latest-frame-wins
     wxRect m_roi;
 
     bool ConnectToDriver(RunInBg *ctx);
@@ -181,6 +183,11 @@ public:
     void ShowPropertyDialog() override;
 
     bool Capture(usImage& img, const CaptureParams& captureParams) override;
+    void InitCapture() override;
+
+    bool GetUseStreaming() const { return INDICameraUseStreaming; }
+    void SetUseStreaming(bool enable);
+    bool SupportsStreaming() const override { return video_prop != nullptr; }
 
     bool ST4PulseGuideScope(int direction, int duration) override;
     bool ST4HasNonGuiMove() override;
@@ -197,6 +204,7 @@ CameraINDI::CameraINDI() : sync_cond(sync_lock), m_lastFrame_cond(m_lastFrame_lo
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraForceVideo = pConfig->Profile.GetBoolean("/indi/INDIcam_forcevideo", false);
     INDICameraForceExposure = pConfig->Profile.GetBoolean("/indi/INDIcam_forceexposure", false);
+    INDICameraUseStreaming = false;
     Name = wxString::Format("INDI Camera [%s]", INDICameraName);
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
@@ -223,6 +231,7 @@ void CameraINDI::ClearStatus()
     ccdinfo_prop = nullptr;
     binning_prop = nullptr;
     video_prop = nullptr;
+    streaming_exposure_prop = nullptr;
     camera_port = nullptr;
     pulseGuideNS_prop = nullptr;
     pulseGuideEW_prop = nullptr;
@@ -234,6 +243,8 @@ void CameraINDI::ClearStatus()
     PixSize = PixSizeX = PixSizeY = 0.0;
 
     updateLastFrame(nullptr);
+
+    INDICameraUseStreaming = false;
 
     guide_active = false;
     sync_cond.Broadcast(); // just in case worker thread was blocked waiting for guide pulse to complete
@@ -430,11 +441,53 @@ void CameraINDI::updateProperty(INDI::Property property)
         if (INDIConfig::Verbose())
             Debug.Write(wxString::Format("INDI Camera Received BLOB %s len=%d size=%d\n", bp->name, bp->bloblen, bp->size));
 
-        if (expose_prop && !INDICameraForceVideo)
+        if (expose_prop && !INDICameraForceVideo && !INDICameraUseStreaming)
         {
             if (bp->name == INDICameraBlobName)
             {
                 updateLastFrame(bp);
+            }
+        }
+        else if (INDICameraUseStreaming && video_prop)
+        {
+            // Streaming guide mode: deliver the latest stream frame directly.
+            // However, if the video stream hasn't actually started yet (first
+            // frame of the loop is a normal exposure), accept the FITS BLOB
+            // as a normal exposure frame so it doesn't get silently dropped.
+            ISwitch *v_on = has_old_videoprop
+                ? IUFindSwitch(video_prop, "ON")
+                : IUFindSwitch(video_prop, "STREAM_ON");
+            bool streamActive = (v_on && v_on->s == ISS_ON);
+
+            if (!streamActive)
+            {
+                // Stream not started yet — treat as normal exposure BLOB
+                if (bp->name == INDICameraBlobName)
+                    updateLastFrame(bp);
+            }
+            else
+            {
+                // Stream is active — filter by format/size
+                bool isStreamFrame = (bp->format[0] != '\0' &&
+                                      strstr(bp->format, "stream") != nullptr);
+                if (!isStreamFrame && m_maxSize.x > 0 && m_maxSize.y > 0)
+                {
+                    unsigned int rawSize = m_maxSize.x * m_maxSize.y / (HwBinning * HwBinning);
+                    isStreamFrame = ((unsigned int)bp->size == rawSize ||
+                                     (unsigned int)bp->size == rawSize * 2 ||
+                                     (unsigned int)bp->size == rawSize * 3);
+                }
+
+                if (isStreamFrame)
+                {
+                    updateLastFrame(bp);
+                }
+                else
+                {
+                    if (INDIConfig::Verbose())
+                        Debug.Write(wxString::Format("INDI Camera: ignoring exposure BLOB in streaming mode (size=%d format=%s)\n",
+                                                     bp->size, bp->format));
+                }
             }
         }
         else if (video_prop)
@@ -555,6 +608,20 @@ void CameraINDI::newProperty(INDI::Property property)
 
         video_prop = property.getSwitch();
         has_old_videoprop = true;
+    }
+    else if (PropName == INDICameraCCDCmd + "STREAMING_EXPOSURE" && Proptype == INDI_NUMBER)
+    {
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Found STREAMING_EXPOSURE for %s %s\n", property.getDeviceName(), PropName));
+
+        streaming_exposure_prop = property.getNumber();
+    }
+    else if (PropName == "STREAMING_EXPOSURE" && Proptype == INDI_NUMBER)
+    {
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Found STREAMING_EXPOSURE for %s %s\n", property.getDeviceName(), PropName));
+
+        streaming_exposure_prop = property.getNumber();
     }
     else if (PropName == "DEVICE_PORT" && Proptype == INDI_TEXT)
     {
@@ -982,6 +1049,88 @@ void CameraINDI::SendBinning()
     m_curBinning = HwBinning;
 }
 
+void CameraINDI::SetUseStreaming(bool enable)
+{
+    if (INDICameraUseStreaming == enable)
+        return;
+
+    INDICameraUseStreaming = enable;
+
+    Debug.Write(wxString::Format("INDI Camera: streaming guide mode %s\n", enable ? "enabled" : "disabled"));
+
+    // When enabling streaming, just set the flag. The current exposure (if any)
+    // will complete normally, and the next Capture() call will enter the streaming
+    // path. Don't cancel in-progress exposures — that disrupts the first frame
+    // of the loop and causes timeouts.
+
+    // If disabling streaming, stop the video stream and wake up any blocked waitFrame()
+    if (!enable && video_prop)
+    {
+        ISwitch *v_on;
+        ISwitch *v_off;
+        if (has_old_videoprop)
+        {
+            v_on = IUFindSwitch(video_prop, "ON");
+            v_off = IUFindSwitch(video_prop, "OFF");
+        }
+        else
+        {
+            v_on = IUFindSwitch(video_prop, "STREAM_ON");
+            v_off = IUFindSwitch(video_prop, "STREAM_OFF");
+        }
+
+        if (v_on->s == ISS_ON)
+        {
+            v_on->s = ISS_OFF;
+            v_off->s = ISS_ON;
+            sendNewSwitch(video_prop);
+            Debug.Write("INDI Camera: stopped video stream\n");
+        }
+
+        // Wake up the worker thread if it's blocked in waitFrame().
+        // Without this, waitFrame() would block for up to 15.5s (exposure + timeout)
+        // after the stream is stopped, causing a camera disconnect timeout.
+        {
+            wxMutexLocker lck(m_lastFrame_lock);
+            m_lastFrame_cond.Broadcast();
+        }
+    }
+}
+
+void CameraINDI::InitCapture()
+{
+    // Always reset streaming flag at the start of a new capture cycle.
+    // This ensures single captures (capture_single_frame) and normal loops
+    // never accidentally enter the streaming path due to a stale flag.
+    // For streaming loops, Ekos sends set_use_streaming(true) AFTER loop,
+    // so the flag will be re-enabled before the second Capture() call.
+    INDICameraUseStreaming = false;
+
+    // Also clean up any active video stream
+    if (video_prop)
+    {
+        ISwitch *v_on;
+        if (has_old_videoprop)
+            v_on = IUFindSwitch(video_prop, "ON");
+        else
+            v_on = IUFindSwitch(video_prop, "STREAM_ON");
+
+        if (v_on && v_on->s == ISS_ON)
+        {
+            Debug.Write("INDI Camera: InitCapture cleaning up video stream\n");
+            ISwitch *v_off;
+            if (has_old_videoprop)
+                v_off = IUFindSwitch(video_prop, "OFF");
+            else
+                v_off = IUFindSwitch(video_prop, "STREAM_OFF");
+
+            v_on->s = ISS_OFF;
+            v_off->s = ISS_ON;
+            sendNewSwitch(video_prop);
+        }
+    }
+}
+
 bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
 {
     if (!Connected)
@@ -993,7 +1142,9 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
     wxRect subframe(captureParams.subframe);
 
     // we can set the exposure time directly in the camera
-    if (expose_prop && !INDICameraForceVideo)
+    Debug.Write(wxString::Format("INDI Camera Capture: expose_prop=%d ForceVideo=%d UseStreaming=%d\n",
+                                 expose_prop != nullptr, INDICameraForceVideo, (bool)INDICameraUseStreaming));
+    if (expose_prop && !INDICameraForceVideo && !INDICameraUseStreaming)
     {
         if (binning_prop && HwBinning != m_curBinning)
         {
@@ -1146,6 +1297,156 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
         pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(frame->m_format)));
         delete frame;
         return true;
+    }
+    else if (INDICameraUseStreaming && video_prop)
+    {
+        // Streaming guide mode: camera streams continuously, we grab the latest frame.
+        // This avoids the per-frame exposure overhead and reduces latency.
+
+        first_frame = false;
+
+        if (binning_prop && HwBinning != m_curBinning)
+        {
+            SendBinning();
+            takeSubframe = false;
+            if (HwBinning == 1)
+                FrameSize.Set(m_maxSize.x, m_maxSize.y);
+            else
+                FrameSize = UNDEFINED_FRAME_SIZE;
+        }
+
+        // Start streaming if not already active — only configure on first call
+        ISwitch *v_on;
+        ISwitch *v_off;
+        if (has_old_videoprop)
+        {
+            v_on = IUFindSwitch(video_prop, "ON");
+            v_off = IUFindSwitch(video_prop, "OFF");
+        }
+        else
+        {
+            v_on = IUFindSwitch(video_prop, "STREAM_ON");
+            v_off = IUFindSwitch(video_prop, "STREAM_OFF");
+        }
+
+        if (v_on->s != ISS_ON)
+        {
+            // Set streaming exposure only when starting the stream
+            if (streaming_exposure_prop)
+            {
+                double streamExp = (double) duration / 1000.0;
+                streaming_exposure_prop->np->value = streamExp;
+                sendNewNumber(streaming_exposure_prop);
+            }
+
+            v_on->s = ISS_ON;
+            v_off->s = ISS_OFF;
+            sendNewSwitch(video_prop);
+
+            if (INDIConfig::Verbose())
+                Debug.Write("INDI Camera: started video stream for streaming guide mode\n");
+        }
+
+        // Discard any stale frame
+        updateLastFrame(nullptr);
+
+        // Wait for the next stream frame
+        unsigned long waitTime = duration + GetTimeoutMs();
+        CapturedFrame *frame = waitFrame(waitTime);
+
+        if (!frame)
+        {
+            if (WorkerThread::TerminateRequested())
+            {
+                // Stop the video stream when the capture loop is terminated
+                SetUseStreaming(false);
+                return true;
+            }
+
+            // If streaming was disabled externally (via set_use_streaming RPC) while
+            // we were waiting, this is not a timeout — just return so the capture loop
+            // restarts with normal single-frame exposures.
+            if (!INDICameraUseStreaming)
+            {
+                Debug.Write("INDI Camera: streaming disabled externally, exiting streaming capture\n");
+                return true;
+            }
+
+            // Stop the video stream on timeout too
+            SetUseStreaming(false);
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            return true;
+        }
+
+        // Process the stream frame
+        if (strcmp(frame->m_format, ".fits") == 0)
+        {
+            if (!ReadFITS(frame, img, false, wxRect()))
+            {
+                delete frame;
+                if (options & CAPTURE_SUBTRACT_DARK)
+                    SubtractDark(img);
+                return false;
+            }
+            delete frame;
+            return true;
+        }
+
+        // Raw stream frame — convert to usImage directly
+        // Stream frames can be 8-bit mono, 16-bit mono (RAW16), or 8-bit RGB
+        if (FrameSize == UNDEFINED_FRAME_SIZE)
+            FrameSize.Set(m_maxSize.x / HwBinning, m_maxSize.y / HwBinning);
+
+        if (img.Init(FrameSize))
+        {
+            delete frame;
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+
+        unsigned int totalPx = FrameSize.x * FrameSize.y;
+        const unsigned char *src = (const unsigned char *) frame->m_data;
+
+        if (frame->m_size == totalPx)
+        {
+            // 8-bit mono
+            unsigned short *dst = img.ImageData;
+            for (unsigned int i = 0; i < totalPx; i++)
+                dst[i] = (unsigned short) src[i];
+        }
+        else if (frame->m_size == totalPx * 2)
+        {
+            // 16-bit mono (RAW16) — direct copy
+            const unsigned short *src16 = (const unsigned short *) frame->m_data;
+            unsigned short *dst = img.ImageData;
+            memcpy(dst, src16, totalPx * sizeof(unsigned short));
+        }
+        else if (frame->m_size == totalPx * 3)
+        {
+            // 8-bit RGB — extract luminance
+            unsigned short *dst = img.ImageData;
+            for (unsigned int i = 0; i < totalPx; i++)
+            {
+                unsigned int r = src[i * 3];
+                unsigned int g = src[i * 3 + 1];
+                unsigned int b = src[i * 3 + 2];
+                dst[i] = (unsigned short)((77 * r + 150 * g + 29 * b) >> 8);
+            }
+        }
+        else
+        {
+            Debug.Write(wxString::Format("INDI Camera: streaming frame size mismatch: got %d, expected %u, %u, or %u\n",
+                                         frame->m_size, totalPx, totalPx * 2, totalPx * 3));
+            delete frame;
+            return true;
+        }
+
+        delete frame;
+
+        if (options & CAPTURE_SUBTRACT_DARK)
+            SubtractDark(img);
+
+        return false;
     }
     else if (video_prop)
     {

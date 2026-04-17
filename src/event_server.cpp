@@ -1811,6 +1811,43 @@ static void get_camera_frame_size(JObj& response, const json_value *params)
         response << jrpc_error(1, "camera not connected");
 }
 
+static void get_use_streaming(JObj& response, const json_value *params)
+{
+    if (pCamera && pCamera->Connected)
+    {
+        response << jrpc_result(pCamera->GetUseStreaming());
+    }
+    else
+        response << jrpc_error(1, "camera not connected");
+}
+
+static void set_use_streaming(JObj& response, const json_value *params)
+{
+    Params p("enabled", params);
+    const json_value *val = p.param("enabled");
+    bool enable;
+    if (!val || !bool_param(val, &enable))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        return;
+    }
+
+    if (!pCamera || !pCamera->Connected)
+    {
+        response << jrpc_error(1, "camera not connected");
+        return;
+    }
+
+    if (enable && !pCamera->SupportsStreaming())
+    {
+        response << jrpc_error(1, "camera does not support streaming");
+        return;
+    }
+
+    pCamera->SetUseStreaming(enable);
+    response << jrpc_result(0);
+}
+
 static void get_guide_output_enabled(JObj& response, const json_value *params)
 {
     if (pMount)
@@ -2445,6 +2482,8 @@ static bool handle_request(JRpcCall& call)
         { "shutdown", &shutdown },
         { "get_camera_binning", &get_camera_binning },
         { "get_camera_frame_size", &get_camera_frame_size },
+        { "get_use_streaming", &get_use_streaming },
+        { "set_use_streaming", &set_use_streaming },
         { "get_current_equipment", &get_current_equipment },
         { "get_guide_output_enabled", &get_guide_output_enabled },
         { "set_guide_output_enabled", &set_guide_output_enabled },

@@ -232,6 +232,11 @@ public:
     double GetCameraPixelSize() const;
     virtual bool GetDevicePixelSize(double *devPixelSize); // Value from device/driver or error return
 
+    // Streaming guide mode: use camera's video stream for lower-latency frame delivery
+    virtual bool SupportsStreaming() const { return false; }
+    virtual bool GetUseStreaming() const { return false; }
+    virtual void SetUseStreaming(bool enable) { }
+
     virtual bool SetCoolerOn(bool on);
     virtual bool SetCoolerSetpoint(double temperature);
     virtual bool GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature);
