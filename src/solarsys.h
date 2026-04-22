@@ -100,7 +100,7 @@ public:
     double m_paramMaxBlobDiameter;
     double m_paramBlobThreshold;
     bool m_paramInvertBlob;
-    bool m_paramAutoThreshold;
+    bool m_paramBlobAutoThreshold;
 
     bool m_roiActive;
     cv::Rect m_roiRect;
@@ -137,6 +137,7 @@ public:
     double Get_minBlobDiameter() { return m_paramMinBlobDiameter; }
     double Get_maxBlobDiameter() { return m_paramMaxBlobDiameter; }
     double Get_blobThreshold() { return m_paramBlobThreshold; }
+    double Get_blobAutoThreshold() { return m_paramBlobAutoThreshold; }
     usImage *GetPreProcessedImage() { return m_preProcessedImage; }
     bool PreProcessedImageValid() { return m_preProcessedImageValid; }
     bool ShowPreProcessedImage() { return m_paramShowPreProcessed; }
@@ -144,7 +145,7 @@ public:
     void Set_maxBlobDiameter(double val);
     void Set_blobThreshold(double val);
     void Set_blobInversion(bool val);
-    void Set_autoThreshold(bool val);
+    void Set_blobAutoThreshold(bool val);
     void Set_minRadius(double val);
     void Set_ShowPreProcessedImage(bool val);
     double Get_minRadius() { return m_paramMinRadius; }
@@ -167,7 +168,7 @@ public:
     bool m_showMinMaxDiameters;
     void RefreshMinMaxDiameters() { m_showMinMaxDiameters = true; }
     void VisualHelper(wxDC& dc, Star primaryStar, double scaleFactor);
-    void RestoreDetectionParams();
+    void InitializeDetectionParams();
 
 private:
     wxStopWatch m_SolarSystemObjWatchdog;

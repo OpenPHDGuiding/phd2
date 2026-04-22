@@ -94,9 +94,9 @@ SolarSystemObject::SolarSystemObject()
             gaussianWeight[i] += exp(-(pow(x, 2) / (2 * pow(sigma, 2))));
     }
 
-    // Enforce valid range limits on solar system object detection parameters
-    // while restoring from configuration
-    RestoreDetectionParams();
+    // Set some rational default values to avoid any uninitialized variable errors; but actual, profile-driven
+    // values will be handled by SolarSystemTool
+    InitializeDetectionParams();
 
     // Remove the alert dialog setting for pausing solar/planetary detection
     pConfig->Global.DeleteEntry(PausePlanetDetectionAlertEnabledKey());
@@ -107,11 +107,6 @@ SolarSystemObject::SolarSystemObject()
 SolarSystemObject::~SolarSystemObject()
 {
     delete m_preProcessedImage;
-    // Save all detection parameters
-    pConfig->Profile.SetInt("/PlanetTool/min_radius", Get_minRadius());
-    pConfig->Profile.SetInt("/PlanetTool/max_radius", Get_maxRadius());
-    pConfig->Profile.SetInt("/PlanetTool/high_threshold", Get_highThreshold());
-    pConfig->Flush();
 }
 
 // Report detected object size or sharpness depending on measurement mode
@@ -145,16 +140,15 @@ void SolarSystemObject::ToggleSharpness()
     m_unknownHFD = true;
 }
 
-void SolarSystemObject::RestoreDetectionParams()
+void SolarSystemObject::InitializeDetectionParams()
 {
-    m_paramMinRadius = pConfig->Profile.GetInt("/PlanetTool/min_radius", PT_MIN_RADIUS_DEFAULT);
-    m_paramMinRadius = wxMax(PT_RADIUS_MIN, wxMin(PT_RADIUS_MAX, m_paramMinRadius));
-    m_paramMaxRadius = pConfig->Profile.GetInt("/PlanetTool/max_radius", PT_MAX_RADIUS_DEFAULT);
-    m_paramMaxRadius = wxMax(PT_RADIUS_MIN, wxMin(PT_RADIUS_MAX, m_paramMaxRadius));
-    m_paramLowThreshold = pConfig->Profile.GetInt("/PlanetTool/low_threshold", PT_HIGH_THRESHOLD_DEFAULT);
-    m_paramLowThreshold = wxMax(PT_THRESHOLD_MIN, wxMin(PT_LOW_THRESHOLD_MAX, m_paramLowThreshold));
-    m_paramHighThreshold = pConfig->Profile.GetInt("/PlanetTool/high_threshold", PT_HIGH_THRESHOLD_DEFAULT);
-    m_paramHighThreshold = wxMax(PT_THRESHOLD_MIN, wxMin(PT_HIGH_THRESHOLD_MAX, m_paramHighThreshold));
+    m_paramMinRadius = PT_MIN_RADIUS_DEFAULT;
+    m_paramMaxRadius = PT_MAX_RADIUS_DEFAULT;
+    m_paramLowThreshold = PT_HIGH_THRESHOLD_DEFAULT / 2;
+    m_paramHighThreshold = PT_HIGH_THRESHOLD_DEFAULT;
+    m_paramMinBlobDiameter = PT_MIN_BLOB_DIAMETER_DEFAULT;
+    m_paramMaxBlobDiameter = PT_MAX_BLOB_DIAMETER_DEFAULT;
+    m_paramBlobThreshold = PT_BLOB_THRESHOLD_DEFAULT;
 }
 
 void SolarSystemObject::SetDetectionMode(DetectionModes mode)
@@ -165,19 +159,16 @@ void SolarSystemObject::SetDetectionMode(DetectionModes mode)
 void SolarSystemObject::Set_minBlobDiameter(double val)
 {
     m_paramMinBlobDiameter = val;
-    pConfig->Profile.SetInt("/PlanetTool/min_blob_radius", val);
 }
 
 void SolarSystemObject::Set_maxBlobDiameter(double val)
 {
     m_paramMaxBlobDiameter = val;
-    pConfig->Profile.SetInt("/PlanetTool/max_blob_radius", val);
 }
 
 void SolarSystemObject::Set_blobThreshold(double val)
 {
     m_paramBlobThreshold = val;
-    pConfig->Profile.SetInt("/PlanetTool/blob_Threshold", val);
 }
 
 void SolarSystemObject::Set_blobInversion(bool val)
@@ -185,9 +176,9 @@ void SolarSystemObject::Set_blobInversion(bool val)
     m_paramInvertBlob = val;
 }
 
-void SolarSystemObject::Set_autoThreshold(bool val)
+void SolarSystemObject::Set_blobAutoThreshold(bool val)
 {
-    m_paramAutoThreshold = val;
+    m_paramBlobAutoThreshold = val;
 }
 
 void SolarSystemObject::Set_ShowPreProcessedImage(bool val)
@@ -198,23 +189,19 @@ void SolarSystemObject::Set_ShowPreProcessedImage(bool val)
 void SolarSystemObject::Set_minRadius(double val)
 {
     m_paramMinRadius = val;
-    pConfig->Profile.SetInt("/PlanetTool/min_radius", m_paramMinRadius);
 }
 void SolarSystemObject::Set_maxRadius(double val)
 {
     m_paramMaxRadius = val;
-    pConfig->Profile.SetInt("/PlanetTool/max_radius", m_paramMaxRadius);
 }
 
 void SolarSystemObject::Set_highThreshold(int value)
 {
     m_paramHighThreshold = value;
-    pConfig->Profile.SetInt("/PlanetTool/high_threshold", m_paramHighThreshold);
 }
 void SolarSystemObject::Set_lowThreshold(int value)
 {
     m_paramLowThreshold = value;
-    pConfig->Profile.SetInt("/PlanetTool/low_threshold", m_paramLowThreshold);
 }
 
 // The Sobel operator can be used to detect edges in an image, which are more
@@ -371,7 +358,6 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
     // Display min/max diameters for visual feedback
     if (m_showMinMaxDiameters)
     {
-        // m_showMinMaxDiameters = false;
         if (pFrame->CaptureActive && pImg)
         {
             int x = 0;
@@ -398,8 +384,8 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
             float maxRadius;
             if (m_detectionMode == DetectionModes::modeBlob)
             {
-                minRadius = Get_minBlobDiameter() / 2.0;
-                maxRadius = Get_maxBlobDiameter() / 2.0;
+                minRadius = (Get_minBlobDiameter() / 2.0) * scaleFactor;
+                maxRadius = (Get_maxBlobDiameter() / 2.0) * scaleFactor;
             }
             else
             {
@@ -820,7 +806,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo,
     // Filter by Color.
     params.filterByColor = true;
     params.blobColor = 255;
-    if (m_paramAutoThreshold)
+    if (m_paramBlobAutoThreshold)
     {
         // Apply auto-thresholding if enabled
         params.minThreshold = 20;

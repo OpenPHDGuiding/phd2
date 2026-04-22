@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "profile_wizard.h"
+#include "solarsys_tool.h"
 
 #include <wx/gbsizer.h>
 #include <functional>
@@ -1907,6 +1908,9 @@ void GearDialog::OnProfileChoice(wxCommandEvent& event)
     LoadGearChoices();
     pFrame->LoadProfileSettings();
     pFrame->pGuider->LoadProfileSettings();
+    if (selection != prev && pFrame->GetSolarSystemMode())
+        if (pFrame->pSolarSysTool)
+            PlanetTool::RestoreProfileSettings();
     pFrame->UpdateTitle();
     pFrame->pGraphLog->ResetData();
 }

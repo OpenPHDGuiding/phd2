@@ -71,7 +71,6 @@ void GuiderSolarSys::LoadProfileSettings()
     Guider::LoadProfileSettings();
     if (m_SolarSystemObject != nullptr)
     {
-        m_SolarSystemObject->RestoreDetectionParams();
         // Profile changed in solar mode, tool window already displayed
         if (pFrame && pFrame->pSolarSysTool != nullptr)
         {
