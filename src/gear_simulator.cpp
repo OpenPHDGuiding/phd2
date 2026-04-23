@@ -1488,6 +1488,7 @@ static double calculateBorderAverage(const cv::Mat& image)
     return average;
 }
 
+// OpenCV operations for contour detection work on 8-bit grayscale data
 void SimCamState::PreProcessImage(cv::Mat& img)
 {
     // Convert to gray scale if needed
@@ -1572,35 +1573,7 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     }
 
     switch (SimCamParams::SimulatorMode)
-    //=======
-    // # if SIMMODE == 1
-    //
-    //    if (!UseSubframes)
-    //        subframe = wxRect();
-    //
-    //    if (sim.ReadNextImage(img, subframe))
-    //        return true;
-    //
-    //    FrameSize = img.Size;
-    //
-    // # else
-    //
-    //    int width = sim.width / Binning;
-    //    int height = sim.height / Binning;
-    //    FrameSize = wxSize(width, height);
-    //
-    //    bool usingSubframe = UseSubframes;
-    //    if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
-    //        usingSubframe = false;
-    //    if (!usingSubframe)
-    //        subframe = wxRect(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight());
-    //
-    //    int const exptime = duration;
-    //    int const gain = 30;
-    //    int const offset = 100;
-    //
-    //    if (img.Init(FrameSize))
-    //>>>>>>> master
+
     {
     case SIMMODE_GENERATE:
     {
