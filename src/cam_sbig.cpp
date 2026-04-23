@@ -57,7 +57,6 @@ class CameraSBIG : public GuideCamera
     bool m_driverLoaded;
     wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
     double m_devicePixelSize;
-    bool IsColor;
 
 public:
     CameraSBIG();
@@ -65,7 +64,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void InitCapture() override;
@@ -105,7 +104,7 @@ CameraSBIG::CameraSBIG() : m_driverLoaded(false)
     m_useTrackingCCD = false;
     HasShutter = true;
     HasSubframes = true;
-    IsColor = false;
+    HasBayer = false;
 }
 
 CameraSBIG::~CameraSBIG()
@@ -376,7 +375,7 @@ bool CameraSBIG::Connect(const wxString& camId)
         }
     }
 
-    MaxBinning = 1;
+    MaxHwBinning = 1;
     m_devicePixelSize = 0.0;
     for (int i = 0; i < gcir0.readoutModes; i++)
     {
@@ -391,16 +390,16 @@ bool CameraSBIG::Connect(const wxString& camId)
                 m_devicePixelSize = (double) bcd2long(bcd) / 100.0;
             }
             else // RM_2x2
-                MaxBinning = 2;
+                MaxHwBinning = 2;
         }
     }
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
-    FrameSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[HwBinning - 1];
 
-    IsColor = false;
+    HasBayer = false;
 
     if (!m_useTrackingCCD)
     {
@@ -409,20 +408,20 @@ bool CameraSBIG::Connect(const wxString& camId)
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir6);
         if (err == CE_NO_ERROR)
         {
-            IsColor = gcir6.ccdBits & 1; // b0 set indicates color CCD
+            HasBayer = gcir6.ccdBits & 1; // b0 set indicates color CCD
         }
     }
 
     Name = gcir0.name;
     if (Name.Find("Color") != wxNOT_FOUND)
     {
-        IsColor = true;
+        HasBayer = true;
     }
 
     Debug.Write(
         wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d IsColor %d\n",
-                         gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y,
-                         m_imageSize[1].x, m_imageSize[1].y, IsColor));
+                         gcir0.name, gcir0.cameraType, m_useTrackingCCD, MaxHwBinning, m_imageSize[0].x, m_imageSize[0].y,
+                         m_imageSize[1].x, m_imageSize[1].y, HasBayer));
 
     Connected = true;
     return false;
@@ -457,11 +456,15 @@ static bool StopExposure(EndExposureParams *eep)
     return err == CE_NO_ERROR;
 }
 
-bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool TakeSubframe = UseSubframes;
 
-    FrameSize = m_imageSize[Binning - 1];
+    FrameSize = m_imageSize[HwBinning - 1];
 
     if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= FrameSize.GetWidth() ||
         subframe.GetBottom() >= FrameSize.GetHeight())
@@ -495,7 +498,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
     sep.exposureTime = (unsigned long) duration / 10;
     sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
-    sep.readoutMode = rlp.readoutMode = dlp.readoutMode = Binning == 1 ? RM_1X1 : RM_2X2;
+    sep.readoutMode = rlp.readoutMode = dlp.readoutMode = HwBinning == 1 ? RM_1X1 : RM_2X2;
 
     if (TakeSubframe)
     {
@@ -621,7 +624,7 @@ bool CameraSBIG::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (IsColor && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

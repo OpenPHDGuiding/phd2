@@ -59,9 +59,7 @@ class MyFrame;
 struct EXPOSE_REQUEST
 {
     usImage *pImage;
-    int exposureDuration;
-    int options;
-    wxRect subframe;
+    CaptureParams captureParams;
     bool error;
     wxSemaphore *pSemaphore;
 };
@@ -180,7 +178,7 @@ protected:
 
     /*************      Expose      **************************/
 public:
-    void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe);
+    void EnqueueWorkerThreadExposeRequest(usImage *pImage, const CaptureParams& captureParams);
     void SetSkipExposeComplete();
 
 protected:

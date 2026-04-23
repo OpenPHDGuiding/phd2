@@ -52,6 +52,7 @@ public:
 
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
+    void ShowPropertyDialog() override;
 
 private:
     virtual bool LEControl(int actions);
@@ -61,6 +62,7 @@ CameraLELxUsbWebcam::CameraLELxUsbWebcam(void) : CameraLEWebcam()
 {
     m_isOpen = false;
     Name = _T("Usb USB Webcam");
+    PropertyDialogType = PROPDLG_ANY;
 }
 
 CameraLELxUsbWebcam::~CameraLELxUsbWebcam(void)
@@ -199,6 +201,81 @@ bool CameraLELxUsbWebcam::LEControl(int actions)
     }
 
     return bError;
+}
+
+struct LELxUsbWebcamDialog : public wxDialog
+{
+    LELxUsbWebcamDialog(wxWindow *parent, CameraLEWebcam *camera);
+    ~LELxUsbWebcamDialog() { }
+    wxSpinCtrl *m_delay;
+    CVVidCapture *m_pVidCap;
+    void OnVidCapClick(wxCommandEvent& evt);
+
+    wxDECLARE_EVENT_TABLE();
+};
+
+// clang-format off
+wxBEGIN_EVENT_TABLE(LELxUsbWebcamDialog, wxDialog)
+    EVT_BUTTON(wxID_CONVERT, LELxUsbWebcamDialog::OnVidCapClick)
+wxEND_EVENT_TABLE();
+// clang-format on
+
+void LELxUsbWebcamDialog::OnVidCapClick(wxCommandEvent& evt)
+{
+    if (m_pVidCap)
+    {
+        m_pVidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
+    }
+}
+
+LELxUsbWebcamDialog::LELxUsbWebcamDialog(wxWindow *parent, CameraLEWebcam *camera)
+    : wxDialog(parent, wxID_ANY, _("USB LE Webcam"))
+{
+    m_pVidCap = camera->m_pVidCap;
+
+    // Delay parameter
+    int textWidth = StringWidth(this, _T("0000"));
+    m_delay = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(textWidth, -1), wxSP_ARROW_KEYS, 0, 250,
+                                   camera->ReadDelay);
+    m_delay->SetToolTip(_("LE Read Delay (ms). Adjust if you get dropped frames"));
+    m_delay->SetValue(camera->ReadDelay);
+    wxStaticText *label = new wxStaticText(this, wxID_ANY, _("Delay"));
+    wxBoxSizer *delaySizer = new wxBoxSizer(wxHORIZONTAL);
+    delaySizer->Add(label, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10));
+    delaySizer->Add(m_delay, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10).Expand());
+
+    wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
+    pVSizer->Add(delaySizer, wxSizerFlags().Border(wxTOP | wxRIGHT | wxLEFT, 10));
+
+    auto pHSizer = new wxBoxSizer(wxHORIZONTAL);
+    if (m_pVidCap)
+    {
+        wxButton *pBtnVidCap = new wxButton(this, wxID_CONVERT, _("Webcam settings"));
+        pHSizer->Add(pBtnVidCap, wxSizerFlags().Border(wxLEFT, 10));
+    }
+    pVSizer->Add(pHSizer, wxSizerFlags().Border(wxALL, 10));
+    pVSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags().Border(wxALL, 10));
+    SetSizerAndFit(pVSizer);
+}
+
+void CameraLELxUsbWebcam::ShowPropertyDialog()
+{
+    wxWindow *parent = pFrame;
+    if (pFrame->pGearDialog->IsActive())
+        parent = pFrame->pGearDialog;
+
+    LELxUsbWebcamDialog dlg(parent, this);
+
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+    ReadDelay = dlg.m_delay->GetValue();
+    pConfig->Profile.SetInt("/camera/ReadDelay", ReadDelay);
+
+    if (!Connected)
+    {
+        CameraLEWebcam::ShowPropertyDialog();
+    }
 }
 
 GuideCamera *LELxUsbWebcamCameraFactory::MakeLELxUsbWebcamCamera()

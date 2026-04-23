@@ -414,7 +414,7 @@ void BacklashComp::GetBacklashCompSettings(int *pulseWidth, int *floor, int *cei
 // May change max-move value for Dec depending on the context
 void BacklashComp::SetCompValues(int requestedSize, int floor, int ceiling)
 {
-    m_pulseWidth = wxMax(0, wxMin(requestedSize, MAX_COMP_AMOUNT));
+    m_pulseWidth = wxClip(requestedSize, 0, MAX_COMP_AMOUNT);
     if (floor > m_pulseWidth || floor < MIN_COMP_AMOUNT) // Coming from GA or user input makes no sense
         m_adjustmentFloor = MIN_COMP_AMOUNT;
     else
@@ -885,6 +885,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
     // double fakeDeltas []= {0, -5, -2, 2, 4, 5, 5, 5, 5 };
     PHD_Point currMountLocation;
     double tol;
+    auto guider = pFrame->pGuider;
+    auto frameSize = guider->CurrentImage()->Size;
     try
     {
         if (m_scope->TransformCameraCoordinatesToMountCoordinates(currentCamLoc, currMountLocation))
@@ -919,7 +921,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 // clearing step
                 m_bltState = BLT_STATE_CLEAR_NORTH;
                 m_scope->SetGuidingEnabled(true);
-                pFrame->pGuider->EnableMeasurementMode(true); // Measurement results now come to us
+                guider->EnableMeasurementMode(true); // Measurement results now come to us
             }
             else
             {
@@ -973,8 +975,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     }
                     else
                     {
-                        if (!OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y,
-                                       pFrame->pGuider->GetMaxMovePixels()))
+                        if (!OutOfRoom(frameSize, currentCamLoc.X, currentCamLoc.Y, guider->GetMaxMovePixels()))
                         {
                             pFrame->ScheduleAxisMove(m_scope, NORTH, m_pulseWidth, MOVEOPTS_CALIBRATION_MOVE);
                             m_stepCount++;
@@ -997,16 +998,18 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 }
             }
             if (m_acceptedMoves >= BACKLASH_MIN_COUNT || m_backlashExemption ||
-                OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y,
-                          pFrame->pGuider->GetMaxMovePixels())) // Ok to go ahead with actual backlash measurement
+                OutOfRoom(frameSize, currentCamLoc.X, currentCamLoc.Y,
+                          guider->GetMaxMovePixels())) // Ok to go ahead with actual backlash measurement
             {
                 m_bltState = BLT_STATE_STEP_NORTH;
                 double totalBacklashCleared = m_stepCount * m_pulseWidth;
-                // Want to move the mount North at >=500 ms, regardless of image scale. But reduce pulse width if it would
-                // exceed 80% of the tracking rectangle - need to leave some room for seeing deflections and dec drift
+                // Want to move the mount North at >=500 ms, regardless of image scale.
+                // But reduce pulse width if it would exceed 80% of the tracking
+                // rectangle - need to leave some room for seeing deflections and dec
+                // drift
                 m_pulseWidth = wxMax((int) NORTH_PULSE_SIZE, m_scope->GetCalibrationDuration());
-                m_pulseWidth =
-                    wxMin(m_pulseWidth, (int) floor(0.7 * (double) pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                auto maxPulse = (int) floor(0.7 * (double) guider->GetMaxMovePixels() / m_lastDecGuideRate);
+                m_pulseWidth = wxMin(m_pulseWidth, maxPulse);
                 m_stepCount = 0;
                 // Move 50% more than the backlash we cleared or >=8 secs, whichever is greater.  We want to leave plenty of
                 // room for giving South moves time to clear backlash and actually get moving
@@ -1020,7 +1023,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
         case BLT_STATE_STEP_NORTH:
             if (m_stepCount < m_northPulseCount &&
-                !OutOfRoom(pCamera->FrameSize, currentCamLoc.X, currentCamLoc.Y, pFrame->pGuider->GetMaxMovePixels()))
+                !OutOfRoom(frameSize, currentCamLoc.X, currentCamLoc.Y, guider->GetMaxMovePixels()))
             {
                 m_lastStatus = wxString::Format(_("Moving North for %d ms, step %d / %d"), m_pulseWidth, m_stepCount + 1,
                                                 m_northPulseCount);
@@ -1131,7 +1134,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 if (m_backlashResultMs > 0)
                 {
                     // Don't push the guide star outside the tracking region
-                    if (m_backlashResultPx < pFrame->pGuider->GetMaxMovePixels())
+                    if (m_backlashResultPx < guider->GetMaxMovePixels())
                     {
                         m_lastStatus = wxString::Format(_("Issuing test backlash correction of %d ms"), m_backlashResultMs);
                         Debug.Write(m_lastStatus + "\n");
@@ -1143,7 +1146,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                     }
                     else
                     {
-                        int maxFrameMove = (int) floor((double) 0.8 * pFrame->pGuider->GetMaxMovePixels() / m_northRate);
+                        int maxFrameMove = (int) floor((double) 0.8 * guider->GetMaxMovePixels() / m_northRate);
                         Debug.Write(
                             wxString::Format("BLT: Clearing pulse is very large, issuing max S move of %d\n", maxFrameMove));
                         pFrame->ScheduleAxisMove(m_scope, SOUTH, maxFrameMove,
@@ -1167,7 +1170,8 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 Debug.Write(
                     wxString::Format("BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location %0.2f\n",
                                      decDelta, currMountLocation.Y));
-                tol = TRIAL_TOLERANCE_AS / pFrame->GetCameraPixelScale(); // tolerance in units of px
+                auto pixelScale = pFrame->GetCameraPixelScale();
+                tol = TRIAL_TOLERANCE_AS / pixelScale; // tolerance in units of px
                 if (fabs(decDelta) > tol) // decDelta = (current - markerPoint)
                 {
                     double pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y); // How far we moved with the test pulse
@@ -1186,7 +1190,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 }
                 else
                     Debug.Write(wxString::Format("BLT: Nominal backlash pulse resulted in final delta of %0.1f a-s\n",
-                                                 fabs(decDelta) * pFrame->GetCameraPixelScale()));
+                                                 fabs(decDelta) * pixelScale));
             }
 
             m_bltState = BLT_STATE_RESTORE;
@@ -1202,7 +1206,7 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
                 Debug.Write(wxString::Format("BLT: Starting Dec position at %0.2f, Ending Dec position at %0.2f\n",
                                              m_markerPoint.Y, currMountLocation.Y));
                 amt = fabs(currMountLocation.Y - m_startingPoint.Y);
-                if (amt > pFrame->pGuider->GetMaxMovePixels()) // Too big, try to move guide star closer to starting position
+                if (amt > guider->GetMaxMovePixels()) // Too big, try to move guide star closer to starting position
                 {
                     m_restoreCount = (int) floor((amt / m_northRate) / m_pulseWidth);
                     m_restoreCount = wxMin(m_restoreCount, 10); // Don't spend forever at it, something probably went wrong

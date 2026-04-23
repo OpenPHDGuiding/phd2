@@ -40,7 +40,7 @@ class usImage
 public:
     unsigned short *ImageData; // Pointer to raw data
     wxSize Size; // Dimensions of image
-    wxRect Subframe; // were the valid data is
+    wxRect Subframe; // where the valid data is
     wxRect LimitFrame; // associated frame limit, empty rect when no frame limit
     unsigned int NPixels;
     unsigned short MinADU;

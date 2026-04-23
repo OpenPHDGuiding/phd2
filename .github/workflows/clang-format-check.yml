@@ -4,15 +4,19 @@ jobs:
   formatting-check:
     name: Formatting Check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        path:
-          - 'src'
-          - 'contributions/MPI_IS_gaussian_process'
     steps:
-    - uses: actions/checkout@v4
-    - name: Run clang-format style check for C/C++ source files
-      uses: jidicula/clang-format-action@v4.13.0
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
       with:
-        clang-format-version: '18'
-        check-path: ${{ matrix.path }}
+        python-version: '3.x'
+
+    - name: Install clang-format
+      run: pip3 install clang-format==18.1.8
+
+    - name: Run clang-format style check
+      run: |
+        ./build/run-clang-format
+        git diff --exit-code

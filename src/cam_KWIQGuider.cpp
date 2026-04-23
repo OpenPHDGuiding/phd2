@@ -50,7 +50,7 @@ class CameraKWIQGuider : public GuideCamera
 
 public:
     CameraKWIQGuider();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     bool ST4PulseGuideScope(int direction, int duration) override;
@@ -117,8 +117,11 @@ bool CameraKWIQGuider::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool CameraKWIQGuider::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraKWIQGuider::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     int xsize = FrameSize.GetWidth();
     int ysize = FrameSize.GetHeight();
 

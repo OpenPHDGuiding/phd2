@@ -119,15 +119,6 @@ PolarDriftToolWin::PolarDriftToolWin()
     m_drifting = false;
 
     m_pxScale = pFrame->GetCameraPixelScale();
-    // FrameSize is easier but the camera simulator does not set this.
-    //    wxSize camsize = pCamera->FrameSize;
-    //    g_camWidth = pCamera->FrameSize.GetWidth() == 0 ? xpx: pCamera->FrameSize.GetWidth();
-
-    //    g_camAngle = 0.0;
-    //    if (pMount && pMount->IsConnected() && pMount->IsCalibrated())
-    //    {
-    //        g_camAngle = degrees(pMount->xAngle());
-    //    }
 
     m_hemi = pConfig->Profile.GetInt("/PolarDriftTool/Hemisphere", 1);
     if (pPointingSource)

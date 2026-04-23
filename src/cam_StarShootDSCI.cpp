@@ -147,12 +147,17 @@ bool CameraStarShootDSCI::Connect(const wxString& camId)
     USB2 = OCP_isUSB2();
     RawX = OCP_Width();
     RawY = OCP_Height();
+
+    HasBayer = true;
+
     Connected = true;
     return false;
 }
 
-bool CameraStarShootDSCI::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraStarShootDSCI::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+
     bool ampoff = true;
     if (duration < 1000)
         ampoff = false;

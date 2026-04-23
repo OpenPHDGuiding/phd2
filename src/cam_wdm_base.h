@@ -76,6 +76,8 @@ protected:
     int m_deviceNumber;
     int m_deviceMode;
     bool m_rawYUY2;
+
+public:
     CVVidCaptureDSWin32 *m_pVidCap;
 
 public:
@@ -83,8 +85,8 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
-    bool CaptureOneFrame(usImage& img, int options, const wxRect& subframe);
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
+    bool CaptureOneFrame(usImage& img, int options);
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void ShowPropertyDialog() override;
@@ -122,10 +124,13 @@ protected:
     };
 
 public:
+    int ReadDelay;
+
+public:
     CameraLEWebcam();
     ~CameraLEWebcam();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     bool HasNonGuiCapture() override { return true; }

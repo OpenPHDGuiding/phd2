@@ -513,7 +513,17 @@ bool DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
         ShowStatus(wxString::Format(_("Taking dark frame %d/%d"), j, frameCount), true);
 
         Debug.Write(wxString::Format("Capture dark frame %d/%d exp=%d\n", j, frameCount, expTime));
-        err = GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK);
+        CaptureParams captureParams;
+        captureParams.duration = expTime;
+        captureParams.hwBinning = pCamera->HwBinning;
+        // darks are not software-binned as this allows the dark library to be re-used
+        // for any software binning level (dark subtraction / bad-pixel map correction
+        // is performed before software binning)
+        captureParams.swBinning = 1;
+        captureParams.bpp = pCamera->BitsPerPixel();
+        captureParams.gain = pCamera->GuideCameraGain;
+        captureParams.captureOptions = CAPTURE_DARK;
+        err = GuideCamera::Capture(pCamera, darkFrame, captureParams);
         if (err)
         {
             ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);

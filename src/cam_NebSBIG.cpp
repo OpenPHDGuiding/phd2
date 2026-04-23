@@ -70,8 +70,11 @@ bool CameraNebSBIG::Disconnect()
     return false;
 }
 
-bool CameraNebSBIG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraNebSBIG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);

@@ -297,6 +297,8 @@ bool CameraSSPIAG::Connect(const wxString& camId)
     Q5V_SetQHY5VGlobalGain(60);
     Q5V_GetFullSizeImage(RawBuffer);
 
+    HasBayer = true;
+
     Connected = true;
     return false;
 }
@@ -350,8 +352,11 @@ bool CameraSSPIAG::Disconnect()
     return false;
 }
 
-bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool CameraSSPIAG::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     // Only does full frames still
     static int last_dur = 0;
     static int last_gain = 60;
@@ -398,7 +403,7 @@ bool CameraSSPIAG::Capture(int duration, usImage& img, int options, const wxRect
         SubtractDark(img);
 
     // Do quick L recon to remove bayer array
-    if (options & CAPTURE_RECON)
+    if ((options & CAPTURE_RECON) && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

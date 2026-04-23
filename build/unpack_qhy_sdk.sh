@@ -19,7 +19,7 @@ _install_headers () (
         sed -E \
             -e 's/config\.h/qhyccd_config\.h/' \
             -e 's,^[[:space:]]*#[[:space:]]*include[[:space:]]+"cyapi\.h",//#include "cyapi.h",' \
-            "$f" > "$SRC"/cameras/"$f"
+            "$f" > "$SRC"/cameras/qhyccdlibs/include/"$f"
     done
 )
 
@@ -35,18 +35,21 @@ _unpack_win_dir () {
         cp "$sdk"/Linux/x86-64/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/x86_64/
         cp "$sdk"/Linux/armv6/libqhy.a "$SRC"/cameras/qhyccdlibs/linux/armv6/
         cp "$sdk"/OSX/universal/libqhy.a "$SRC"/cameras/qhyccdlibs/mac/x86_32/
-        cp "$sdk"/Windows/x86/vc12/qhyccd.dll    "$SRC"/WinLibs/
-        cp "$sdk"/Windows/x86/vc12/qhyccd.lib    "$SRC"/cameras/
+        cp "$sdk"/Windows/x86/vc12/qhyccd.dll    "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/Windows/x86/vc12/qhyccd.lib    "$SRC"/cameras/qhyccdlibs/win/x86/
     elif [ -f "$sdk"/qhyccd.dll ]; then
         # QXX's style packaging (Windows only)
-        cp "$sdk"/qhyccd.dll "$SRC"/WinLibs/
-        cp "$sdk"/tbb.dll "$SRC"/WinLibs/
-        cp "$sdk"/lib/qhyccd.lib "$SRC"/cameras/
+        cp "$sdk"/qhyccd.dll "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/tbb.dll "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/lib/qhyccd.lib "$SRC"/cameras/qhyccdlibs/win/x86/
     elif [ -f "$sdk"/x86/qhyccd.dll ]; then
-        # MYQ's style packaging
-        cp "$sdk"/x86/qhyccd.dll "$SRC"/WinLibs/
-        cp "$sdk"/x86/tbb.dll "$SRC"/WinLibs/
-        cp "$sdk"/x86/qhyccd.lib "$SRC"/cameras/
+        # MYQ's style packaging - 2026
+        cp "$sdk"/x86/qhyccd.dll "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/x86/tbb.dll "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/x86/qhyccd.lib "$SRC"/cameras/qhyccdlibs/win/x86/
+        cp "$sdk"/x64/qhyccd.dll "$SRC"/cameras/qhyccdlibs/win/x64/
+        cp "$sdk"/x64/tbb.dll "$SRC"/cameras/qhyccdlibs/win/x64/
+        cp "$sdk"/x64/qhyccd.lib "$SRC"/cameras/qhyccdlibs/win/x64/
     fi
 
     rm -rf "$sdk"
@@ -144,8 +147,8 @@ unpack_qxx () (
     (
         cd win32
         unzip ../libqhyccd20*_windows.zip
-        install -m 0755 x86/qhyccd.dll "$SRC"/WinLibs/
-        install -m 0644 x86/qhyccd.lib "$SRC"/cameras/
+        install -m 0755 x86/qhyccd.dll "$SRC"/cameras/qhyccdlibs/win/x86/
+        install -m 0644 x86/qhyccd.lib "$SRC"/cameras/qhyccdlibs/win/x86/
     )
 )
 

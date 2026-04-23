@@ -132,7 +132,6 @@ struct AltairCamera : public GuideCamera
     SDKLib m_sdk;
     wxRect m_frame;
     unsigned char *m_buffer;
-    bool m_isColor;
     bool m_capturing;
     unsigned int m_discardCnt;
     int m_minGain;
@@ -150,7 +149,7 @@ struct AltairCamera : public GuideCamera
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -224,7 +223,7 @@ AltairCameraDlg::AltairCameraDlg(wxWindow *parent)
 static int GetConfigDiscardFrames()
 {
     int n = pConfig->Profile.GetInt("/camera/Altair/DiscardFrames", 0);
-    return wxMax(0, wxMin((int) AltairCamera::MAX_DISCARD_FRAMES, n));
+    return wxClip(n, 0, (int) AltairCamera::MAX_DISCARD_FRAMES);
 }
 
 AltairCamera::AltairCamera(AltairCamType type) : m_type(type), m_buffer(nullptr), m_capturing(false)
@@ -361,9 +360,9 @@ bool AltairCamera::Connect(const wxString& camIdArg)
     Name = pai->displayname;
     bool hasROI = (pai->model->flag & ALTAIRCAM_FLAG_ROI_HARDWARE) != 0;
     bool hasSkip = (pai->model->flag & ALTAIRCAM_FLAG_BINSKIP_SUPPORTED) != 0;
-    m_isColor = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
+    HasBayer = (pai->model->flag & ALTAIRCAM_FLAG_MONO) == 0;
 
-    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n", m_isColor, hasROI, hasSkip));
+    Debug.Write(wxString::Format("ALTAIR: isColor = %d, hasROI = %d, hasSkip = %d\n", HasBayer, hasROI, hasSkip));
 
     int width, height;
     if (FAILED(m_sdk.get_Resolution(m_handle, 0, &width, &height)))
@@ -522,8 +521,11 @@ void __stdcall CameraCallback(unsigned int event, void *pCallbackCtx)
 //     }
 // }
 
-bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool AltairCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
     if (img.Init(FrameSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
@@ -626,7 +628,7 @@ bool AltairCamera::Capture(int duration, usImage& img, int options, const wxRect
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

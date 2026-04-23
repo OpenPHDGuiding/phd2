@@ -169,7 +169,7 @@ wxString SimCamParams::SimFileTemplate = _("C:\\Temp\\phd2\\sim_image.png");
 // Needed to handle legacy registry values that may no longer be in correct units or range
 static double range_check(double thisval, double minval, double maxval)
 {
-    return wxMin(wxMax(thisval, minval), maxval);
+    return wxClip(thisval, minval, maxval);
 }
 
 static void load_sim_params()
@@ -1308,6 +1308,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 # endif // STEPGUIDER_SIMULATOR
 
+    int binning = pCamera->HwBinning;
+
     // render each star
     if (!pCamera->ShutterClosed)
     {
@@ -1318,7 +1320,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double) (rand() % (gain * 100));
             double inten = star + dark + noise;
 
-            render_star(img, pCamera->Binning, subframe, cc[i], inten);
+            render_star(img, binning, subframe, cc[i], inten);
         }
 
 # ifndef SIM_FILE_DISPLACEMENTS
@@ -1335,7 +1337,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double) (rand() % (gain * 100));
             inten = star + dark + noise;
 
-            render_comet(img, pCamera->Binning, subframe, wxRealPoint(cx, cy), inten);
+            render_comet(img, binning, subframe, wxRealPoint(cx, cy), inten);
         }
 # endif
     }
@@ -1347,8 +1349,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     for (unsigned int i = 0; i < hotpx.size(); i++)
     {
         wxPoint p(hotpx[i]);
-        p.x /= pCamera->Binning;
-        p.y /= pCamera->Binning;
+        p.x /= binning;
+        p.y /= binning;
         if (subframe.Contains(p))
             set_pixel(img, p.x, p.y, (unsigned short) -1);
     }
@@ -1361,7 +1363,7 @@ public:
     SimCamState sim;
     CameraSimulator();
     ~CameraSimulator();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void ShowPropertyDialog() override;
@@ -1387,8 +1389,13 @@ CameraSimulator::CameraSimulator()
     HasGainControl = true;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    MaxBinning = 3;
+    MaxHwBinning = 3;
     HasCooler = true;
+# if SIMMODE == 2
+    HasBayer = true;
+# else
+    HasBayer = false;
+# endif
 }
 
 wxByte CameraSimulator::BitsPerPixel()
@@ -1452,6 +1459,7 @@ CameraSimulator::~CameraSimulator()
 }
 
 // Used with the SIMMODE_GENERATE mode
+
 static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
@@ -1553,9 +1561,12 @@ bool SimCamState::LoadDiskImage(cv::Mat& image, bool preProcess, wxSize& fullSiz
     return false;
 }
 
-bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
+bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
 {
-    wxRect subframe(subframeArg);
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+
+    wxRect subframe(captureParams.subframe);
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     // sleep before rendering the image so that any changes made in the middle of a long exposure (e.g. manual guide pulse)
@@ -1577,8 +1588,8 @@ bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxR
     {
     case SIMMODE_GENERATE:
     {
-        int width = sim.width / Binning;
-        int height = sim.height / Binning;
+        int width = sim.width / HwBinning;
+        int height = sim.height / HwBinning;
         FrameSize = wxSize(width, height);
 
         bool usingSubframe = UseSubframes;
@@ -1727,7 +1738,7 @@ bool CameraSimulator::ST4PulseGuideScope(int direction, int duration)
     // Following must take into account how the render_star function works.  Render_star uses camera binning explicitly, so
     // relying only on image scale in computing d creates distances that are too small by a factor of <binning>
     // "d" is a guide distance in units of pixels for use in generating offsets in the simulated image
-    double d = SimCamParams::guide_rate * Binning * duration / (1000.0 * SimCamParams::image_scale);
+    double d = SimCamParams::guide_rate * HwBinning * duration / (1000.0 * SimCamParams::image_scale);
 
     // simulate RA motion scaling according to declination
     if (direction == WEST || direction == EAST)
@@ -1849,7 +1860,8 @@ void CameraSimulator::FlipPierSide()
 }
 
 # ifdef SIMMODE_LEGACY_DRIFT_ENABLED
-bool CameraSimulator::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+
+bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
 {
     int xsize, ysize;
     //  unsigned short *dataptr;

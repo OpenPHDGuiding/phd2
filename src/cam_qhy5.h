@@ -43,7 +43,7 @@ class CameraQHY5 : public GuideCamera
 public:
     CameraQHY5();
     ~CameraQHY5();
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
     void InitCapture() override;

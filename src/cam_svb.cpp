@@ -62,7 +62,6 @@ class SVBCamera : public GuideCamera
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
-    bool m_isColor;
     double m_devicePixelSize;
 
 public:
@@ -71,7 +70,7 @@ public:
 
     bool CanSelectCamera() const override { return true; }
     bool EnumCameras(wxArrayString& names, wxArrayString& ids) override;
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool Connect(const wxString& camId) override;
     bool Disconnect() override;
 
@@ -395,8 +394,8 @@ bool SVBCamera::Connect(const wxString& camId)
 
     Connected = true;
     Name = info.FriendlyName;
-    m_isColor = props.IsColorCam != SVB_FALSE;
-    Debug.Write(wxString::Format("SVB: IsColorCam = %d\n", m_isColor));
+    HasBayer = props.IsColorCam != SVB_FALSE;
+    Debug.Write(wxString::Format("SVB: IsColorCam = %d\n", HasBayer));
 
     HasShutter = false;
 
@@ -409,17 +408,17 @@ bool SVBCamera::Connect(const wxString& camId)
         if (props.SupportedBins[i] > maxBin)
             maxBin = props.SupportedBins[i];
     }
-    MaxBinning = maxBin;
+    MaxHwBinning = maxBin;
 
-    if (Binning > MaxBinning)
-        Binning = MaxBinning;
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
 
     m_maxSize.x = props.MaxWidth;
     m_maxSize.y = props.MaxHeight;
 
-    FrameSize.x = m_maxSize.x / Binning;
-    FrameSize.y = m_maxSize.y / Binning;
-    m_prevBinning = Binning;
+    FrameSize.x = m_maxSize.x / HwBinning;
+    FrameSize.y = m_maxSize.y / HwBinning;
+    m_prevBinning = HwBinning;
 
     ::free(m_buffer);
     m_buffer_size = props.MaxWidth * props.MaxHeight * (m_bpp == 8 ? 1 : 2);
@@ -503,7 +502,7 @@ bool SVBCamera::Connect(const wxString& camId)
 
     SVBSetOutputImageType(m_cameraId, img_type);
 
-    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(), m_frame.GetWidth(), m_frame.GetHeight(), Binning);
+    SVBSetROIFormat(m_cameraId, m_frame.GetLeft(), m_frame.GetTop(), m_frame.GetWidth(), m_frame.GetHeight(), HwBinning);
 
     return false;
 }
@@ -583,14 +582,18 @@ static void flush_buffered_image(int cameraId, void *buf, size_t size)
     }
 }
 
-bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+bool SVBCamera::Capture(usImage& img, const CaptureParams& captureParams)
 {
+    int duration = captureParams.duration;
+    int options = captureParams.captureOptions;
+    const wxRect& subframe = captureParams.subframe;
+
     bool binning_change = false;
-    if (Binning != m_prevBinning)
+    if (HwBinning != m_prevBinning)
     {
-        FrameSize.x = m_maxSize.x / Binning;
-        FrameSize.y = m_maxSize.y / Binning;
-        m_prevBinning = Binning;
+        FrameSize.x = m_maxSize.x / HwBinning;
+        FrameSize.y = m_maxSize.y / HwBinning;
+        m_prevBinning = HwBinning;
         binning_change = true;
     }
 
@@ -657,11 +660,11 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
         StopCapture();
 
         SVB_ERROR_CODE status =
-            SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), Binning);
+            SVBSetROIFormat(m_cameraId, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight(), HwBinning);
 
         if (status != SVB_SUCCESS)
             Debug.Write(wxString::Format("SVB: setImageFormat(%d,%d,%d,%d,%hu) => %d\n", frame.GetLeft(), frame.GetTop(),
-                                         frame.GetWidth(), frame.GetHeight(), Binning, status));
+                                         frame.GetWidth(), frame.GetHeight(), HwBinning, status));
     }
 
     int poll = wxMin(duration, 100);
@@ -814,7 +817,7 @@ bool SVBCamera::Capture(int duration, usImage& img, int options, const wxRect& s
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;

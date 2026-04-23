@@ -59,7 +59,7 @@ public:
     CameraFirewire();
     ~CameraFirewire();
 
-    bool Capture(int duration, usImage& img, int options, const wxRect& subframe) override;
+    bool Capture(usImage& img, const CaptureParams& captureParams) override;
     bool HasNonGuiCapture() override;
     wxByte BitsPerPixel() override;
     bool Connect(const wxString& camId) override;

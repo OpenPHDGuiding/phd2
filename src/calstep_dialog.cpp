@@ -123,12 +123,12 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // binning
     wxArrayString opts;
-    GuideCamera::GetBinningOpts(pCamera ? pCamera->MaxBinning : 1, &opts);
+    bool includeSwBinning = true; // Include s/w options for "what-if" use cases
+    GuideCamera::GetBinningOpts(&opts, pCamera ? pCamera->MaxHwBinning : 1, includeSwBinning);
     m_binningChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, opts);
     m_binningChoice->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
     m_binningChoice->Bind(wxEVT_CHOICE, &CalstepDialog::OnText, this);
-    int idx = binning - 1;
-    m_binningChoice->Select(idx);
+    SetIntChoice(m_binningChoice, binning);
     AddTableEntry(m_pInputTableSizer, _("Camera binning"), m_binningChoice, _("Guide camera pixel binning"));
     m_binningChoice->Enable(m_binningChoice->GetCount() > 1);
 
@@ -220,7 +220,7 @@ int CalstepDialog::GetCalibrationDistance(int focalLength, double pixelSize, int
 //
 //  FocalLength = focal length in millimeters
 //  PixelSize = pixel size in microns (un-binned)
-//  Binning = hardware pixel binning factor
+//  Binning = pixel binning factor (combined hardware and software binning)
 //  GuideSpeed = guide rate as fraction of sidereal rate
 //  DesiredSteps = desired number of calibration steps
 //  Declination = declination in degrees
@@ -254,7 +254,8 @@ void CalstepDialog::OnSpinCtrlDouble(wxSpinDoubleEvent& evt)
 
 void CalstepDialog::OnReset(wxCommandEvent& evt)
 {
-    int bestDistance = GetCalibrationDistance(m_iFocalLength, m_pPixelSize->GetValue(), m_binningChoice->GetSelection() + 1);
+    int binning = GetIntChoice(m_binningChoice, 1);
+    int bestDistance = GetCalibrationDistance(m_iFocalLength, m_pPixelSize->GetValue(), binning);
     m_pDistance->SetValue(bestDistance);
     m_pNumSteps->SetValue(DEFAULT_STEPS);
     DoRecalc();
@@ -268,7 +269,7 @@ void CalstepDialog::DoRecalc(void)
     {
         m_fPixelSize = m_pPixelSize->GetValue();
         m_pPixelSize->SetValue(m_fPixelSize); // For European locales, '.' -> ',' on output
-        m_binning = m_binningChoice->GetSelection() + 1;
+        m_binning = GetIntChoice(m_binningChoice, 1);
         m_fGuideSpeed = m_pGuideSpeed->GetValue();
         m_pGuideSpeed->SetValue(m_fGuideSpeed);
         m_iNumSteps = m_pNumSteps->GetValue();

@@ -113,8 +113,6 @@ bool CameraLESerialWebcam::Connect(const wxString& camId)
             throw ERROR_INFO("LESerialWebcamClass::Connect: serial port connect failed");
         }
 
-        // pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
-
         if (CameraLEWebcam::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");
@@ -239,10 +237,10 @@ bool CameraLESerialWebcam::LEControl(int actions)
     return bError;
 }
 
-struct LEWebcamDialog : public wxDialog
+struct LESerialWebcamDialog : public wxDialog
 {
-    LEWebcamDialog(wxWindow *parent, CVVidCapture *vc);
-    ~LEWebcamDialog() { }
+    LESerialWebcamDialog(wxWindow *parent, CameraLEWebcam *camera);
+    ~LESerialWebcamDialog() { }
     wxChoice *m_pPortNum;
     wxCheckBox *m_pLEMaskDTR;
     wxCheckBox *m_pLEMaskRTS;
@@ -254,6 +252,7 @@ struct LEWebcamDialog : public wxDialog
     wxCheckBox *m_pLEAmpRTS;
     wxCheckBox *m_pInvertedLogic;
     wxCheckBox *m_pUseAmp;
+    wxSpinCtrl *m_delay;
     CVVidCapture *m_pVidCap;
     void OnDefaults(wxCommandEvent& evt);
     void OnVidCapClick(wxCommandEvent& evt);
@@ -262,13 +261,13 @@ struct LEWebcamDialog : public wxDialog
 };
 
 // clang-format off
-wxBEGIN_EVENT_TABLE(LEWebcamDialog, wxDialog)
-    EVT_BUTTON(wxID_DEFAULT, LEWebcamDialog::OnDefaults)
-    EVT_BUTTON(wxID_CONVERT, LEWebcamDialog::OnVidCapClick)
+wxBEGIN_EVENT_TABLE(LESerialWebcamDialog, wxDialog)
+    EVT_BUTTON(wxID_DEFAULT, LESerialWebcamDialog::OnDefaults)
+    EVT_BUTTON(wxID_CONVERT, LESerialWebcamDialog::OnVidCapClick)
 wxEND_EVENT_TABLE();
 // clang-format on
 
-void LEWebcamDialog::OnDefaults(wxCommandEvent& evt)
+void LESerialWebcamDialog::OnDefaults(wxCommandEvent& evt)
 {
     int def = LE_DEFAULT;
 
@@ -284,7 +283,7 @@ void LEWebcamDialog::OnDefaults(wxCommandEvent& evt)
     m_pUseAmp->SetValue(false);
 }
 
-void LEWebcamDialog::OnVidCapClick(wxCommandEvent& evt)
+void LESerialWebcamDialog::OnVidCapClick(wxCommandEvent& evt)
 {
     if (m_pVidCap)
     {
@@ -292,9 +291,10 @@ void LEWebcamDialog::OnVidCapClick(wxCommandEvent& evt)
     }
 }
 
-LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc) : wxDialog(parent, wxID_ANY, _("Serial LE Webcam"))
+LESerialWebcamDialog::LESerialWebcamDialog(wxWindow *parent, CameraLEWebcam *camera)
+    : wxDialog(parent, wxID_ANY, _("Serial LE Webcam"))
 {
-    m_pVidCap = vc;
+    m_pVidCap = camera->m_pVidCap;
 
     wxBoxSizer *pHSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *pPortLabel = new wxStaticText(this, wxID_ANY, _("LE Port"));
@@ -375,11 +375,23 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc) : wxDialog(pa
     m_pUseAmp = new wxCheckBox(this, wxID_ANY, _("Use Amp"));
     m_pUseAmp->SetValue(pConfig->Profile.GetBoolean("/camera/serialLEWebcam/UseAmp", false));
 
+    // Delay parameter
+    int textWidth = StringWidth(this, _T("0000"));
+    m_delay = pFrame->MakeSpinCtrl(this, wxID_ANY, _T(" "), wxDefaultPosition, wxSize(textWidth, -1), wxSP_ARROW_KEYS, 0, 250,
+                                   camera->ReadDelay);
+    m_delay->SetToolTip(_("LE Read Delay (ms). Adjust if you get dropped frames"));
+    m_delay->SetValue(camera->ReadDelay);
+    wxStaticText *label = new wxStaticText(this, wxID_ANY, _("Delay"));
+    wxBoxSizer *delaySizer = new wxBoxSizer(wxHORIZONTAL);
+    delaySizer->Add(label, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10));
+    delaySizer->Add(m_delay, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT | wxLEFT, 10).Expand());
+
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
     pVSizer->Add(pHSizer, wxSizerFlags().Border(wxTOP | wxBOTTOM, 10).Expand());
     pVSizer->Add(pSignalSizer, wxSizerFlags().Border(wxALL, 10).Expand());
     pVSizer->Add(m_pInvertedLogic, wxSizerFlags().Border(wxRIGHT | wxLEFT, 10));
     pVSizer->Add(m_pUseAmp, wxSizerFlags().Border(wxTOP | wxRIGHT | wxLEFT, 10));
+    pVSizer->Add(delaySizer, wxSizerFlags().Border(wxTOP | wxRIGHT | wxLEFT, 10));
 
     pHSizer = new wxBoxSizer(wxHORIZONTAL);
     wxButton *pBtnDefault = new wxButton(this, wxID_DEFAULT, _("Defaults"));
@@ -400,41 +412,43 @@ void CameraLESerialWebcam::ShowPropertyDialog()
     if (pFrame->pGearDialog->IsActive())
         parent = pFrame->pGearDialog;
 
-    LEWebcamDialog dlg(parent, m_pVidCap);
+    LESerialWebcamDialog dlg(parent, this);
 
-    if (dlg.ShowModal() == wxID_OK)
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+    pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", dlg.m_pPortNum->GetStringSelection());
+
+    m_signalConfig = 0;
+    if (dlg.m_pLEMaskDTR->GetValue())
+        m_signalConfig |= LE_MASK_DTR;
+    if (dlg.m_pLEMaskRTS->GetValue())
+        m_signalConfig |= LE_MASK_RTS;
+    // if (dlg.m_pLEInitDTR->GetValue()) m_signalConfig |= LE_INIT_DTR;
+    // if (dlg.m_pLEInitRTS->GetValue()) m_signalConfig |= LE_INIT_RTS;
+    if (dlg.m_pLEExpoDTR->GetValue())
+        m_signalConfig |= LE_EXPO_DTR;
+    if (dlg.m_pLEExpoRTS->GetValue())
+        m_signalConfig |= LE_EXPO_RTS;
+    if (dlg.m_pLEAmpDTR->GetValue())
+        m_signalConfig |= LE_AMP_DTR;
+    if (dlg.m_pLEAmpRTS->GetValue())
+        m_signalConfig |= LE_AMP_RTS;
+    m_InvertedLogic = dlg.m_pInvertedLogic->GetValue();
+    m_UseAmp = dlg.m_pUseAmp->GetValue();
+    m_Expo = (m_signalConfig & (LE_EXPO_DTR | LE_EXPO_RTS) ^ (LE_MASK_DTR | LE_MASK_RTS)) ? m_InvertedLogic : !m_InvertedLogic;
+    m_Amp = (m_signalConfig & (LE_AMP_DTR | LE_AMP_RTS) ^ (LE_MASK_DTR | LE_MASK_RTS)) ? m_InvertedLogic : !m_InvertedLogic;
+
+    pConfig->Profile.SetInt("/camera/serialLEWebcam/SignalConfig", m_signalConfig);
+    pConfig->Profile.SetBoolean("/camera/serialLEWebcam/InvertedLogic", m_InvertedLogic);
+    pConfig->Profile.SetBoolean("/camera/serialLEWebcam/UseAmp", m_UseAmp);
+
+    ReadDelay = dlg.m_delay->GetValue();
+    pConfig->Profile.SetInt("/camera/ReadDelay", ReadDelay);
+
+    if (!Connected)
     {
-        pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", dlg.m_pPortNum->GetStringSelection());
-
-        m_signalConfig = 0;
-        if (dlg.m_pLEMaskDTR->GetValue())
-            m_signalConfig |= LE_MASK_DTR;
-        if (dlg.m_pLEMaskRTS->GetValue())
-            m_signalConfig |= LE_MASK_RTS;
-        // if (dlg.m_pLEInitDTR->GetValue()) m_signalConfig |= LE_INIT_DTR;
-        // if (dlg.m_pLEInitRTS->GetValue()) m_signalConfig |= LE_INIT_RTS;
-        if (dlg.m_pLEExpoDTR->GetValue())
-            m_signalConfig |= LE_EXPO_DTR;
-        if (dlg.m_pLEExpoRTS->GetValue())
-            m_signalConfig |= LE_EXPO_RTS;
-        if (dlg.m_pLEAmpDTR->GetValue())
-            m_signalConfig |= LE_AMP_DTR;
-        if (dlg.m_pLEAmpRTS->GetValue())
-            m_signalConfig |= LE_AMP_RTS;
-        m_InvertedLogic = dlg.m_pInvertedLogic->GetValue();
-        m_UseAmp = dlg.m_pUseAmp->GetValue();
-        m_Expo =
-            (m_signalConfig & (LE_EXPO_DTR | LE_EXPO_RTS) ^ (LE_MASK_DTR | LE_MASK_RTS)) ? m_InvertedLogic : !m_InvertedLogic;
-        m_Amp = (m_signalConfig & (LE_AMP_DTR | LE_AMP_RTS) ^ (LE_MASK_DTR | LE_MASK_RTS)) ? m_InvertedLogic : !m_InvertedLogic;
-
-        pConfig->Profile.SetInt("/camera/serialLEWebcam/SignalConfig", m_signalConfig);
-        pConfig->Profile.SetBoolean("/camera/serialLEWebcam/InvertedLogic", m_InvertedLogic);
-        pConfig->Profile.SetBoolean("/camera/serialLEWebcam/UseAmp", m_UseAmp);
-
-        if (!Connected)
-        {
-            CameraLEWebcam::ShowPropertyDialog();
-        }
+        CameraLEWebcam::ShowPropertyDialog();
     }
 }
 
