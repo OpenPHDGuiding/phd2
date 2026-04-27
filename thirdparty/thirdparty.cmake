@@ -576,7 +576,7 @@ if(WIN32)
       ${VCPKG_RELEASE_LIB}/opencv_core4.lib
       ${VCPKG_RELEASE_LIB}/opencv_videoio4.lib
       ${VCPKG_RELEASE_LIB}/opencv_imgcodecs4.lib
-      ${VCPKG_DEBUG_LIB}/opencv_features2d4d.lib
+      ${VCPKG_RELEASE_LIB}/opencv_features2d4.lib
   )
   list(APPEND PHD_COPY_EXTERNAL_DBG
       ${VCPKG_DEBUG_BIN}/opencv_imgproc4d.dll

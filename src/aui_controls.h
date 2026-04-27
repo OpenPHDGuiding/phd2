@@ -64,6 +64,7 @@ public:
     void UpdateStates();
 
     void UpdateStarInfo(double SNR, bool Saturated);
+    void UpdateBlobInfo(wxString& blobType, int blobSize);
     void ClearStarInfo() { UpdateStarInfo(-1, 0); }
 
     void UpdateGuiderInfo(const GuideStepInfo& step);

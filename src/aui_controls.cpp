@@ -192,6 +192,7 @@ public:
     SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths);
     void PositionControls();
     void UpdateState(double MassPct, double SNR, bool Saturated);
+    void UpdateState(wxString& blobType, int blobSize);
 };
 
 // How this works:
@@ -393,7 +394,7 @@ SBStarIndicators::SBStarIndicators(SBPanel *panel, std::vector<int>& fldWidths)
     txtStarInfo->SetForegroundColour(*wxWHITE);
     txtStarInfo->SetToolTip(_("In multiple star mode, displays the number of guiding stars out of the total detected. "
                               "In single star mode, shows 'STAR*' (or 'SAT' if the star is saturated), and 'DISK' in "
-                              "solar/lunar detection mode."));
+                              "solar system detection mode."));
 
     // Label and value fields separated to allow different foreground colors for each
     txtSNRLabel = new wxStaticText(panel, wxID_ANY, _("SNR"), wxDefaultPosition, wxDefaultSize);
@@ -421,6 +422,18 @@ void SBStarIndicators::PositionControls()
     txtSNRLabel->SetPosition(wxPoint(snrPos.x + 3, snrPos.y));
     txtSNRValue->SetPosition(wxPoint(snrPos.x + 3 + snrLabelWidth + 6, snrPos.y));
 }
+void SBStarIndicators::UpdateState(wxString& blobType, int blobSize)
+{
+    txtSNRValue->SetForegroundColour(*wxWHITE);
+    txtSNRLabel->SetForegroundColour(*wxWHITE);
+    txtStarInfo->SetForegroundColour(*wxWHITE);
+    m_parentPanel->ShowControl(txtSNRLabel, true);
+    m_parentPanel->ShowControl(txtSNRValue, true);
+    m_parentPanel->ShowControl(txtStarInfo, true);
+    txtSNRLabel->SetLabelText(blobType);
+    txtSNRValue->SetLabelText(wxString::Format("%d", blobSize));
+    txtStarInfo->SetLabelText(_("BLOB"));
+}
 
 void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
 {
@@ -436,15 +449,14 @@ void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)
                 txtSNRValue->SetForegroundColour(*wxRED);
         }
         m_parentPanel->ShowControl(txtSNRLabel, true);
+        txtSNRLabel->SetLabelText(_("SNR"));
         txtSNRValue->SetLabelText(wxString::Format("%4.1f", SNR));
         m_parentPanel->ShowControl(txtStarInfo, true);
         m_parentPanel->ShowControl(txtSNRValue, true);
 
         // Update the star info text
         wxString starText;
-        if (pFrame->GetSolarSystemMode())
-            starText = _T("DISK");
-        else if (pFrame->pGuider->GetMultiStarMode())
+        if (pFrame->pGuider->GetMultiStarMode())
             starText = pFrame->pGuider->GetStarCount();
         else
             starText = Saturated ? _T(" SAT ") : _T("STAR*");
@@ -983,6 +995,11 @@ void PHDStatusBar::OnSize(wxSizeEvent& event)
 void PHDStatusBar::UpdateStates()
 {
     m_StateIndicators->UpdateState();
+}
+
+void PHDStatusBar::UpdateBlobInfo(wxString& blobType, int blobSize)
+{
+    m_StarIndicators->UpdateState(blobType, blobSize);
 }
 
 void PHDStatusBar::UpdateStarInfo(double SNR, bool Saturated)

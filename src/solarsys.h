@@ -84,6 +84,7 @@ private:
 
     std::vector<cv::Point2f> m_diskContour;
     std::vector<cv::Point> m_blobContour;
+    CentroidResult m_lastCentroidResult;
     int m_frameWidth;
     int m_frameHeight;
     DetectionModes m_detectionMode;
@@ -127,6 +128,7 @@ public:
     void ToggleSharpness();
     void GetDetectionStatus(wxString& statusMsg);
     bool UpdateCaptureState(bool CaptureActive);
+    CentroidResult GetLastCentroidResult() { return m_lastCentroidResult; }
 
     DetectionModes GetDetectionMode() { return m_detectionMode; }
     void SetDetectionMode(DetectionModes mode);

@@ -1076,7 +1076,7 @@ static void SuppressDarksAlert(intptr_t)
 
 static void ValidateDarksLoaded(void)
 {
-    if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
+    if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap && !pFrame->GetSolarSystemMode())
     {
         pFrame->SuppressibleAlert(DarksWarningEnabledKey(),
                                   _("For best results, use a Dark Library or a Bad-pixel Map "

@@ -45,6 +45,7 @@
 #include "phdupdate.h"
 #include "pierflip_tool.h"
 #include "Refine_DefMap.h"
+#include "solarsys.h"
 
 #include <algorithm>
 #include <memory>
@@ -1544,6 +1545,15 @@ void MyFrame::UpdateStatusBarStarInfo(double SNR, bool Saturated)
 {
     assert(wxThread::IsMain());
     m_statusbar->UpdateStarInfo(SNR, Saturated);
+}
+void MyFrame::UpdateStatusBarBlobInfo(CentroidResult lastCentroidResult)
+{
+    wxString type;
+    if (lastCentroidResult.mode == DetectionModes::modeBlob)
+        type = "Blb";
+    else
+        type = "Ctr";
+    m_statusbar->UpdateBlobInfo(type, lastCentroidResult.objectSize);
 }
 
 void MyFrame::UpdateStatusBarStateLabels()

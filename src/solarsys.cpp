@@ -1286,27 +1286,31 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
         GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
 
         // Find object depending on the selected detection mode
-        CentroidResult centroidInfo;
+        // CentroidResult centroidInfo;
         if (m_detectionMode != DetectionModes::modeContours)
         {
-            detectionResult = FindBlobCentroid(img8, centroidInfo, m_blobContour);
+            detectionResult = FindBlobCentroid(img8, m_lastCentroidResult, m_blobContour);
         }
         if ((!detectionResult && m_detectionMode == DetectionModes::modeEither) ||
             m_detectionMode == DetectionModes::modeContours)
         {
             detectionResult = FindContoursCentroid(imgFiltered, roiActive, clickedPoint, roiRect, activeRoiLimits,
-                                                   distanceRoiMax, centroidInfo);
+                                                   distanceRoiMax, m_lastCentroidResult);
         }
         if (detectionResult)
         {
-            m_center_x = roiRect.x + centroidInfo.centroidX;
-            m_center_y = roiRect.y + centroidInfo.centroidY;
-            if (centroidInfo.mode == DetectionModes::modeBlob)
-                m_radius = cvRound(centroidInfo.objectSize / 2.0);
+            m_center_x = roiRect.x + m_lastCentroidResult.centroidX;
+            m_center_y = roiRect.y + m_lastCentroidResult.centroidY;
+            if (m_lastCentroidResult.mode == DetectionModes::modeBlob)
+            {
+                m_radius = cvRound(m_lastCentroidResult.objectSize / 2.0);
+                PlanetTool::UpdateContourInfoStats(1, m_blobContour.size());
+                PlanetTool::UpdateScoreStats(1.);
+            }
             else
-                m_radius = cvRound(centroidInfo.objectSize);
+                m_radius = cvRound(m_lastCentroidResult.objectSize);
             m_searchRegion = m_radius;
-            PlanetTool::UpdateCentroidInfoStats(centroidInfo.centroidX, centroidInfo.centroidY, m_radius);
+            PlanetTool::UpdateCentroidInfoStats(m_lastCentroidResult.centroidX, m_lastCentroidResult.centroidY, m_radius);
         }
         // For use by visual aid for parameter tuning
         if (VisualElementsEnabled())

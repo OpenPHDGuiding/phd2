@@ -1391,11 +1391,7 @@ CameraSimulator::CameraSimulator()
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxHwBinning = 3;
     HasCooler = true;
-# if SIMMODE == 2
-    HasBayer = true;
-# else
-    HasBayer = false;
-# endif
+    // HasBayer will be set true for bmp files
 }
 
 wxByte CameraSimulator::BitsPerPixel()
@@ -1539,7 +1535,10 @@ bool SimCamState::LoadFitsDiskImage(usImage& img, cv::Mat& matImage, bool prePro
         }
         fullSize.x = matImage.size().width;
         fullSize.y = matImage.size().height;
+        return false;
     }
+    else
+        return true;
 }
 // Loads an image from disk when simulator mode is 'file', a requirement for
 // simulating solar system guiding.  The image will optionally be pre-processed
@@ -1634,6 +1633,10 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         else
         {
             sim.LoadDiskImage(image, true, FrameSize);
+            if (wxf.GetExt().CmpNoCase("bmp") == 0)
+                HasBayer = true;
+            else
+                HasBayer = false;
         }
 
         //// Save full frame size

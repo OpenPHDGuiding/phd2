@@ -42,6 +42,7 @@ class MyFrame;
 class RefineDefMap;
 struct alert_params;
 class PHDStatusBar;
+struct CentroidResult;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
@@ -409,6 +410,7 @@ public:
     void UpdateStatusBarCalibrationStatus();
     void UpdateStatusBarStateLabels();
     void UpdateStatusBarStarInfo(double SNR, bool Saturated);
+    void UpdateStatusBarBlobInfo(CentroidResult lastCentroidResult);
     void UpdateStatusBarGuiderInfo(const GuideStepInfo& info);
     void ClearStatusBarGuiderInfo();
     void UpdateStatsWindowScopePointing();

@@ -363,9 +363,9 @@ SolarSysToolWin::SolarSysToolWin()
     m_ShowDiameters = new wxCheckBox(this, wxID_ANY, _("Bounding diameters"));
     m_ShowDiameters->SetToolTip(_("Show the min/max search region being used to identify the target. "
                                   "Use this option to adjust the sizes if the target object isn't being selected."));
-    m_ShowDiagnosticImage = new wxCheckBox(this, wxID_ANY, _("Processed image"));
-    m_ShowDiagnosticImage->SetToolTip(_("Show the pre-processed image being used internally for detecting features. "
-                                        "Can be helpful in adjusting detection parameters such as threshold values."));
+    m_ShowDiagnosticImage = new wxCheckBox(this, wxID_ANY, _("Thresholding result"));
+    m_ShowDiagnosticImage->SetToolTip(_("For setting manual threshold values, this option will show the image "
+                                        "after the threshold value has been applied"));
 
     pVisElements->Add(m_ShowContours, 0, wxLEFT | wxTOP, 10);
     pVisElements->AddSpacer(20);
@@ -476,6 +476,7 @@ SolarSysToolWin::SolarSysToolWin()
     m_solarSystemObj->ShowVisualElements(false);
 
     m_detectionBlob->SetValue(true);
+    m_ShowDiagnosticImage->SetValue(false);
     m_detectionContours->SetValue(false);
     m_detectionEither->SetValue(false);
     wxCommandEvent evt;
@@ -495,11 +496,13 @@ SolarSysToolWin::SolarSysToolWin()
         m_windowPosY = -1;
     }
     MyFrame::PlaceWindowOnScreen(this, m_windowPosX, m_windowPosY);
+    Debug.Write("Solar system guiding activated\n");
 }
 
 SolarSysToolWin::~SolarSysToolWin(void)
 {
     pFrame->pSolarSysTool = nullptr;
+    Debug.Write("Solar system guiding de-activated\n");
 }
 
 // Profiles can be changed while the window is active.  Params are restored based on a hierarchy of
@@ -604,19 +607,22 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeBlob);
         m_tabs->SetSelection(0);
-        m_ShowDiagnosticImage->Enable(true);
+        m_ShowDiagnosticImage->Enable(!m_useAutoThresh->IsChecked());
+        Debug.Write("Solar system guiding via simple blob detection\n");
     }
     else if (m_detectionContours->GetValue())
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeContours);
         m_tabs->SetSelection(1);
         m_ShowDiagnosticImage->Enable(false);
+        Debug.Write("Solar system guiding via contour detection\n");
     }
     else
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeEither);
         m_tabs->SetSelection(1); // Intentional, 3rd tab is "stats"
         m_ShowDiagnosticImage->Enable(false);
+        Debug.Write("Solar system guiding via 'either' detection mode\n");
     }
     ClearStats();
 }
@@ -679,6 +685,7 @@ void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
 {
     bool enabled = m_useAutoThresh->IsChecked();
     m_blobThreshold->Enable(!enabled);
+    m_ShowDiagnosticImage->Enable(!enabled);
     m_solarSystemObj->Set_blobAutoThreshold(enabled);
 }
 
