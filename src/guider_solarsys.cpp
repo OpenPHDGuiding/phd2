@@ -969,7 +969,7 @@ void GuiderSolarSys::SaveStarFITS()
 
 wxString GuiderSolarSys::GetSettingsSummary() const
 {
-    return _("Solar system mode");
+    return _("Solar system mode ");
 }
 
 Guider::GuiderConfigDialogPane *GuiderSolarSys::GetConfigDialogPane(wxWindow *pParent)

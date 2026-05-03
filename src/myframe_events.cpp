@@ -968,7 +968,7 @@ void MyFrame::SetSolarSystemMode(bool Enable)
         pFrame->pGuider = pFrame->m_pGuiderMultiStar;
         pAdvancedDialog->UpdateMountPage(); // Revert the Guider tab contents to reflect stellar guiding
         pFrame->m_PlanetaryMenuItem->Check(false);
-        pSolarSysTool->Close();
+        pSolarSysTool->Close(true);
     }
     m_mgr.Update();
 }

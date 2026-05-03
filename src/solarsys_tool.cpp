@@ -625,7 +625,7 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
         detectionMode = "Contours";
     }
 
-    pFrame->NotifyGuidingParam("SolarSys: Detection mode", detectionMode);
+    pFrame->NotifyGuidingParam("SolarSys: Detection mode ", detectionMode);
     ClearStats();
 }
 
@@ -850,6 +850,19 @@ void SolarSysToolWin::OnPauseClick(wxCommandEvent& event)
 
 void SolarSysToolWin::OnClose(wxCloseEvent& evt)
 {
+    if (pFrame->CaptureActive && evt.CanVeto())
+    {
+        bool confirmed =
+            ConfirmDialog::Confirm(_("Are you sure you want to stop SolarSystem guiding while capturing is active?"),
+                                   "/quit_when_SolarSys_looping", _("Confirm SolarSystem halt"));
+        if (!confirmed)
+        {
+            evt.Veto();
+            return;
+        }
+    }
+
+    pFrame->StopCapturing();
     // Windows close needs to be done in an orderly sequence, driven through SetSolarSystemMode
     if (pFrame->GetSolarSystemMode())
     {
