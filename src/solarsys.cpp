@@ -268,7 +268,7 @@ double SolarSystemObject::CalcSharpness(Mat& FullFrame, Point2f& clickedPoint, b
 // Get current detection status
 void SolarSystemObject::GetDetectionStatus(wxString& statusMsg)
 {
-    statusMsg = wxString::Format(_("Disk at (%.1f, %.1f) radius=%d"), m_center_x, m_center_y, m_radius);
+    statusMsg = wxString::Format(_("Disk at (%.1f, %.1f) diameter=%d"), m_center_x, m_center_y, 2 * m_radius);
 }
 
 // Update state used to visualize internally detected features
@@ -790,10 +790,15 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
 }
 
 // Find center of object using blob searching
-bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo, std::vector<cv::Point>& blobContour)
+bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
+                                         std::vector<cv::Point>& blobContour)
 {
     SimpleBlobDetector::Params params;
     Mat preppedMat;
+
+    Debug.Write(wxString::Format("SolarSys: Blob find thresh:%s, minD=%d,maxD=%d\n",
+                                 m_paramBlobAutoThreshold ? "Auto" : std::to_string(m_paramBlobThreshold),
+                                 (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
 
     params.filterByCircularity = false;
     params.filterByConvexity = false;
@@ -835,12 +840,14 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, CentroidResult& centroidInfo,
     centroidInfo.mode = DetectionModes::modeBlob;
     if (keypoints.size() == 1)
     {
-        centroidInfo.centroidX = keypoints[0].pt.x;
-        centroidInfo.centroidY = keypoints[0].pt.y;
+        centroidInfo.centroidX = keypoints[0].pt.x + roiX;
+        centroidInfo.centroidY = keypoints[0].pt.y + roiY;
         centroidInfo.objectSize = keypoints[0].size;
         std::vector<std::vector<cv::Point>> contours;
         contours = detector->getBlobContours();
         blobContour = contours.front();
+        Debug.Write(wxString::Format("SolarSys: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
+                                     centroidInfo.centroidY, centroidInfo.objectSize));
     }
     else
     {
@@ -874,7 +881,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     int maxRadius = Get_maxRadius();
 
     // Apply Canny edge detection
-    Debug.Write(wxString::Format("Start detection of solar system object (roi:%d "
+    Debug.Write(wxString::Format("SolarSys: Contour find (roi:%d "
                                  "low_tr=%d,high_tr=%d,minr=%d,maxr=%d)\n",
                                  roiActive, LowThreshold, HighThreshold, minRadius, maxRadius));
     Mat edges, dilatedEdges;
@@ -969,7 +976,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     }
 
     // Publish detection stats
-    Debug.Write(wxString::Format("End detection of solar system object (t=%d): r=%.1f, x=%.1f, y=%.1f, "
+    Debug.Write(wxString::Format("SolarSys: Contour find result (t=%d): r=%.1f, x=%.1f, y=%.1f, "
                                  "score=%.3f, contours=%d/%d, threads=%d\n",
                                  m_SolarSystemObjWatchdog.Time(), bestDiskCenter.radius, roiRect.x + bestDiskCenter.x,
                                  roiRect.y + bestDiskCenter.y, bestScore, contourMatchingCount, contourAllCount,
@@ -984,14 +991,14 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     if (bestDiskCenter.radius > 0)
     {
         centroidResult.mode = DetectionModes::modeContours;
-        centroidResult.centroidX = bestDiskCenter.x;
-        centroidResult.centroidY = bestDiskCenter.y;
+        centroidResult.centroidX = bestDiskCenter.x + roiRect.x;
+        centroidResult.centroidY = bestDiskCenter.y + roiRect.y;
         centroidResult.objectSize = cvRound(bestDiskCenter.radius);
         m_diskContour = bestContour;
         return true;
     }
 
-    m_preProcessedImageValid = false; // Pre-processed images isn't useful for contour detection
+    m_preProcessedImageValid = false; // Pre-processed image isn't useful for contour detection
 
     return false;
 }
@@ -1213,8 +1220,15 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
 
     // Use ROI for CPU time optimization
     bool roiActive = false;
-    int minRadius = (int) Get_minRadius();
-    int maxRadius = (int) Get_maxRadius();
+    int maxRadius;
+    if (m_detectionMode == DetectionModes::modeBlob)
+    {
+        maxRadius = (int) Get_maxBlobDiameter() / 2.0;
+    }
+    else
+    {
+        maxRadius = (int) Get_maxRadius();
+    }
     int roiRadius = (int) (maxRadius * 3 / 2.0 + 0.5);
     int roiOffsetX = 0;
     int roiOffsetY = 0;
@@ -1239,25 +1253,36 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     // Limit image processing to ROI when enabled
     Mat RoiFrame;
     Rect roiRect(0, 0, pImage->Size.GetWidth(), pImage->Size.GetHeight());
-    if (!autoSelect && GetRoiEnableState() && m_detected && (m_center_x < m_frameWidth) && (m_center_y < m_frameHeight) &&
-        (m_frameWidth == pImage->Size.GetWidth()) && (m_frameHeight == pImage->Size.GetHeight()))
+    bool useROI =
+        (!autoSelect && GetRoiEnableState() && m_detected && (m_center_x < m_frameWidth) && (m_center_y < m_frameHeight) &&
+         (m_frameWidth == pImage->Size.GetWidth()) && (m_frameHeight == pImage->Size.GetHeight()));
+    if (useROI)
     {
-        float fraction = (m_userLClick && (m_detectionCounter <= 4)) ? (1.0 - m_detectionCounter / 4.0) : 0.0;
-        int x = cvRound(m_clicked_x * fraction + m_center_x * (1.0 - fraction));
-        int y = cvRound(m_clicked_y * fraction + m_center_y * (1.0 - fraction));
-        roiOffsetX = wxMax(0, x - roiRadius);
-        roiOffsetY = wxMax(0, y - roiRadius);
+        if (m_userLClick && m_detectionCounter <= 4)
+        {
+            float blendAmt = (1.0 - m_detectionCounter / 4.0);
+            int xBlend = cvRound(m_clicked_x * blendAmt + m_center_x * (1.0 - blendAmt));
+            int yBlend = cvRound(m_clicked_y * blendAmt + m_center_y * (1.0 - blendAmt));
+            roiOffsetX = wxMax(0, xBlend - roiRadius);
+            roiOffsetY = wxMax(0, yBlend - roiRadius);
+        }
+        else
+        {
+            roiOffsetX = wxMax(0, m_center_x - roiRadius);
+            roiOffsetY = wxMax(0, m_center_y - roiRadius);
+        }
         int w = wxMin(roiRadius * 2, pImage->Size.GetWidth() - roiOffsetX);
         int h = wxMin(roiRadius * 2, pImage->Size.GetHeight() - roiOffsetY);
         roiRect = Rect(roiOffsetX, roiOffsetY, w, h);
         RoiFrame = FullFrame(roiRect);
         roiActive = true;
-        Debug.Write(wxString::Format("SolarSys::Find: ROI: {x:%d, y:%d w:%d, h:%d, xOff:%d, yOff:%d}, full:%s, frame %u\n", x,
-                                     y, w, h, roiOffsetX, roiOffsetY, "false", pImage->FrameNum));
+        Debug.Write(wxString::Format("SolarSys::Find: ROI: {x:%d, y:%d w:%d, h:%d}, full:%s, frame %u\n", roiOffsetX,
+                                     roiOffsetY, w, h, "false", pImage->FrameNum));
     }
     else
     {
         RoiFrame = FullFrame;
+        roiActive = false;
         Debug.Write(wxString::Format("SolarSys::Find: Fullframe %d X %d, frame %u\n", pImage->Size.GetWidth(),
                                      pImage->Size.GetHeight(), pImage->FrameNum));
     }
@@ -1286,21 +1311,20 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
         GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
 
         // Find object depending on the selected detection mode
-        // CentroidResult centroidInfo;
-        if (m_detectionMode != DetectionModes::modeContours)
+        // Object centers are in absolute sensor coordinates regardless of ROI use
+        if (m_detectionMode == DetectionModes::modeBlob)
         {
-            detectionResult = FindBlobCentroid(img8, m_lastCentroidResult, m_blobContour);
+            detectionResult = FindBlobCentroid(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
         }
-        if ((!detectionResult && m_detectionMode == DetectionModes::modeEither) ||
-            m_detectionMode == DetectionModes::modeContours)
+        else
         {
             detectionResult = FindContoursCentroid(imgFiltered, roiActive, clickedPoint, roiRect, activeRoiLimits,
                                                    distanceRoiMax, m_lastCentroidResult);
         }
         if (detectionResult)
         {
-            m_center_x = roiRect.x + m_lastCentroidResult.centroidX;
-            m_center_y = roiRect.y + m_lastCentroidResult.centroidY;
+            m_center_x = m_lastCentroidResult.centroidX;
+            m_center_y = m_lastCentroidResult.centroidY;
             if (m_lastCentroidResult.mode == DetectionModes::modeBlob)
             {
                 m_radius = cvRound(m_lastCentroidResult.objectSize / 2.0);
@@ -1375,5 +1399,5 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     m_prevClickedPoint = clickedPoint;
     m_syncLock.Unlock();
 
-    return detectionResult;
+    return m_detected;
 }

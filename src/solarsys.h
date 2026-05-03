@@ -42,8 +42,7 @@
 enum DetectionModes
 {
     modeBlob = 1,
-    modeContours = 2,
-    modeEither = 3
+    modeContours = 2
 };
 struct CentroidResult
 {
@@ -208,7 +207,7 @@ private:
                      int maxRadius);
     bool FindContoursCentroid(cv::Mat img8, bool roiActive, cv::Point2f& clickedPoint, cv::Rect& roiRect, bool activeRoiLimits,
                               float distanceRoiMax, CentroidResult& rslt);
-    bool FindBlobCentroid(cv::Mat testMat, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
+    bool FindBlobCentroid(cv::Mat testMat, int roiX, int roiY, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
 };
 
 #endif // PLANETARY_INCLUDED

@@ -1429,6 +1429,8 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 
             pFrame->StatusMsg(_("Mount Connected"));
             pFrame->UpdateStatusBarStateLabels();
+            if (pFrame->pSolarSysTool)
+                PlanetTool::NotifyMountConnectionChange(true);
         }
         else
         {
@@ -1472,6 +1474,8 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
             }
 
             pFrame->StatusMsg(_("Aux Mount Connected"));
+            if (pFrame->pSolarSysTool)
+                PlanetTool::NotifyMountConnectionChange(true);
         }
 
         Debug.AddLine("Connected AuxScope:" + (m_pAuxScope ? m_pAuxScope->Name() : "None"));
@@ -1480,6 +1484,8 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
     {
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("Aux Mount Connect Failed"));
+        if (pFrame->pSolarSysTool)
+            PlanetTool::NotifyMountConnectionChange(false);
     }
 
     UpdateButtonState();
@@ -1505,6 +1511,8 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
 
         pFrame->StatusMsg(_("Mount Disconnected"));
         pFrame->UpdateStatusBarStateLabels();
+        if (pFrame->pSolarSysTool)
+            PlanetTool::NotifyMountConnectionChange(false);
 
         if (pFrame->pManualGuide)
         {
@@ -1537,6 +1545,8 @@ void GearDialog::OnButtonDisconnectAuxScope(wxCommandEvent& event)
 
         m_pAuxScope->Disconnect();
         pFrame->StatusMsg(_("Aux Mount Disconnected"));
+        if (pFrame->pSolarSysTool)
+            PlanetTool::NotifyMountConnectionChange(false);
     }
     catch (const wxString& Msg)
     {

@@ -1550,10 +1550,15 @@ void MyFrame::UpdateStatusBarBlobInfo(CentroidResult lastCentroidResult)
 {
     wxString type;
     if (lastCentroidResult.mode == DetectionModes::modeBlob)
+    {
         type = "Blb";
+        m_statusbar->UpdateBlobInfo(type, lastCentroidResult.objectSize);
+    }
     else
+    {
         type = "Ctr";
-    m_statusbar->UpdateBlobInfo(type, lastCentroidResult.objectSize);
+        m_statusbar->UpdateBlobInfo(type, 2 * lastCentroidResult.objectSize);
+    }
 }
 
 void MyFrame::UpdateStatusBarStateLabels()
@@ -2869,6 +2874,7 @@ void MyFrame::SetVariableDelayConfig(bool varDelayEnabled, int ShortDelayMS, int
     pConfig->Profile.SetInt("/frame/var_delay/short_delay", ShortDelayMS);
     pConfig->Profile.SetInt("/frame/var_delay/long_delay", LongDelayMS);
     pConfig->Profile.SetBoolean("/frame/var_delay/enabled", varDelayEnabled);
+    NotifyGuidingParam("Variable delay", varDelayEnabled);
 }
 
 wxString MyFrame::GetDefaultFileDir()

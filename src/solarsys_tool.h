@@ -68,6 +68,7 @@ public:
     static wxWindow *CreateSolarSysToolWindow();
     static void RestoreProfileSettings();
     static void NotifyCameraSettingsChange();
+    static void NotifyMountConnectionChange(bool Connected);
     static void ShowDiameters(bool showDiams);
     static void UpdateTimingStats(long elapsedTime);
     static void UpdateScoreStats(float score);

@@ -57,7 +57,7 @@
 
 // subset of SIMMODE_GENERATE, reading raw star displacements from a file
 // #define SIM_FILE_DISPLACEMENTS
-
+# define DEVELOPER_MODE
 enum SimMode
 {
     SIMMODE_GENERATE = 0,

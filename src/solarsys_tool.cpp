@@ -50,7 +50,6 @@ struct SolarSysToolWin : public wxDialog
     wxPanel *m_statsTab;
     wxRadioButton *m_detectionBlob;
     wxRadioButton *m_detectionContours;
-    wxRadioButton *m_detectionEither;
     // Blob-related controls
     wxSpinCtrlDouble *m_minBlobDiameter;
     wxStaticText *m_minBlobDiameterAngle;
@@ -90,6 +89,7 @@ struct SolarSysToolWin : public wxDialog
     bool m_MouseHoverFlag;
     int m_windowPosX;
     int m_windowPosY;
+    VarDelayCfg prevVariableDelayConfig;
 
     SolarSysToolWin();
     ~SolarSysToolWin();
@@ -128,6 +128,7 @@ struct SolarSysToolWin : public wxDialog
     void RestoreBlobSearchParameters();
     void RestoreContourSearchParameters();
     void NotifyCameraSettingsChange();
+    void NotifyMountConnectionChange(bool Connected);
     void SaveProfileParameters();
     void ClearStats();
     void UpdateTiming(long elapsedTime);
@@ -196,12 +197,12 @@ SolarSysToolWin::SolarSysToolWin()
     wxBoxSizer *blob_vSizer = new wxBoxSizer(wxVERTICAL);
     wxFlexGridSizer *blobDiamGrid = new wxFlexGridSizer(2, 4, 5, 15);
     wxStaticText *minBlobDiameter_Label = new wxStaticText(m_basic_tab, wxID_ANY, _("Min Pixels:"));
-    m_minBlobDiameter = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
+    m_minBlobDiameter = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1),
                                              wxSP_ARROW_KEYS, PT_RADIUS_MIN * 2, PT_RADIUS_MAX * 2, 50.0, 10.0);
     m_minBlobDiameter->SetToolTip(_("Minimum expected object diameter in pixels.  "));
     m_minBlobDiameterAngle = new wxStaticText(m_basic_tab, wxID_ANY, "20 arc-min");
     wxStaticText *maxBlobDiameter_Label = new wxStaticText(m_basic_tab, wxID_ANY, _("Max Pixels:"));
-    m_maxBlobDiameter = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
+    m_maxBlobDiameter = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1),
                                              wxSP_ARROW_KEYS, PT_RADIUS_MIN * 2, PT_RADIUS_MAX * 2, 250, 10.0);
     m_maxBlobDiameter->SetToolTip(_("Maximum expected object diameter in pixels.  Keep this well above the actual diameter. "));
     m_maxBlobDiameterAngle = new wxStaticText(m_basic_tab, wxID_ANY, "60 arc-min");
@@ -215,7 +216,7 @@ SolarSysToolWin::SolarSysToolWin()
     blobDiamGrid->Add(m_maxBlobDiameterAngle);
 
     wxStaticText *blobThreshold_Label = new wxStaticText(m_basic_tab, wxID_ANY, _("Brightness threshold:"));
-    m_blobThreshold = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
+    m_blobThreshold = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1),
                                            wxSP_ARROW_KEYS, 20, 200, 50, 10.0);
     m_blobThreshold->SetToolTip(
         _("Pixel brightness threshold for blob detection. Values below this threshold will be set to zero "
@@ -238,17 +239,16 @@ SolarSysToolWin::SolarSysToolWin()
 
     wxBoxSizer *blobSizer2 = new wxBoxSizer(wxHORIZONTAL);
     blobSizer2->Add(blobThreshold_Label, wxSizerFlags().Border(wxLEFT, 4));
-    blobSizer2->Add(m_blobThreshold, wxSizerFlags().Border(wxLEFT, 4));
-    blobSizer2->AddSpacer(10);
-    blobSizer2->Add(m_useAutoThresh, wxSizerFlags().Border(wxLEFT, 10));
-    blobSizer2->AddSpacer(10);
-    blobSizer2->Add(m_blobInvert, wxSizerFlags().Border(wxLEFT, 10));
+    blobSizer2->Add(m_blobThreshold);
+    blobSizer2->AddSpacer(30);
+    blobSizer2->Add(m_useAutoThresh, wxSizerFlags().Border(wxLEFT, 20));
 
     blob_vSizer->AddSpacer(20);
     blob_vSizer->Add(blobDiametersSzr, 0, wxEXPAND, 5);
-
     blob_vSizer->AddSpacer(15);
-    blob_vSizer->Add(blobSizer2);
+    blob_vSizer->Add(blobSizer2, wxSizerFlags().Center());
+    blob_vSizer->AddSpacer(10);
+    blob_vSizer->Add(m_blobInvert, wxSizerFlags().Center());
 
     m_restoreBlobParams = new wxButton(m_basic_tab, wxID_ANY, _("Restore Parameters"));
     m_restoreBlobParams->SetToolTip(_("Restore search parameters to values used in previous guiding session"));
@@ -261,13 +261,13 @@ SolarSysToolWin::SolarSysToolWin()
     // Contour detection.  SolarSystemObject deals with radius values but we will use diameters just in the UI
     // for consistency with blobs
     wxStaticText *minDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("Min Pixels:"));
-    m_minDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
+    m_minDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(90, -1),
                                          wxSP_ARROW_KEYS, PT_RADIUS_MIN, PT_RADIUS_MAX, PT_MIN_RADIUS_DEFAULT, 10.0);
     m_minDiameter->SetToolTip(_("Minimum object diameter in pixels. Set this a few pixels lower than "
                                 "the actual object diameter. ") +
                               radiusTooltip);
     wxStaticText *maxDiameter_Label = new wxStaticText(m_expert_tab, wxID_ANY, _("Max Pixels:"));
-    m_maxDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(60, -1),
+    m_maxDiameter = new wxSpinCtrlDouble(m_expert_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(90, -1),
                                          wxSP_ARROW_KEYS, PT_RADIUS_MIN, PT_RADIUS_MAX, PT_MAX_RADIUS_DEFAULT, 10.0);
     m_maxDiameter->SetToolTip(_("Maximum object diameter in pixels. Set this a few pixels higher than "
                                 "the actual object diameter. ") +
@@ -389,9 +389,9 @@ SolarSysToolWin::SolarSysToolWin()
     // Camera settings group
     wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera settings"));
     wxBoxSizer *pCamSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    m_ExposureCtrl = NewSpinner(this, _T("%5.0f"), 1000, PT_CAMERA_EXPOSURE_MIN, PT_CAMERA_EXPOSURE_MAX, 1);
+    m_ExposureCtrl = NewSpinner(this, _T("%5.0f"), 1000, PT_CAMERA_EXPOSURE_MIN, PT_CAMERA_EXPOSURE_MAX, 100);
     m_GainCtrl = NewSpinner(this, _T("%3.0f"), 0, 0, 100, 1);
-    m_DelayCtrl = NewSpinner(this, _T("%5.0f"), 100, 0, 60000, 100);
+    m_DelayCtrl = NewSpinner(this, _T("%5.0f"), 1000, 0, 60000, 1000);
 
     m_ExposureCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnExposureChanged, this);
     m_GainCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnGainChanged, this);
@@ -426,15 +426,10 @@ SolarSysToolWin::SolarSysToolWin()
     m_detectionContours->SetToolTip(
         _("Contour detection assumes the target is circular and it requires more computer resources, "
           "but it has proven to be robust for eclipse situations when the solar/lunar disk shape is changing."));
-    m_detectionEither = new wxRadioButton(this, wxID_ANY, _("Either"), wxDefaultPosition, wxDefaultSize);
-    m_detectionEither->SetToolTip(
-        _("Will use blob detection first, then contour detection if the blob can't be found, "
-          "but the contour detection parameters must be configured correctly in order for this to work."));
     detectionModeBox->Add(m_detectionBlob, 0, wxLEFT | wxTOP, 10);
-    detectionModeBox->AddSpacer(5);
+    detectionModeBox->AddSpacer(10);
     detectionModeBox->Add(m_detectionContours, 0, wxLEFT | wxTOP, 10);
-    detectionModeBox->AddSpacer(5);
-    detectionModeBox->Add(m_detectionEither, 0, wxLEFT | wxTOP, 10);
+
     topControls->Add(checkBoxesSzr, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
     topControls->AddSpacer(60);
     topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 20).Border(wxTOP, 2));
@@ -471,14 +466,12 @@ SolarSysToolWin::SolarSysToolWin()
     m_thresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnThresholdChanged, this);
     m_detectionBlob->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_detectionContours->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
-    m_detectionEither->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_solarSystemObj->SetShowFeaturesButtonState(false);
     m_solarSystemObj->ShowVisualElements(false);
 
     m_detectionBlob->SetValue(true);
     m_ShowDiagnosticImage->SetValue(false);
     m_detectionContours->SetValue(false);
-    m_detectionEither->SetValue(false);
     wxCommandEvent evt;
     OnDetectionModeClick(evt);
     m_solarSystemObj->Set_blobInversion(false);
@@ -489,6 +482,11 @@ SolarSysToolWin::SolarSysToolWin()
 
     RestoreProfileParameters();
     InitializeTrackingRates(m_trackingRateName);
+    prevVariableDelayConfig = pFrame->GetVariableDelayConfig();
+    if (prevVariableDelayConfig.enabled)
+    {
+        pFrame->SetVariableDelayConfig(false, prevVariableDelayConfig.shortDelay, prevVariableDelayConfig.longDelay);
+    }
 
     if (wxGetKeyState(WXK_ALT))
     {
@@ -502,6 +500,9 @@ SolarSysToolWin::SolarSysToolWin()
 SolarSysToolWin::~SolarSysToolWin(void)
 {
     pFrame->pSolarSysTool = nullptr;
+    if (prevVariableDelayConfig.enabled)
+        pFrame->SetVariableDelayConfig(prevVariableDelayConfig.enabled, prevVariableDelayConfig.shortDelay,
+                                       prevVariableDelayConfig.longDelay);
     Debug.Write("Solar system guiding de-activated\n");
 }
 
@@ -566,9 +567,12 @@ void SolarSysToolWin::RestoreProfileParameters()
 
     double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 1000));
     m_ExposureCtrl->SetValue(val);
+    m_DelayCtrl->SetValue(pConfig->Profile.GetInt("/PlanetTool/Timelapse", pFrame->GetTimeLapse()));
+    // Wait until both delay' and 'exposure' controls are initialized because either event will trigger a check on
+    // delay+exposure
+    // >= 500ms
     wxSpinDoubleEvent evt;
     OnExposureChanged(evt);
-    m_DelayCtrl->SetValue(pConfig->Profile.GetInt("/PlanetTool/Timelapse", pFrame->GetTimeLapse()));
     OnDelayChanged(evt);
     if (pCamera)
     {
@@ -603,12 +607,14 @@ void SolarSysToolWin::SaveProfileParameters()
 
 void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
 {
+    wxString detectionMode;
     if (m_detectionBlob->GetValue())
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeBlob);
         m_tabs->SetSelection(0);
         m_ShowDiagnosticImage->Enable(!m_useAutoThresh->IsChecked());
         Debug.Write("Solar system guiding via simple blob detection\n");
+        detectionMode = "Blob";
     }
     else if (m_detectionContours->GetValue())
     {
@@ -616,14 +622,10 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
         m_tabs->SetSelection(1);
         m_ShowDiagnosticImage->Enable(false);
         Debug.Write("Solar system guiding via contour detection\n");
+        detectionMode = "Contours";
     }
-    else
-    {
-        m_solarSystemObj->SetDetectionMode(DetectionModes::modeEither);
-        m_tabs->SetSelection(1); // Intentional, 3rd tab is "stats"
-        m_ShowDiagnosticImage->Enable(false);
-        Debug.Write("Solar system guiding via 'either' detection mode\n");
-    }
+
+    pFrame->NotifyGuidingParam("SolarSys: Detection mode", detectionMode);
     ClearStats();
 }
 
@@ -645,6 +647,7 @@ void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
     m_solarSystemObj->Set_minRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
     ShowAngularSize(v, m_minContourDiameterAngle);
+    pFrame->NotifyGuidingParam("SolarSys: Min contour diameter", v);
 }
 
 void SolarSysToolWin::OnSpinCtrl_maxDiameter(wxSpinDoubleEvent& event)
@@ -653,6 +656,7 @@ void SolarSysToolWin::OnSpinCtrl_maxDiameter(wxSpinDoubleEvent& event)
     m_solarSystemObj->Set_maxRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
     ShowAngularSize(v, m_maxContourDiameterAngle);
+    pFrame->NotifyGuidingParam("SolarSys: Max contour diameter", v);
 }
 
 void SolarSysToolWin::OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event)
@@ -660,6 +664,7 @@ void SolarSysToolWin::OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event)
     int v = m_minBlobDiameter->GetValue();
     m_solarSystemObj->Set_minBlobDiameter(v);
     ShowAngularSize(v, m_minBlobDiameterAngle);
+    pFrame->NotifyGuidingParam("SolarSys: Blob min diam", v);
 }
 
 void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
@@ -667,18 +672,21 @@ void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
     int v = m_maxBlobDiameter->GetValue();
     m_solarSystemObj->Set_maxBlobDiameter(v);
     ShowAngularSize(v, m_maxBlobDiameterAngle);
+    pFrame->NotifyGuidingParam("SolarSys: Blob max diam", v);
 }
 
 void SolarSysToolWin::OnSpinCtrl_blobThreshold(wxSpinDoubleEvent& event)
 {
     int v = m_blobThreshold->GetValue();
     m_solarSystemObj->Set_blobThreshold(v);
+    pFrame->NotifyGuidingParam("SolarSys: Blob threshold", v);
 }
 
 void SolarSysToolWin::OnBlobInvertClick(wxCommandEvent& event)
 {
     bool enabled = m_blobInvert->IsChecked();
     m_solarSystemObj->Set_blobInversion(enabled);
+    pFrame->NotifyGuidingParam("SolarSys : Blob inversion", enabled);
 }
 
 void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
@@ -687,6 +695,7 @@ void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
     m_blobThreshold->Enable(!enabled);
     m_ShowDiagnosticImage->Enable(!enabled);
     m_solarSystemObj->Set_blobAutoThreshold(enabled);
+    pFrame->NotifyGuidingParam("SolarSys: Blob auto-threshold", enabled);
 }
 
 void SolarSysToolWin::OnBlobRestoreParamsClick(wxCommandEvent& event)
@@ -729,7 +738,7 @@ void SolarSysToolWin::OnShowDiagnosticImage(wxCommandEvent& event)
 
 void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
 {
-    m_mountTrackingRate->Enable(false);
+    m_mountTrackingRate->Enable(false); // Default, changed only when relevant
     if (pPointingSource && pPointingSource->IsConnected())
     {
         int selInx = 0;
@@ -774,7 +783,8 @@ void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
         m_trackingRateName = m_mountTrackingRate->GetString(sel);
         int *pRate = (int *) m_mountTrackingRate->GetClientData(sel);
         pPointingSource->SetTrackingRate((TrackingRates) *pRate);
-        Debug.Write(wxString::Format("Solar/planetary: setting mount tracking rate to %s\n", m_trackingRateName));
+        Debug.Write(wxString::Format("SolarSys: setting mount tracking rate to %s\n", m_trackingRateName));
+        pFrame->NotifyGuidingParam("SolarSys: mount tracking rate", m_trackingRateName);
     }
 }
 
@@ -818,6 +828,7 @@ void SolarSysToolWin::OnThresholdChanged(wxCommandEvent& event)
     int lowThreshold = wxMax(highThreshold / 2, PT_THRESHOLD_MIN);
     m_solarSystemObj->Set_lowThreshold(lowThreshold);
     m_solarSystemObj->Set_highThreshold(highThreshold);
+    pFrame->NotifyGuidingParam("SolarSy:s contour threshold", highThreshold);
 }
 
 static void SuppressPausePlanetDetection(long)
@@ -893,7 +904,7 @@ void SolarSysToolWin::CheckMinExposureDuration()
     }
 }
 
-// Based on notification from my MyFrame that a camera-related property has been changed
+// Based on notification from MyFrame that a camera-related property has been changed
 void SolarSysToolWin::SyncCameraExposure(bool init)
 {
     int exposureMsec;
@@ -1003,6 +1014,16 @@ void SolarSysToolWin::NotifyCameraSettingsChange()
         m_GainCtrl->Enable(false);
 }
 
+void SolarSysToolWin::NotifyMountConnectionChange(bool Connected)
+{
+    if (Connected)
+    {
+        InitializeTrackingRates(m_trackingRateName); // Will also condition tracking rate control appropriately
+    }
+    else
+        m_mountTrackingRate->Enable(false);
+}
+
 // Restores profile value in UI if profile is switched while window is already displayed
 void PlanetTool::RestoreProfileSettings()
 {
@@ -1023,6 +1044,17 @@ void PlanetTool::NotifyCameraSettingsChange()
         win->NotifyCameraSettingsChange();
     }
 }
+
+void PlanetTool::NotifyMountConnectionChange(bool Connected)
+{
+    SolarSysToolWin *win;
+    if (pFrame && pFrame->pSolarSysTool)
+    {
+        win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
+        win->NotifyMountConnectionChange(Connected);
+    }
+}
+
 void PlanetTool::ShowDiameters(bool showDiams)
 {
     SolarSysToolWin *win;

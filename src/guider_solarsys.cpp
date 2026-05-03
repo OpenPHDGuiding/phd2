@@ -382,7 +382,6 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
 
         pFrame->AdjustAutoExposure(m_primaryStar.SNR);
         pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
-        // pFrame->UpdateStatusBarStarInfo(m_primaryStar.SNR, m_primaryStar.GetError() == Star::STAR_SATURATED);
         errorInfo->status = StarStatus(m_primaryStar);
 
         // Show sun/moon/planet position after successful detection
@@ -491,15 +490,14 @@ void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)
 
             if (!m_primaryStar.IsValid())
             {
-                pFrame->StatusMsg(wxString::Format(_("No star found")));
+                pFrame->StatusMsg(wxString::Format(_("No disk found")));
             }
             else
             {
                 SetLockPosition(m_primaryStar);
                 Debug.Write("Solar system: target forced by user star selection\n");
                 pFrame->StatusMsg(
-                    wxString::Format(_("Selected %s at (%.1f, %.1f)"), _("Disc"), m_primaryStar.X, m_primaryStar.Y));
-                // pFrame->UpdateStatusBarStarInfo(m_primaryStar.SNR, m_primaryStar.GetError() == Star::STAR_SATURATED);
+                    wxString::Format(_("Selected %s at (%.1f, %.1f)"), _("Disk"), m_primaryStar.X, m_primaryStar.Y));
                 pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
