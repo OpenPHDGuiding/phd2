@@ -45,6 +45,7 @@
 #include "phd.h"
 #include "solarsys.h"
 #include "solarsys_tool.h"
+#include "guiding_stats.h"
 
 #include <wx/dir.h>
 #include <algorithm>
@@ -64,8 +65,13 @@ wxEND_EVENT_TABLE();
 GuiderSolarSys::GuiderSolarSys(wxWindow *parent) : Guider(parent, XWinSize, YWinSize), m_lockPositionMoved(false)
 {
     SetState(STATE_UNINITIALIZED);
+    m_distanceStats = new DescriptiveStats();
+    retryingFind = false;
 }
-
+GuiderSolarSys::~GuiderSolarSys()
+{
+    delete m_distanceStats;
+}
 void GuiderSolarSys::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -376,6 +382,34 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
                 pMount->TransformCameraCoordinatesToMountCoordinates(ofs->cameraOfs, ofs->mountOfs, true);
             double distanceRA = ofs->mountOfs.IsValid() ? fabs(ofs->mountOfs.X) : 0.;
             UpdateCurrentDistance(distance, distanceRA);
+            if (GetState() == STATE_GUIDING)
+            {
+                m_distanceStats->AddValue(distance);
+                if (m_distanceStats->GetCount() > 10)
+                {
+                    double sigma = m_distanceStats->GetSigma();
+                    double meanV = m_distanceStats->GetMean();
+                    if (!retryingFind && fabs(distance - meanV) >= 1.75 * sigma)
+                    {
+                        pFrame->SetTimeLapse(0);
+                        Debug.Write(wxString::Format("SolarSys: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
+                                                     distance, 1.75 * sigma));
+                        errorInfo->starError = Star::FindResult::STAR_RESAMPLE;
+                        errorInfo->status = _("Resampling");
+                        retryingFind = true;
+                        throw ERROR_INFO("Resampling");
+                    }
+                    else
+                    {
+                        if (retryingFind)
+                            Debug.Write(wxString::Format("SolarSys: resampling result, dist: %0.1f, thresh: %0.1f\n", distance,
+                                                         1.75 * sigma));
+                        retryingFind = false;
+                        pFrame->StatusMsg(_("Guiding"));
+                        pFrame->SetTimeLapse(1000);
+                    }
+                }
+            }
         }
 
         pFrame->pProfile->UpdateData(pImage, m_primaryStar.X, m_primaryStar.Y);
@@ -384,7 +418,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
         pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
         errorInfo->status = StarStatus(m_primaryStar);
 
-        // Show sun/moon/planet position after successful detection
+        // Show SSO position after successful detection
         if (GetState() != STATE_GUIDING)
         {
             wxString statusMsg;

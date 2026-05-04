@@ -86,7 +86,7 @@ public:
 
 public:
     GuiderSolarSys(wxWindow *parent);
-
+    virtual ~GuiderSolarSys();
     void OnPaint(wxPaintEvent& evt) override;
     void SetImageDisplayWindow(wxWindow *DispWin);
     bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC) override;
@@ -114,6 +114,8 @@ private:
     bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) final;
     bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) final;
     void OnLClick(wxMouseEvent& evt);
+    DescriptiveStats *m_distanceStats;
+    bool retryingFind;
 
     void SaveStarFITS();
 

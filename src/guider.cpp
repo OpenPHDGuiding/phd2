@@ -1346,6 +1346,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_GUIDING:
             {
+                if (pFrame->GetSolarSystemMode() && info.starError == Star::FindResult::STAR_RESAMPLE)
+                {
+                    break;
+                }
                 GuideLog.FrameDropped(info);
                 EvtServer.NotifyStarLost(info);
                 GuidingAssistant::NotifyFrameDropped(info);

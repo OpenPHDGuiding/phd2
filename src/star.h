@@ -60,6 +60,7 @@ public:
         STAR_TOO_NEAR_EDGE,
         STAR_MASSCHANGE,
         STAR_ERROR,
+        STAR_RESAMPLE
     };
 
     enum StarFindLogType
