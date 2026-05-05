@@ -73,7 +73,7 @@ struct SolarSysToolWin : public wxDialog
     // and exposure time dropdown. Used for streamlining the solar/planetary mode
     // guiding user experience.
     wxSpinCtrlDouble *m_ExposureCtrl;
-    wxSpinCtrlDouble *m_DelayCtrl;
+    wxSpinCtrlDouble *m_CadenceCtrl;
     wxSpinCtrlDouble *m_GainCtrl;
 
     // Mount controls
@@ -119,11 +119,10 @@ struct SolarSysToolWin : public wxDialog
     void OnTrackingRateMouseWheel(wxMouseEvent& event);
 
     void OnExposureChanged(wxSpinDoubleEvent& event);
-    void OnDelayChanged(wxSpinDoubleEvent& event);
+    void OnCadenceChanged(wxSpinDoubleEvent& event);
     void OnGainChanged(wxSpinDoubleEvent& event);
     void SyncCameraExposure(bool init = false);
     void InitializeTrackingRates(wxString trackingRateName);
-    void CheckMinExposureDuration();
     void RestoreProfileParameters();
     void RestoreBlobSearchParameters();
     void RestoreContourSearchParameters();
@@ -391,16 +390,16 @@ SolarSysToolWin::SolarSysToolWin()
     wxBoxSizer *pCamSizer1 = new wxBoxSizer(wxHORIZONTAL);
     m_ExposureCtrl = NewSpinner(this, _T("%5.0f"), 1000, PT_CAMERA_EXPOSURE_MIN, PT_CAMERA_EXPOSURE_MAX, 100);
     m_GainCtrl = NewSpinner(this, _T("%3.0f"), 0, 0, 100, 1);
-    m_DelayCtrl = NewSpinner(this, _T("%5.0f"), 1000, 0, 60000, 1000);
+    m_CadenceCtrl = NewSpinner(this, _T("%5.0f"), 1000, 500, 20000, 500);
 
     m_ExposureCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnExposureChanged, this);
     m_GainCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnGainChanged, this);
-    m_DelayCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnDelayChanged, this);
+    m_CadenceCtrl->Bind(wxEVT_SPINCTRLDOUBLE, &SolarSysToolWin::OnCadenceChanged, this);
     pCamSizer1->AddSpacer(5);
     AddTableEntryPair(this, pCamSizer1, _("Exposure (ms)"), 10, m_ExposureCtrl, 10, _("Camera exposure in milliseconds)"));
-    AddTableEntryPair(this, pCamSizer1, _("Time Lapse (ms)"), 5, m_DelayCtrl, 10,
-                      _("How long should PHD wait between guide frames? Useful when using very "
-                        "short exposures but wanting to send guide commands less frequently"));
+    AddTableEntryPair(this, pCamSizer1, _("Guiding cadence (ms)"), 5, m_CadenceCtrl, 10,
+                      _("Minimum time interval between sending guide corrections to the mount.  Required when using  "
+                        "exposure times < 500ms"));
     AddTableEntryPair(this, pCamSizer1, _("Gain"), 10, m_GainCtrl, 0, _("Camera gain (0-100)"));
 
     pCamGroup->Add(pCamSizer1);
@@ -567,13 +566,11 @@ void SolarSysToolWin::RestoreProfileParameters()
 
     double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 1000));
     m_ExposureCtrl->SetValue(val);
-    m_DelayCtrl->SetValue(pConfig->Profile.GetInt("/PlanetTool/Timelapse", pFrame->GetTimeLapse()));
-    // Wait until both delay' and 'exposure' controls are initialized because either event will trigger a check on
-    // delay+exposure
-    // >= 500ms
+    val = pConfig->Profile.GetInt("/PlanetTool/Timelapse", 500.);
+    m_CadenceCtrl->SetValue(val);
     wxSpinDoubleEvent evt;
     OnExposureChanged(evt);
-    OnDelayChanged(evt);
+    OnCadenceChanged(evt);
     if (pCamera)
     {
         m_GainCtrl->SetValue(pConfig->Profile.GetInt("/PlanetTool/Gain", pCamera->GetCameraGain()));
@@ -599,7 +596,7 @@ void SolarSysToolWin::SaveProfileParameters()
     pConfig->Profile.SetInt("/PlanetTool/MinRadius", (int) (m_minDiameter->GetValue() / 2.0));
     pConfig->Profile.SetInt("/PlanetTool/MaxRadius", (int) m_maxDiameter->GetValue() / 2.0);
     pConfig->Profile.SetInt("/PlanetTool/Threshold", (int) m_thresholdSlider->GetValue());
-    pConfig->Profile.SetInt("/PlanetTool/Timelapse", (int) m_DelayCtrl->GetValue());
+    pConfig->Profile.SetInt("/PlanetTool/Timelapse", (int) m_CadenceCtrl->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/ExposureTime", (int) m_ExposureCtrl->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/Gain", (int) m_GainCtrl->GetValue());
     pConfig->Profile.SetString("/PlanetTool/TrackingRateName", m_trackingRateName);
@@ -799,16 +796,12 @@ void SolarSysToolWin::OnExposureChanged(wxSpinDoubleEvent& event)
     expMsec = wxMin(expMsec, PT_CAMERA_EXPOSURE_MAX);
     expMsec = wxMax(expMsec, PT_CAMERA_EXPOSURE_MIN);
     pFrame->SetExposureDuration(expMsec, true);
-    CheckMinExposureDuration();
 }
 
-void SolarSysToolWin::OnDelayChanged(wxSpinDoubleEvent& event)
+void SolarSysToolWin::OnCadenceChanged(wxSpinDoubleEvent& event)
 {
-    int delayMsec = m_DelayCtrl->GetValue();
-    delayMsec = wxMin(delayMsec, 60000);
-    delayMsec = wxMax(delayMsec, 0);
-    pFrame->SetTimeLapse(delayMsec);
-    CheckMinExposureDuration();
+    int delayMsec = m_CadenceCtrl->GetValue();
+    m_solarSystemObj->SetGuiderCadence(delayMsec);
 }
 
 void SolarSysToolWin::OnGainChanged(wxSpinDoubleEvent& event)
@@ -906,17 +899,6 @@ void SolarSysToolWin::OnCloseButton(wxCommandEvent& event)
     }
 }
 
-void SolarSysToolWin::CheckMinExposureDuration()
-{
-    int delayMsec = m_DelayCtrl->GetValue();
-    int exposureMsec = m_ExposureCtrl->GetValue();
-    if (delayMsec + exposureMsec < 500)
-    {
-        pFrame->Alert(_("Warning: the sum of camera exposure and time lapse duration must be "
-                        "at least 500 msec (recommended 500-5000 msec)!"));
-    }
-}
-
 // Based on notification from MyFrame that a camera-related property has been changed
 void SolarSysToolWin::SyncCameraExposure(bool init)
 {
@@ -941,7 +923,6 @@ void SolarSysToolWin::SyncCameraExposure(bool init)
             pFrame->SetExposureDuration(exposureMsec, true);
         }
     }
-    CheckMinExposureDuration();
 }
 
 void SolarSysToolWin::ClearStats()
@@ -1011,11 +992,6 @@ void PlanetTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
 void SolarSysToolWin::NotifyCameraSettingsChange()
 {
     SyncCameraExposure();
-
-    int const delayMsec = pFrame->GetTimeLapse();
-    if (delayMsec != m_DelayCtrl->GetValue())
-        m_DelayCtrl->SetValue(delayMsec);
-
     if (pCamera && pCamera->HasGainControl)
     {
 

@@ -619,8 +619,9 @@ int MyFrame::GetTextWidth(wxControl *pControl, const wxString& string)
 int MyFrame::GetExposureDelay()
 {
     int rslt;
-
-    if (!m_varDelayConfig.enabled)
+    if (pFrame->GetSolarSystemMode())
+        rslt = pFrame->pGuider->m_SolarSystemObject->GetGuiderCadence();
+    else if (!m_varDelayConfig.enabled)
         rslt = m_timeLapse;
     else if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() && pMount->GetGuidingEnabled())
     {

@@ -204,6 +204,19 @@ void SolarSystemObject::Set_lowThreshold(int value)
     m_paramLowThreshold = value;
 }
 
+void SolarSystemObject::SetGuiderCadence(int cadenceMS)
+{
+    m_paramGuiderCadence = cadenceMS;
+}
+void SolarSystemObject::SuspendGuiderCadence()
+{
+    m_savedGuiderCadence = m_guiderCadence;
+}
+void SolarSystemObject::ResumeGuiderCadence()
+{
+    m_guiderCadence = m_savedGuiderCadence;
+}
+
 // The Sobel operator can be used to detect edges in an image, which are more
 // pronounced in focused images. You can apply the Sobel operator to the image
 // and calculate the sum or mean of the absolute values of the gradients.

@@ -391,7 +391,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
                     double meanV = m_distanceStats->GetMean();
                     if (!retryingFind && fabs(distance - meanV) >= 1.75 * sigma)
                     {
-                        pFrame->SetTimeLapse(0);
+                        m_SolarSystemObject->SuspendGuiderCadence();
                         Debug.Write(wxString::Format("SolarSys: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
                                                      distance, 1.75 * sigma));
                         errorInfo->starError = Star::FindResult::STAR_RESAMPLE;
@@ -406,7 +406,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
                                                          1.75 * sigma));
                         retryingFind = false;
                         pFrame->StatusMsg(_("Guiding"));
-                        pFrame->SetTimeLapse(1000);
+                        m_SolarSystemObject->ResumeGuiderCadence();
                     }
                 }
             }

@@ -87,7 +87,9 @@ private:
     int m_frameWidth;
     int m_frameHeight;
     DetectionModes m_detectionMode;
+    int m_guiderCadence;
 
+    // TODO: Sort out the private/public mess
 public:
     wxString m_statusMsg;
     bool m_detected;
@@ -101,6 +103,8 @@ public:
     double m_paramBlobThreshold;
     bool m_paramInvertBlob;
     bool m_paramBlobAutoThreshold;
+    int m_paramGuiderCadence;
+    int m_savedGuiderCadence;
 
     bool m_roiActive;
     cv::Rect m_roiRect;
@@ -158,6 +162,10 @@ public:
     int Get_lowThreshold() { return m_paramLowThreshold; }
     void Set_highThreshold(int value);
     int Get_highThreshold() { return m_paramHighThreshold; }
+    int GetGuiderCadence() { return m_paramGuiderCadence; }
+    void SetGuiderCadence(int cadenceMS);
+    void SuspendGuiderCadence();
+    void ResumeGuiderCadence();
 
     void ShowVisualElements(bool state);
     bool VisualElementsEnabled() { return m_showVisualElements; }
