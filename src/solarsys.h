@@ -67,6 +67,7 @@ private:
     int m_paramLowThreshold;
     int m_paramHighThreshold;
     bool m_paramShowElementsButtonState;
+    bool m_paramResamplingEnabled;
 
     bool m_showVisualElements;
     bool m_prevCaptureActive;
@@ -166,11 +167,21 @@ public:
     void SetGuiderCadence(int cadenceMS);
     void SuspendGuiderCadence();
     void ResumeGuiderCadence();
+    bool GetResamplingEnabled() { return m_paramResamplingEnabled; }
+    void SetResamplingEnabled(bool Enabled);
+    DescriptiveStats *m_distanceStats;
+    double m_lastDistance;
+    int resampleCount;
+    int resampleReductionCount;
+    bool retryingFind;
+    int lostTargetEvents;
+    int totalDetectionEvents;
 
     void ShowVisualElements(bool state);
     bool VisualElementsEnabled() { return m_showVisualElements; }
     void SetShowFeaturesButtonState(bool state) { m_paramShowElementsButtonState = state; }
     bool GetShowFeaturesButtonState() { return m_paramShowElementsButtonState; }
+    void ResetDetectionStats();
 
 public:
     // Displaying visual aid for solar system object parameter tuning

@@ -432,7 +432,7 @@ void SBStarIndicators::UpdateState(wxString& blobType, int blobSize)
     m_parentPanel->ShowControl(txtStarInfo, true);
     txtSNRLabel->SetLabelText(blobType);
     txtSNRValue->SetLabelText(wxString::Format("%d", blobSize));
-    txtStarInfo->SetLabelText(_("BLOB"));
+    txtStarInfo->SetLabelText(_("DISK"));
 }
 
 void SBStarIndicators::UpdateState(double MassPct, double SNR, bool Saturated)

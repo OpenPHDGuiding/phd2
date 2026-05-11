@@ -65,13 +65,8 @@ wxEND_EVENT_TABLE();
 GuiderSolarSys::GuiderSolarSys(wxWindow *parent) : Guider(parent, XWinSize, YWinSize), m_lockPositionMoved(false)
 {
     SetState(STATE_UNINITIALIZED);
-    m_distanceStats = new DescriptiveStats();
-    retryingFind = false;
 }
-GuiderSolarSys::~GuiderSolarSys()
-{
-    delete m_distanceStats;
-}
+GuiderSolarSys::~GuiderSolarSys() { }
 void GuiderSolarSys::LoadProfileSettings()
 {
     Guider::LoadProfileSettings();
@@ -384,30 +379,12 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
             UpdateCurrentDistance(distance, distanceRA);
             if (GetState() == STATE_GUIDING)
             {
-                m_distanceStats->AddValue(distance);
-                if (m_distanceStats->GetCount() > 10)
+                if (newStar.GetError() == Star::FindResult::STAR_RESAMPLE)
                 {
-                    double sigma = m_distanceStats->GetSigma();
-                    double meanV = m_distanceStats->GetMean();
-                    if (!retryingFind && fabs(distance - meanV) >= 1.75 * sigma)
-                    {
-                        m_SolarSystemObject->SuspendGuiderCadence();
-                        Debug.Write(wxString::Format("SolarSys: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
-                                                     distance, 1.75 * sigma));
-                        errorInfo->starError = Star::FindResult::STAR_RESAMPLE;
-                        errorInfo->status = _("Resampling");
-                        retryingFind = true;
-                        throw ERROR_INFO("Resampling");
-                    }
-                    else
-                    {
-                        if (retryingFind)
-                            Debug.Write(wxString::Format("SolarSys: resampling result, dist: %0.1f, thresh: %0.1f\n", distance,
-                                                         1.75 * sigma));
-                        retryingFind = false;
-                        pFrame->StatusMsg(_("Guiding"));
-                        m_SolarSystemObject->ResumeGuiderCadence();
-                    }
+                    errorInfo->status = _("Resampling");
+                    errorInfo->starError =
+                        Star::FindResult::STAR_RESAMPLE; // Skip the guiding step in the Guider.cpp state machine
+                    throw ERROR_INFO("Resampling");
                 }
             }
         }

@@ -67,6 +67,9 @@ SolarSystemObject::SolarSystemObject()
     m_unknownHFD = true;
     m_focusSharpness = 0;
     m_paramShowPreProcessed = false;
+    m_paramResamplingEnabled = false;
+    lostTargetEvents = 0;
+    totalDetectionEvents = 0;
 
     m_center_x = m_center_y = 0;
 
@@ -102,11 +105,14 @@ SolarSystemObject::SolarSystemObject()
     pConfig->Global.DeleteEntry(PausePlanetDetectionAlertEnabledKey());
     m_preProcessedImage = new usImage(); // so we always have one
     m_preProcessedImageValid = false;
+    m_distanceStats = new DescriptiveStats();
+    retryingFind = false;
 }
 
 SolarSystemObject::~SolarSystemObject()
 {
     delete m_preProcessedImage;
+    delete m_distanceStats;
 }
 
 // Report detected object size or sharpness depending on measurement mode
@@ -216,7 +222,21 @@ void SolarSystemObject::ResumeGuiderCadence()
 {
     m_guiderCadence = m_savedGuiderCadence;
 }
-
+void SolarSystemObject::SetResamplingEnabled(bool Enabled)
+{
+    m_paramResamplingEnabled = Enabled;
+    resampleCount = 0;
+    resampleReductionCount = 0;
+    if (!Enabled)
+        m_distanceStats->ClearAll();
+}
+void SolarSystemObject::ResetDetectionStats()
+{
+    resampleCount = 0;
+    resampleReductionCount = 0;
+    lostTargetEvents = 0;
+    totalDetectionEvents = 1;
+}
 // The Sobel operator can be used to detect edges in an image, which are more
 // pronounced in focused images. You can apply the Sobel operator to the image
 // and calculate the sum or mean of the absolute values of the gradients.
@@ -809,7 +829,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     SimpleBlobDetector::Params params;
     Mat preppedMat;
 
-    Debug.Write(wxString::Format("SolarSys: Blob find thresh:%s, minD=%d,maxD=%d\n",
+    Debug.Write(wxString::Format("SSG: Blob find thresh:%s, minD=%d,maxD=%d\n",
                                  m_paramBlobAutoThreshold ? "Auto" : std::to_string(m_paramBlobThreshold),
                                  (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
 
@@ -859,7 +879,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
         std::vector<std::vector<cv::Point>> contours;
         contours = detector->getBlobContours();
         blobContour = contours.front();
-        Debug.Write(wxString::Format("SolarSys: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
+        Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
                                      centroidInfo.centroidY, centroidInfo.objectSize));
     }
     else
@@ -894,7 +914,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     int maxRadius = Get_maxRadius();
 
     // Apply Canny edge detection
-    Debug.Write(wxString::Format("SolarSys: Contour find (roi:%d "
+    Debug.Write(wxString::Format("SSG: Contour find (roi:%d "
                                  "low_tr=%d,high_tr=%d,minr=%d,maxr=%d)\n",
                                  roiActive, LowThreshold, HighThreshold, minRadius, maxRadius));
     Mat edges, dilatedEdges;
@@ -989,7 +1009,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     }
 
     // Publish detection stats
-    Debug.Write(wxString::Format("SolarSys: Contour find result (t=%d): r=%.1f, x=%.1f, y=%.1f, "
+    Debug.Write(wxString::Format("SSG: Contour find result (t=%d): r=%.1f, x=%.1f, y=%.1f, "
                                  "score=%.3f, contours=%d/%d, threads=%d\n",
                                  m_SolarSystemObjWatchdog.Time(), bestDiskCenter.radius, roiRect.x + bestDiskCenter.x,
                                  roiRect.y + bestDiskCenter.y, bestScore, contourMatchingCount, contourAllCount,
@@ -1081,7 +1101,6 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
     else
     {
         // Use detected center of the Sun, Moon or planet for guiding
-        // m_searchRegion = planet->m_searchRegion;
         Result = Star::STAR_OK;
         newX = m_center_x;
         newY = m_center_y;
@@ -1091,11 +1110,73 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
 
     // update state
     pDisk->SetXY(newX, newY);
+    if (!autoSelect && pFrame->pGuider->GetState() == STATE_GUIDING)
+    {
+        const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
+        double distance;
+        bool raOnly = MyFrame::GuidingRAOnly();
+        if (lockPos.IsValid())
+        {
+            if (raOnly)
+                distance = fabs(newX - lockPos.X);
+            else
+                distance = hypot(newX - lockPos.X, newY - lockPos.Y);
+        }
+        else
+            distance = 0.;
+        if (m_paramResamplingEnabled)
+        {
+            m_distanceStats->AddValue(distance);
+            if (m_distanceStats->GetCount() > 10)
+            {
+                // TODO: test code remove this
+                // if (m_distanceStats->GetCount() % 600 == 0)
+                //{
+                //    int val = Get_minBlobDiameter();
+                //    Set_minBlobDiameter(val - 10);
+                //    Debug.Write("SSG: Min blob diameter set to " + std::to_string(val - 10) + "\n");
+                //}
+                double thresh = 1.75 * m_distanceStats->GetSigma();
+                double meanV = m_distanceStats->GetMean();
+                if (!retryingFind && distance >= 2.0 * thresh)
+                {
+                    SuspendGuiderCadence();
+                    Debug.Write(wxString::Format("SSG: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
+                                                 distance, thresh));
+                    Result = Star::FindResult::STAR_RESAMPLE;
+                    pFrame->StatusMsg(_("Resampling"));
+                    m_lastDistance = distance;
+                    retryingFind = true;
+                }
+                else if (retryingFind)
+                {
+                    Debug.Write(wxString::Format("SSG: resampling result, new dist: %0.1f, last dist: %0.1f, thresh: %0.1f\n",
+                                                 distance, m_lastDistance, thresh));
+                    retryingFind = false;
+                    resampleCount++;
+                    if (distance <= m_lastDistance)
+                        resampleReductionCount++;
+                    pFrame->StatusMsg(_("Guiding"));
+                    ResumeGuiderCadence();
+                }
+            }
+        }
+    }
+    else
+        retryingFind = false;
+
     pDisk->SetError(Result);
 
-    bool wasFound = Star::WasFound(Result);
-    Debug.Write(wxString::Format("SolarSys::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n",
-                                 wasFound, Result, newX, newY, pDisk->Mass, pDisk->SNR, pDisk->PeakVal, pDisk->HFD));
+    bool wasFound = Star::WasFound(Result) || retryingFind;
+    if (pFrame->pGuider->GetState() == STATE_GUIDING)
+    {
+        totalDetectionEvents++;
+        if (!wasFound)
+            lostTargetEvents++;
+        PlanetTool::UpdateDetectionStats(resampleCount, resampleReductionCount, lostTargetEvents, totalDetectionEvents);
+    }
+    Debug.Write(wxString::Format("SSG::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n", wasFound,
+                                 Result, newX, newY, pDisk->Mass, pDisk->SNR, pDisk->PeakVal, pDisk->HFD));
     return wasFound;
 }
 
@@ -1289,14 +1370,14 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
         roiRect = Rect(roiOffsetX, roiOffsetY, w, h);
         RoiFrame = FullFrame(roiRect);
         roiActive = true;
-        Debug.Write(wxString::Format("SolarSys::Find: ROI: {x:%d, y:%d w:%d, h:%d}, full:%s, frame %u\n", roiOffsetX,
-                                     roiOffsetY, w, h, "false", pImage->FrameNum));
+        Debug.Write(wxString::Format("SSG::Find: ROI: {x:%d, y:%d w:%d, h:%d}, full:%s, frame %u\n", roiOffsetX, roiOffsetY, w,
+                                     h, "false", pImage->FrameNum));
     }
     else
     {
         RoiFrame = FullFrame;
         roiActive = false;
-        Debug.Write(wxString::Format("SolarSys::Find: Fullframe %d X %d, frame %u\n", pImage->Size.GetWidth(),
+        Debug.Write(wxString::Format("SSG::Find: Fullframe %d X %d, frame %u\n", pImage->Size.GetWidth(),
                                      pImage->Size.GetHeight(), pImage->FrameNum));
     }
 

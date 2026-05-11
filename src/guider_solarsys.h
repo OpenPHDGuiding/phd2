@@ -114,9 +114,6 @@ private:
     bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) final;
     bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) final;
     void OnLClick(wxMouseEvent& evt);
-    DescriptiveStats *m_distanceStats;
-    bool retryingFind;
-
     void SaveStarFITS();
 
     wxDECLARE_EVENT_TABLE();

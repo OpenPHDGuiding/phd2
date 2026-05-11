@@ -68,6 +68,7 @@ struct SolarSysToolWin : public wxDialog
     wxSlider *m_thresholdSlider;
     wxButton *m_restoreContourParams;
     wxGrid *m_statsGrid;
+    wxButton *m_resetStats;
 
     // Controls for camera settings, duplicating the ones from camera setup dialog
     // and exposure time dropdown. Used for streamlining the solar/planetary mode
@@ -83,6 +84,7 @@ struct SolarSysToolWin : public wxDialog
 
     wxCheckBox *m_RoiCheckBox;
     wxCheckBox *m_PauseCheckBox;
+    wxCheckBox *m_ResamplingCheckBox;
     wxCheckBox *m_ShowContours;
     wxCheckBox *m_ShowDiameters;
     wxCheckBox *m_ShowDiagnosticImage;
@@ -117,6 +119,7 @@ struct SolarSysToolWin : public wxDialog
     void OnShowDiagnosticImage(wxCommandEvent& event);
     void OnMountTrackingRateClick(wxCommandEvent& event);
     void OnTrackingRateMouseWheel(wxMouseEvent& event);
+    void OnResamplingClick(wxCommandEvent& event);
 
     void OnExposureChanged(wxSpinDoubleEvent& event);
     void OnCadenceChanged(wxSpinDoubleEvent& event);
@@ -134,6 +137,8 @@ struct SolarSysToolWin : public wxDialog
     void UpdateScore(float score);
     void UpdateContourInfo(int contCount, int bestSize);
     void UpdateCentroidInfo(float xLoc, float yLoc, float radius);
+    void UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents);
+    void OnResetDetectionStats(wxCommandEvent& evnt);
 };
 
 static wxString TITLE = wxTRANSLATE("Solar System Guiding");
@@ -312,7 +317,7 @@ SolarSysToolWin::SolarSysToolWin()
     m_expert_tab->Layout();
 
     // Solar system detection stats
-    const int statsRows = 6;
+    const int statsRows = 7;
     m_statsGrid = new wxGrid(m_statsTab, wxID_ANY);
     m_statsGrid->CreateGrid(statsRows, 2);
     m_statsGrid->SetRowLabelSize(1);
@@ -322,28 +327,33 @@ SolarSysToolWin::SolarSysToolWin()
     m_statsGrid->SetDefaultColSize(minColSize);
 
     int row = 0, col = 0;
-    m_statsGrid->SetCellValue(row, col++, _("Detection time"));
+    m_statsGrid->SetCellValue(row, col++, _("Detection time")); // row 0
     m_statsGrid->SetCellValue(row, col, _("000000 ms"));
     ++row, col = 0;
-    m_statsGrid->SetCellValue(row, col++, _("Centroid X/Y"));
+    m_statsGrid->SetCellValue(row, col++, _("Centroid X/Y")); // row 1
     m_statsGrid->SetCellValue(row, col, _("X: 99999.9  Y: 99999.9"));
     ++row, col = 0;
-    m_statsGrid->SetCellValue(row, col++, _("Radius"));
+    m_statsGrid->SetCellValue(row, col++, _("Reductions / Resamples")); // row 2
+    m_statsGrid->SetCellValue(row, col, _("99999 / 100.0"));
+    ++row, col = 0;
+    m_statsGrid->SetCellValue(row, col++, _("Not-found / Total")); // row 3
+    m_statsGrid->SetCellValue(row, col, _("9999 / 100.0 %"));
+    ++row, col = 0;
+    m_statsGrid->SetCellValue(row, col++, _("Diameter")); // row 4
     m_statsGrid->SetCellValue(row, col, _("9999"));
     ++row, col = 0;
-    m_statsGrid->SetCellValue(row, col++, _("#Contours"));
+    m_statsGrid->SetCellValue(row, col++, _("#Contours")); // row 5
     m_statsGrid->SetCellValue(row, col, _("9999"));
     ++row, col = 0;
-
-    m_statsGrid->SetCellValue(row, col++, _("Best size"));
-    m_statsGrid->SetCellValue(row, col, _("9999"));
-    ++row, col = 0;
-    m_statsGrid->SetCellValue(row, col++, _("Fitting score"));
+    m_statsGrid->SetCellValue(row, col++, _("Contour score")); // row 6
     m_statsGrid->SetCellValue(row, col, _("1.00"));
     m_statsGrid->Fit();
     wxStaticBoxSizer *statsSizer = new wxStaticBoxSizer(wxVERTICAL, m_statsTab, wxEmptyString);
     statsSizer->AddSpacer(30);
     statsSizer->Add(m_statsGrid, wxSizerFlags(0).Center());
+    wxButton *m_resetStats = new wxButton(m_statsTab, wxID_ANY, _("Reset stats"));
+    statsSizer->AddSpacer(10);
+    statsSizer->Add(m_resetStats, wxSizerFlags(0).Center());
     m_statsTab->SetSizer(statsSizer);
     m_statsTab->Layout();
 
@@ -413,6 +423,7 @@ SolarSysToolWin::SolarSysToolWin()
                                 "processing speed and reduced CPU usage."));
     m_PauseCheckBox = new wxCheckBox(this, wxID_ANY, _("Pause Detection"));
     m_PauseCheckBox->SetToolTip(_("Temporarily pause detection while letting PHD2 continue to loop exposures"));
+    m_ResamplingCheckBox = new wxCheckBox(this, wxID_ANY, _("Enable resampling"));
     checkBoxesSzr->Add(m_RoiCheckBox);
     checkBoxesSzr->AddSpacer(10);
     checkBoxesSzr->Add(m_PauseCheckBox);
@@ -430,8 +441,10 @@ SolarSysToolWin::SolarSysToolWin()
     detectionModeBox->Add(m_detectionContours, 0, wxLEFT | wxTOP, 10);
 
     topControls->Add(checkBoxesSzr, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
-    topControls->AddSpacer(60);
-    topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 20).Border(wxTOP, 2));
+    topControls->AddSpacer(10);
+    topControls->Add(m_ResamplingCheckBox, wxSizerFlags().Border(wxTOP, 20));
+    topControls->AddSpacer(30);
+    topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 20).Border(wxTOP, 20));
     topSizer->AddSpacer(5);
     topSizer->Add(topControls, 0, wxLEFT, 10);
     topSizer->AddSpacer(20);
@@ -449,6 +462,7 @@ SolarSysToolWin::SolarSysToolWin()
     // Connect Events
     m_PauseCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnPauseClick, this);
     m_RoiCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnRoiModeClick, this);
+    m_ResamplingCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnResamplingClick, this);
     m_ShowContours->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowContoursClick, this);
     m_ShowDiameters->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiameters, this);
     m_ShowDiagnosticImage->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiagnosticImage, this);
@@ -465,6 +479,7 @@ SolarSysToolWin::SolarSysToolWin()
     m_thresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnThresholdChanged, this);
     m_detectionBlob->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_detectionContours->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
+    m_resetStats->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &SolarSysToolWin::OnResetDetectionStats, this);
     m_solarSystemObj->SetShowFeaturesButtonState(false);
     m_solarSystemObj->ShowVisualElements(false);
 
@@ -476,6 +491,8 @@ SolarSysToolWin::SolarSysToolWin()
     m_solarSystemObj->Set_blobInversion(false);
     m_RoiCheckBox->SetValue(false);
     m_PauseCheckBox->SetValue(false);
+    m_ResamplingCheckBox->SetValue(true);
+    OnResamplingClick(evt);
     m_ShowDiameters->SetValue(true); // We start out with no disk found, so show the bounding boxes
     OnShowDiagnosticImage(evt);
 
@@ -563,6 +580,7 @@ void SolarSysToolWin::RestoreProfileParameters()
 
     RestoreBlobSearchParameters();
     RestoreContourSearchParameters();
+    bool resampEnabled = pConfig->Profile.GetBoolean("/PlanetTool/ResampleEnabled", true);
 
     double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 1000));
     m_ExposureCtrl->SetValue(val);
@@ -571,6 +589,7 @@ void SolarSysToolWin::RestoreProfileParameters()
     wxSpinDoubleEvent evt;
     OnExposureChanged(evt);
     OnCadenceChanged(evt);
+    OnResamplingClick(evt);
     if (pCamera)
     {
         m_GainCtrl->SetValue(pConfig->Profile.GetInt("/PlanetTool/Gain", pCamera->GetCameraGain()));
@@ -592,6 +611,7 @@ void SolarSysToolWin::SaveProfileParameters()
     pConfig->Profile.SetInt("/PlanetTool/MaxBlobDiameter", m_solarSystemObj->Get_maxBlobDiameter());
     pConfig->Profile.SetInt("/PlanetTool/BlobThreshold", m_solarSystemObj->Get_blobThreshold());
     pConfig->Profile.SetBoolean("/PlanetTool/BlobAutoThreshold", m_solarSystemObj->Get_blobAutoThreshold());
+    pConfig->Profile.SetBoolean("/PlanetTool/ResampleEnabled", m_solarSystemObj->GetResamplingEnabled());
 
     pConfig->Profile.SetInt("/PlanetTool/MinRadius", (int) (m_minDiameter->GetValue() / 2.0));
     pConfig->Profile.SetInt("/PlanetTool/MaxRadius", (int) m_maxDiameter->GetValue() / 2.0);
@@ -708,7 +728,14 @@ void SolarSysToolWin::OnRoiModeClick(wxCommandEvent& event)
 {
     bool enabled = m_RoiCheckBox->IsChecked();
     m_solarSystemObj->SetRoiEnableState(enabled);
-    Debug.Write(wxString::Format("Solar/planetary: ROI %s\n", enabled ? "enabled" : "disabled"));
+    Debug.Write(wxString::Format("SSG: ROI %s\n", enabled ? "enabled" : "disabled"));
+}
+
+void SolarSysToolWin::OnResamplingClick(wxCommandEvent& event)
+{
+    bool enabled = m_ResamplingCheckBox->IsChecked();
+    m_solarSystemObj->SetResamplingEnabled(enabled);
+    pFrame->NotifyGuidingParam("SolarSys: Resampling", enabled);
 }
 
 void SolarSysToolWin::OnShowContoursClick(wxCommandEvent& event)
@@ -937,18 +964,33 @@ void SolarSysToolWin::UpdateTiming(long elapsedTime)
 }
 void SolarSysToolWin::UpdateScore(float score)
 {
-    m_statsGrid->SetCellValue(5, 1, wxString::Format("%0.2f", score));
+    m_statsGrid->SetCellValue(6, 1, wxString::Format("%0.2f", score));
 }
 void SolarSysToolWin::UpdateContourInfo(int contCount, int bestSize)
 {
-    m_statsGrid->SetCellValue(3, 1, wxString::Format("%d", contCount));
-    m_statsGrid->SetCellValue(4, 1, wxString::Format("%d", bestSize));
+    m_statsGrid->SetCellValue(5, 1, wxString::Format("%d", contCount));
 }
 void SolarSysToolWin::UpdateCentroidInfo(float xLoc, float yLoc, float radius)
 {
     wxString locStr = wxString::Format("X: %.1f  Y: %0.1f", xLoc, yLoc);
     m_statsGrid->SetCellValue(1, 1, locStr);
-    m_statsGrid->SetCellValue(2, 1, wxString::Format("%0.2f", radius));
+    m_statsGrid->SetCellValue(4, 1, wxString::Format("%0.2f", radius * 2.0));
+}
+
+void SolarSysToolWin::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
+{
+    wxString resampleInfo = wxString::Format("%d / %d", rsmpReductions, rsmpCount);
+    m_statsGrid->SetCellValue(2, 1, resampleInfo);
+    if (totalEvents > 0)
+    {
+        wxString detectionInfo = wxString::Format("%d / %d", lostEvents, totalEvents);
+        m_statsGrid->SetCellValue(3, 1, detectionInfo);
+    }
+}
+
+void SolarSysToolWin::OnResetDetectionStats(wxCommandEvent& event)
+{
+    m_solarSystemObj->ResetDetectionStats();
 }
 
 void PlanetTool::UpdateTimingStats(long elapsedTime)
@@ -988,6 +1030,15 @@ void PlanetTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
     }
 }
 
+void PlanetTool::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
+{
+    SolarSysToolWin *win;
+    if (pFrame && pFrame->pSolarSysTool)
+    {
+        win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
+        win->UpdateDetectionStats(rsmpCount, rsmpReductions, lostEvents, totalEvents);
+    }
+}
 // Used to synch form camera settings with those of MyFrame
 void SolarSysToolWin::NotifyCameraSettingsChange()
 {
