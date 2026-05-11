@@ -993,7 +993,7 @@ void SolarSysToolWin::OnResetDetectionStats(wxCommandEvent& event)
     m_solarSystemObj->ResetDetectionStats();
 }
 
-void PlanetTool::UpdateTimingStats(long elapsedTime)
+void SsgTool::UpdateTimingStats(long elapsedTime)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1002,7 +1002,7 @@ void PlanetTool::UpdateTimingStats(long elapsedTime)
         win->UpdateTiming(elapsedTime);
     }
 }
-void PlanetTool::UpdateScoreStats(float score)
+void SsgTool::UpdateScoreStats(float score)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1011,7 +1011,7 @@ void PlanetTool::UpdateScoreStats(float score)
         win->UpdateScore(score);
     }
 }
-void PlanetTool::UpdateContourInfoStats(int contCount, int bestSize)
+void SsgTool::UpdateContourInfoStats(int contCount, int bestSize)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1020,7 +1020,7 @@ void PlanetTool::UpdateContourInfoStats(int contCount, int bestSize)
         win->UpdateContourInfo(contCount, bestSize);
     }
 }
-void PlanetTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
+void SsgTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1030,7 +1030,7 @@ void PlanetTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
     }
 }
 
-void PlanetTool::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
+void SsgTool::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1065,7 +1065,7 @@ void SolarSysToolWin::NotifyMountConnectionChange(bool Connected)
 }
 
 // Restores profile value in UI if profile is switched while window is already displayed
-void PlanetTool::RestoreProfileSettings()
+void SsgTool::RestoreProfileSettings()
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1075,7 +1075,7 @@ void PlanetTool::RestoreProfileSettings()
     }
 }
 
-void PlanetTool::NotifyCameraSettingsChange()
+void SsgTool::NotifyCameraSettingsChange()
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1085,7 +1085,7 @@ void PlanetTool::NotifyCameraSettingsChange()
     }
 }
 
-void PlanetTool::NotifyMountConnectionChange(bool Connected)
+void SsgTool::NotifyMountConnectionChange(bool Connected)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1095,7 +1095,7 @@ void PlanetTool::NotifyMountConnectionChange(bool Connected)
     }
 }
 
-void PlanetTool::ShowDiameters(bool showDiams)
+void SsgTool::ShowDiameters(bool showDiams)
 {
     SolarSysToolWin *win;
     if (pFrame && pFrame->pSolarSysTool)
@@ -1106,7 +1106,7 @@ void PlanetTool::ShowDiameters(bool showDiams)
         win->OnShowDiameters(evt);
     }
 }
-wxWindow *PlanetTool::CreateSolarSysToolWindow()
+wxWindow *SsgTool::CreateSolarSysToolWindow()
 {
     return new SolarSysToolWin();
 }

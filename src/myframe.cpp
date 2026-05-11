@@ -1112,7 +1112,7 @@ void MyFrame::NotifyCameraSettingsChange()
 {
     if (pSolarSysTool)
     {
-        PlanetTool::NotifyCameraSettingsChange();
+        SsgTool::NotifyCameraSettingsChange();
     }
 }
 

@@ -954,7 +954,7 @@ void MyFrame::SetSolarSystemMode(bool Enable)
         pAdvancedDialog->UpdateMountPage(); // Top sizer on Guider tab changes for solar guiding
         if (!pSolarSysTool)
         {
-            pSolarSysTool = PlanetTool::CreateSolarSysToolWindow();
+            pSolarSysTool = SsgTool::CreateSolarSysToolWindow();
         }
         pSolarSysTool->Show();
     }

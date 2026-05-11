@@ -60,9 +60,9 @@ static inline wxString PausePlanetDetectionAlertEnabledKey()
     return wxString::Format("/Confirm/%d/PausePlanetDetectionAlertEnabled", pConfig->GetCurrentProfileId());
 }
 
-class PlanetTool
+class SsgTool
 {
-    PlanetTool();
+    SsgTool();
 
 public:
     static wxWindow *CreateSolarSysToolWindow();

@@ -1430,7 +1430,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
             pFrame->StatusMsg(_("Mount Connected"));
             pFrame->UpdateStatusBarStateLabels();
             if (pFrame->pSolarSysTool)
-                PlanetTool::NotifyMountConnectionChange(true);
+                SsgTool::NotifyMountConnectionChange(true);
         }
         else
         {
@@ -1475,7 +1475,7 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
 
             pFrame->StatusMsg(_("Aux Mount Connected"));
             if (pFrame->pSolarSysTool)
-                PlanetTool::NotifyMountConnectionChange(true);
+                SsgTool::NotifyMountConnectionChange(true);
         }
 
         Debug.AddLine("Connected AuxScope:" + (m_pAuxScope ? m_pAuxScope->Name() : "None"));
@@ -1485,7 +1485,7 @@ void GearDialog::OnButtonConnectAuxScope(wxCommandEvent& event)
         POSSIBLY_UNUSED(Msg);
         pFrame->StatusMsg(_("Aux Mount Connect Failed"));
         if (pFrame->pSolarSysTool)
-            PlanetTool::NotifyMountConnectionChange(false);
+            SsgTool::NotifyMountConnectionChange(false);
     }
 
     UpdateButtonState();
@@ -1512,7 +1512,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
         pFrame->StatusMsg(_("Mount Disconnected"));
         pFrame->UpdateStatusBarStateLabels();
         if (pFrame->pSolarSysTool)
-            PlanetTool::NotifyMountConnectionChange(false);
+            SsgTool::NotifyMountConnectionChange(false);
 
         if (pFrame->pManualGuide)
         {
@@ -1546,7 +1546,7 @@ void GearDialog::OnButtonDisconnectAuxScope(wxCommandEvent& event)
         m_pAuxScope->Disconnect();
         pFrame->StatusMsg(_("Aux Mount Disconnected"));
         if (pFrame->pSolarSysTool)
-            PlanetTool::NotifyMountConnectionChange(false);
+            SsgTool::NotifyMountConnectionChange(false);
     }
     catch (const wxString& Msg)
     {
@@ -1923,7 +1923,7 @@ void GearDialog::OnProfileChoice(wxCommandEvent& event)
     pFrame->pGuider->LoadProfileSettings();
     if (selection != prev && pFrame->GetSolarSystemMode())
         if (pFrame->pSolarSysTool)
-            PlanetTool::RestoreProfileSettings();
+            SsgTool::RestoreProfileSettings();
     pFrame->UpdateTitle();
     pFrame->pGraphLog->ResetData();
 }

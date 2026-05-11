@@ -75,7 +75,7 @@ void GuiderSolarSys::LoadProfileSettings()
         // Profile changed in solar mode, tool window already displayed
         if (pFrame && pFrame->pSolarSysTool != nullptr)
         {
-            PlanetTool::RestoreProfileSettings();
+            SsgTool::RestoreProfileSettings();
         }
     }
 }
@@ -517,7 +517,7 @@ void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)
             }
 
             if (pFrame->pSolarSysTool)
-                PlanetTool::ShowDiameters(true); // If user has click somewhere, show him the current min/max diameters
+                SsgTool::ShowDiameters(true); // If user has click somewhere, show him the current min/max diameters
             Refresh();
             Update();
         }

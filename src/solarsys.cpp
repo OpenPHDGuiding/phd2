@@ -940,7 +940,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
         m_statusMsg = _("Too many contour points detected. Please apply pixel binning, "
                         "enable ROI, or increase the Edge Detection Threshold.");
         pFrame->Alert(m_statusMsg, wxICON_WARNING);
-        PlanetTool::UpdateContourInfoStats(0, totalPoints);
+        SsgTool::UpdateContourInfoStats(0, totalPoints);
         return false;
     }
 
@@ -1018,8 +1018,8 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     // Debug.Write(wxString::Format("Centroids:,%0.2f,%0.2f,%0.2f,%0.2f\n", blobX, blobY, bestDiskCenter.x, bestDiskCenter.y));
     // //testing only
 
-    PlanetTool::UpdateContourInfoStats(contourMatchingCount, bestContour.size());
-    PlanetTool::UpdateScoreStats(bestScore);
+    SsgTool::UpdateContourInfoStats(contourMatchingCount, bestContour.size());
+    SsgTool::UpdateScoreStats(bestScore);
 
     if (bestDiskCenter.radius > 0)
     {
@@ -1173,7 +1173,7 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
         totalDetectionEvents++;
         if (!wasFound)
             lostTargetEvents++;
-        PlanetTool::UpdateDetectionStats(resampleCount, resampleReductionCount, lostTargetEvents, totalDetectionEvents);
+        SsgTool::UpdateDetectionStats(resampleCount, resampleReductionCount, lostTargetEvents, totalDetectionEvents);
     }
     Debug.Write(wxString::Format("SSG::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n", wasFound,
                                  Result, newX, newY, pDisk->Mass, pDisk->SNR, pDisk->PeakVal, pDisk->HFD));
@@ -1422,13 +1422,13 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
             if (m_lastCentroidResult.mode == DetectionModes::modeBlob)
             {
                 m_radius = cvRound(m_lastCentroidResult.objectSize / 2.0);
-                PlanetTool::UpdateContourInfoStats(1, m_blobContour.size());
-                PlanetTool::UpdateScoreStats(1.);
+                SsgTool::UpdateContourInfoStats(1, m_blobContour.size());
+                SsgTool::UpdateScoreStats(1.);
             }
             else
                 m_radius = cvRound(m_lastCentroidResult.objectSize);
             m_searchRegion = m_radius;
-            PlanetTool::UpdateCentroidInfoStats(m_lastCentroidResult.centroidX, m_lastCentroidResult.centroidY, m_radius);
+            SsgTool::UpdateCentroidInfoStats(m_lastCentroidResult.centroidX, m_lastCentroidResult.centroidY, m_radius);
         }
         // For use by visual aid for parameter tuning
         if (VisualElementsEnabled())
@@ -1442,7 +1442,7 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
             m_focusSharpness = CalcSharpness(FullFrame, clickedPoint, detectionResult);
 
         // Update detection time stats
-        PlanetTool::UpdateTimingStats(m_SolarSystemObjWatchdog.Time());
+        SsgTool::UpdateTimingStats(m_SolarSystemObjWatchdog.Time());
 
         if (detectionResult)
         {
