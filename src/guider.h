@@ -121,6 +121,7 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
     Guider *m_pGuider;
     wxCheckBox *m_pEnableFastRecenter;
     wxCheckBox *m_pScaleImage;
+    wxCheckBox *m_pBeepForLostStarCtrl;
 
 public:
     GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);

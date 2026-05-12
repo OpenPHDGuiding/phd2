@@ -61,7 +61,6 @@ public:
     wxSpinCtrlDouble *m_pMassChangeThreshold;
     wxSpinCtrlDouble *m_MinHFD;
     wxChoice *m_autoSelDownsample;
-    wxCheckBox *m_pBeepForLostStarCtrl;
     wxCheckBox *m_pUseMultiStars;
     wxSpinCtrlDouble *m_MinSNR;
     wxSpinCtrlDouble *m_MaxHFD;

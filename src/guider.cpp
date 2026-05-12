@@ -1724,7 +1724,7 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, BrainCtrlId
     wxStaticBoxSizer *pCalib = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Calibration"));
     wxStaticBoxSizer *pShared = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Shared Parameters"));
     wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 10, 10);
-    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 10, 10);
+    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(3, 2, 10, 10);
 
     pStarTrack->Add(GetSizerCtrl(CtrlMap, AD_szStarTracking), def_flags);
     pStarTrack->Layout();
@@ -1740,10 +1740,11 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, BrainCtrlId
 
     // Minor ordering to have "no-mount" condition look ok
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbScaleImages));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 35));
-    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbReverseDecOnFlip);
-    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbEnableGuiding, wxSizerFlags(0).Border(wxLEFT, 35));
-    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbSlewDetection);
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 90));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBeepForLostStar));
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbReverseDecOnFlip, wxSizerFlags(0).Border(wxLEFT, 90));
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbEnableGuiding);
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbSlewDetection, wxSizerFlags(0).Border(wxLEFT, 90));
     pShared->Add(pSharedSizer, def_flags);
     pShared->Layout();
 
@@ -1767,6 +1768,10 @@ GuiderConfigDialogCtrlSet::GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *
 
     m_pGuider = pGuider;
 
+    m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star/disk"));
+    AddCtrl(CtrlMap, AD_cbBeepForLostStar, m_pBeepForLostStarCtrl,
+            _("Issue an audible alarm any time the guide star or disk is lost"));
+
     m_pScaleImage = new wxCheckBox(GetParentWindow(AD_cbScaleImages), wxID_ANY, _("Always scale images"));
     AddCtrl(CtrlMap, AD_cbScaleImages, m_pScaleImage, _("Always scale images to fill window"));
 
@@ -1781,12 +1786,15 @@ void GuiderConfigDialogCtrlSet::LoadValues()
 {
     m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
     m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
+    m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
 }
 
 void GuiderConfigDialogCtrlSet::UnloadValues()
 {
     m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
     m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
+    if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
+        pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
 }
 
 EXPOSED_STATE Guider::GetExposedState()

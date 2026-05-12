@@ -1440,9 +1440,6 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
                            _("Downsampling factor for star auto-selection camera frames. Choose a value greater than 1 if star "
                              "auto-selection is failing to recognize misshapen guide stars."));
 
-    m_pBeepForLostStarCtrl = new wxCheckBox(GetParentWindow(AD_cbBeepForLostStar), wxID_ANY, _("Beep on lost star"));
-    m_pBeepForLostStarCtrl->SetToolTip(_("Issue an audible alarm any time the guide star is lost"));
-
     m_pUseMultiStars = new wxCheckBox(GetParentWindow(AD_szStarTracking), MULTI_STAR_ENABLE, _("Use multiple stars"));
     m_pUseMultiStars->SetToolTip(_("Use multiple guide stars if they are available"));
     GetParentWindow(AD_szStarTracking)
@@ -1468,7 +1465,6 @@ GuiderMultiStarConfigDialogCtrlSet::GuiderMultiStarConfigDialogCtrlSet(wxWindow 
     pTrackingParams->Add(pSNR, wxSizerFlags().Border(wxLEFT, 75));
     pTrackingParams->Add(pMaxHFD, wxSizerFlags().Border(wxTOP, 4));
     pTrackingParams->Add(m_pUseMultiStars, wxSizerFlags(0).Border(wxLEFT, 75));
-    pTrackingParams->Add(m_pBeepForLostStarCtrl, wxSizerFlags().Border(wxTOP, 3));
     pTrackingParams->Add(dsamp, wxSizerFlags().Border(wxTOP, 3).Right());
 
     AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
@@ -1487,7 +1483,6 @@ void GuiderMultiStarConfigDialogCtrlSet::LoadValues()
     m_MinSNR->SetValue(m_pGuiderMultiStar->GetAFMinStarSNR());
     m_MaxHFD->SetValue(m_pGuiderMultiStar->GetMaxStarHFD());
     m_autoSelDownsample->SetSelection(m_pGuiderMultiStar->GetAutoSelDownsample());
-    m_pBeepForLostStarCtrl->SetValue(pFrame->GetBeepForLostStar());
     m_pUseMultiStars->SetValue(m_pGuiderMultiStar->GetMultiStarMode());
     GuiderConfigDialogCtrlSet::LoadValues();
 }
@@ -1502,8 +1497,6 @@ void GuiderMultiStarConfigDialogCtrlSet::UnloadValues()
     m_pGuiderMultiStar->SetMaxStarHFD(wxMax(m_MaxHFD->GetValue(), min_hfd + 2.0));
     m_pGuiderMultiStar->SetAFMinStarSNR(m_MinSNR->GetValue());
     m_pGuiderMultiStar->SetAutoSelDownsample(m_autoSelDownsample->GetSelection());
-    if (m_pBeepForLostStarCtrl->GetValue() != pFrame->GetBeepForLostStar())
-        pFrame->SetBeepForLostStar(m_pBeepForLostStarCtrl->GetValue());
     m_pGuiderMultiStar->SetMultiStarMode(m_pUseMultiStars->GetValue());
     GuiderConfigDialogCtrlSet::UnloadValues();
 }
