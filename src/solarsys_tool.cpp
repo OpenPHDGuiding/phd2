@@ -488,7 +488,7 @@ SolarSysToolWin::SolarSysToolWin()
     m_detectionContours->SetValue(false);
     wxCommandEvent evt;
     OnDetectionModeClick(evt);
-    m_solarSystemObj->Set_blobInversion(false);
+    m_solarSystemObj->SetBlobInversion(false);
     m_RoiCheckBox->SetValue(false);
     m_PauseCheckBox->SetValue(false);
     m_ResamplingCheckBox->SetValue(true);
@@ -532,24 +532,24 @@ void SolarSysToolWin::RestoreBlobSearchParameters()
     double apparentSolarDiskSize = 1800 / pixelScale;
     val = pConfig->Profile.GetInt("/PlanetTool/MinBlobDiameter", 50);
     m_minBlobDiameter->SetValue(val);
-    m_solarSystemObj->Set_minBlobDiameter(val);
+    m_solarSystemObj->SetMinBlobDiameter(val);
     val = pConfig->Profile.GetInt("/PlanetTool/MaxBlobDiameter", apparentSolarDiskSize + 100);
 
     m_maxBlobDiameter->SetValue(val);
-    m_solarSystemObj->Set_maxBlobDiameter(val);
+    m_solarSystemObj->SetMaxBlobDiameter(val);
     wxSpinDoubleEvent evt;
     OnSpinCtrl_minBlobDiameter(evt);
     OnSpinCtrl_maxBlobDiameter(evt);
 
     val = pConfig->Profile.GetInt("/PlanetTool/BlobThreshold", 50);
     m_blobThreshold->SetValue(val);
-    m_solarSystemObj->Set_blobThreshold(val);
+    m_solarSystemObj->SetBlobThreshold(val);
 
     val = pConfig->Profile.GetBoolean("/PlanetTool/BlobAutoThreshold", true);
     m_useAutoThresh->SetValue(val);
     wxCommandEvent ev;
     OnAutoThreshClick(ev);
-    m_solarSystemObj->Set_blobAutoThreshold(val);
+    m_solarSystemObj->SetBlobAutoThreshold(val);
 }
 void SolarSysToolWin::RestoreContourSearchParameters()
 {
@@ -559,16 +559,16 @@ void SolarSysToolWin::RestoreContourSearchParameters()
     m_minDiameter->SetValue(2.0 * val);
     wxSpinDoubleEvent evt;
     OnSpinCtrl_minDiameter(evt);
-    m_solarSystemObj->Set_minRadius(val);
+    m_solarSystemObj->SetMinRadius(val);
 
     val = pConfig->Profile.GetInt("/PlanetTool/MaxRadius", apparentSolarRadius + 20);
     m_maxDiameter->SetValue(2.0 * val);
     OnSpinCtrl_maxDiameter(evt);
-    m_solarSystemObj->Set_maxRadius(val);
+    m_solarSystemObj->SetMaxRadius(val);
 
     val = pConfig->Profile.GetInt("/PlanetTool/Threshold", PT_BLOB_THRESHOLD_DEFAULT);
     m_thresholdSlider->SetValue(val);
-    m_solarSystemObj->Set_highThreshold(val);
+    m_solarSystemObj->SetLowThreshold(val);
 }
 
 void SolarSysToolWin::RestoreProfileParameters()
@@ -607,10 +607,10 @@ void SolarSysToolWin::SaveProfileParameters()
     GetPosition(&x, &y);
     pConfig->Profile.SetInt("/PlanetTool/pos.x", x);
     pConfig->Profile.SetInt("/PlanetTool/pos.y", y);
-    pConfig->Profile.SetInt("/PlanetTool/MinBlobDiameter", m_solarSystemObj->Get_minBlobDiameter());
-    pConfig->Profile.SetInt("/PlanetTool/MaxBlobDiameter", m_solarSystemObj->Get_maxBlobDiameter());
-    pConfig->Profile.SetInt("/PlanetTool/BlobThreshold", m_solarSystemObj->Get_blobThreshold());
-    pConfig->Profile.SetBoolean("/PlanetTool/BlobAutoThreshold", m_solarSystemObj->Get_blobAutoThreshold());
+    pConfig->Profile.SetInt("/PlanetTool/MinBlobDiameter", m_solarSystemObj->GetMinBlobDiameter());
+    pConfig->Profile.SetInt("/PlanetTool/MaxBlobDiameter", m_solarSystemObj->GetMaxBlobDiameter());
+    pConfig->Profile.SetInt("/PlanetTool/BlobThreshold", m_solarSystemObj->GetBlobThreshold());
+    pConfig->Profile.SetBoolean("/PlanetTool/BlobAutoThreshold", m_solarSystemObj->GetBlobAutoThreshold());
     pConfig->Profile.SetBoolean("/PlanetTool/ResampleEnabled", m_solarSystemObj->GetResamplingEnabled());
 
     pConfig->Profile.SetInt("/PlanetTool/MinRadius", (int) (m_minDiameter->GetValue() / 2.0));
@@ -661,7 +661,7 @@ static void ShowAngularSize(int val, wxStaticText *textField)
 void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_minDiameter->GetValue();
-    m_solarSystemObj->Set_minRadius(v < 1 ? 1 : v / 2.0);
+    m_solarSystemObj->SetMinRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
     ShowAngularSize(v, m_minContourDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Min contour diameter", v);
@@ -670,7 +670,7 @@ void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
 void SolarSysToolWin::OnSpinCtrl_maxDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_maxDiameter->GetValue();
-    m_solarSystemObj->Set_maxRadius(v < 1 ? 1 : v / 2.0);
+    m_solarSystemObj->SetMaxRadius(v < 1 ? 1 : v / 2.0);
     m_solarSystemObj->RefreshMinMaxDiameters();
     ShowAngularSize(v, m_maxContourDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Max contour diameter", v);
@@ -679,7 +679,7 @@ void SolarSysToolWin::OnSpinCtrl_maxDiameter(wxSpinDoubleEvent& event)
 void SolarSysToolWin::OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_minBlobDiameter->GetValue();
-    m_solarSystemObj->Set_minBlobDiameter(v);
+    m_solarSystemObj->SetMinBlobDiameter(v);
     ShowAngularSize(v, m_minBlobDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Blob min diam", v);
 }
@@ -687,7 +687,7 @@ void SolarSysToolWin::OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event)
 void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_maxBlobDiameter->GetValue();
-    m_solarSystemObj->Set_maxBlobDiameter(v);
+    m_solarSystemObj->SetMaxBlobDiameter(v);
     ShowAngularSize(v, m_maxBlobDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Blob max diam", v);
 }
@@ -695,14 +695,14 @@ void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
 void SolarSysToolWin::OnSpinCtrl_blobThreshold(wxSpinDoubleEvent& event)
 {
     int v = m_blobThreshold->GetValue();
-    m_solarSystemObj->Set_blobThreshold(v);
+    m_solarSystemObj->SetBlobThreshold(v);
     pFrame->NotifyGuidingParam("SolarSys: Blob threshold", v);
 }
 
 void SolarSysToolWin::OnBlobInvertClick(wxCommandEvent& event)
 {
     bool enabled = m_blobInvert->IsChecked();
-    m_solarSystemObj->Set_blobInversion(enabled);
+    m_solarSystemObj->SetBlobInversion(enabled);
     pFrame->NotifyGuidingParam("SolarSys : Blob inversion", enabled);
 }
 
@@ -711,7 +711,7 @@ void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
     bool enabled = m_useAutoThresh->IsChecked();
     m_blobThreshold->Enable(!enabled);
     m_ShowDiagnosticImage->Enable(!enabled);
-    m_solarSystemObj->Set_blobAutoThreshold(enabled);
+    m_solarSystemObj->SetBlobAutoThreshold(enabled);
     pFrame->NotifyGuidingParam("SolarSys: Blob auto-threshold", enabled);
 }
 
@@ -742,7 +742,7 @@ void SolarSysToolWin::OnShowContoursClick(wxCommandEvent& event)
 {
     bool enabled = m_ShowContours->IsChecked();
     m_solarSystemObj->SetShowFeaturesButtonState(enabled);
-    if (m_solarSystemObj->Get_SolarSystemObjMode() && enabled)
+    if (m_solarSystemObj->GetSolarSystemObjMode() && enabled)
         m_solarSystemObj->ShowVisualElements(true);
     else
         m_solarSystemObj->ShowVisualElements(false);
@@ -757,7 +757,7 @@ void SolarSysToolWin::OnShowDiameters(wxCommandEvent& event)
 
 void SolarSysToolWin::OnShowDiagnosticImage(wxCommandEvent& event)
 {
-    m_solarSystemObj->Set_ShowPreProcessedImage(m_ShowDiagnosticImage->IsChecked());
+    m_solarSystemObj->SetShowPreProcessedImage(m_ShowDiagnosticImage->IsChecked());
 }
 
 void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
@@ -846,9 +846,9 @@ void SolarSysToolWin::OnThresholdChanged(wxCommandEvent& event)
     highThreshold = wxMin(highThreshold, PT_HIGH_THRESHOLD_MAX);
     highThreshold = wxMax(highThreshold, PT_THRESHOLD_MIN);
     int lowThreshold = wxMax(highThreshold / 2, PT_THRESHOLD_MIN);
-    m_solarSystemObj->Set_lowThreshold(lowThreshold);
-    m_solarSystemObj->Set_highThreshold(highThreshold);
-    pFrame->NotifyGuidingParam("SolarSy:s contour threshold", highThreshold);
+    m_solarSystemObj->SetLowThreshold(lowThreshold);
+    m_solarSystemObj->SetHighThreshold(highThreshold);
+    pFrame->NotifyGuidingParam("SolarSys: contour threshold", highThreshold);
 }
 
 static void SuppressPausePlanetDetection(long)
@@ -911,14 +911,14 @@ void SolarSysToolWin::OnCloseButton(wxCommandEvent& event)
     // Reset all to defaults
     if (wxGetKeyState(WXK_ALT))
     {
-        m_solarSystemObj->Set_minRadius(PT_MIN_RADIUS_DEFAULT);
-        m_solarSystemObj->Set_maxRadius(PT_MAX_RADIUS_DEFAULT);
-        m_solarSystemObj->Set_lowThreshold(PT_HIGH_THRESHOLD_DEFAULT / 2);
-        m_solarSystemObj->Set_highThreshold(PT_HIGH_THRESHOLD_DEFAULT);
+        m_solarSystemObj->SetMinRadius(PT_MIN_RADIUS_DEFAULT);
+        m_solarSystemObj->SetMaxRadius(PT_MAX_RADIUS_DEFAULT);
+        m_solarSystemObj->SetLowThreshold(PT_HIGH_THRESHOLD_DEFAULT / 2);
+        m_solarSystemObj->SetHighThreshold(PT_HIGH_THRESHOLD_DEFAULT);
 
-        m_minDiameter->SetValue(2.0 * m_solarSystemObj->Get_minRadius());
-        m_maxDiameter->SetValue(2.0 * m_solarSystemObj->Get_maxRadius());
-        m_thresholdSlider->SetValue(m_solarSystemObj->Get_highThreshold());
+        m_minDiameter->SetValue(2.0 * m_solarSystemObj->GetMinRadius());
+        m_maxDiameter->SetValue(2.0 * m_solarSystemObj->GetMaxRadius());
+        m_thresholdSlider->SetValue(m_solarSystemObj->GetHighThreshold());
     }
     else
     {

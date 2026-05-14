@@ -136,33 +136,33 @@ public:
 
     DetectionModes GetDetectionMode() { return m_detectionMode; }
     void SetDetectionMode(DetectionModes mode);
-    bool Get_SolarSystemObjMode() { return m_paramEnabled; }
-    void Set_SolarSystemObjMode(bool enabled) { m_paramEnabled = enabled; }
+    bool GetSolarSystemObjMode() { return m_paramEnabled; }
     bool GetDetectionPausedState() { return m_paramDetectionPaused; }
     void SetDetectionPausedState(bool paused) { m_paramDetectionPaused = paused; }
-    double Get_minBlobDiameter() { return m_paramMinBlobDiameter; }
-    double Get_maxBlobDiameter() { return m_paramMaxBlobDiameter; }
-    double Get_blobThreshold() { return m_paramBlobThreshold; }
-    double Get_blobAutoThreshold() { return m_paramBlobAutoThreshold; }
+    double GetMinBlobDiameter() { return m_paramMinBlobDiameter; }
+    double GetMaxBlobDiameter() { return m_paramMaxBlobDiameter; }
+    double GetBlobThreshold() { return m_paramBlobThreshold; }
+    double GetBlobAutoThreshold() { return m_paramBlobAutoThreshold; }
     usImage *GetPreProcessedImage() { return m_preProcessedImage; }
     bool PreProcessedImageValid() { return m_preProcessedImageValid; }
     bool ShowPreProcessedImage() { return m_paramShowPreProcessed; }
-    void Set_minBlobDiameter(double val);
-    void Set_maxBlobDiameter(double val);
-    void Set_blobThreshold(double val);
-    void Set_blobInversion(bool val);
-    void Set_blobAutoThreshold(bool val);
-    void Set_minRadius(double val);
-    void Set_ShowPreProcessedImage(bool val);
-    double Get_minRadius() { return m_paramMinRadius; }
-    void Set_maxRadius(double val);
-    double Get_maxRadius() { return m_paramMaxRadius; }
+    void SetMinBlobDiameter(double val);
+    void SetMaxBlobDiameter(double val);
+    void SetBlobThreshold(double val);
+    void SetBlobInversion(bool val);
+    void SetBlobAutoThreshold(bool val);
+    void SetMinRadius(double val);
+    void SetShowPreProcessedImage(bool val);
+    double GetMinRadius() { return m_paramMinRadius; }
+    void SetMaxRadius(double val);
+    double GetMaxRadius() { return m_paramMaxRadius; }
+    void RefreshMinMaxDiameters() { m_showMinMaxDiameters = true; }
     bool GetRoiEnableState() { return m_paramRoiEnabled; }
     void SetRoiEnableState(bool enabled) { m_paramRoiEnabled = enabled; }
-    void Set_lowThreshold(int value);
-    int Get_lowThreshold() { return m_paramLowThreshold; }
-    void Set_highThreshold(int value);
-    int Get_highThreshold() { return m_paramHighThreshold; }
+    void SetLowThreshold(int value);
+    int GetLowThreshold() { return m_paramLowThreshold; }
+    void SetHighThreshold(int value);
+    int GetHighThreshold() { return m_paramHighThreshold; }
     int GetGuiderCadence() { return m_paramGuiderCadence; }
     void SetGuiderCadence(int cadenceMS);
     void SuspendGuiderCadence();
@@ -171,11 +171,11 @@ public:
     void SetResamplingEnabled(bool Enabled);
     DescriptiveStats *m_distanceStats;
     double m_lastDistance;
-    int resampleCount;
-    int resampleReductionCount;
-    bool retryingFind;
-    int lostTargetEvents;
-    int totalDetectionEvents;
+    int m_resampleCount;
+    int m_resampleReductionCount;
+    bool m_retryingFind;
+    int m_lostTargetEvents;
+    int m_totalDetectionEvents;
 
     void ShowVisualElements(bool state);
     bool VisualElementsEnabled() { return m_showVisualElements; }
@@ -183,10 +183,8 @@ public:
     bool GetShowFeaturesButtonState() { return m_paramShowElementsButtonState; }
     void ResetDetectionStats();
 
-public:
     // Displaying visual aid for solar system object parameter tuning
     bool m_showMinMaxDiameters;
-    void RefreshMinMaxDiameters() { m_showMinMaxDiameters = true; }
     void VisualHelper(wxDC& dc, Star primaryStar, double scaleFactor);
     void InitializeDetectionParams();
 

@@ -68,8 +68,8 @@ SolarSystemObject::SolarSystemObject()
     m_focusSharpness = 0;
     m_paramShowPreProcessed = false;
     m_paramResamplingEnabled = false;
-    lostTargetEvents = 0;
-    totalDetectionEvents = 0;
+    m_lostTargetEvents = 0;
+    m_totalDetectionEvents = 0;
 
     m_center_x = m_center_y = 0;
 
@@ -106,7 +106,7 @@ SolarSystemObject::SolarSystemObject()
     m_preProcessedImage = new usImage(); // so we always have one
     m_preProcessedImageValid = false;
     m_distanceStats = new DescriptiveStats();
-    retryingFind = false;
+    m_retryingFind = false;
 }
 
 SolarSystemObject::~SolarSystemObject()
@@ -136,7 +136,7 @@ wxString SolarSystemObject::GetHfdLabel()
 
 bool SolarSystemObject::IsPixelMetrics()
 {
-    return Get_SolarSystemObjMode() ? !m_measuringSharpnessMode : true;
+    return GetSolarSystemObjMode() ? !m_measuringSharpnessMode : true;
 }
 
 // Toggle between sharpness and radius display in the Profile window
@@ -162,50 +162,50 @@ void SolarSystemObject::SetDetectionMode(DetectionModes mode)
     m_detectionMode = mode;
 }
 
-void SolarSystemObject::Set_minBlobDiameter(double val)
+void SolarSystemObject::SetMinBlobDiameter(double val)
 {
     m_paramMinBlobDiameter = val;
 }
 
-void SolarSystemObject::Set_maxBlobDiameter(double val)
+void SolarSystemObject::SetMaxBlobDiameter(double val)
 {
     m_paramMaxBlobDiameter = val;
 }
 
-void SolarSystemObject::Set_blobThreshold(double val)
+void SolarSystemObject::SetBlobThreshold(double val)
 {
     m_paramBlobThreshold = val;
 }
 
-void SolarSystemObject::Set_blobInversion(bool val)
+void SolarSystemObject::SetBlobInversion(bool val)
 {
     m_paramInvertBlob = val;
 }
 
-void SolarSystemObject::Set_blobAutoThreshold(bool val)
+void SolarSystemObject::SetBlobAutoThreshold(bool val)
 {
     m_paramBlobAutoThreshold = val;
 }
 
-void SolarSystemObject::Set_ShowPreProcessedImage(bool val)
+void SolarSystemObject::SetShowPreProcessedImage(bool val)
 {
     m_paramShowPreProcessed = val;
 }
 
-void SolarSystemObject::Set_minRadius(double val)
+void SolarSystemObject::SetMinRadius(double val)
 {
     m_paramMinRadius = val;
 }
-void SolarSystemObject::Set_maxRadius(double val)
+void SolarSystemObject::SetMaxRadius(double val)
 {
     m_paramMaxRadius = val;
 }
 
-void SolarSystemObject::Set_highThreshold(int value)
+void SolarSystemObject::SetHighThreshold(int value)
 {
     m_paramHighThreshold = value;
 }
-void SolarSystemObject::Set_lowThreshold(int value)
+void SolarSystemObject::SetLowThreshold(int value)
 {
     m_paramLowThreshold = value;
 }
@@ -225,17 +225,17 @@ void SolarSystemObject::ResumeGuiderCadence()
 void SolarSystemObject::SetResamplingEnabled(bool Enabled)
 {
     m_paramResamplingEnabled = Enabled;
-    resampleCount = 0;
-    resampleReductionCount = 0;
+    m_resampleCount = 0;
+    m_resampleReductionCount = 0;
     if (!Enabled)
         m_distanceStats->ClearAll();
 }
 void SolarSystemObject::ResetDetectionStats()
 {
-    resampleCount = 0;
-    resampleReductionCount = 0;
-    lostTargetEvents = 0;
-    totalDetectionEvents = 1;
+    m_resampleCount = 0;
+    m_resampleReductionCount = 0;
+    m_lostTargetEvents = 0;
+    m_totalDetectionEvents = 1;
 }
 // The Sobel operator can be used to detect edges in an image, which are more
 // pronounced in focused images. You can apply the Sobel operator to the image
@@ -322,7 +322,7 @@ bool SolarSystemObject::UpdateCaptureState(bool CaptureActive)
         if (!CaptureActive)
         {
             // Clear selection symbols (green circle/target lock) and visual elements
-            if (Get_SolarSystemObjMode())
+            if (GetSolarSystemObjMode())
             {
                 ShowVisualElements(false);
                 pFrame->pGuider->Reset(false);
@@ -333,7 +333,7 @@ bool SolarSystemObject::UpdateCaptureState(bool CaptureActive)
         {
             // In solar/planetary mode update the state used to
             // control drawing of the internal detection elements.
-            if (Get_SolarSystemObjMode() && GetShowFeaturesButtonState())
+            if (GetSolarSystemObjMode() && GetShowFeaturesButtonState())
                 ShowVisualElements(true);
         }
     }
@@ -417,13 +417,13 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
             float maxRadius;
             if (m_detectionMode == DetectionModes::modeBlob)
             {
-                minRadius = (Get_minBlobDiameter() / 2.0) * scaleFactor;
-                maxRadius = (Get_maxBlobDiameter() / 2.0) * scaleFactor;
+                minRadius = (GetMinBlobDiameter() / 2.0) * scaleFactor;
+                maxRadius = (GetMaxBlobDiameter() / 2.0) * scaleFactor;
             }
             else
             {
-                minRadius = Get_minRadius() * scaleFactor;
-                maxRadius = Get_maxRadius() * scaleFactor;
+                minRadius = GetMinRadius() * scaleFactor;
+                maxRadius = GetMaxRadius() * scaleFactor;
             }
             int minRadius_x = x + minRadius;
             int maxRadius_x = x + maxRadius;
@@ -908,10 +908,10 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
 bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& clickedPoint, Rect& roiRect,
                                              bool activeRoiLimits, float distanceRoiMax, CentroidResult& centroidResult)
 {
-    int LowThreshold = Get_lowThreshold();
-    int HighThreshold = Get_highThreshold();
-    int minRadius = Get_minRadius();
-    int maxRadius = Get_maxRadius();
+    int LowThreshold = GetLowThreshold();
+    int HighThreshold = GetHighThreshold();
+    int minRadius = GetMinRadius();
+    int maxRadius = GetMaxRadius();
 
     // Apply Canny edge detection
     Debug.Write(wxString::Format("SSG: Contour find (roi:%d "
@@ -1132,13 +1132,13 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
                 // TODO: test code remove this
                 // if (m_distanceStats->GetCount() % 600 == 0)
                 //{
-                //    int val = Get_minBlobDiameter();
-                //    Set_minBlobDiameter(val - 10);
+                //    int val = GetMinBlobDiameter();
+                //    SetMinBlobDiameter(val - 10);
                 //    Debug.Write("SSG: Min blob diameter set to " + std::to_string(val - 10) + "\n");
                 //}
                 double thresh = 1.75 * m_distanceStats->GetSigma();
                 double meanV = m_distanceStats->GetMean();
-                if (!retryingFind && distance >= 2.0 * thresh)
+                if (!m_retryingFind && distance >= 2.0 * thresh)
                 {
                     SuspendGuiderCadence();
                     Debug.Write(wxString::Format("SSG: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
@@ -1146,16 +1146,16 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
                     Result = Star::FindResult::STAR_RESAMPLE;
                     pFrame->StatusMsg(_("Resampling"));
                     m_lastDistance = distance;
-                    retryingFind = true;
+                    m_retryingFind = true;
                 }
-                else if (retryingFind)
+                else if (m_retryingFind)
                 {
                     Debug.Write(wxString::Format("SSG: resampling result, new dist: %0.1f, last dist: %0.1f, thresh: %0.1f\n",
                                                  distance, m_lastDistance, thresh));
-                    retryingFind = false;
-                    resampleCount++;
+                    m_retryingFind = false;
+                    m_resampleCount++;
                     if (distance <= m_lastDistance)
-                        resampleReductionCount++;
+                        m_resampleReductionCount++;
                     pFrame->StatusMsg(_("Guiding"));
                     ResumeGuiderCadence();
                 }
@@ -1163,17 +1163,17 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
         }
     }
     else
-        retryingFind = false;
+        m_retryingFind = false;
 
     pDisk->SetError(Result);
 
-    bool wasFound = Star::WasFound(Result) || retryingFind;
+    bool wasFound = Star::WasFound(Result) || m_retryingFind;
     if (pFrame->pGuider->GetState() == STATE_GUIDING)
     {
-        totalDetectionEvents++;
+        m_totalDetectionEvents++;
         if (!wasFound)
-            lostTargetEvents++;
-        SsgTool::UpdateDetectionStats(resampleCount, resampleReductionCount, lostTargetEvents, totalDetectionEvents);
+            m_lostTargetEvents++;
+        SsgTool::UpdateDetectionStats(m_resampleCount, m_resampleReductionCount, m_lostTargetEvents, m_totalDetectionEvents);
     }
     Debug.Write(wxString::Format("SSG::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n", wasFound,
                                  Result, newX, newY, pDisk->Mass, pDisk->SNR, pDisk->PeakVal, pDisk->HFD));
@@ -1317,11 +1317,11 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     int maxRadius;
     if (m_detectionMode == DetectionModes::modeBlob)
     {
-        maxRadius = (int) Get_maxBlobDiameter() / 2.0;
+        maxRadius = (int) GetMaxBlobDiameter() / 2.0;
     }
     else
     {
-        maxRadius = (int) Get_maxRadius();
+        maxRadius = (int) GetMaxRadius();
     }
     int roiRadius = (int) (maxRadius * 3 / 2.0 + 0.5);
     int roiOffsetX = 0;
