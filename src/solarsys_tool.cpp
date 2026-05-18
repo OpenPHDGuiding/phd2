@@ -65,7 +65,7 @@ struct SolarSysToolWin : public wxDialog
     wxStaticText *m_minContourDiameterAngle;
     wxSpinCtrlDouble *m_maxDiameter;
     wxStaticText *m_maxContourDiameterAngle;
-    wxSlider *m_thresholdSlider;
+    wxSlider *m_contourEdgeThresholdSlider;
     wxButton *m_restoreContourParams;
     wxGrid *m_statsGrid;
     wxButton *m_resetStats;
@@ -108,7 +108,7 @@ struct SolarSysToolWin : public wxDialog
     void OnAutoThreshClick(wxCommandEvent& event);
     void OnBlobRestoreParamsClick(wxCommandEvent& event);
 
-    void OnThresholdChanged(wxCommandEvent& event);
+    void OnEdgeThresholdChanged(wxCommandEvent& event);
     void OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event);
     void OnSpinCtrl_maxDiameter(wxSpinDoubleEvent& event);
     void OnContourRestoreParamsClick(wxCommandEvent& event);
@@ -297,18 +297,19 @@ SolarSysToolWin::SolarSysToolWin()
     contourDiametersSzr->Add(contourSizeClue, wxSizerFlags(wxSizerFlags().Border(wxTOP, 5).Center()));
 
     wxStaticText *ThresholdLabel =
-        new wxStaticText(m_expert_tab, wxID_ANY, _("Length Threshold:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_thresholdSlider = new wxSlider(m_expert_tab, wxID_ANY, PT_HIGH_THRESHOLD_DEFAULT, PT_HIGH_THRESHOLD_MAX / 4,
-                                     PT_HIGH_THRESHOLD_MAX, wxPoint(20, 20), wxSize(400, -1), wxSL_HORIZONTAL | wxSL_LABELS);
-    m_thresholdSlider->SetToolTip(_("Higher values reduce sensitivity to weaker edges, resulting in "
-                                    "cleaner contour. This is displayed in red when the display of "
-                                    "internal contour edges is enabled."));
+        new wxStaticText(m_expert_tab, wxID_ANY, _("Sharpening Threshold:"), wxDefaultPosition, wxDefaultSize, 0);
+    m_contourEdgeThresholdSlider =
+        new wxSlider(m_expert_tab, wxID_ANY, PT_HIGH_THRESHOLD_DEFAULT, PT_HIGH_THRESHOLD_MAX / 4, PT_HIGH_THRESHOLD_MAX,
+                     wxPoint(20, 20), wxSize(400, -1), wxSL_HORIZONTAL | wxSL_LABELS);
+    m_contourEdgeThresholdSlider->SetToolTip(_("Higher values reduce sensitivity to weaker edges, resulting in "
+                                               "cleaner contour. This is displayed in red when the display of "
+                                               "internal contour edges is enabled."));
     // Add all solar system object tab elements
     wxStaticBoxSizer *planetSizer = new wxStaticBoxSizer(new wxStaticBox(m_expert_tab, wxID_ANY, _("")), wxVERTICAL);
     planetSizer->AddSpacer(10);
     planetSizer->Add(contourDiametersSzr, 0, wxEXPAND, 5);
     planetSizer->Add(ThresholdLabel, 0, wxLEFT | wxTOP, 5);
-    planetSizer->Add(m_thresholdSlider, 0, wxALL, 5);
+    planetSizer->Add(m_contourEdgeThresholdSlider, 0, wxALL, 5);
     m_restoreContourParams = new wxButton(m_expert_tab, wxID_ANY, _("Restore Parameters"));
     m_restoreContourParams->SetToolTip(_("Restore search parameters to values used in previous guiding session"));
     m_restoreContourParams->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &SolarSysToolWin::OnContourRestoreParamsClick, this);
@@ -440,11 +441,12 @@ SolarSysToolWin::SolarSysToolWin()
     detectionModeBox->AddSpacer(10);
     detectionModeBox->Add(m_detectionContours, 0, wxLEFT | wxTOP, 10);
 
-    topControls->Add(checkBoxesSzr, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
-    topControls->AddSpacer(10);
-    topControls->Add(m_ResamplingCheckBox, wxSizerFlags().Border(wxTOP, 20));
+    topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
     topControls->AddSpacer(30);
-    topControls->Add(detectionModeBox, wxSizerFlags().Border(wxLEFT, 20).Border(wxTOP, 20));
+    topControls->Add(checkBoxesSzr, wxSizerFlags().Border(wxTOP, 20));
+    topControls->AddSpacer(10);
+    topControls->Add(m_ResamplingCheckBox, wxSizerFlags().Border(wxLEFT, 10).Border(wxTOP, 20));
+
     topSizer->AddSpacer(5);
     topSizer->Add(topControls, 0, wxLEFT, 10);
     topSizer->AddSpacer(20);
@@ -476,7 +478,7 @@ SolarSysToolWin::SolarSysToolWin()
                                NULL, this);
     m_blobThreshold->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_blobThreshold), NULL,
                              this);
-    m_thresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnThresholdChanged, this);
+    m_contourEdgeThresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnEdgeThresholdChanged, this);
     m_detectionBlob->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_detectionContours->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
     m_resetStats->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &SolarSysToolWin::OnResetDetectionStats, this);
@@ -567,8 +569,8 @@ void SolarSysToolWin::RestoreContourSearchParameters()
     m_solarSystemObj->SetMaxRadius(val);
 
     val = pConfig->Profile.GetInt("/PlanetTool/Threshold", PT_BLOB_THRESHOLD_DEFAULT);
-    m_thresholdSlider->SetValue(val);
-    m_solarSystemObj->SetLowThreshold(val);
+    m_contourEdgeThresholdSlider->SetValue(val);
+    m_solarSystemObj->SetContourEdgeThresholds(val);
 }
 
 void SolarSysToolWin::RestoreProfileParameters()
@@ -615,7 +617,7 @@ void SolarSysToolWin::SaveProfileParameters()
 
     pConfig->Profile.SetInt("/PlanetTool/MinRadius", (int) (m_minDiameter->GetValue() / 2.0));
     pConfig->Profile.SetInt("/PlanetTool/MaxRadius", (int) m_maxDiameter->GetValue() / 2.0);
-    pConfig->Profile.SetInt("/PlanetTool/Threshold", (int) m_thresholdSlider->GetValue());
+    pConfig->Profile.SetInt("/PlanetTool/Threshold", (int) m_contourEdgeThresholdSlider->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/Timelapse", (int) m_CadenceCtrl->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/ExposureTime", (int) m_ExposureCtrl->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/Gain", (int) m_GainCtrl->GetValue());
@@ -807,7 +809,7 @@ void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
         m_trackingRateName = m_mountTrackingRate->GetString(sel);
         int *pRate = (int *) m_mountTrackingRate->GetClientData(sel);
         pPointingSource->SetTrackingRate((TrackingRates) *pRate);
-        Debug.Write(wxString::Format("SolarSys: setting mount tracking rate to %s\n", m_trackingRateName));
+        Debug.Write(wxString::Format("SSG: setting mount tracking rate to %s\n", m_trackingRateName));
         pFrame->NotifyGuidingParam("SolarSys: mount tracking rate", m_trackingRateName);
     }
 }
@@ -840,14 +842,15 @@ void SolarSysToolWin::OnGainChanged(wxSpinDoubleEvent& event)
         pCamera->SetCameraGain(gain);
 }
 
-void SolarSysToolWin::OnThresholdChanged(wxCommandEvent& event)
+// The edge threshold is only used for Canny detection in Contour mode.  The Canny function takes
+// a range of low to high thresholds which are defined here as upper=UI control value and lower =
+// 1/2 of upper.
+void SolarSysToolWin::OnEdgeThresholdChanged(wxCommandEvent& event)
 {
     int highThreshold = event.GetInt();
-    highThreshold = wxMin(highThreshold, PT_HIGH_THRESHOLD_MAX);
-    highThreshold = wxMax(highThreshold, PT_THRESHOLD_MIN);
+    highThreshold = wxClip(highThreshold, PT_THRESHOLD_MIN, PT_HIGH_THRESHOLD_MAX);
+    m_solarSystemObj->SetContourEdgeThresholds(highThreshold);
     int lowThreshold = wxMax(highThreshold / 2, PT_THRESHOLD_MIN);
-    m_solarSystemObj->SetLowThreshold(lowThreshold);
-    m_solarSystemObj->SetHighThreshold(highThreshold);
     pFrame->NotifyGuidingParam("SolarSys: contour threshold", highThreshold);
 }
 
@@ -913,12 +916,11 @@ void SolarSysToolWin::OnCloseButton(wxCommandEvent& event)
     {
         m_solarSystemObj->SetMinRadius(PT_MIN_RADIUS_DEFAULT);
         m_solarSystemObj->SetMaxRadius(PT_MAX_RADIUS_DEFAULT);
-        m_solarSystemObj->SetLowThreshold(PT_HIGH_THRESHOLD_DEFAULT / 2);
-        m_solarSystemObj->SetHighThreshold(PT_HIGH_THRESHOLD_DEFAULT);
+        m_solarSystemObj->SetContourEdgeThresholds(PT_HIGH_THRESHOLD_DEFAULT);
 
         m_minDiameter->SetValue(2.0 * m_solarSystemObj->GetMinRadius());
         m_maxDiameter->SetValue(2.0 * m_solarSystemObj->GetMaxRadius());
-        m_thresholdSlider->SetValue(m_solarSystemObj->GetHighThreshold());
+        m_contourEdgeThresholdSlider->SetValue(m_solarSystemObj->GetHighThreshold());
     }
     else
     {
@@ -990,7 +992,7 @@ void SolarSysToolWin::UpdateDetectionStats(int rsmpCount, int rsmpReductions, in
 
 void SolarSysToolWin::OnResetDetectionStats(wxCommandEvent& event)
 {
-    m_solarSystemObj->ResetDetectionStats();
+    m_solarSystemObj->ResetGuidedDetectionStats();
 }
 
 void SsgTool::UpdateTimingStats(long elapsedTime)

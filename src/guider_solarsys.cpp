@@ -121,54 +121,54 @@ bool GuiderSolarSys::SetCurrentPosition(const usImage *pImage, const PHD_Point& 
     return bError;
 }
 
-static wxString StarStatusStr(const Star& star)
-{
-    if (!star.IsValid())
-        return _("No target selected");
-
-    switch (star.GetError())
-    {
-    case Star::STAR_LOWSNR:
-        return _("Star lost - low SNR");
-    case Star::STAR_LOWMASS:
-        return _("Star lost - low mass");
-    case Star::STAR_LOWHFD:
-        return _("Star lost - low HFD");
-    case Star::STAR_TOO_NEAR_EDGE:
-        return _("Star too near edge");
-    case Star::STAR_MASSCHANGE:
-        return _("Star lost - mass changed");
-    default:
-        return _("No star found");
-    }
-}
+// static wxString StarStatusStr(const Star& star)
+//{
+//     if (!star.IsValid())
+//         return _("No target selected");
+//
+//     switch (star.GetError())
+//     {
+//     case Star::STAR_LOWSNR:
+//         return _("Star lost - low SNR");
+//     case Star::STAR_LOWMASS:
+//         return _("Star lost - low mass");
+//     case Star::STAR_LOWHFD:
+//         return _("Star lost - low HFD");
+//     case Star::STAR_TOO_NEAR_EDGE:
+//         return _("Star too near edge");
+//     case Star::STAR_MASSCHANGE:
+//         return _("Star lost - mass changed");
+//     default:
+//         return _("No star found");
+//     }
+// }
 
 static wxString StarStatus(const Star& star)
 {
     wxString status = wxString::Format(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
 
-    if (star.GetError() == Star::STAR_SATURATED)
-        status += _T(" ") + _("Saturated");
+    // if (star.GetError() == Star::STAR_SATURATED)
+    //     status += _T(" ") + _("Saturated");
 
-    int exp;
-    bool auto_exp;
-    pFrame->GetExposureInfo(&exp, &auto_exp);
+    // int exp;
+    // bool auto_exp;
+    // pFrame->GetExposureInfo(&exp, &auto_exp);
 
-    if (auto_exp)
-    {
-        status += _T(" ");
-        if (exp >= 1)
-            status += wxString::Format(_("Exp=%0.1f s"), (double) exp / 1000.);
-        else
-            status += wxString::Format(_("Exp=%d ms"), exp);
-    }
+    // if (auto_exp)
+    //{
+    //     status += _T(" ");
+    //     if (exp >= 1)
+    //         status += wxString::Format(_("Exp=%0.1f s"), (double) exp / 1000.);
+    //     else
+    //         status += wxString::Format(_("Exp=%d ms"), exp);
+    // }
 
     return status;
 }
 
 bool GuiderSolarSys::AutoSelect(const wxRect& roi)
 {
-    Debug.Write("GuiderSolarSys::AutoSelect enter\n");
+    Debug.Write("SSG:AutoSelect enter\n");
 
     bool error = false;
 
@@ -233,7 +233,7 @@ bool GuiderSolarSys::AutoSelect(const wxRect& roi)
     if (image && image->ImageData)
     {
         if (error)
-            Debug.Write("GuiderSolarSys::AutoSelect failed.\n");
+            Debug.Write("SSG:AutoSelect failed.\n");
 
         ImageLogger::LogAutoSelectImage(image, !error);
     }
@@ -340,7 +340,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
             errorInfo->starMass = 0.0;
             errorInfo->starSNR = 0.0;
             errorInfo->starHFD = 0.0;
-            errorInfo->status = m_SolarSystemObject->m_statusMsg;
+            errorInfo->status = m_SolarSystemObject->GetStatusMessage();
             m_primaryStar.SetError(newStar.GetError());
 
             ImageLogger::LogImage(pImage, *errorInfo);
@@ -391,7 +391,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
 
         pFrame->pProfile->UpdateData(pImage, m_primaryStar.X, m_primaryStar.Y);
 
-        pFrame->AdjustAutoExposure(m_primaryStar.SNR);
+        // pFrame->AdjustAutoExposure(m_primaryStar.SNR);
         pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
         errorInfo->status = StarStatus(m_primaryStar);
 
@@ -495,7 +495,7 @@ void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)
             m_SolarSystemObject->m_clicked_x = wxMin(StarX, pImage->Size.GetWidth() - 1);
             m_SolarSystemObject->m_clicked_y = wxMin(StarY, pImage->Size.GetHeight() - 1);
             m_SolarSystemObject->m_userLClick = true;
-            m_SolarSystemObject->m_detectionCounter = 0;
+            m_SolarSystemObject->ResetDetectionCounter();
 
             SetCurrentPosition(pImage, PHD_Point(StarX, StarY));
 

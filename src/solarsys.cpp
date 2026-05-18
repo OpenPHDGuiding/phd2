@@ -69,7 +69,7 @@ SolarSystemObject::SolarSystemObject()
     m_paramShowPreProcessed = false;
     m_paramResamplingEnabled = false;
     m_lostTargetEvents = 0;
-    m_totalDetectionEvents = 0;
+    m_totalGuidedSamples = 0;
 
     m_center_x = m_center_y = 0;
 
@@ -160,31 +160,38 @@ void SolarSystemObject::InitializeDetectionParams()
 void SolarSystemObject::SetDetectionMode(DetectionModes mode)
 {
     m_detectionMode = mode;
+    Debug.Write(
+        wxString::Format("SSG: Param DetectionMode set to %s\n", mode == DetectionModes::modeBlob ? "Blob" : "Contour"));
 }
 
 void SolarSystemObject::SetMinBlobDiameter(double val)
 {
     m_paramMinBlobDiameter = val;
+    Debug.Write(wxString::Format("SSG: Param BlobMinDiameter set to %0.1f\n", val));
 }
 
 void SolarSystemObject::SetMaxBlobDiameter(double val)
 {
     m_paramMaxBlobDiameter = val;
+    Debug.Write(wxString::Format("SSG: Param BlobMaxDiameter set to %0.1f\n", val));
 }
 
 void SolarSystemObject::SetBlobThreshold(double val)
 {
     m_paramBlobThreshold = val;
+    Debug.Write(wxString::Format("SSG: Param BlobThresh set to %0.1f\n", val));
 }
 
 void SolarSystemObject::SetBlobInversion(bool val)
 {
     m_paramInvertBlob = val;
+    Debug.Write(wxString::Format("SSG: Param BlobInversion set to %s\n", val ? "true" : "false"));
 }
 
 void SolarSystemObject::SetBlobAutoThreshold(bool val)
 {
     m_paramBlobAutoThreshold = val;
+    Debug.Write(wxString::Format("SSG: Param BlobAutoThreshold set to %s\n", val ? "true" : "false"));
 }
 
 void SolarSystemObject::SetShowPreProcessedImage(bool val)
@@ -195,24 +202,27 @@ void SolarSystemObject::SetShowPreProcessedImage(bool val)
 void SolarSystemObject::SetMinRadius(double val)
 {
     m_paramMinRadius = val;
+    Debug.Write(wxString::Format("SSG: Param ContourMinRadius set to %0.1f\n", val));
 }
 void SolarSystemObject::SetMaxRadius(double val)
 {
     m_paramMaxRadius = val;
+    Debug.Write(wxString::Format("SSG: Param ContourMaxRadius set to %0.1f\n", val));
 }
 
-void SolarSystemObject::SetHighThreshold(int value)
+// These are the thresholds used for Canny edge detection
+void SolarSystemObject::SetContourEdgeThresholds(double highValue)
 {
-    m_paramHighThreshold = value;
-}
-void SolarSystemObject::SetLowThreshold(int value)
-{
-    m_paramLowThreshold = value;
+    m_paramHighThreshold = highValue;
+    m_paramLowThreshold = (int) (highValue / 2.);
+    Debug.Write(wxString::Format("SSG: Param ContourThresholds set to %0.1f, %0.1f\n", m_paramLowThreshold, highValue));
 }
 
+// Suspension/resumption of user-specified guider cadence is needed for "resampling"
 void SolarSystemObject::SetGuiderCadence(int cadenceMS)
 {
     m_paramGuiderCadence = cadenceMS;
+    Debug.Write(wxString::Format("SSG: Param GuiderCadence set to %d\n", cadenceMS));
 }
 void SolarSystemObject::SuspendGuiderCadence()
 {
@@ -229,13 +239,14 @@ void SolarSystemObject::SetResamplingEnabled(bool Enabled)
     m_resampleReductionCount = 0;
     if (!Enabled)
         m_distanceStats->ClearAll();
+    Debug.Write(wxString::Format("SSG: Param ResamplingEnabled set to %s\n", Enabled ? "true" : "false"));
 }
-void SolarSystemObject::ResetDetectionStats()
+void SolarSystemObject::ResetGuidedDetectionStats()
 {
     m_resampleCount = 0;
     m_resampleReductionCount = 0;
     m_lostTargetEvents = 0;
-    m_totalDetectionEvents = 1;
+    m_totalGuidedSamples = 1;
 }
 // The Sobel operator can be used to detect edges in an image, which are more
 // pronounced in focused images. You can apply the Sobel operator to the image
@@ -822,7 +833,7 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
     }
 }
 
-// Find center of object using blob searching
+// Find center of object using OpenCV SimpleBlobDetector
 bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
                                          std::vector<cv::Point>& blobContour)
 {
@@ -887,7 +898,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
         centroidInfo.centroidX = -1.0;
         centroidInfo.centroidY = -1.0;
     }
-    // Optionally keep a re-scaled version of the pre-processed image for diagnostic/tuning purposes
+    // Optionally keep a re-scaled version of the pre-processed image if user is doing manual threshold adjustment
     if (m_paramShowPreProcessed)
     {
         Mat rescaled;
@@ -1100,7 +1111,7 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
     }
     else
     {
-        // Use detected center of the Sun, Moon or planet for guiding
+        // Use detected center of the object for guiding
         Result = Star::STAR_OK;
         newX = m_center_x;
         newY = m_center_y;
@@ -1150,12 +1161,14 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
                 }
                 else if (m_retryingFind)
                 {
-                    Debug.Write(wxString::Format("SSG: resampling result, new dist: %0.1f, last dist: %0.1f, thresh: %0.1f\n",
-                                                 distance, m_lastDistance, thresh));
                     m_retryingFind = false;
                     m_resampleCount++;
                     if (distance <= m_lastDistance)
                         m_resampleReductionCount++;
+                    Debug.Write(wxString::Format("SSG: Resampled, new dist: %0.1f, last dist: %0.1f, success: %d / %d, "
+                                                 "total_samples: %d, thresh: %0.1f\n",
+                                                 distance, m_lastDistance, m_resampleReductionCount, m_resampleCount,
+                                                 m_totalGuidedSamples + 1, thresh));
                     pFrame->StatusMsg(_("Guiding"));
                     ResumeGuiderCadence();
                 }
@@ -1170,10 +1183,10 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
     bool wasFound = Star::WasFound(Result) || m_retryingFind;
     if (pFrame->pGuider->GetState() == STATE_GUIDING)
     {
-        m_totalDetectionEvents++;
+        m_totalGuidedSamples++;
         if (!wasFound)
             m_lostTargetEvents++;
-        SsgTool::UpdateDetectionStats(m_resampleCount, m_resampleReductionCount, m_lostTargetEvents, m_totalDetectionEvents);
+        SsgTool::UpdateDetectionStats(m_resampleCount, m_resampleReductionCount, m_lostTargetEvents, m_totalGuidedSamples);
     }
     Debug.Write(wxString::Format("SSG::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f, Peak=%hu HFD=%.1f\n", wasFound,
                                  Result, newX, newY, pDisk->Mass, pDisk->SNR, pDisk->PeakVal, pDisk->HFD));
@@ -1352,6 +1365,8 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
          (m_frameWidth == pImage->Size.GetWidth()) && (m_frameHeight == pImage->Size.GetHeight()));
     if (useROI)
     {
+        // If user has clicked to define a bounding region, this will incrementally move the region to the
+        // actual center of the detected object
         if (m_userLClick && m_detectionCounter <= 4)
         {
             float blendAmt = (1.0 - m_detectionCounter / 4.0);

@@ -90,13 +90,20 @@ private:
     DetectionModes m_detectionMode;
     int m_guiderCadence;
 
-    // TODO: Sort out the private/public mess
-public:
+    DescriptiveStats *m_distanceStats;
+    double m_lastDistance;
+    int m_resampleCount;
+    int m_resampleReductionCount;
+    bool m_retryingFind;
+    int m_lostTargetEvents;
+    int m_totalGuidedSamples; // Used on tool stats tab for resampling activity
+
+private:
     wxString m_statusMsg;
-    bool m_detected;
+
     float m_center_x;
     float m_center_y;
-    int m_radius;
+
     int m_searchRegion;
     float m_prevSearchRegion;
     double m_paramMinBlobDiameter;
@@ -106,16 +113,19 @@ public:
     bool m_paramBlobAutoThreshold;
     int m_paramGuiderCadence;
     int m_savedGuiderCadence;
+    int m_detectionCounter;
+    bool m_simulationZeroOffset;
+    bool m_cameraSimulationRefPointValid;
 
+public:
+    // Public members used for rendering in GuiderSolarSys or StarProfile
+    bool m_detected;
+    int m_radius;
     bool m_roiActive;
     cv::Rect m_roiRect;
     bool m_userLClick;
     int m_clicked_x;
     int m_clicked_y;
-
-    int m_detectionCounter;
-    bool m_simulationZeroOffset;
-    bool m_cameraSimulationRefPointValid;
 
 public:
     SolarSystemObject();
@@ -159,9 +169,8 @@ public:
     void RefreshMinMaxDiameters() { m_showMinMaxDiameters = true; }
     bool GetRoiEnableState() { return m_paramRoiEnabled; }
     void SetRoiEnableState(bool enabled) { m_paramRoiEnabled = enabled; }
-    void SetLowThreshold(int value);
     int GetLowThreshold() { return m_paramLowThreshold; }
-    void SetHighThreshold(int value);
+    void SetContourEdgeThresholds(double highValue);
     int GetHighThreshold() { return m_paramHighThreshold; }
     int GetGuiderCadence() { return m_paramGuiderCadence; }
     void SetGuiderCadence(int cadenceMS);
@@ -169,19 +178,14 @@ public:
     void ResumeGuiderCadence();
     bool GetResamplingEnabled() { return m_paramResamplingEnabled; }
     void SetResamplingEnabled(bool Enabled);
-    DescriptiveStats *m_distanceStats;
-    double m_lastDistance;
-    int m_resampleCount;
-    int m_resampleReductionCount;
-    bool m_retryingFind;
-    int m_lostTargetEvents;
-    int m_totalDetectionEvents;
+    wxString GetStatusMessage() { return m_statusMsg; }
+    void ResetDetectionCounter() { m_detectionCounter = 0; }
 
     void ShowVisualElements(bool state);
     bool VisualElementsEnabled() { return m_showVisualElements; }
     void SetShowFeaturesButtonState(bool state) { m_paramShowElementsButtonState = state; }
     bool GetShowFeaturesButtonState() { return m_paramShowElementsButtonState; }
-    void ResetDetectionStats();
+    void ResetGuidedDetectionStats();
 
     // Displaying visual aid for solar system object parameter tuning
     bool m_showMinMaxDiameters;
