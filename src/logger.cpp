@@ -195,8 +195,8 @@ void Logger::RemoveOldDirectories(const wxString& filePattern, int DaysOld)
                         wxString rslt = subdir.Mid(start + 13);
                         if (rslt < oldestDateStr)
                             dirTargets.Add(subdir);
-                        more = dir.GetNext(&subdir);
                     }
+                    more = dir.GetNext(&subdir);
                 }
                 dir.Close();
                 for (unsigned int i = 0; i < dirTargets.GetCount(); i++)
