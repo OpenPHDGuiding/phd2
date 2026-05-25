@@ -1132,47 +1132,52 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
                 distance = fabs(newX - lockPos.X);
             else
                 distance = hypot(newX - lockPos.X, newY - lockPos.Y);
-        }
-        else
-            distance = 0.;
-        if (m_paramResamplingEnabled)
-        {
-            m_distanceStats->AddValue(distance);
-            if (m_distanceStats->GetCount() > 10)
+            if (m_paramResamplingEnabled)
             {
-                // TODO: test code remove this
-                // if (m_distanceStats->GetCount() % 600 == 0)
-                //{
-                //    int val = GetMinBlobDiameter();
-                //    SetMinBlobDiameter(val - 10);
-                //    Debug.Write("SSG: Min blob diameter set to " + std::to_string(val - 10) + "\n");
-                //}
-                double thresh = 1.75 * m_distanceStats->GetSigma();
-                double meanV = m_distanceStats->GetMean();
-                if (!m_retryingFind && distance >= 2.0 * thresh)
+                m_distanceStats->AddValue(distance);
+                if (m_distanceStats->GetCount() > 10)
                 {
-                    SuspendGuiderCadence();
-                    Debug.Write(wxString::Format("SSG: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
-                                                 distance, thresh));
-                    Result = Star::FindResult::STAR_RESAMPLE;
-                    pFrame->StatusMsg(_("Resampling"));
-                    m_lastDistance = distance;
-                    m_retryingFind = true;
-                }
-                else if (m_retryingFind)
-                {
-                    m_retryingFind = false;
-                    m_resampleCount++;
-                    if (distance <= m_lastDistance)
-                        m_resampleReductionCount++;
-                    Debug.Write(wxString::Format("SSG: Resampled, new dist: %0.1f, last dist: %0.1f, success: %d / %d, "
-                                                 "total_samples: %d, thresh: %0.1f\n",
-                                                 distance, m_lastDistance, m_resampleReductionCount, m_resampleCount,
-                                                 m_totalGuidedSamples + 1, thresh));
-                    pFrame->StatusMsg(_("Guiding"));
-                    ResumeGuiderCadence();
+                    // TODO: test code remove this
+                    // if (m_distanceStats->GetCount() % 600 == 0)
+                    //{
+                    //    int val = GetMinBlobDiameter();
+                    //    SetMinBlobDiameter(val - 10);
+                    //    Debug.Write("SSG: Min blob diameter set to " + std::to_string(val - 10) + "\n");
+                    //}
+                    double thresh = 1.75 * m_distanceStats->GetSigma();
+                    double meanV = m_distanceStats->GetMean();
+                    if (!m_retryingFind && distance >= 2.0 * thresh)
+                    {
+                        SuspendGuiderCadence();
+                        Debug.Write(wxString::Format("SSG: resampling after large excursion, dist: %0.1f, thresh: %0.1f\n",
+                                                     distance, thresh));
+                        Result = Star::FindResult::STAR_RESAMPLE;
+                        pFrame->StatusMsg(_("Resampling"));
+                        m_lastDistance = distance;
+                        m_retryingFind = true;
+                    }
+                    else if (m_retryingFind)
+                    {
+                        // We use the 2nd sample because there are two situations: 1) the first sample was flawed or 2) there
+                        // really is a large mechanical excursion underway and we need to react to it
+                        m_retryingFind = false;
+                        m_resampleCount++;
+                        if (distance <= m_lastDistance)
+                            m_resampleReductionCount++;
+                        Debug.Write(wxString::Format("SSG: Resampled, new dist: %0.1f, last dist: %0.1f, success: %d / %d, "
+                                                     "total_samples: %d, thresh: %0.1f\n",
+                                                     distance, m_lastDistance, m_resampleReductionCount, m_resampleCount,
+                                                     m_totalGuidedSamples + 1, thresh));
+                        pFrame->StatusMsg(_("Guiding"));
+                        ResumeGuiderCadence();
+                    }
                 }
             }
+        }
+        else
+        {
+            distance = 0.;
+            m_retryingFind = false;
         }
     }
     else

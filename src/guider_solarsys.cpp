@@ -121,47 +121,12 @@ bool GuiderSolarSys::SetCurrentPosition(const usImage *pImage, const PHD_Point& 
     return bError;
 }
 
-// static wxString StarStatusStr(const Star& star)
-//{
-//     if (!star.IsValid())
-//         return _("No target selected");
-//
-//     switch (star.GetError())
-//     {
-//     case Star::STAR_LOWSNR:
-//         return _("Star lost - low SNR");
-//     case Star::STAR_LOWMASS:
-//         return _("Star lost - low mass");
-//     case Star::STAR_LOWHFD:
-//         return _("Star lost - low HFD");
-//     case Star::STAR_TOO_NEAR_EDGE:
-//         return _("Star too near edge");
-//     case Star::STAR_MASSCHANGE:
-//         return _("Star lost - mass changed");
-//     default:
-//         return _("No star found");
-//     }
-// }
-
 static wxString StarStatus(const Star& star)
 {
     wxString status = wxString::Format(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
 
-    // if (star.GetError() == Star::STAR_SATURATED)
-    //     status += _T(" ") + _("Saturated");
-
-    // int exp;
-    // bool auto_exp;
-    // pFrame->GetExposureInfo(&exp, &auto_exp);
-
-    // if (auto_exp)
-    //{
-    //     status += _T(" ");
-    //     if (exp >= 1)
-    //         status += wxString::Format(_("Exp=%0.1f s"), (double) exp / 1000.);
-    //     else
-    //         status += wxString::Format(_("Exp=%d ms"), exp);
-    // }
+    if (star.GetError() == Star::STAR_RESAMPLE)
+        status += _T(" ") + _("Resampling");
 
     return status;
 }
@@ -544,10 +509,19 @@ inline static void DrawBox(SolarSystemObject *ssoHelper, wxDC& dc, const PHD_Poi
 
     if (ssoHelper->m_detected)
     {
-        int x = int(star.X * scale + 0.5);
-        int y = int(star.Y * scale + 0.5);
-        int r = int(ssoHelper->m_radius * scale + 0.5);
-        dc.DrawCircle(x, y, r);
+        // Show large bounding circle if both bounding circles not already shown
+        if (!ssoHelper->m_showMinMaxDiameters)
+        {
+            int x = int(star.X * scale + 0.5);
+            int y = int(star.Y * scale + 0.5);
+            int r;
+            if (ssoHelper->GetDetectionMode() == DetectionModes::modeBlob)
+                r = int(ssoHelper->GetMaxBlobDiameter() * 0.5 * scale + 0.5);
+            else
+                r = int(ssoHelper->m_radius * scale + 0.5);
+            dc.DrawCircle(x, y, r);
+        }
+        // Always show centroid
         dc.SetPen(wxPen(dc.GetPen().GetColour(), 1, dc.GetPen().GetStyle()));
         dc.DrawRectangle(xpos, ypos, w, w);
     }

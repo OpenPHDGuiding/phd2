@@ -91,7 +91,6 @@ struct SolarSysToolWin : public wxDialog
     bool m_MouseHoverFlag;
     int m_windowPosX;
     int m_windowPosY;
-    VarDelayCfg prevVariableDelayConfig;
 
     SolarSysToolWin();
     ~SolarSysToolWin();
@@ -500,11 +499,6 @@ SolarSysToolWin::SolarSysToolWin()
 
     RestoreProfileParameters();
     InitializeTrackingRates(m_trackingRateName);
-    prevVariableDelayConfig = pFrame->GetVariableDelayConfig();
-    if (prevVariableDelayConfig.enabled)
-    {
-        pFrame->SetVariableDelayConfig(false, prevVariableDelayConfig.shortDelay, prevVariableDelayConfig.longDelay);
-    }
 
     if (wxGetKeyState(WXK_ALT))
     {
@@ -518,9 +512,6 @@ SolarSysToolWin::SolarSysToolWin()
 SolarSysToolWin::~SolarSysToolWin(void)
 {
     pFrame->pSolarSysTool = nullptr;
-    if (prevVariableDelayConfig.enabled)
-        pFrame->SetVariableDelayConfig(prevVariableDelayConfig.enabled, prevVariableDelayConfig.shortDelay,
-                                       prevVariableDelayConfig.longDelay);
     Debug.Write("Solar system guiding de-activated\n");
 }
 
@@ -835,9 +826,7 @@ void SolarSysToolWin::OnCadenceChanged(wxSpinDoubleEvent& event)
 
 void SolarSysToolWin::OnGainChanged(wxSpinDoubleEvent& event)
 {
-    int gain = m_GainCtrl->GetValue();
-    gain = wxMin(gain, 100.0);
-    gain = wxMax(gain, 0.0);
+    int gain = wxClip(m_GainCtrl->GetValue(), 0, 100);
     if (pCamera)
         pCamera->SetCameraGain(gain);
 }
