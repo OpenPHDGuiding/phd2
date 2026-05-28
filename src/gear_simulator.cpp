@@ -2055,7 +2055,7 @@ static void SetControlStates(SimCamDialog *dlg, bool captureActive)
     dlg->pPECustomRb->Enable(enable);
     dlg->pUsePECbx->Enable(enable);
 # ifndef DEVELOPER_MODE
-    dlg->pUseStiction->Show(false); // no good for end-users
+    dlg->pUseStiction->Enable(false); // no good for end-users
 # endif
     if (pPointingSource && pPointingSource->IsConnected())
         dlg->pPierFlip->Enable(false); // With mount connected, any "flip" must be initiated there
@@ -2216,19 +2216,21 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     AddTableEntryPair(this, pMountTable, _("Dec backlash"), pBacklashSpin);
     pDriftSpinDEC =
         NewSpinner(this, SimCamParams::dec_drift_rate * 60.0, -DEC_DRIFT_MAX, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
+    pUseStiction = NewCheckBox(this, SimCamParams::use_stiction, _("Apply stiction"), _("Simulate dec axis stiction"));
     pDriftSpinRA =
         NewSpinner(this, SimCamParams::ra_drift_rate * 60.0, -RA_DRIFT_MAX, RA_DRIFT_MAX, 0.5, _("Ra drift, arc-sec/min"));
     AddTableEntryPair(this, pMountTable, _("Dec drift"), pDriftSpinDEC);
+    pMountTable->AddSpacer(5);
+    pMountTable->Add(pUseStiction, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
     AddTableEntryPair(this, pMountTable, _("Ra drift"), pDriftSpinRA);
     pGuideRateSpin = NewSpinner(this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
     AddTableEntryPair(this, pMountTable, _("Guide rate"), pGuideRateSpin);
     wxButton *RecenterBtn = new wxButton(this, wxID_ANY, _("Recenter"));
     RecenterBtn->Bind(wxEVT_BUTTON, &SimCamDialog::OnRecenterButton, this);
     RecenterBtn->SetToolTip(_("Recenter simulated image to original position"));
-    pMountTable->AddSpacer(5); //    Empty cell
     pMountTable->AddSpacer(5);
     pMountTable->Add(RecenterBtn, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    pUseStiction = NewCheckBox(this, SimCamParams::use_stiction, _("Apply stiction"), _("Simulate dec axis stiction"));
+
 # ifndef DEVELOPER_MODE
     // too crude to put in hands of users
     pUseStiction->Enable(false);
