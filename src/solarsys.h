@@ -112,6 +112,7 @@ private:
     bool m_paramInvertBlob;
     bool m_paramBlobAutoThreshold;
     int m_paramGuiderCadence;
+    bool m_paramRetryAutofinds;
     int m_savedGuiderCadence;
     int m_detectionCounter;
     bool m_simulationZeroOffset;
@@ -178,6 +179,8 @@ public:
     void ResumeGuiderCadence();
     bool GetResamplingEnabled() { return m_paramResamplingEnabled; }
     void SetResamplingEnabled(bool Enabled);
+    bool GetRetryAutofinds() { return m_paramRetryAutofinds; }
+    void SetRetryAutofinds(bool val) { m_paramRetryAutofinds = val; }
     wxString GetStatusMessage() { return m_statusMsg; }
     void ResetDetectionCounter() { m_detectionCounter = 0; }
 

@@ -1056,18 +1056,65 @@ bool SolarSystemObject::AutoFindDisk(const usImage& image, Star *pDisk)
         return false; // not found
     }
 
-    if (FindSolarSystemObject(&image, true))
+    bool done = false;
+    bool found = false;
+    int retryCount = 0;
+    int origMinBlob = m_paramMinBlobDiameter;
+    while (!done)
     {
-        pDisk->SetXY(m_center_x, m_center_y);
-        Debug.Write(wxString::Format("Planetary::AutoFind found object at (%.1f, %.1f)\n", m_center_x, m_center_x));
-        return true;
+        found = FindSolarSystemObject(&image, true);
+        if (found)
+        {
+            pDisk->SetXY(m_center_x, m_center_y);
+            Debug.Write(wxString::Format("Planetary::AutoFind found object at (%.1f, %.1f)\n", m_center_x, m_center_x));
+            if (retryCount > 0)
+                Debug.Write(wxString::Format("SSG: AutoFind retry with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
+            done = true;
+        }
+        else
+        {
+            if (m_detectionMode == DetectionModes::modeBlob)
+            {
+                if (m_paramRetryAutofinds && retryCount++ < 50 && m_paramMinBlobDiameter > 5)
+                {
+                    if (retryCount == 1)
+                    {
+                        m_paramMinBlobDiameter = 0.8 * m_paramMaxBlobDiameter;
+                        Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d\n",
+                                                     (int) m_paramMinBlobDiameter));
+                    }
+                    else
+                    {
+                        m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
+                        Debug.Write(
+                            wxString::Format("SSG: AutoFind retry with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
+                    }
+                    pFrame->StatusMsg(_("Search #") + std::to_string(retryCount));
+                }
+                else
+                {
+                    Debug.Write("SSG: Autofind no target found, retries exhausted\n");
+                    pDisk->Invalidate();
+                    done = true;
+                }
+            }
+            else
+            {
+                Debug.Write("SSG: Autofind no target found\n");
+                pDisk->Invalidate();
+                done = true;
+            }
+        }
     }
-    else
+    if (retryCount > 0) // Synch the UI control
     {
-        Debug.Write("AutoFind: no object found\n");
-        pDisk->Invalidate();
-        return false;
+        if (found)
+            SsgTool::ChangeMinBlobDiameter(m_paramMinBlobDiameter);
+        else
+            SsgTool::ChangeMinBlobDiameter(origMinBlob);
     }
+
+    return found;
 }
 
 // Find the targeted disk object
