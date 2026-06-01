@@ -297,20 +297,20 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
 
     try
     {
-        Star newStar(m_primaryStar);
+        Star newDisk(m_primaryStar);
 
-        if (!m_SolarSystemObject->FindDisk(pImage, false, &newStar))
+        if (!m_SolarSystemObject->FindDisk(pImage, false, &newDisk))
         {
-            errorInfo->starError = newStar.GetError();
+            errorInfo->starError = newDisk.GetError();
             errorInfo->starMass = 0.0;
             errorInfo->starSNR = 0.0;
             errorInfo->starHFD = 0.0;
             errorInfo->status = m_SolarSystemObject->GetStatusMessage();
-            m_primaryStar.SetError(newStar.GetError());
+            m_primaryStar.SetError(newDisk.GetError());
 
             ImageLogger::LogImage(pImage, *errorInfo);
 
-            throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
+            throw ERROR_INFO("UpdateCurrentPosition():newDisk not found");
         }
 
         const PHD_Point& lockPos = LockPosition();
@@ -319,9 +319,9 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
         if (lockPos.IsValid())
         {
             if (raOnly)
-                distance = fabs(newStar.X - lockPos.X);
+                distance = fabs(newDisk.X - lockPos.X);
             else
-                distance = newStar.Distance(lockPos);
+                distance = newDisk.Distance(lockPos);
         }
         else
             distance = 0.;
@@ -331,7 +331,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
         ImageLogger::LogImage(pImage, distance);
 
         // update the star position, mass, etc.
-        m_primaryStar = newStar;
+        m_primaryStar = newDisk;
 
         if (lockPos.IsValid())
         {
@@ -344,7 +344,7 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
             UpdateCurrentDistance(distance, distanceRA);
             if (GetState() == STATE_GUIDING)
             {
-                if (newStar.GetError() == Star::FindResult::STAR_RESAMPLE)
+                if (newDisk.GetError() == Star::FindResult::STAR_RESAMPLE)
                 {
                     errorInfo->status = _("Resampling");
                     errorInfo->starError =
@@ -454,15 +454,15 @@ void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)
             }
 
             double scaleFactor = ScaleFactor();
-            double StarX = (double) mevent.m_x / scaleFactor;
-            double StarY = (double) mevent.m_y / scaleFactor;
+            double diskX = (double) mevent.m_x / scaleFactor;
+            double diskY = (double) mevent.m_y / scaleFactor;
 
-            m_SolarSystemObject->m_clicked_x = wxMin(StarX, pImage->Size.GetWidth() - 1);
-            m_SolarSystemObject->m_clicked_y = wxMin(StarY, pImage->Size.GetHeight() - 1);
+            m_SolarSystemObject->m_clicked_x = wxMin(diskX, pImage->Size.GetWidth() - 1);
+            m_SolarSystemObject->m_clicked_y = wxMin(diskY, pImage->Size.GetHeight() - 1);
             m_SolarSystemObject->m_userLClick = true;
             m_SolarSystemObject->ResetDetectionCounter();
 
-            SetCurrentPosition(pImage, PHD_Point(StarX, StarY));
+            SetCurrentPosition(pImage, PHD_Point(diskX, diskY));
 
             if (!m_primaryStar.IsValid())
             {
@@ -493,14 +493,14 @@ void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)
     }
 }
 
-inline static void DrawBox(SolarSystemObject *ssoHelper, wxDC& dc, const PHD_Point& star, int halfW, double scale)
+inline static void DrawBox(SolarSystemObject *ssoHelper, wxDC& dc, const PHD_Point& disk, int halfW, double scale)
 {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     halfW = 10;
     double w = ROUND((halfW * 2 + 1) * scale);
-    int xpos = int((star.X - halfW) * scale);
-    int ypos = int((star.Y - halfW) * scale);
+    int xpos = int((disk.X - halfW) * scale);
+    int ypos = int((disk.Y - halfW) * scale);
 
     // Clip drawing region to displayed image frame
     wxImage *pImg = pFrame->pGuider->DisplayedImage();
@@ -512,8 +512,8 @@ inline static void DrawBox(SolarSystemObject *ssoHelper, wxDC& dc, const PHD_Poi
         // Show large bounding circle if both bounding circles not already shown
         if (!ssoHelper->m_showMinMaxDiameters)
         {
-            int x = int(star.X * scale + 0.5);
-            int y = int(star.Y * scale + 0.5);
+            int x = int(disk.X * scale + 0.5);
+            int y = int(disk.Y * scale + 0.5);
             int r;
             if (ssoHelper->GetDetectionMode() == DetectionModes::modeBlob)
                 r = int(ssoHelper->GetMaxBlobDiameter() * 0.5 * scale + 0.5);
@@ -544,8 +544,8 @@ inline static void DrawBox(SolarSystemObject *ssoHelper, wxDC& dc, const PHD_Poi
         pen.SetDashes(4, dashPattern[dash]);
         dc.SetPen(pen);
 
-        int x = int(star.X * scale + 0.5);
-        int y = int(star.Y * scale + 0.5);
+        int x = int(disk.X * scale + 0.5);
+        int y = int(disk.Y * scale + 0.5);
         int r = int(ssoHelper->m_radius * scale + 0.5);
         dc.DrawCircle(x, y, r);
     }
@@ -603,10 +603,6 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
 
             double newScaleFactor = (xScaleFactor > yScaleFactor) ? xScaleFactor : yScaleFactor;
 
-            //            Debug.Write(wxString::Format("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f\n",
-            //            xScaleFactor,
-            //                    yScaleFactor, newScaleFactor));
-
             // we rescale the image if:
             // - The image is either too big
             // - The image is so small that at least one dimension is less
@@ -625,8 +621,6 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
 
                 if (imageWidth != newWidth || imageHeight != newHeight)
                 {
-                    // Debug.Write(wxString::Format("Resizing image to %d,%d\n", newWidth, newHeight));
-
                     if (newWidth > 0 && newHeight > 0)
                     {
                         m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_NORMAL);
@@ -685,8 +679,8 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
                 Mount *mount = TheScope();
                 if (mount)
                 {
-                    double StarX = CurrentPosition().X;
-                    double StarY = CurrentPosition().Y;
+                    double diskX = CurrentPosition().X;
+                    double diskY = CurrentPosition().Y;
 
                     double r = 15.0;
                     double rlabel = r + 9.0;
@@ -697,20 +691,20 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
                     if (raParity == GUIDE_PARITY_ODD)
                     {
                         // odd parity => West calibration pulses move scope East
-                        //   => star moves West
+                        //   => target moves West
                         //   => East vector is opposite direction from X calibration vector (West calibration direction)
                         eAngle += M_PI;
                     }
                     double cos_eangle = cos(eAngle);
                     double sin_eangle = sin(eAngle);
                     dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(), 2, wxPENSTYLE_DOT));
-                    dc.DrawLine(ROUND(StarX * m_scaleFactor + r * cos_eangle), ROUND(StarY * m_scaleFactor + r * sin_eangle),
-                                ROUND(StarX * m_scaleFactor - r * cos_eangle), ROUND(StarY * m_scaleFactor - r * sin_eangle));
+                    dc.DrawLine(ROUND(diskX * m_scaleFactor + r * cos_eangle), ROUND(diskY * m_scaleFactor + r * sin_eangle),
+                                ROUND(diskX * m_scaleFactor - r * cos_eangle), ROUND(diskY * m_scaleFactor - r * sin_eangle));
                     if (raParity != GUIDE_PARITY_UNKNOWN)
                     {
                         dc.SetTextForeground(pFrame->pGraphLog->GetRaOrDxColor());
-                        dc.DrawText(_("E"), ROUND(StarX * m_scaleFactor + rlabel * cos_eangle) - 4,
-                                    ROUND(StarY * m_scaleFactor + rlabel * sin_eangle) - 6);
+                        dc.DrawText(_("E"), ROUND(diskX * m_scaleFactor + rlabel * cos_eangle) - 4,
+                                    ROUND(diskY * m_scaleFactor + rlabel * sin_eangle) - 6);
                     }
 
                     double nAngle = mount->IsCalibrated() ? mount->yAngle() : M_PI / 2.0;
@@ -718,20 +712,20 @@ bool GuiderSolarSys::PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memD
                     if (decParity == GUIDE_PARITY_EVEN)
                     {
                         // even parity => North calibration pulses move scope North
-                        //   => star moves South
+                        //   => target moves South
                         //   => North vector is opposite direction from Y calibration vector (North calibration direction)
                         nAngle += M_PI;
                     }
                     double cos_nangle = cos(nAngle);
                     double sin_nangle = sin(nAngle);
                     dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(), 2, wxPENSTYLE_DOT));
-                    dc.DrawLine(ROUND(StarX * m_scaleFactor + r * cos_nangle), ROUND(StarY * m_scaleFactor + r * sin_nangle),
-                                ROUND(StarX * m_scaleFactor - r * cos_nangle), ROUND(StarY * m_scaleFactor - r * sin_nangle));
+                    dc.DrawLine(ROUND(diskX * m_scaleFactor + r * cos_nangle), ROUND(diskY * m_scaleFactor + r * sin_nangle),
+                                ROUND(diskX * m_scaleFactor - r * cos_nangle), ROUND(diskY * m_scaleFactor - r * sin_nangle));
                     if (decParity != GUIDE_PARITY_UNKNOWN)
                     {
                         dc.SetTextForeground(pFrame->pGraphLog->GetDecOrDyColor());
-                        dc.DrawText(_("N"), ROUND(StarX * m_scaleFactor + rlabel * cos_nangle) - 4,
-                                    ROUND(StarY * m_scaleFactor + rlabel * sin_nangle) - 6);
+                        dc.DrawText(_("N"), ROUND(diskX * m_scaleFactor + rlabel * cos_nangle) - 4,
+                                    ROUND(diskY * m_scaleFactor + rlabel * sin_nangle) - 6);
                     }
 
                     wxGraphicsContext *gc = wxGraphicsContext::Create(dc);

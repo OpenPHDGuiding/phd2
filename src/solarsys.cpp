@@ -54,7 +54,7 @@ static float gaussianWeight[GAUSSIAN_SIZE];
 // Initialize solar/planetary detection module
 SolarSystemObject::SolarSystemObject()
 {
-    m_paramEnabled = true;
+    // m_paramEnabled = true;
     m_paramDetectionPaused = false;
     m_paramRoiEnabled = false;
     m_prevCaptureActive = false;
@@ -136,7 +136,7 @@ wxString SolarSystemObject::GetHfdLabel()
 
 bool SolarSystemObject::IsPixelMetrics()
 {
-    return GetSolarSystemObjMode() ? !m_measuringSharpnessMode : true;
+    return !m_measuringSharpnessMode;
 }
 
 // Toggle between sharpness and radius display in the Profile window
@@ -218,20 +218,16 @@ void SolarSystemObject::SetContourEdgeThresholds(double highValue)
     Debug.Write(wxString::Format("SSG: Param ContourThresholds set to %0.1f, %0.1f\n", m_paramLowThreshold, highValue));
 }
 
-// Suspension/resumption of user-specified guider cadence is needed for "resampling"
+// Don't use the "time delay" or "variable delay" properties for stellar guiding, create a new one.  This eliminates
+// the need to save/restore settings when a profile is being used for both stellar and solar system guiding.  GetGuiderCadence()
+// is called from MyFrame::GetExposureDelay()
 void SolarSystemObject::SetGuiderCadence(int cadenceMS)
 {
     m_paramGuiderCadence = cadenceMS;
     Debug.Write(wxString::Format("SSG: Param GuiderCadence set to %d\n", cadenceMS));
 }
-void SolarSystemObject::SuspendGuiderCadence()
-{
-    m_savedGuiderCadence = m_guiderCadence;
-}
-void SolarSystemObject::ResumeGuiderCadence()
-{
-    m_guiderCadence = m_savedGuiderCadence;
-}
+
+// Suspension/resumption of user-specified guider cadence is needed for "resampling"
 void SolarSystemObject::SetResamplingEnabled(bool Enabled)
 {
     m_paramResamplingEnabled = Enabled;
@@ -309,7 +305,7 @@ double SolarSystemObject::CalcSharpness(Mat& FullFrame, Point2f& clickedPoint, b
     return ComputeSobelSharpness(focusRoi);
 }
 
-// Get current detection status
+// Get current detection status, independent of detection mode
 void SolarSystemObject::GetDetectionStatus(wxString& statusMsg)
 {
     statusMsg = wxString::Format(_("Disk at (%.1f, %.1f) diameter=%d"), m_center_x, m_center_y, 2 * m_radius);
@@ -324,42 +320,7 @@ void SolarSystemObject::ShowVisualElements(bool state)
     m_syncLock.Unlock();
 }
 
-// Notification callback when PHD2 may change CaptureActive state
-bool SolarSystemObject::UpdateCaptureState(bool CaptureActive)
-{
-    bool need_update = false;
-    if (m_prevCaptureActive != CaptureActive)
-    {
-        if (!CaptureActive)
-        {
-            // Clear selection symbols (green circle/target lock) and visual elements
-            if (GetSolarSystemObjMode())
-            {
-                ShowVisualElements(false);
-                pFrame->pGuider->Reset(false);
-            }
-            need_update = true;
-        }
-        else
-        {
-            // In solar/planetary mode update the state used to
-            // control drawing of the internal detection elements.
-            if (GetSolarSystemObjMode() && GetShowFeaturesButtonState())
-                ShowVisualElements(true);
-        }
-    }
-
-    // Reset the detection paused state if guiding has been cancelled
-    if (!pFrame->pGuider->IsGuiding())
-    {
-        SetDetectionPausedState(false);
-    }
-
-    m_prevCaptureActive = CaptureActive;
-    return need_update;
-}
-
-// Helper for visualizing detection radius and internal features
+// Helper for visualizing detection diameters and internal features
 void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFactor)
 {
     // Do nothing if no visual elements are enabled
@@ -428,13 +389,13 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
             float maxRadius;
             if (m_detectionMode == DetectionModes::modeBlob)
             {
-                minRadius = (GetMinBlobDiameter() / 2.0) * scaleFactor;
-                maxRadius = (GetMaxBlobDiameter() / 2.0) * scaleFactor;
+                minRadius = (m_paramMinBlobDiameter / 2.0) * scaleFactor;
+                maxRadius = (m_paramMaxBlobDiameter / 2.0) * scaleFactor;
             }
             else
             {
-                minRadius = GetMinRadius() * scaleFactor;
-                maxRadius = GetMaxRadius() * scaleFactor;
+                minRadius = m_paramMinRadius * scaleFactor;
+                maxRadius = m_paramMaxRadius * scaleFactor;
             }
             int minRadius_x = x + minRadius;
             int maxRadius_x = x + maxRadius;
@@ -442,7 +403,6 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
             int lineMax_x = x;
 
             // Center the elements at the tracking point
-            // if (m_detected)
             {
                 minRadius_x = maxRadius_x = x;
                 lineMin_x -= minRadius;
@@ -595,7 +555,7 @@ public:
     }
 };
 
-/* Find best circle candidate */
+/* Find best circle candidate for contour-based detection */
 int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& diskCenter, std::vector<Point2f>& diskContour,
                                         int minRadius, int maxRadius, float searchRadius, float resolution)
 {
@@ -833,96 +793,14 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
     }
 }
 
-// Find center of object using OpenCV SimpleBlobDetector
-bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
-                                         std::vector<cv::Point>& blobContour)
-{
-    SimpleBlobDetector::Params params;
-    Mat preppedMat;
-
-    Debug.Write(wxString::Format("SSG: Blob find thresh:%s, minD=%d,maxD=%d\n",
-                                 m_paramBlobAutoThreshold ? "Auto" : std::to_string(m_paramBlobThreshold),
-                                 (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
-
-    params.filterByCircularity = false;
-    params.filterByConvexity = false;
-    params.filterByInertia = false;
-    params.minRepeatability = 2;
-    // Filter by Area.
-    params.filterByArea = true;
-    params.minArea = m_paramMinBlobDiameter * m_paramMinBlobDiameter;
-    params.maxArea = m_paramMaxBlobDiameter * m_paramMaxBlobDiameter;
-    // Filter by Color.
-    params.filterByColor = true;
-    params.blobColor = 255;
-    if (m_paramBlobAutoThreshold)
-    {
-        // Apply auto-thresholding if enabled
-        params.minThreshold = 20;
-        params.maxThreshold = 220;
-        params.thresholdStep = 10;
-        preppedMat = img8;
-    }
-    else
-    {
-        cv::threshold(img8, preppedMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
-    }
-    if (m_paramInvertBlob)
-        cv::bitwise_not(preppedMat, preppedMat);
-
-    // Save the contours for possible display
-    params.collectContours = true;
-    // Storage for single keypoint which contains centroid and size info
-    std::vector<KeyPoint> keypoints;
-
-    // Set up detector with params
-    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
-
-    // Detect blobs
-    blobContour.clear();
-    detector->detect(preppedMat, keypoints);
-    centroidInfo.mode = DetectionModes::modeBlob;
-    if (keypoints.size() == 1)
-    {
-        centroidInfo.centroidX = keypoints[0].pt.x + roiX;
-        centroidInfo.centroidY = keypoints[0].pt.y + roiY;
-        centroidInfo.objectSize = keypoints[0].size;
-        std::vector<std::vector<cv::Point>> contours;
-        contours = detector->getBlobContours();
-        blobContour = contours.front();
-        Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
-                                     centroidInfo.centroidY, centroidInfo.objectSize));
-    }
-    else
-    {
-        centroidInfo.centroidX = -1.0;
-        centroidInfo.centroidY = -1.0;
-    }
-    // Optionally keep a re-scaled version of the pre-processed image if user is doing manual threshold adjustment
-    if (m_paramShowPreProcessed)
-    {
-        Mat rescaled;
-        preppedMat.convertTo(rescaled, CV_16U, 1 << 8);
-        int width = rescaled.cols;
-        int height = rescaled.rows;
-        int dataSize = width * height * 2;
-        m_preProcessedImage->Init(width, height); // no cost if dimensions don't change
-        memcpy(m_preProcessedImage->ImageData, rescaled.data, dataSize);
-        m_preProcessedImageValid = true;
-    }
-    else
-        m_preProcessedImageValid = false;
-    return centroidInfo.centroidX != -1.0;
-}
-
 // Find disk center using circle matching with contours
 bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& clickedPoint, Rect& roiRect,
                                              bool activeRoiLimits, float distanceRoiMax, CentroidResult& centroidResult)
 {
-    int LowThreshold = GetLowThreshold();
-    int HighThreshold = GetHighThreshold();
-    int minRadius = GetMinRadius();
-    int maxRadius = GetMaxRadius();
+    int LowThreshold = m_paramLowThreshold;
+    int HighThreshold = m_paramHighThreshold;
+    int minRadius = m_paramMinRadius;
+    int maxRadius = m_paramMaxRadius;
 
     // Apply Canny edge detection
     Debug.Write(wxString::Format("SSG: Contour find (roi:%d "
@@ -1047,7 +925,91 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     return false;
 }
 
-// Auto-find a disk object, return the object w/ only its x/y position
+// Find center of object using OpenCV SimpleBlobDetector - no assumptions made about shape but
+// target is assumed to be bright-on-dark (unless inversion is specified in the tool); and target has a size within user-defined
+// limits
+bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
+                                         std::vector<cv::Point>& blobContour)
+{
+    SimpleBlobDetector::Params params;
+    Mat preppedMat;
+
+    Debug.Write(wxString::Format("SSG: Blob find thresh:%s, minD=%d,maxD=%d\n",
+                                 m_paramBlobAutoThreshold ? "Auto" : std::to_string(m_paramBlobThreshold),
+                                 (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
+
+    params.filterByCircularity = false;
+    params.filterByConvexity = false;
+    params.filterByInertia = false;
+    params.minRepeatability = 2;
+    // Filter by Area.
+    params.filterByArea = true;
+    params.minArea = m_paramMinBlobDiameter * m_paramMinBlobDiameter;
+    params.maxArea = m_paramMaxBlobDiameter * m_paramMaxBlobDiameter;
+    // Filter by Color.
+    params.filterByColor = true;
+    params.blobColor = 255;
+    if (m_paramBlobAutoThreshold)
+    {
+        // Apply auto-thresholding if enabled
+        params.minThreshold = 20;
+        params.maxThreshold = 220;
+        params.thresholdStep = 10;
+        preppedMat = img8;
+    }
+    else
+    {
+        cv::threshold(img8, preppedMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
+    }
+    if (m_paramInvertBlob)
+        cv::bitwise_not(preppedMat, preppedMat);
+
+    // Save the contours for possible display
+    params.collectContours = true;
+    // Storage for single keypoint which contains centroid and size info
+    std::vector<KeyPoint> keypoints;
+
+    // Set up detector with params
+    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+
+    // Detect blobs
+    blobContour.clear();
+    detector->detect(preppedMat, keypoints);
+    centroidInfo.mode = DetectionModes::modeBlob;
+    if (keypoints.size() == 1)
+    {
+        centroidInfo.centroidX = keypoints[0].pt.x + roiX;
+        centroidInfo.centroidY = keypoints[0].pt.y + roiY;
+        centroidInfo.objectSize = keypoints[0].size;
+        std::vector<std::vector<cv::Point>> contours;
+        contours = detector->getBlobContours();
+        blobContour = contours.front();
+        Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
+                                     centroidInfo.centroidY, centroidInfo.objectSize));
+    }
+    else
+    {
+        centroidInfo.centroidX = -1.0;
+        centroidInfo.centroidY = -1.0;
+    }
+    // Optionally keep a re-scaled version of the pre-processed image if user is doing manual threshold adjustment
+    if (m_paramShowPreProcessed)
+    {
+        Mat rescaled;
+        preppedMat.convertTo(rescaled, CV_16U, 1 << 8);
+        int width = rescaled.cols;
+        int height = rescaled.rows;
+        int dataSize = width * height * 2;
+        m_preProcessedImage->Init(width, height); // no cost if dimensions don't change
+        memcpy(m_preProcessedImage->ImageData, rescaled.data, dataSize);
+        m_preProcessedImageValid = true;
+    }
+    else
+        m_preProcessedImageValid = false;
+    return centroidInfo.centroidX != -1.0;
+}
+// Auto-find a disk object, return the object w/ only its x/y position.  For blob detection, retry failed searches by
+// "tuning" the min blob diameter and repeating the search (up to 50 times)
 bool SolarSystemObject::AutoFindDisk(const usImage& image, Star *pDisk)
 {
     if (!image.Subframe.IsEmpty())
@@ -1162,7 +1124,7 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
         Result = Star::STAR_OK;
         newX = m_center_x;
         newY = m_center_y;
-        pDisk->SNR = CalcPlanetMetrics(image, newX, newY, m_searchRegion, 15, pDisk);
+        pDisk->SNR = CalcDiskMetrics(image, newX, newY, m_searchRegion, 15, pDisk);
         pDisk->HFD = GetHFD();
     }
 
@@ -1184,13 +1146,6 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
                 m_distanceStats->AddValue(distance);
                 if (m_distanceStats->GetCount() > 10)
                 {
-                    // TODO: test code remove this
-                    // if (m_distanceStats->GetCount() % 600 == 0)
-                    //{
-                    //    int val = GetMinBlobDiameter();
-                    //    SetMinBlobDiameter(val - 10);
-                    //    Debug.Write("SSG: Min blob diameter set to " + std::to_string(val - 10) + "\n");
-                    //}
                     double thresh = 1.75 * m_distanceStats->GetSigma();
                     double meanV = m_distanceStats->GetMean();
                     if (!m_retryingFind && distance >= 2.0 * thresh)
@@ -1246,8 +1201,7 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
 }
 
 // Calculate metric for a solar system object
-double SolarSystemObject::CalcPlanetMetrics(const usImage *pImg, int center_x, int center_y, int r, int annulusWidth,
-                                            Star *pDisk)
+double SolarSystemObject::CalcDiskMetrics(const usImage *pImg, int center_x, int center_y, int r, int annulusWidth, Star *pDisk)
 {
     const double sigma_factor = 1.0;
     int scopeOuter = r + annulusWidth * 3;
@@ -1348,7 +1302,7 @@ double SolarSystemObject::CalcPlanetMetrics(const usImage *pImg, int center_x, i
     return snr;
 }
 
-// Find object in the given image
+// Find object in the given image using whichever detection mode the user has chosen
 bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSelect)
 {
     m_SolarSystemObjWatchdog.Start();
@@ -1382,11 +1336,11 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     int maxRadius;
     if (m_detectionMode == DetectionModes::modeBlob)
     {
-        maxRadius = (int) GetMaxBlobDiameter() / 2.0;
+        maxRadius = (int) m_paramMaxBlobDiameter / 2.0;
     }
     else
     {
-        maxRadius = (int) GetMaxRadius();
+        maxRadius = (int) m_paramMaxRadius;
     }
     int roiRadius = (int) (maxRadius * 3 / 2.0 + 0.5);
     int roiOffsetX = 0;
@@ -1413,7 +1367,7 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     Mat RoiFrame;
     Rect roiRect(0, 0, pImage->Size.GetWidth(), pImage->Size.GetHeight());
     bool useROI =
-        (!autoSelect && GetRoiEnableState() && m_detected && (m_center_x < m_frameWidth) && (m_center_y < m_frameHeight) &&
+        (!autoSelect && m_paramRoiEnabled && m_detected && (m_center_x < m_frameWidth) && (m_center_y < m_frameHeight) &&
          (m_frameWidth == pImage->Size.GetWidth()) && (m_frameHeight == pImage->Size.GetHeight()));
     if (useROI)
     {
@@ -1461,7 +1415,7 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     m_frameHeight = pImage->Size.GetHeight();
 
     // ROI current state and limit
-    bool activeRoiLimits = m_userLClick && GetRoiEnableState();
+    bool activeRoiLimits = m_userLClick && m_paramRoiEnabled;
     float distanceRoiMax = maxRadius * 3 / 2.0;
 
     bool detectionResult = false;

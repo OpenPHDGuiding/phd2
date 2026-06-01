@@ -56,7 +56,6 @@ class SolarSystemObject
 {
 private:
     // Solar system object guiding parameters
-    bool m_paramEnabled;
     bool m_paramDetectionPaused;
     bool m_paramRoiEnabled;
     usImage *m_preProcessedImage;
@@ -66,7 +65,7 @@ private:
     double m_paramMaxRadius;
     int m_paramLowThreshold;
     int m_paramHighThreshold;
-    bool m_paramShowElementsButtonState;
+    bool m_paramShowFeatures;
     bool m_paramResamplingEnabled;
 
     bool m_showVisualElements;
@@ -135,21 +134,19 @@ public:
     bool FindDisk(const usImage *image, bool autoSelect, Star *pDisk);
     bool AutoFindDisk(const usImage& image, Star *pDisk);
     // Calcular SNR, peak value and mass of a solar system object
-    double CalcPlanetMetrics(const usImage *pImg, int center_x, int center_y, int radius, int annulusWidth, Star *pDisk);
+    double CalcDiskMetrics(const usImage *pImg, int center_x, int center_y, int radius, int annulusWidth, Star *pDisk);
     bool FindSolarSystemObject(const usImage *pImage, bool autoSelect);
     double GetHFD();
     wxString GetHfdLabel();
     bool IsPixelMetrics();
     void ToggleSharpness();
     void GetDetectionStatus(wxString& statusMsg);
-    bool UpdateCaptureState(bool CaptureActive);
     CentroidResult GetLastCentroidResult() { return m_lastCentroidResult; }
 
     DetectionModes GetDetectionMode() { return m_detectionMode; }
     void SetDetectionMode(DetectionModes mode);
-    bool GetSolarSystemObjMode() { return m_paramEnabled; }
     bool GetDetectionPausedState() { return m_paramDetectionPaused; }
-    void SetDetectionPausedState(bool paused) { m_paramDetectionPaused = paused; }
+    void SetDetectionPausedState(bool paused);
     double GetMinBlobDiameter() { return m_paramMinBlobDiameter; }
     double GetMaxBlobDiameter() { return m_paramMaxBlobDiameter; }
     double GetBlobThreshold() { return m_paramBlobThreshold; }
@@ -167,9 +164,9 @@ public:
     double GetMinRadius() { return m_paramMinRadius; }
     void SetMaxRadius(double val);
     double GetMaxRadius() { return m_paramMaxRadius; }
-    void RefreshMinMaxDiameters() { m_showMinMaxDiameters = true; }
+    void RefreshMinMaxDiameters();
     bool GetRoiEnableState() { return m_paramRoiEnabled; }
-    void SetRoiEnableState(bool enabled) { m_paramRoiEnabled = enabled; }
+    void SetRoiEnableState(bool enabled);
     int GetLowThreshold() { return m_paramLowThreshold; }
     void SetContourEdgeThresholds(double highValue);
     int GetHighThreshold() { return m_paramHighThreshold; }
@@ -180,14 +177,13 @@ public:
     bool GetResamplingEnabled() { return m_paramResamplingEnabled; }
     void SetResamplingEnabled(bool Enabled);
     bool GetRetryAutofinds() { return m_paramRetryAutofinds; }
-    void SetRetryAutofinds(bool val) { m_paramRetryAutofinds = val; }
+    void SetRetryAutofinds(bool val);
     wxString GetStatusMessage() { return m_statusMsg; }
-    void ResetDetectionCounter() { m_detectionCounter = 0; }
+    void ResetDetectionCounter();
 
     void ShowVisualElements(bool state);
     bool VisualElementsEnabled() { return m_showVisualElements; }
-    void SetShowFeaturesButtonState(bool state) { m_paramShowElementsButtonState = state; }
-    bool GetShowFeaturesButtonState() { return m_paramShowElementsButtonState; }
+    void ShowFeatures(bool state);
     void ResetGuidedDetectionStats();
 
     // Displaying visual aid for solar system object parameter tuning
@@ -233,5 +229,39 @@ private:
                               float distanceRoiMax, CentroidResult& rslt);
     bool FindBlobCentroid(cv::Mat testMat, int roiX, int roiY, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
 };
+
+// Inline function definitions for simple ops
+inline void SolarSystemObject::SetRetryAutofinds(bool val)
+{
+    m_paramRetryAutofinds = val;
+}
+inline void SolarSystemObject::RefreshMinMaxDiameters()
+{
+    m_showMinMaxDiameters = true;
+}
+inline void SolarSystemObject::SetDetectionPausedState(bool paused)
+{
+    m_paramDetectionPaused = paused;
+}
+inline void SolarSystemObject::SetRoiEnableState(bool enabled)
+{
+    m_paramRoiEnabled = enabled;
+}
+inline void SolarSystemObject::ResetDetectionCounter()
+{
+    m_detectionCounter = 0;
+}
+inline void SolarSystemObject::SuspendGuiderCadence()
+{
+    m_savedGuiderCadence = m_guiderCadence;
+}
+inline void SolarSystemObject::ResumeGuiderCadence()
+{
+    m_guiderCadence = m_savedGuiderCadence;
+}
+inline void SolarSystemObject::ShowFeatures(bool state)
+{
+    m_paramShowFeatures = state;
+}
 
 #endif // PLANETARY_INCLUDED

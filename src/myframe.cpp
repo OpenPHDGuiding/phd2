@@ -620,7 +620,7 @@ int MyFrame::GetExposureDelay()
 {
     int rslt;
     if (pFrame->GetSolarSystemMode())
-        rslt = pFrame->pGuider->m_SolarSystemObject->GetGuiderCadence();
+        rslt = pGuider->m_SolarSystemObject->GetGuiderCadence();
     else if (!m_varDelayConfig.enabled)
         rslt = m_timeLapse;
     else if (pGuider->IsGuiding() && PhdController::IsIdle() && !pGuider->IsRecentering() && pMount->GetGuidingEnabled())
@@ -760,7 +760,9 @@ wxString MyFrame::ExposureDurationSummary() const
                                 m_autoExp.targetSNR);
     else
         rslt = wxString::Format("%d ms", m_exposureDuration);
-    if (m_varDelayConfig.enabled)
+    if (m_solarSystemMode)
+        rslt += wxString::Format(", SSG Cadence = %d", pGuider->m_SolarSystemObject->GetGuiderCadence());
+    else if (m_varDelayConfig.enabled)
         rslt += wxString::Format(", VarDelay (short = %d ms, long = %d ms)", m_varDelayConfig.shortDelay,
                                  m_varDelayConfig.longDelay);
     return rslt;
