@@ -89,7 +89,9 @@ struct SolarSysToolWin : public wxDialog
     wxCheckBox *m_ShowContours;
     wxCheckBox *m_ShowDiameters;
     wxCheckBox *m_ShowDiagnosticImage;
-    wxCheckBox *m_RetryFailedAutofinds;
+    wxCheckBox *m_retryLostTargets;
+    wxRadioButton *m_retryOnlyAutoFinds;
+    wxRadioButton *m_retryAny;
     bool m_MouseHoverFlag;
     int m_windowPosX;
     int m_windowPosY;
@@ -121,7 +123,9 @@ struct SolarSysToolWin : public wxDialog
     void OnShowDiagnosticImage(wxCommandEvent& event);
     void OnMountTrackingRateClick(wxCommandEvent& event);
     void OnResamplingClick(wxCommandEvent& event);
-    void OnRetryAutofindsClick(wxCommandEvent& event);
+    void OnRetriesEnabledClick(wxCommandEvent& event);
+    void OnRetryAutofindsOnlyClick(wxCommandEvent& event);
+    void OnRetryAnyClick(wxCommandEvent& event);
 
     void OnExposureChanged(wxSpinDoubleEvent& event);
     void OnCadenceChanged(wxSpinDoubleEvent& event);
@@ -212,10 +216,13 @@ SolarSysToolWin::SolarSysToolWin()
                                              wxSP_ARROW_KEYS, PT_RADIUS_MIN * 2, PT_RADIUS_MAX * 2, 250, 10.0);
     m_maxBlobDiameter->SetToolTip(_("Maximum expected object diameter in pixels.  Keep this well above the actual diameter. "));
     m_maxBlobDiameterAngle = new wxStaticText(m_basic_tab, wxID_ANY, "60 arc-min");
-    m_RetryFailedAutofinds = new wxCheckBox(m_basic_tab, wxID_ANY, _("Retry failed auto-finds"));
-    m_RetryFailedAutofinds->SetValue(true);
-    m_RetryFailedAutofinds->SetToolTip(_("If the initial auto-find fails, the search will by retried "
-                                         "using successively smaller values for minimum object diameter"));
+    m_retryLostTargets = new wxCheckBox(m_basic_tab, wxID_ANY, _("Enable retries"));
+    m_retryLostTargets->SetValue(true);
+    m_retryLostTargets->SetToolTip(_("Retry lost-target events using successively smaller values for minimum object diameter"));
+    m_retryAny = new wxRadioButton(m_basic_tab, wxID_ANY, _("Any"));
+    m_retryAny->SetToolTip(_("Retry anytime the target is lost"));
+    m_retryOnlyAutoFinds = new wxRadioButton(m_basic_tab, wxID_ANY, _("Only auto-finds"));
+    m_retryOnlyAutoFinds->SetToolTip(_("Retry only for failed auto-finds"));
     blobDiamGrid->Add(minBlobDiameter_Label, wxSizerFlags().Border(wxLEFT, 10));
     blobDiamGrid->Add(m_minBlobDiameter);
     blobDiamGrid->Add(maxBlobDiameter_Label, wxSizerFlags().Border(wxLEFT, 10));
@@ -246,7 +253,12 @@ SolarSysToolWin::SolarSysToolWin()
     blobDiametersSzr->AddSpacer(5);
     blobDiametersSzr->Add(blobDiamGrid, wxSizerFlags().Center());
     blobDiametersSzr->AddSpacer(10);
-    blobDiametersSzr->Add(m_RetryFailedAutofinds, wxSizerFlags().Center());
+    // blobDiametersSzr->Add(m_retryLostTargets, wxSizerFlags().Left());
+    wxStaticBoxSizer *retrySzr = new wxStaticBoxSizer(wxHORIZONTAL, m_basic_tab, _("Lost-target retries"));
+    retrySzr->Add(m_retryLostTargets, wxSizerFlags().Border(wxLEFT, 2));
+    retrySzr->Add(m_retryAny, wxSizerFlags().Border(wxLEFT, 10));
+    retrySzr->Add(m_retryOnlyAutoFinds, wxSizerFlags().Border(wxLEFT, 10));
+    blobDiametersSzr->Add(retrySzr, wxSizerFlags().Border(wxTOP, 5).Center());
 
     wxBoxSizer *blobSizer2 = new wxBoxSizer(wxHORIZONTAL);
     blobSizer2->Add(blobThreshold_Label, wxSizerFlags().Border(wxLEFT, 4));
@@ -468,7 +480,9 @@ SolarSysToolWin::SolarSysToolWin()
     m_PauseCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnPauseClick, this);
     m_RoiCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnRoiModeClick, this);
     m_ResamplingCheckBox->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnResamplingClick, this);
-    m_RetryFailedAutofinds->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnRetryAutofindsClick, this);
+    m_retryLostTargets->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnRetriesEnabledClick, this);
+    m_retryAny->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnRetryAnyClick, this);
+    m_retryOnlyAutoFinds->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnRetryAutofindsOnlyClick, this);
     m_ShowContours->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowContoursClick, this);
     m_ShowDiameters->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiameters, this);
     m_ShowDiagnosticImage->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiagnosticImage, this);
@@ -557,10 +571,18 @@ void SolarSysToolWin::RestoreBlobSearchParameters()
     OnAutoThreshClick(ev);
     m_solarSystemObj->SetBlobAutoThreshold(val);
 
-    val = pConfig->Profile.GetBoolean("/PlanetTool/RetryAutofinds", true);
-    m_RetryFailedAutofinds->SetValue(val);
-    m_solarSystemObj->SetRetryAutofinds(val);
+    val = pConfig->Profile.GetBoolean("/PlanetTool/RetryLostTargets", true);
+    m_retryLostTargets->SetValue(val);
+    m_retryAny->Enable(val);
+    m_retryOnlyAutoFinds->Enable(val);
+    m_solarSystemObj->SetRetriesEnabled(val);
+
+    val = pConfig->Profile.GetBoolean("/PlanetTool/RetryOnlyAutoFinds", false);
+    m_retryOnlyAutoFinds->SetValue(val);
+    m_retryAny->SetValue(!val);
+    m_solarSystemObj->SetRetriesAutofindOnly(val);
 }
+
 void SolarSysToolWin::RestoreContourSearchParameters()
 {
     double pixelScale = pFrame->GetCameraPixelScale();
@@ -623,7 +645,8 @@ void SolarSysToolWin::SaveProfileParameters()
     pConfig->Profile.SetInt("/PlanetTool/BlobThreshold", m_solarSystemObj->GetBlobThreshold());
     pConfig->Profile.SetBoolean("/PlanetTool/BlobAutoThreshold", m_solarSystemObj->GetBlobAutoThreshold());
     pConfig->Profile.SetBoolean("/PlanetTool/ResampleEnabled", m_solarSystemObj->GetResamplingEnabled());
-    pConfig->Profile.SetBoolean("/PlanetTool/RetryAutofinds", m_solarSystemObj->GetRetryAutofinds());
+    pConfig->Profile.SetBoolean("/PlanetTool/RetryLostTargets", m_solarSystemObj->GetRetriesEnabled());
+    pConfig->Profile.SetBoolean("/PlanetTool/RetryOnlyAutoFinds", m_solarSystemObj->GetRetriesAutofindOnly());
 
     pConfig->Profile.SetInt("/PlanetTool/MinRadius", (int) (m_minDiameter->GetValue() / 2.0));
     pConfig->Profile.SetInt("/PlanetTool/MaxRadius", (int) m_maxDiameter->GetValue() / 2.0);
@@ -758,11 +781,39 @@ void SolarSysToolWin::OnResamplingClick(wxCommandEvent& event)
     pFrame->NotifyGuidingParam("SolarSys: Resampling", enabled);
 }
 
-void SolarSysToolWin::OnRetryAutofindsClick(wxCommandEvent& event)
+void SolarSysToolWin::OnRetryAutofindsOnlyClick(wxCommandEvent& event)
 {
-    bool enabled = m_RetryFailedAutofinds->IsChecked();
-    m_solarSystemObj->SetRetryAutofinds(enabled);
-    pFrame->NotifyGuidingParam("SolarSys: Retry autofinds", enabled);
+    bool enabled = m_retryOnlyAutoFinds->GetValue();
+    m_solarSystemObj->SetRetriesAutofindOnly(enabled);
+    pFrame->NotifyGuidingParam("SolarSys: Retry autofinds only", enabled);
+}
+
+void SolarSysToolWin::OnRetryAnyClick(wxCommandEvent& event)
+{
+    bool enabled = m_retryAny->GetValue();
+    if (enabled)
+        m_solarSystemObj->SetRetriesAutofindOnly(false);
+}
+
+void SolarSysToolWin::OnRetriesEnabledClick(wxCommandEvent& event)
+{
+    bool enabled = m_retryLostTargets->IsChecked();
+    m_solarSystemObj->SetRetriesEnabled(enabled);
+    if (enabled)
+    {
+        m_retryAny->Enable(true);
+        m_retryOnlyAutoFinds->Enable(true);
+        if (m_retryOnlyAutoFinds->GetValue())
+            pFrame->NotifyGuidingParam("SSG: Retry enabled, auto-finds only", true);
+        else
+            pFrame->NotifyGuidingParam("SSG: Retry enabled", true);
+    }
+    else
+    {
+        m_retryAny->Enable(false);
+        m_retryOnlyAutoFinds->Enable(false);
+        pFrame->NotifyGuidingParam("SSG: Retries enabled", false);
+    }
 }
 
 void SolarSysToolWin::OnShowContoursClick(wxCommandEvent& event)

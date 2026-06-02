@@ -54,7 +54,6 @@ static float gaussianWeight[GAUSSIAN_SIZE];
 // Initialize solar/planetary detection module
 SolarSystemObject::SolarSystemObject()
 {
-    // m_paramEnabled = true;
     m_paramDetectionPaused = false;
     m_paramRoiEnabled = false;
     m_prevCaptureActive = false;
@@ -925,9 +924,55 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
     return false;
 }
 
+// Handle retries for blob-based detection.  If the object isn't found, decrease the MinBlobDiameter property
+// in small steps until the object is found or until 50 attempts have been made.  BlobDiameter steps start at
+// 80% of the MaxBlobDiameter. All attempts are repeated on the same image
+bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
+                                           std::vector<cv::Point>& blobContour)
+{
+    bool done = false;
+    bool found = false;
+    int retryCount = 0;
+    int origMinBlob = m_paramMinBlobDiameter;
+    m_paramMinBlobDiameter = 0.8 * m_paramMaxBlobDiameter;
+    Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
+    while (!done)
+    {
+        found = FindBlobCentroid(img8, roiX, roiY, centroidInfo, blobContour);
+        if (found)
+        {
+            Debug.Write(wxString::Format("SSG:: Retry detection found object at (%.1f, %.1f) with MinBlobDiameter of %d \n",
+                                         m_center_x, m_center_x, (int) m_paramMinBlobDiameter));
+            done = true;
+        }
+        else
+        {
+            if (retryCount++ < 50 && m_paramMinBlobDiameter > 5)
+            {
+                m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
+                Debug.Write(
+                    wxString::Format("SSG: Retry detection with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
+                pFrame->StatusMsg(_("Search #") + std::to_string(retryCount));
+            }
+            else
+            {
+                Debug.Write("SSG: Retry detection, no target found, retries exhausted\n");
+                done = true;
+            }
+        }
+    }
+
+    if (found)
+        SsgTool::ChangeMinBlobDiameter(m_paramMinBlobDiameter);
+    else
+        SsgTool::ChangeMinBlobDiameter(origMinBlob);
+
+    return found;
+}
+
 // Find center of object using OpenCV SimpleBlobDetector - no assumptions made about shape but
-// target is assumed to be bright-on-dark (unless inversion is specified in the tool); and target has a size within user-defined
-// limits
+// target is assumed to be bright-on-dark (unless inversion is specified in the tool); and must have a size within user-defined
+// limits.
 bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
                                          std::vector<cv::Point>& blobContour)
 {
@@ -1008,8 +1053,8 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
         m_preProcessedImageValid = false;
     return centroidInfo.centroidX != -1.0;
 }
-// Auto-find a disk object, return the object w/ only its x/y position.  For blob detection, retry failed searches by
-// "tuning" the min blob diameter and repeating the search (up to 50 times)
+// Auto-find a disk object, return the object w/ only its x/y position.  For blob detection, retries may be
+// attempted based on user options
 bool SolarSystemObject::AutoFindDisk(const usImage& image, Star *pDisk)
 {
     if (!image.Subframe.IsEmpty())
@@ -1018,64 +1063,17 @@ bool SolarSystemObject::AutoFindDisk(const usImage& image, Star *pDisk)
         return false; // not found
     }
 
-    bool done = false;
-    bool found = false;
-    int retryCount = 0;
-    int origMinBlob = m_paramMinBlobDiameter;
-    while (!done)
+    bool found = FindSolarSystemObject(&image, true);
+    if (found)
     {
-        found = FindSolarSystemObject(&image, true);
-        if (found)
-        {
-            pDisk->SetXY(m_center_x, m_center_y);
-            Debug.Write(wxString::Format("Planetary::AutoFind found object at (%.1f, %.1f)\n", m_center_x, m_center_x));
-            if (retryCount > 0)
-                Debug.Write(wxString::Format("SSG: AutoFind retry with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
-            done = true;
-        }
-        else
-        {
-            if (m_detectionMode == DetectionModes::modeBlob)
-            {
-                if (m_paramRetryAutofinds && retryCount++ < 50 && m_paramMinBlobDiameter > 5)
-                {
-                    if (retryCount == 1)
-                    {
-                        m_paramMinBlobDiameter = 0.8 * m_paramMaxBlobDiameter;
-                        Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d\n",
-                                                     (int) m_paramMinBlobDiameter));
-                    }
-                    else
-                    {
-                        m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
-                        Debug.Write(
-                            wxString::Format("SSG: AutoFind retry with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
-                    }
-                    pFrame->StatusMsg(_("Search #") + std::to_string(retryCount));
-                }
-                else
-                {
-                    Debug.Write("SSG: Autofind no target found, retries exhausted\n");
-                    pDisk->Invalidate();
-                    done = true;
-                }
-            }
-            else
-            {
-                Debug.Write("SSG: Autofind no target found\n");
-                pDisk->Invalidate();
-                done = true;
-            }
-        }
+        pDisk->SetXY(m_center_x, m_center_y);
+        Debug.Write(wxString::Format("SSG::AutoFind found object at (%.1f, %.1f)\n", m_center_x, m_center_x));
     }
-    if (retryCount > 0) // Synch the UI control
+    else
     {
-        if (found)
-            SsgTool::ChangeMinBlobDiameter(m_paramMinBlobDiameter);
-        else
-            SsgTool::ChangeMinBlobDiameter(origMinBlob);
+        Debug.Write("SSG: Autofind no target found\n");
+        pDisk->Invalidate();
     }
-
     return found;
 }
 
@@ -1302,7 +1300,8 @@ double SolarSystemObject::CalcDiskMetrics(const usImage *pImg, int center_x, int
     return snr;
 }
 
-// Find object in the given image using whichever detection mode the user has chosen
+// Find object in the given image using whichever detection mode the user has chosen.  For blob-based detection,
+// and depending on user settings, the blob detection may be tried up to 50 times via calls on RetryBlobDetection()
 bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSelect)
 {
     m_SolarSystemObjWatchdog.Start();
@@ -1429,7 +1428,17 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
         // Object centers are in absolute sensor coordinates regardless of ROI use
         if (m_detectionMode == DetectionModes::modeBlob)
         {
+            bool autoRetry = false;
+            if (m_paramRetriesEnabled)
+            {
+                autoRetry = autoSelect || !m_paramRetryAutofindsOnly;
+            }
+
             detectionResult = FindBlobCentroid(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
+            if (!detectionResult && autoRetry)
+            {
+                detectionResult = RetryBlobDetection(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
+            }
         }
         else
         {

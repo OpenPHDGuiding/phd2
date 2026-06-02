@@ -111,7 +111,8 @@ private:
     bool m_paramInvertBlob;
     bool m_paramBlobAutoThreshold;
     int m_paramGuiderCadence;
-    bool m_paramRetryAutofinds;
+    bool m_paramRetriesEnabled;
+    bool m_paramRetryAutofindsOnly;
     int m_savedGuiderCadence;
     int m_detectionCounter;
     bool m_simulationZeroOffset;
@@ -176,8 +177,10 @@ public:
     void ResumeGuiderCadence();
     bool GetResamplingEnabled() { return m_paramResamplingEnabled; }
     void SetResamplingEnabled(bool Enabled);
-    bool GetRetryAutofinds() { return m_paramRetryAutofinds; }
-    void SetRetryAutofinds(bool val);
+    bool GetRetriesEnabled() { return m_paramRetriesEnabled; }
+    void SetRetriesEnabled(bool val);
+    bool GetRetriesAutofindOnly() { return m_paramRetryAutofindsOnly; }
+    void SetRetriesAutofindOnly(bool val);
     wxString GetStatusMessage() { return m_statusMsg; }
     void ResetDetectionCounter();
 
@@ -228,13 +231,20 @@ private:
     bool FindContoursCentroid(cv::Mat img8, bool roiActive, cv::Point2f& clickedPoint, cv::Rect& roiRect, bool activeRoiLimits,
                               float distanceRoiMax, CentroidResult& rslt);
     bool FindBlobCentroid(cv::Mat testMat, int roiX, int roiY, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
+    bool RetryBlobDetection(cv::Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
+                            std::vector<cv::Point>& blobContour);
 };
 
 // Inline function definitions for simple ops
-inline void SolarSystemObject::SetRetryAutofinds(bool val)
+inline void SolarSystemObject::SetRetriesEnabled(bool val)
 {
-    m_paramRetryAutofinds = val;
+    m_paramRetriesEnabled = val;
 }
+inline void SolarSystemObject::SetRetriesAutofindOnly(bool val)
+{
+    m_paramRetryAutofindsOnly = val;
+}
+
 inline void SolarSystemObject::RefreshMinMaxDiameters()
 {
     m_showMinMaxDiameters = true;
