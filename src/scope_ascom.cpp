@@ -935,12 +935,7 @@ double ScopeASCOM::GetDeclinationRadians()
     return dReturn;
 }
 
-bool ScopeASCOM::GetTrackingRate(enum TrackingRates *rate, bool verbose)
-{
-    return GetTrackingRate(rate, nullptr, nullptr, verbose);
-}
-
-bool ScopeASCOM::GetTrackingRate(enum TrackingRates *rate, double *ra_rate, double *dec_rate, bool verbose)
+bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
 {
     bool bError = false;
 
@@ -960,24 +955,22 @@ bool ScopeASCOM::GetTrackingRate(enum TrackingRates *rate, double *ra_rate, doub
             throw ERROR_INFO("ASCOM Scope: GetTrackingRate() failed: " + ExcepMsg(scope.Excep()));
         }
 
-        *rate = (enum TrackingRates) vRes.iVal;
-
-        // EQMOD is known to return bogus rates, so we use offsets to correct them
-        // if (*rate == rateSidereal)
-        //{
-        //    if (ra_rate && scope.GetProp(&vRes, L"RightAscensionRate"))
-        //    {
-        //        *ra_rate = vRes.dblVal;
-        //        if (verbose)
-        //            Debug.Write(wxString::Format("ScopeASCOM::GetTrackingRate() RightAscensionRate=%.9f\n", *ra_rate));
-        //    }
-        //    if (dec_rate && scope.GetProp(&vRes, L"DeclinationRate"))
-        //    {
-        //        *dec_rate = vRes.dblVal;
-        //        if (verbose)
-        //            Debug.Write(wxString::Format("ScopeASCOM::GetTrackingRate() DeclinationRate=%.9f\n", *dec_rate));
-        //    }
-        //}
+        rateInfo.numericalID = (enum TrackingRates) vRes.iVal;
+        switch (rateInfo.numericalID)
+        {
+        case rateSidereal:
+            rateInfo.name = _("Sidereal");
+            break;
+        case rateLunar:
+            rateInfo.name = _("Lunar");
+            break;
+        case rateSolar:
+            rateInfo.name = _("Solar");
+            break;
+        case rateKing:
+            rateInfo.name = _("King");
+            break;
+        }
     }
     catch (const wxString& Msg)
     {
@@ -985,10 +978,8 @@ bool ScopeASCOM::GetTrackingRate(enum TrackingRates *rate, double *ra_rate, doub
         POSSIBLY_UNUSED(Msg);
     }
 
-    if (verbose)
-        Debug.Write(wxString::Format("ScopeASCOM::GetTrackingRate() returns %s, tracking rate = %d\n",
-                                     bError ? "error" : "success", bError ? 0 : *rate));
-
+    Debug.Write(wxString::Format("ScopeASCOM::GetTrackingRate() returns %s, tracking rate = %s\n", bError ? "error" : "success",
+                                 bError ? "Unknown" : rateInfo.name));
     return bError;
 }
 

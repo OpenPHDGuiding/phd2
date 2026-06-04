@@ -105,8 +105,7 @@ public:
     bool GetTracking(bool *tracking, bool verbose) override;
     bool SetTracking(bool tracking) override;
     bool CanSetTracking() override;
-    bool GetTrackingRate(enum TrackingRates *rate, bool verbose) override;
-    bool GetTrackingRate(enum TrackingRates *rate, double *ra_rate, double *dec_rate, bool verbose) override;
+    bool GetTrackingRate(TrackingRateInfo& rateInfo) override;
     bool SetTrackingRate(enum TrackingRates rate) override;
     bool SetTrackingRateOffsets(double raRateOffset, double decRateOffset) override;
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;

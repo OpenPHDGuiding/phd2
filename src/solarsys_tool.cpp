@@ -82,6 +82,7 @@ struct SolarSysToolWin : public wxDialog
     enum TrackingRates m_trackingRate;
     wxString m_trackingRateName;
     wxChoice *m_mountTrackingRate;
+    wxCheckBox *m_restoreSidereal;
 
     wxCheckBox *m_RoiCheckBox;
     wxCheckBox *m_PauseCheckBox;
@@ -414,6 +415,8 @@ SolarSysToolWin::SolarSysToolWin()
     m_mountTrackingRate->SetSelection(0);
     AddTableEntryPair(this, pMountTable, _("Mount tracking rate"), m_mountTrackingRate,
                       _("Select the desired tracking rate for the mount"));
+    m_restoreSidereal = new wxCheckBox(this, wxID_ANY, _(" Restore to sidereal rate\n when Tool window closes"));
+    pMountTable->Add(m_restoreSidereal, wxALL | wxALIGN_CENTER_VERTICAL, 10);
 
     // Camera settings group
     wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera settings"));
@@ -535,13 +538,13 @@ SolarSysToolWin::SolarSysToolWin()
         m_windowPosY = -1;
     }
     MyFrame::PlaceWindowOnScreen(this, m_windowPosX, m_windowPosY);
-    Debug.Write("Solar system guiding activated\n");
+    Debug.Write("SSG: guiding activated\n");
 }
 
 SolarSysToolWin::~SolarSysToolWin(void)
 {
     pFrame->pSolarSysTool = nullptr;
-    Debug.Write("Solar system guiding de-activated\n");
+    Debug.Write("SSG: guiding de-activated\n");
 }
 
 // Profiles can be changed while the window is active so profile-stored parameters
@@ -612,7 +615,7 @@ void SolarSysToolWin::RestoreProfileParameters()
 
     RestoreBlobSearchParameters();
     RestoreContourSearchParameters();
-    bool resampEnabled = pConfig->Profile.GetBoolean("/PlanetTool/ResampleEnabled", true);
+    m_ResamplingCheckBox->SetValue(pConfig->Profile.GetBoolean("/PlanetTool/ResampleEnabled", true));
 
     double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 1000));
     m_ExposureCtrl->SetValue(val);
@@ -630,7 +633,16 @@ void SolarSysToolWin::RestoreProfileParameters()
         else
             m_GainCtrl->Enable(false);
     }
-    m_trackingRateName = pConfig->Profile.GetString("/PlanetTool/TrackingRateName", _("Sidereal"));
+    // m_trackingRateName = pConfig->Profile.GetString("/PlanetTool/TrackingRateName", _("Sidereal"));
+    if (pPointingSource && pPointingSource->IsConnected())
+    {
+        Scope::TrackingRateInfo rateInfo;
+        pPointingSource->GetTrackingRate(rateInfo);
+        m_trackingRateName = rateInfo.name;
+    }
+    else
+        m_trackingRateName = _("Sidereal");
+    m_restoreSidereal->SetValue(pConfig->Profile.GetBoolean("/PlanetTool/RestoreSidereal", true));
 }
 
 // Profile properties are handled in the tool, not in the SolarSystemObject
@@ -655,6 +667,7 @@ void SolarSysToolWin::SaveProfileParameters()
     pConfig->Profile.SetInt("/PlanetTool/ExposureTime", (int) m_ExposureCtrl->GetValue());
     pConfig->Profile.SetInt("/PlanetTool/Gain", (int) m_GainCtrl->GetValue());
     pConfig->Profile.SetString("/PlanetTool/TrackingRateName", m_trackingRateName);
+    pConfig->Profile.SetBoolean("/PlanetTool/RestoreSidereal", m_restoreSidereal->IsChecked());
 }
 
 void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
@@ -665,7 +678,7 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeBlob);
         m_tabs->SetSelection(0);
         m_ShowDiagnosticImage->Enable(!m_useAutoThresh->IsChecked());
-        Debug.Write("Solar system guiding via simple blob detection\n");
+        Debug.Write("SSG: guiding via simple blob detection\n");
         detectionMode = "Blob";
         HandleWarningMsgs(0);
     }
@@ -674,7 +687,7 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeContours);
         m_tabs->SetSelection(1);
         m_ShowDiagnosticImage->Enable(false);
-        Debug.Write("Solar system guiding via contour detection\n");
+        Debug.Write("SSG: guiding via contour detection\n");
         detectionMode = "Contours";
         HandleWarningMsgs(1);
     }
@@ -841,6 +854,7 @@ void SolarSysToolWin::OnShowDiagnosticImage(wxCommandEvent& event)
 void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
 {
     m_mountTrackingRate->Enable(false); // Default, changed only when relevant
+    m_restoreSidereal->Enable(false);
     if (pPointingSource && pPointingSource->IsConnected())
     {
         int selInx = 0;
@@ -862,7 +876,10 @@ void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
                     selInx++;
             }
             if (m_mountTrackingRate->GetCount() > 1)
+            {
                 m_mountTrackingRate->Enable(true);
+                m_restoreSidereal->Enable(true);
+            }
         }
         else
         {
@@ -886,7 +903,7 @@ void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
         int *pRate = (int *) m_mountTrackingRate->GetClientData(sel);
         pPointingSource->SetTrackingRate((TrackingRates) *pRate);
         Debug.Write(wxString::Format("SSG: setting mount tracking rate to %s\n", m_trackingRateName));
-        pFrame->NotifyGuidingParam("SolarSys: mount tracking rate", m_trackingRateName);
+        pFrame->NotifyGuidingParam("SSG: mount tracking rate", m_trackingRateName);
     }
 }
 
@@ -989,9 +1006,10 @@ void SolarSysToolWin::OnClose(wxCloseEvent& evt)
 
         SolarSysToolWin *win = static_cast<SolarSysToolWin *>(this);
         win->SaveProfileParameters();
-        // Make sure the mount is left tracking at sidereal rate
+        // Based on UI choice, restore mount tracking to sidereal
         if (pPointingSource->CanSetTracking() && m_trackingRateName != _("Sidereal"))
-            pPointingSource->SetTrackingRate(TrackingRates::rateSidereal);
+            if (m_restoreSidereal->IsChecked())
+                pPointingSource->SetTrackingRate(TrackingRates::rateSidereal);
 
         // Revert to a default duration of tooltip display (apparently 5 seconds)
         wxToolTip::SetAutoPop(5000);

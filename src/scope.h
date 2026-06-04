@@ -297,8 +297,7 @@ public:
     virtual void EnumerateTrackingRates();
     virtual bool GetTracking(bool *tracking, bool verbose = false);
     virtual bool SetTracking(bool tracking);
-    virtual bool GetTrackingRate(enum TrackingRates *rate, bool verbose = false);
-    virtual bool GetTrackingRate(enum TrackingRates *rate, double *ra_rate, double *dec_rate, bool verbose);
+    virtual bool GetTrackingRate(TrackingRateInfo& rateInfo);
     virtual bool SetTrackingRate(enum TrackingRates rate);
     virtual bool SetTrackingRateOffsets(double raRateOffset, double decRateOffset);
     virtual bool CanSetTracking();

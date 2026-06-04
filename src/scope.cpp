@@ -1810,19 +1810,10 @@ bool Scope::CanSetTracking()
     return false;
 }
 
-bool Scope::GetTrackingRate(enum TrackingRates *rate, bool verbose)
+bool Scope::GetTrackingRate(TrackingRateInfo& rateInfo)
 {
-    *rate = rateSidereal;
-    return false;
-}
-
-bool Scope::GetTrackingRate(enum TrackingRates *rate, double *ra_rate, double *dec_rate, bool verbose)
-{
-    *rate = rateSidereal;
-    if (ra_rate)
-        *ra_rate = 0;
-    if (dec_rate)
-        *dec_rate = 0;
+    rateInfo.name = _("Sidereal");
+    rateInfo.numericalID = rateSidereal;
     return false;
 }
 
