@@ -295,7 +295,7 @@ public:
     virtual bool PreparePositionInteractive();
     virtual bool CanPulseGuide();
     virtual void EnumerateTrackingRates();
-    virtual bool GetTracking(bool *tracking, bool verbose = false);
+    virtual bool GetTracking(bool *tracking);
     virtual bool SetTracking(bool tracking);
     virtual bool GetTrackingRate(TrackingRateInfo& rateInfo);
     virtual bool SetTrackingRate(enum TrackingRates rate);

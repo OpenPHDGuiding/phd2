@@ -1795,7 +1795,7 @@ double Scope::GetDeclinationRadians()
 
 void Scope::EnumerateTrackingRates() { }
 
-bool Scope::GetTracking(bool *tracking, bool verbose)
+bool Scope::GetTracking(bool *tracking)
 {
     return true; // error
 }

@@ -102,7 +102,7 @@ public:
 
     double GetDeclinationRadians() override;
     void EnumerateTrackingRates() override;
-    bool GetTracking(bool *tracking, bool verbose) override;
+    bool GetTracking(bool *tracking) override;
     bool SetTracking(bool tracking) override;
     bool CanSetTracking() override;
     bool GetTrackingRate(TrackingRateInfo& rateInfo) override;

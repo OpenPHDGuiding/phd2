@@ -930,7 +930,9 @@ double ScopeASCOM::GetDeclinationRadians()
         m_canGetCoordinates = false;
     }
 
-    Debug.Write(wxString::Format("ScopeASCOM::GetDeclinationRadians() returns %s\n", DeclinationStr(dReturn)));
+    if (dReturn != UNKNOWN_DECLINATION)
+        Debug.Write(wxString::Format("ScopeASCOM::GetDeclinationRadians() returns %0.1f, (%s degrees)\n", dReturn,
+                                     DeclinationStr(dReturn)));
 
     return dReturn;
 }
@@ -1046,7 +1048,7 @@ bool ScopeASCOM::SetTrackingRateOffsets(double raRateOffset, double decRateOffse
     return bError;
 }
 
-bool ScopeASCOM::GetTracking(bool *tracking, bool verbose)
+bool ScopeASCOM::GetTracking(bool *tracking)
 {
     bool bError = false;
 
@@ -1074,9 +1076,8 @@ bool ScopeASCOM::GetTracking(bool *tracking, bool verbose)
         POSSIBLY_UNUSED(Msg);
     }
 
-    if (verbose)
-        Debug.Write(wxString::Format("ScopeASCOM::GetTracking() returns %s, tracking = %d\n", bError ? "error" : "success",
-                                     bError ? 0 : *tracking));
+    Debug.Write(wxString::Format("ScopeASCOM::GetTracking() returns %s, tracking = %d\n", bError ? "error" : "success",
+                                 bError ? 0 : *tracking));
 
     return bError;
 }
