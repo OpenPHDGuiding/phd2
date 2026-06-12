@@ -76,6 +76,7 @@ public:
     static void UpdateContourInfoStats(int contCount, int bestSize);
     static void UpdateCentroidInfoStats(float xLoc, float yLoc, float radius);
     static void UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents);
+    static void UpdateToolStatus(wxString msg);
 };
 
 #endif // PANETARY_TOOL_INCLUDED

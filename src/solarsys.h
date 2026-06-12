@@ -133,8 +133,7 @@ public:
     ~SolarSystemObject();
 
     bool FindDisk(const usImage *image, bool autoSelect, Star *pDisk);
-    bool AutoFindDisk(const usImage& image, Star *pDisk);
-    // Calcular SNR, peak value and mass of a solar system object
+    //  Calculate SNR, peak value and mass of a solar system object
     double CalcDiskMetrics(const usImage *pImg, int center_x, int center_y, int radius, int annulusWidth, Star *pDisk);
     bool FindSolarSystemObject(const usImage *pImage, bool autoSelect);
     double GetHFD();

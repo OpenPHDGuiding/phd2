@@ -157,10 +157,6 @@ bool GuiderSolarSys::AutoSelect(const wxRect& roi)
             edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
 
         Star newDisk;
-        if (!m_SolarSystemObject->AutoFindDisk(*image, &newDisk))
-        {
-            throw ERROR_INFO("Unable to AutoFind");
-        }
 
         if (!m_SolarSystemObject->FindDisk(image, false, &newDisk))
         {
@@ -188,6 +184,9 @@ bool GuiderSolarSys::AutoSelect(const wxRect& roi)
         pFrame->StatusMsg(wxString::Format(_("Auto-selected disk at (%.1f, %.1f)"), m_primaryStar.X, m_primaryStar.Y));
         pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
         pFrame->pProfile->UpdateData(image, m_primaryStar.X, m_primaryStar.Y);
+        wxString msg;
+        m_SolarSystemObject->GetDetectionStatus(msg);
+        SsgTool::UpdateToolStatus(msg);
     }
     catch (const wxString& Msg)
     {
@@ -218,50 +217,9 @@ wxRect GuiderSolarSys::GetBoundingBox() const
         SUBFRAME_BOUNDARY_PX = 0
     };
 
-    GUIDER_STATE state = GetState();
-
-    bool subframe;
-    PHD_Point pos;
-
-    switch (state)
-    {
-    case STATE_SELECTED:
-    case STATE_CALIBRATING_PRIMARY:
-    case STATE_CALIBRATING_SECONDARY:
-        subframe = m_primaryStar.WasFound();
-        pos = CurrentPosition();
-        break;
-    case STATE_GUIDING:
-    {
-        subframe = m_primaryStar.WasFound(); // true;
-        // As long as the star is close to the lock position, keep the subframe
-        // at the lock position. Otherwise, follow the star.
-        double dist = CurrentPosition().Distance(LockPosition());
-        if ((int) dist > m_searchRegion / 3)
-            pos = CurrentPosition();
-        else
-            pos = LockPosition();
-        break;
-    }
-    default:
-        subframe = false;
-    }
-
-    if (m_forceFullFrame)
-    {
-        subframe = false;
-    }
-
-    if (subframe)
-    {
-        wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
-        box.Intersect(wxRect(pCamera->FrameSize));
-        return box;
-    }
-    else
-    {
-        return wxRect(0, 0, 0, 0);
-    }
+    // Use cases aren't likely to benefit from sub-frames.  If this proves to not be the case,
+    // then re-use the code in guider_multistar.cpp
+    return wxRect(0, 0, 0, 0);
 }
 
 void GuiderSolarSys::InvalidateCurrentPosition(bool fullReset)

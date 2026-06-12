@@ -943,6 +943,13 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
         {
             Debug.Write(wxString::Format("SSG:: Retry detection found object at (%.1f, %.1f) with MinBlobDiameter of %d \n",
                                          m_center_x, m_center_x, (int) m_paramMinBlobDiameter));
+            if (retryCount > 0 && pFrame->pGuider->IsGuiding())
+            {
+                wxString msg;
+                GetDetectionStatus(msg);
+                pFrame->StatusMsg(msg);
+                SsgTool::UpdateToolStatus(msg);
+            }
             done = true;
         }
         else
@@ -952,7 +959,9 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
                 m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
                 Debug.Write(
                     wxString::Format("SSG: Retry detection with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
-                pFrame->StatusMsg(_("Search #") + std::to_string(retryCount));
+                wxString msg = wxString::Format(_("Search # %d"), retryCount);
+                pFrame->StatusMsg(msg);
+                SsgTool::UpdateToolStatus(msg);
             }
             else
             {
@@ -1053,29 +1062,6 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
         m_preProcessedImageValid = false;
     return centroidInfo.centroidX != -1.0;
 }
-// Auto-find a disk object, return the object w/ only its x/y position.  For blob detection, retries may be
-// attempted based on user options
-bool SolarSystemObject::AutoFindDisk(const usImage& image, Star *pDisk)
-{
-    if (!image.Subframe.IsEmpty())
-    {
-        Debug.AddLine("AutoFind called on subframe, returning error");
-        return false; // not found
-    }
-
-    bool found = FindSolarSystemObject(&image, true);
-    if (found)
-    {
-        pDisk->SetXY(m_center_x, m_center_y);
-        Debug.Write(wxString::Format("SSG::AutoFind found object at (%.1f, %.1f)\n", m_center_x, m_center_x));
-    }
-    else
-    {
-        Debug.Write("SSG: Autofind no target found\n");
-        pDisk->Invalidate();
-    }
-    return found;
-}
 
 // Find the targeted disk object
 bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pDisk)
@@ -1084,36 +1070,14 @@ bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pD
     double newX = 0.;
     double newY = 0.;
 
-    int minx, miny, maxx, maxy;
-    if (image->Subframe.IsEmpty())
-    {
-        minx = miny = 0;
-        maxx = image->Size.GetWidth() - 1;
-        maxy = image->Size.GetHeight() - 1;
-    }
-    else
-    {
-        minx = image->Subframe.GetLeft();
-        maxx = image->Subframe.GetRight();
-        miny = image->Subframe.GetTop();
-        maxy = image->Subframe.GetBottom();
-    }
-
-    // search region bounds
-    int start_x, end_x, start_y, end_y;
-    const unsigned short *imgdata = image->ImageData;
-    int rowsize = image->Size.GetWidth();
-
-    int peak_x = 0, peak_y = 0;
-    unsigned int peak_val = 0;
-    unsigned short max3[3] = { 0, 0, 0 };
-
     if (!FindSolarSystemObject(image, false))
     {
         Result = Star::STAR_ERROR;
         pDisk->Mass = 0.0;
         pDisk->SNR = 0.0;
         pDisk->HFD = 0.0;
+        pDisk->X = 0;
+        pDisk->Y = 0;
         pDisk->Invalidate();
     }
     else
