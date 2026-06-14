@@ -844,6 +844,11 @@ endif()
 
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+# wxWidgets 3.3 enforces literal-only msgids in _() via a static_assert; PHD2 passes
+# runtime wxStrings to _() in several places, so opt out for 3.3+ (no-op on older wx).
+if(wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.3")
+  target_compile_definitions(phd2 PRIVATE wxNO_REQUIRE_LITERAL_MSGIDS)
+endif()
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 if(APPLE)
   # suppress warnings about "overrides a member function but is not marked 'override'" with wxDECLARE_EVENT_TABLE
