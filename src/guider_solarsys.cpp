@@ -1,19 +1,11 @@
 /*
  *  guider_solarsys.cpp
  *  PHD Guiding
-
- *  Original guider_onestar Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
- *  All rights reserved.
- *
- *  guider_onestar completely refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
- *  All rights reserved.
  *
  *  guider_solarSys adaptation created by Bruce Waddington
  *  to integrate earlier work by Leo Schatz
  *
- *  Copyright (c) 2025 Bruce Waddington
+ *  Copyright (c) 2023-2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -314,7 +306,6 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
 
         pFrame->pProfile->UpdateData(pImage, m_primaryStar.X, m_primaryStar.Y);
 
-        // pFrame->AdjustAutoExposure(m_primaryStar.SNR);
         pFrame->UpdateStatusBarBlobInfo(m_SolarSystemObject->GetLastCentroidResult());
         errorInfo->status = StarStatus(m_primaryStar);
 
@@ -354,16 +345,6 @@ bool GuiderSolarSys::IsValidLockPosition(const PHD_Point& pt)
     // this is a bit ugly as it is tightly coupled to Star::Find
     return pt.X >= 1 + m_searchRegion && pt.X + 1 + m_searchRegion < pImage->Size.GetX() && pt.Y >= 1 + m_searchRegion &&
         pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
-}
-
-bool GuiderSolarSys::IsValidSecondaryStarPosition(const PHD_Point& pt)
-{
-    const usImage *pImage = CurrentImage();
-    if (!pImage)
-        return false;
-    // As above, tightly coupled to Star::Find but with somewhat relaxed constraints. Find handles cases where search region is
-    // only partly within image
-    return pt.X >= 5 && pt.X + 5 < pImage->Size.GetX() && pt.Y >= 5 && pt.Y + 5 < pImage->Size.GetY();
 }
 
 void GuiderSolarSys::OnLClick(wxMouseEvent& mevent)

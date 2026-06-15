@@ -1,8 +1,9 @@
 /*
- *  planetary_tool.cpp
+ *  solarsys_tool.cpp
  *  PHD Guiding
  *
- *  Created by Leo Shatz.
+ *  Created by Leo Shatz, extended and refactored
+ *  by Bruce Waddington
  *  Copyright (c) 2023-2024 PHD2 Developers
  *  All rights reserved.
  *
@@ -580,8 +581,6 @@ static double DefaultMaxBlobSize()
 void SolarSysToolWin::RestoreBlobSearchParameters()
 {
     double val;
-    // double pixelScale = pFrame->GetCameraPixelScale();
-    // double apparentSolarDiskSize = 1800 / pixelScale;
     val = pConfig->Profile.GetInt("/PlanetTool/MinBlobDiameter", 50);
     m_minBlobDiameter->SetValue(val);
     m_solarSystemObj->SetMinBlobDiameter(val);
@@ -658,7 +657,6 @@ void SolarSysToolWin::RestoreProfileParameters()
         else
             m_GainCtrl->Enable(false);
     }
-    // m_trackingRateName = pConfig->Profile.GetString("/PlanetTool/TrackingRateName", _("Sidereal"));
     if (pPointingSource && pPointingSource->IsConnected())
     {
         Scope::TrackingRateInfo rateInfo;
@@ -1044,9 +1042,9 @@ void SolarSysToolWin::OnEdgeThresholdChanged(wxCommandEvent& event)
     pFrame->NotifyGuidingParam("SolarSys: contour threshold", highThreshold);
 }
 
-static void SuppressPausePlanetDetection(long)
+static void SuppressPauseSsgDetection(long)
 {
-    pConfig->Global.SetBoolean(PausePlanetDetectionAlertEnabledKey(), false);
+    pConfig->Global.SetBoolean(PauseSsgDetectionAlertEnabledKey(), false);
 }
 
 void SolarSysToolWin::OnPauseClick(wxCommandEvent& event)

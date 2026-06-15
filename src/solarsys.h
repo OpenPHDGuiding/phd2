@@ -2,7 +2,8 @@
  *  solarsys.h
  *  PHD Guiding
  *
- *  Solar, lunar and planetary detection extensions created by Leo Shatz
+ *  Solar system detection extensions created by Leo Shatz
+ *  and extended by Bruce Waddington
  *  Copyright (c) 2023-2024 PHD2 Developers
  *  All rights reserved.
  *
@@ -32,9 +33,9 @@
  *
  */
 
-#ifndef PLANETARY_INCLUDED
+#ifndef SSG_INCLUDED
 
-#define PLANETARY_INCLUDED
+#define SSG_INCLUDED
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -273,4 +274,4 @@ inline void SolarSystemObject::ShowFeatures(bool state)
     m_paramShowFeatures = state;
 }
 
-#endif // PLANETARY_INCLUDED
+#endif // SSG_INCLUDED

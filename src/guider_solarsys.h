@@ -2,16 +2,10 @@
  *  guider_solarsys.h
  *  PHD Guiding
  *
- *  Original guider_onestar Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
- *  All rights reserved.
+ *  guider_solarSys adaptation created by Bruce Waddington
+ *  to integrate earlier work by Leo Schatz
  *
- *  guider_onestar completely refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
- *  All rights reserved.
- *
- *  guider_multistar extensions created by Bruce Waddington
- *  Copyright (c) 2020 Bruce Waddington
+ *  Copyright (c) 2023-2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -109,7 +103,6 @@ public:
 
 private:
     bool IsValidLockPosition(const PHD_Point& pt) final;
-    bool IsValidSecondaryStarPosition(const PHD_Point& pt) final;
     void InvalidateCurrentPosition(bool fullReset = false) final;
     bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) final;
     bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) final;

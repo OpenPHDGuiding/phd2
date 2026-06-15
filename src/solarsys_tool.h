@@ -1,8 +1,9 @@
 /*
- *  planetary_tool.h
+ *  solarsys_tool.h
  *  PHD Guiding
  *
- *  Created by Leo Shatz
+ *  Created by Leo Shatz, extended and refactored
+ *  by Bruce Waddington
  *  Copyright (c) 2023-2024 PHD2 Developers
  *  All rights reserved.
  *
@@ -32,8 +33,8 @@
  *
  */
 
-#ifndef PLANETARY_TOOL_INCLUDED
-#define PLANETARY_TOOL_INCLUDED
+#ifndef SSG_TOOL_INCLUDED
+#define SSG_TOOL_INCLUDED
 
 // Default solar system object detection parameters values
 #define PT_MIN_RADIUS_DEFAULT 100
@@ -52,12 +53,12 @@
 #define PT_CAMERA_EXPOSURE_MIN 1
 #define PT_CAMERA_EXPOSURE_MAX 30000
 
-static inline wxString PausePlanetDetectionAlertEnabledKey()
+static inline wxString PauseSsgDetectionAlertEnabledKey()
 {
     // we want the key to be under "/Confirm" so
     // ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the
     // setting to be per-profile
-    return wxString::Format("/Confirm/%d/PausePlanetDetectionAlertEnabled", pConfig->GetCurrentProfileId());
+    return wxString::Format("/Confirm/%d/PauseSsgDetectionAlertEnabled", pConfig->GetCurrentProfileId());
 }
 
 class SsgTool
@@ -79,4 +80,4 @@ public:
     static void UpdateToolStatus(wxString msg);
 };
 
-#endif // PANETARY_TOOL_INCLUDED
+#endif // SSG_TOOL_INCLUDED

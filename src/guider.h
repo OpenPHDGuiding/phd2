@@ -299,7 +299,6 @@ public:
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
-    virtual bool IsValidSecondaryStarPosition(const PHD_Point& pt) = 0;
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
 
 private:

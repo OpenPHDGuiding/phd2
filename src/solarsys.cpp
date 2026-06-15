@@ -1,8 +1,9 @@
 /*
- *  planetary.cpp
+ *  solarsys.cpp
  *  PHD Guiding
  *
- *  Solar, lunar and planetary detection extensions created by Leo Shatz
+ *  Solar system detection extensions created by Leo Shatz,
+ *  extended by Bruce Waddington
  *  Copyright (c) 2023-2024 PHD2 Developers
  *  All rights reserved.
  *
@@ -47,11 +48,11 @@
 // Using OpenCV namespace
 using namespace cv;
 
-// Gaussian weights lookup table
+// Gaussian weights lookup table for contour processing
 #define GAUSSIAN_SIZE 2000
 static float gaussianWeight[GAUSSIAN_SIZE];
 
-// Initialize solar/planetary detection module
+// Initialize SolarSystem detection module
 SolarSystemObject::SolarSystemObject()
 {
     m_paramDetectionPaused = false;
@@ -100,8 +101,8 @@ SolarSystemObject::SolarSystemObject()
     // values will be handled by SolarSystemTool
     InitializeDetectionParams();
 
-    // Remove the alert dialog setting for pausing solar/planetary detection
-    pConfig->Global.DeleteEntry(PausePlanetDetectionAlertEnabledKey());
+    // Remove the alert dialog setting for pausing SSG detection
+    pConfig->Global.DeleteEntry(PauseSsgDetectionAlertEnabledKey());
     m_preProcessedImage = new usImage(); // so we always have one
     m_preProcessedImageValid = false;
     m_distanceStats = new DescriptiveStats();
@@ -334,12 +335,12 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
     // Make sure to use transparent brush
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
-    // Display internally detected elements (must be enabled in UI)
+    // Display internally detected elements (if enabled in UI)
     if (VisualElementsEnabled())
     {
         m_syncLock.Lock();
 
-        // Draw contour points in solar/planetary mode
+        // Draw contour points in SSG mode
         if (m_detectionMode != DetectionModes::modeContours && m_blobContour.size() > 0)
         {
             dc.SetPen(wxPen(wxColour(255, 255, 0), 2, wxPENSTYLE_SOLID));
@@ -1026,7 +1027,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     // Set up detector with params
     Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
 
-    // Detect blobs
+    // Detect blob
     blobContour.clear();
     detector->detect(preppedMat, keypoints);
     centroidInfo.mode = DetectionModes::modeBlob;
@@ -1063,7 +1064,8 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     return centroidInfo.centroidX != -1.0;
 }
 
-// Find the targeted disk object
+// Find the targeted disk object and populate all the properties needed for
+// star or disk surface
 bool SolarSystemObject::FindDisk(const usImage *image, bool autoSelect, Star *pDisk)
 {
     Star::FindResult Result = Star::STAR_OK;
@@ -1258,9 +1260,9 @@ double SolarSystemObject::CalcDiskMetrics(const usImage *pImg, int center_x, int
     pDisk->SNR = snr;
     pDisk->PeakVal = peak_val;
     pDisk->Mass = mass;
-    Debug.Write(wxString::Format(
-        "Star::CalcPlanetMetric: signalThreshold=%d, meanSignal=%.1f, meanNoise=%.1f (stddev=%.1f), SNR=%.1f\n",
-        signalThreshold, meanSignal, meanNoise, noiseStdDev, snr));
+    Debug.Write(
+        wxString::Format("SsgDiskMetrics: signalThreshold=%d, meanSignal=%.1f, meanNoise=%.1f (stddev=%.1f), SNR=%.1f\n",
+                         signalThreshold, meanSignal, meanNoise, noiseStdDev, snr));
     return snr;
 }
 
