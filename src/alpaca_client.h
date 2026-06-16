@@ -54,16 +54,23 @@
 #include <string>
 #include <vector>
 
-namespace alpaca {
+namespace alpaca
+{
 
 // Error is thrown for any failure: transport (libcurl), HTTP status, an Alpaca device
 // error (ErrorNumber != 0), or a malformed response.
 struct Error : public std::runtime_error
 {
-    enum Kind { Transport, Http, Device, Parse };
+    enum Kind
+    {
+        Transport,
+        Http,
+        Device,
+        Parse
+    };
     Kind kind;
-    long httpStatus;   // for Kind::Http
-    int alpacaNumber;  // for Kind::Device (Alpaca ErrorNumber)
+    long httpStatus; // for Kind::Http
+    int alpacaNumber; // for Kind::Device (Alpaca ErrorNumber)
     Error(Kind k, const std::string& msg, long http = 0, int num = 0)
         : std::runtime_error(msg), kind(k), httpStatus(http), alpacaNumber(num)
     {
@@ -75,7 +82,7 @@ struct DeviceAddress
 {
     std::string host = "127.0.0.1";
     int port = 11111;
-    std::string deviceType;  // "camera" or "telescope"
+    std::string deviceType; // "camera" or "telescope"
     int deviceNumber = 0;
 };
 
@@ -83,16 +90,20 @@ struct DeviceAddress
 struct ConfiguredDevice
 {
     std::string name;
-    std::string deviceType;  // "Camera", "Telescope", ...
+    std::string deviceType; // "Camera", "Telescope", ...
     std::string uniqueId;
     int deviceNumber = 0;
 };
 
 // discover returns "host:port" for every Alpaca server answering UDP 32227 discovery
-// within timeoutMs. It probes the limited broadcast, loopback, and every local
-// interface's directed broadcast (so multi-homed machines reach all their subnets),
-// plus a unicast probe to each entry in extraHosts (bare IP/hostname — for servers on
-// other networks the broadcast can't reach). Best-effort; returns {} on no replies.
+// within timeoutMs. It probes, on both IP families: each local interface's IPv4 directed
+// broadcast + the limited broadcast + loopback (so multi-homed machines reach all their
+// subnets), the IPv6 discovery multicast group (ff12::a1:9aca) on every multicast-capable
+// interface, and a unicast probe to each entry in extraHosts (bare IPv4 IP/hostname — for
+// servers on other subnets the broadcast can't reach). The probe set is re-sent a few times
+// across the window to tolerate UDP loss. Best-effort; returns {} on no replies.
+// NOTE: IPv6 link-local (fe80::) responders are reported without a zone id, so connecting to
+// them isn't supported; global/ULA IPv6 and all IPv4 work.
 std::vector<std::string> discover(int timeoutMs = 1000, const std::vector<std::string>& extraHosts = {});
 
 // configuredDevices queries a server's management API for the devices it exposes.
@@ -139,8 +150,8 @@ public:
 protected:
     // Returns the raw HTTP body for a GET, with the given extra query args. Used by the
     // typed getters and by Camera for the ImageBytes transport (acceptImageBytes=true).
-    std::string httpGet(const std::string& member, const std::map<std::string, std::string>& query,
-                        bool acceptImageBytes, std::string* contentType);
+    std::string httpGet(const std::string& member, const std::map<std::string, std::string>& query, bool acceptImageBytes,
+                        std::string *contentType);
 
 private:
     std::string baseUrl(const std::string& member) const;
@@ -150,7 +161,7 @@ private:
     uint32_t m_txn;
     long m_timeoutMs = 30000;
     std::mutex m_mu;
-    void* m_curl;  // CURL* (opaque to keep curl out of the header)
+    void *m_curl; // CURL* (opaque to keep curl out of the header)
 };
 
 // ---- Telescope (ITelescopeV3 subset PHD2 uses) --------------------------------------
@@ -158,31 +169,37 @@ private:
 class Telescope : public Device
 {
 public:
-    enum GuideDirection { North = 0, South = 1, East = 2, West = 3 };
+    enum GuideDirection
+    {
+        North = 0,
+        South = 1,
+        East = 2,
+        West = 3
+    };
 
     using Device::Device;
 
     bool canPulseGuide();
-    void pulseGuide(GuideDirection dir, int durationMs);  // returns after the PUT; see isPulseGuiding
+    void pulseGuide(GuideDirection dir, int durationMs); // returns after the PUT; see isPulseGuiding
     bool isPulseGuiding();
 
-    bool canReportCoordinates();  // true if the mount can report RA/Dec
-    double rightAscension();      // hours
-    double declination();         // degrees
-    double siderealTime();        // hours
+    bool canReportCoordinates(); // true if the mount can report RA/Dec
+    double rightAscension(); // hours
+    double declination(); // degrees
+    double siderealTime(); // hours
     bool slewing();
-    void abortSlew();             // ITelescope AbortSlew (stop a stuck pulse/slew)
-    double siteLatitude();        // degrees, +N
-    double siteLongitude();       // degrees, +E
+    void abortSlew(); // ITelescope AbortSlew (stop a stuck pulse/slew)
+    double siteLatitude(); // degrees, +N
+    double siteLongitude(); // degrees, +E
 
-    bool canSlew();               // can slew to coordinates
-    bool canSlewAsync();          // supports the async (non-blocking) slew
-    void slewToCoordinatesAsync(double raHours, double decDegrees);  // poll slewing() for completion
+    bool canSlew(); // can slew to coordinates
+    bool canSlewAsync(); // supports the async (non-blocking) slew
+    void slewToCoordinatesAsync(double raHours, double decDegrees); // poll slewing() for completion
 
-    int sideOfPier();  // 0 = pierEast, 1 = pierWest, -1 = unknown
+    int sideOfPier(); // 0 = pierEast, 1 = pierWest, -1 = unknown
     bool canSetGuideRates();
-    double guideRateRightAscension();  // degrees/second
-    double guideRateDeclination();     // degrees/second
+    double guideRateRightAscension(); // degrees/second
+    double guideRateDeclination(); // degrees/second
 };
 
 // ---- Camera (ICameraV3 subset) ------------------------------------------------------
@@ -207,8 +224,8 @@ enum class ElementType
 // fastest), so getImageBytes transposes it onto this row-major layout.
 struct ImageData
 {
-    int width = 0;   // ASCOM Dimension1 (x)
-    int height = 0;  // ASCOM Dimension2 (y)
+    int width = 0; // ASCOM Dimension1 (x)
+    int height = 0; // ASCOM Dimension2 (y)
     ElementType transmissionType = ElementType::Unknown;
     std::vector<uint16_t> pixels;
 };
@@ -221,22 +238,22 @@ public:
     // Sensor geometry / properties.
     int cameraXSize();
     int cameraYSize();
-    double pixelSizeX();  // microns
-    double pixelSizeY();  // microns
+    double pixelSizeX(); // microns
+    double pixelSizeY(); // microns
     int maxBinX();
-    int sensorType();  // 0 = mono, 1 = colour (Bayer), 2..5 = RGGB/CMYG/... per ASCOM
+    int sensorType(); // 0 = mono, 1 = colour (Bayer), 2..5 = RGGB/CMYG/... per ASCOM
     int bayerOffsetX();
     int bayerOffsetY();
-    int maxADU();      // saturation level → bit depth (>255 ⇒ 16-bit, else 8-bit)
-    double exposureMin();  // seconds — shortest exposure the camera accepts
-    double exposureMax();  // seconds — longest exposure the camera accepts
+    int maxADU(); // saturation level → bit depth (>255 ⇒ 16-bit, else 8-bit)
+    double exposureMin(); // seconds — shortest exposure the camera accepts
+    double exposureMax(); // seconds — longest exposure the camera accepts
 
     // Gain. ASCOM has two modes: "value" mode (gain is a number in [gainMin, gainMax])
     // and "index" mode (gainMin/gainMax throw and gain is an index into the Gains[] list).
     int gain();
     int gainMin();
     int gainMax();
-    int gainsCount();  // number of entries in the Gains[] list (index mode); throws if absent
+    int gainsCount(); // number of entries in the Gains[] list (index mode); throws if absent
     void setGain(int);
 
     // Frame setup.
@@ -264,11 +281,11 @@ public:
     void setCoolerOn(bool);
     bool coolerOn();
     void setCCDTemperature(double celsius);
-    double ccdSetpoint();  // GET setccdtemperature — the current cooler target (°C); ASCOM SetCCDTemperature is readable
+    double ccdSetpoint(); // GET setccdtemperature — the current cooler target (°C); ASCOM SetCCDTemperature is readable
     double ccdTemperature();
     double coolerPower();
 };
 
-}  // namespace alpaca
+} // namespace alpaca
 
-#endif  // ALPACA_CLIENT_H
+#endif // ALPACA_CLIENT_H
