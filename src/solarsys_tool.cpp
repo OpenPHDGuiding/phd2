@@ -87,6 +87,8 @@ struct SolarSysToolWin : public wxDialog
     wxString m_trackingRateName;
     wxChoice *m_mountTrackingRate;
     wxCheckBox *m_restoreSidereal;
+    bool m_trackingRateNeedsConfirmation;
+    wxDateTime m_ConfirmationPeriodStart;
 
     wxCheckBox *m_RoiCheckBox;
     wxCheckBox *m_PauseCheckBox;
@@ -155,6 +157,7 @@ struct SolarSysToolWin : public wxDialog
     void OnResetDetectionStats(wxCommandEvent& evnt);
     void HandleWarningMsgs(int selection);
     void ShowStatus(const wxString& msg, bool appending = false);
+    void ConfirmMountTrackingRate();
 };
 
 static wxString TITLE = wxTRANSLATE("Solar System Guiding");
@@ -193,7 +196,7 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, wxString formatstr, double
 SolarSysToolWin::SolarSysToolWin()
     : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxDefaultPosition, wxDefaultSize,
                wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX),
-      m_lastDiameter(0), m_autoAdjustingActive(false)
+      m_lastDiameter(0), m_autoAdjustingActive(false), m_trackingRateNeedsConfirmation(false)
 
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -865,6 +868,7 @@ void SolarSysToolWin::OnAutoAdjustButton(wxCommandEvent& event)
         m_maxBlobDiameter->SetValue(DefaultMaxBlobSize());
     wxSpinDoubleEvent evt;
     OnSpinCtrl_maxBlobDiameter(evt);
+    // Setting the MinBlobDiameter this large will invariably trigger retries
     m_solarSystemObj->SetMinBlobDiameter(0.8 * m_maxBlobDiameter->GetValue());
 
     if (!pFrame->pGuider->IsGuiding())
@@ -969,6 +973,31 @@ void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
     }
 }
 
+void SolarSysToolWin::ConfirmMountTrackingRate()
+{
+    // Need to see if the change "stuck" - can be over-written by mount s/w using customized tracking
+    Scope::TrackingRateInfo rateInfo;
+    wxStopWatch timer;
+
+    if (!pPointingSource->GetTrackingRate(rateInfo))
+    {
+        if (rateInfo.name != m_trackingRateName)
+        {
+            int inx = m_mountTrackingRate->FindString(rateInfo.name);
+            m_mountTrackingRate->SetSelection(inx);
+            ShowStatus(_("Mount tracking rate reset by another application"));
+        }
+        else
+            ShowStatus(_("Mount tracking rate confirmed"));
+    }
+    else
+    {
+        int inx = m_mountTrackingRate->FindString("Sidereal");
+        m_mountTrackingRate->SetSelection(inx);
+        ShowStatus(_("Mount driver can't set/return tracking rates correctly"));
+    }
+}
+
 void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
 {
     if (pPointingSource && pPointingSource->IsConnected())
@@ -982,30 +1011,11 @@ void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
         int *pRate = (int *) m_mountTrackingRate->GetClientData(sel);
         pPointingSource->SetTrackingRate((TrackingRates) *pRate);
         Debug.Write(wxString::Format("SSG: requesting mount tracking rate of %s\n", m_trackingRateName));
+        ShowStatus(wxString::Format(_("Requested mount tracking rate change to %s\n"), m_trackingRateName));
         pFrame->NotifyGuidingParam("SSG: mount tracking rate", m_trackingRateName);
         // Need to see if the change "stuck" - can be over-written by mount s/w using customized tracking
-        Scope::TrackingRateInfo rateInfo;
-        wxStopWatch timer;
-        timer.Start();
-        while (timer.Time() < 3000)
-            wxMilliSleep(100);
-        if (!pPointingSource->GetTrackingRate(rateInfo))
-        {
-            if (rateInfo.name != m_trackingRateName)
-            {
-                int inx = m_mountTrackingRate->FindString(rateInfo.name);
-                m_mountTrackingRate->SetSelection(inx);
-                ShowStatus(_("Mount tracking rate reset by another application"));
-            }
-            else
-                ShowStatus(_("Mount tracking rate confirmed"));
-        }
-        else
-        {
-            int inx = m_mountTrackingRate->FindString("Sidereal");
-            m_mountTrackingRate->SetSelection(inx);
-            ShowStatus(_("Mount driver can't set/return tracking rates correctly"));
-        }
+        m_ConfirmationPeriodStart = wxDateTime::Now(); // Check it after 3 seconds
+        m_trackingRateNeedsConfirmation = true;
     }
 }
 
@@ -1205,6 +1215,17 @@ void SolarSysToolWin::UpdateCentroidInfo(float xLoc, float yLoc, float radius)
     m_statsGrid->SetCellValue(1, 1, locStr);
     m_statsGrid->SetCellValue(4, 1, wxString::Format("%0.2f", radius * 2.0));
     m_lastDiameter = 2 * radius;
+    // Just take advantage of a periodic function to handle a one-time, little-used verification
+    if (m_trackingRateNeedsConfirmation)
+    {
+        wxDateTime now = wxDateTime::Now();
+        wxTimeSpan interval = now - m_ConfirmationPeriodStart;
+        if (interval.GetSeconds() >= 3)
+        {
+            ConfirmMountTrackingRate();
+            m_trackingRateNeedsConfirmation = false;
+        }
+    }
 }
 
 void SolarSysToolWin::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
@@ -1304,10 +1325,12 @@ void SolarSysToolWin::NotifyMountConnectionChange(bool Connected)
         m_mountTrackingRate->Enable(false);
 }
 
+// This is used by SolarSys.cpp for auto-adjusting min blob size
 void SolarSysToolWin::ChangeMinBlobDiameter(int val)
 {
     m_minBlobDiameter->SetValue(val);
     ShowAngularSize(val, m_minBlobDiameterAngle);
+    pFrame->NotifyGuidingParam("SolarSys: Blob min diam", val);
 }
 
 // Restores profile value in UI if profile is switched while window is already displayed

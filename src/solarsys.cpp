@@ -944,7 +944,7 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
         {
             Debug.Write(wxString::Format("SSG:: Retry detection found object at (%.1f, %.1f) with MinBlobDiameter of %d \n",
                                          m_center_x, m_center_x, (int) m_paramMinBlobDiameter));
-            if (retryCount > 0 && pFrame->pGuider->IsGuiding())
+            if (retryCount > 0)
             {
                 wxString msg;
                 GetDetectionStatus(msg);
@@ -967,6 +967,8 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
             else
             {
                 Debug.Write("SSG: Retry detection, no target found, retries exhausted\n");
+                SsgTool::UpdateToolStatus(_("Object not found.  Make sure your MaxBlobDiameter is larger "
+                                            "than the apparent diameter of the target."));
                 done = true;
             }
         }

@@ -138,16 +138,6 @@ bool GuiderSolarSys::AutoSelect(const wxRect& roi)
             throw ERROR_INFO("No Current Image");
         }
 
-        // If mount is not calibrated, we need to choose a star a bit farther
-        // from the egde to allow for the motion of the star during
-        // calibration
-        //
-        int edgeAllowance = 0;
-        if (pMount && pMount->IsConnected() && !pMount->IsCalibrated())
-            edgeAllowance = wxMax(edgeAllowance, pMount->CalibrationTotDistance());
-        if (pSecondaryMount && pSecondaryMount->IsConnected() && !pSecondaryMount->IsCalibrated())
-            edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
-
         Star newDisk;
 
         if (!m_SolarSystemObject->FindDisk(image, false, &newDisk))
@@ -195,11 +185,6 @@ bool GuiderSolarSys::AutoSelect(const wxRect& roi)
     }
 
     return error;
-}
-
-inline static wxRect SubframeRect(const PHD_Point& pos, int halfwidth)
-{
-    return wxRect(ROUND(pos.X) - halfwidth, ROUND(pos.Y) - halfwidth, 2 * halfwidth + 1, 2 * halfwidth + 1);
 }
 
 wxRect GuiderSolarSys::GetBoundingBox() const
@@ -276,11 +261,9 @@ bool GuiderSolarSys::UpdateCurrentPosition(const usImage *pImage, GuiderOffset *
         else
             distance = 0.;
 
-        // double tolerance = m_tolerateJumpsEnabled ? m_tolerateJumpsThreshold : 9e99;
-
         ImageLogger::LogImage(pImage, distance);
 
-        // update the star position, mass, etc.
+        // update the disk position, mass, etc.
         m_primaryStar = newDisk;
 
         if (lockPos.IsValid())

@@ -116,8 +116,8 @@ double SimCamParams::seeing_scale; // simulated seeing scale factor
 double SimCamParams::cam_angle; // simulated camera angle (degrees)
 double SimCamParams::guide_rate; // guide rate, pixels per second
 PierSide SimCamParams::pier_side; // side of pier
-bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial
-                                                   // mounts
+bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like some ASCOM pulse guided
+                                                   // equatorial mounts
 unsigned int SimCamParams::clouds_inten = 50; // seed brightness for cloud contribution
 double SimCamParams::clouds_opacity;
 double SimCamParams::image_scale; // arc-sec per pixel
@@ -1639,11 +1639,11 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
                 HasBayer = false;
         }
 
-        //// Save full frame size
+        // Save full frame size
         FrameSize.x = image.size().width;
         FrameSize.y = image.size().height;
 
-        // Simulate scope motion
+        // Simulate motion from tracking errors and seeing
         double deltaX, deltaY;
         sim.GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
 
@@ -2421,7 +2421,13 @@ void SimCamDialog::OnFileTextChange(wxCommandEvent& event)
     simcam->sim.CloseDir();
 }
 
-void SimCamDialog::OnRecenterButton(wxCommandEvent& event) { }
+void SimCamDialog::OnRecenterButton(wxCommandEvent& event)
+{
+    pFrame->pGuider->StopGuiding();
+    CameraSimulator *simcam = static_cast<CameraSimulator *>(pCamera);
+    simcam->sim.ra_ofs = 0;
+    simcam->sim.dec_ofs = 0;
+}
 
 void SimCamDialog::UpdatePierSideLabel()
 {

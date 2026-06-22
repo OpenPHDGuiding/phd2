@@ -947,7 +947,6 @@ void MyFrame::SetSolarSystemMode(bool Enable)
     {
         pFrame->pGuider->StopGuiding();
         m_solarSystemMode = true;
-        m_mgr.GetPane(_T("GuiderSolarSys")).Show().Float();
         m_mgr.GetPane(_T("Guider")).Hide();
         m_mgr.Update();
         pFrame->pGuider = pFrame->m_pGuiderSolarSys;
@@ -956,6 +955,11 @@ void MyFrame::SetSolarSystemMode(bool Enable)
         {
             pSolarSysTool = SsgTool::CreateSolarSysToolWindow();
         }
+        bool dockIt = pConfig->Profile.GetBoolean("/guider/SSG/wasDocked", false);
+        if (dockIt)
+            m_mgr.GetPane(_T("GuiderSolarSys")).Show().Dock();
+        else
+            m_mgr.GetPane(_("GuiderSolarSys")).Show().Float();
         pSolarSysTool->Show();
     }
     else
@@ -963,6 +967,7 @@ void MyFrame::SetSolarSystemMode(bool Enable)
         m_solarSystemMode = false;
         m_mgr.GetPane(_T("GuiderSolarSys")).Hide();
         m_mgr.GetPane(_T("Guider")).Show().Bottom().Left().Position(0).MinSize(-1, 400);
+        pConfig->Profile.SetBoolean("/guider/SSG/wasDocked", m_mgr.GetPane(_("GuiderSolarSys")).IsDocked());
         m_mgr.Update();
         pFrame->StopCapturing();
         pFrame->pGuider = pFrame->m_pGuiderMultiStar;
