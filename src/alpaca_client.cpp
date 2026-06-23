@@ -126,6 +126,21 @@ namespace
         return v;
     }
 
+    // Bracket a literal IPv6 address for use in a URL: http://[::1]:port/ . IPv4 addrs and
+    // hostnames (no ':') pass through unchanged.
+    std::string urlHost(const std::string& host)
+    {
+        if (host.find(':') == std::string::npos || host.front() == '[')
+            return host; // IPv4 / hostname / already bracketed
+        // Literal IPv6: bracket it, and percent-encode a zone id's '%' so curl keeps the
+        // scope (fe80::1%en0 -> [fe80::1%25en0]), per RFC 6874.
+        std::string h = host;
+        auto z = h.find('%');
+        if (z != std::string::npos)
+            h.replace(z, 1, "%25");
+        return "[" + h + "]";
+    }
+
     std::string urlEncode(const std::string& v)
     {
         static const char *hex = "0123456789ABCDEF";
@@ -236,6 +251,10 @@ namespace
                     continue;
                 if (!(ia->ifa_flags & IFF_UP) || !(ia->ifa_flags & IFF_MULTICAST))
                     continue;
+                // Skip point-to-point tunnels (utun/VPN): they carry no LAN discovery, and a
+                // multicast send out them is pointless and can be slow on macOS.
+                if (ia->ifa_flags & IFF_POINTOPOINT)
+                    continue;
                 unsigned idx = if_nametoindex(ia->ifa_name);
                 if (idx)
                     out.push_back(idx);
@@ -267,12 +286,9 @@ Device::~Device()
 
 std::string Device::baseUrl(const std::string& mbr) const
 {
-    // A literal IPv6 host must be bracketed in a URL ("http://[::1]:11111/..."). Detect it
-    // by the colon that an IPv4 address / hostname never contains.
-    bool ipv6 = m_addr.host.find(':') != std::string::npos && m_addr.host.front() != '[';
     std::ostringstream os;
-    os << "http://" << (ipv6 ? "[" + m_addr.host + "]" : m_addr.host) << ":" << m_addr.port << "/api/v1/" << m_addr.deviceType
-       << "/" << m_addr.deviceNumber << "/" << mbr;
+    os << "http://" << urlHost(m_addr.host) << ":" << m_addr.port << "/api/v1/" << m_addr.deviceType << "/"
+       << m_addr.deviceNumber << "/" << mbr;
     return os.str();
 }
 
@@ -857,6 +873,15 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
                     sendto(s6, msg, msgLen, 0, (struct sockaddr *) &d6, sizeof(d6));
                 }
             }
+            // Loopback unicast (::1): a localhost server binds ::1 and answers unicast but
+            // often doesn't join the discovery multicast group — the IPv6 analog of the
+            // 127.0.0.1 probe above.
+            struct sockaddr_in6 lo6;
+            std::memset(&lo6, 0, sizeof(lo6));
+            lo6.sin6_family = AF_INET6;
+            lo6.sin6_port = htons(kPort);
+            lo6.sin6_addr = in6addr_loopback;
+            sendto(s6, msg, msgLen, 0, (struct sockaddr *) &lo6, sizeof(lo6));
         }
     };
 
@@ -891,11 +916,25 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
         else
             return;
         char ip[INET6_ADDRSTRLEN] = { 0 };
+        std::string host;
         if (from.ss_family == AF_INET6)
-            inet_ntop(AF_INET6, &((struct sockaddr_in6 *) &from)->sin6_addr, ip, sizeof(ip));
+        {
+            struct sockaddr_in6 *s6a = (struct sockaddr_in6 *) &from;
+            inet_ntop(AF_INET6, &s6a->sin6_addr, ip, sizeof(ip));
+            host = ip;
+            // A link-local responder is reachable only via the interface the reply arrived on,
+            // so carry the arrival zone id (numeric, for portability) into the host. Without it
+            // the follow-up http://[fe80::...]/ management request is unroutable and stalls until
+            // the curl timeout — repeated per responder, that is the discovery "hang".
+            if (IN6_IS_ADDR_LINKLOCAL(&s6a->sin6_addr) && s6a->sin6_scope_id)
+                host += "%" + std::to_string(s6a->sin6_scope_id);
+        }
         else
+        {
             inet_ntop(AF_INET, &((struct sockaddr_in *) &from)->sin_addr, ip, sizeof(ip));
-        servers.push_back(std::string(ip) + ":" + portStr);
+            host = ip;
+        }
+        servers.push_back(host + ":" + portStr);
     };
 
     while (steady_clock::now() < deadline)
@@ -977,7 +1016,9 @@ std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int ti
             continue;
         std::string host = server.substr(0, colon);
         int port = std::atoi(server.substr(colon + 1).c_str());
-        for (const ConfiguredDevice& d : configuredDevices(host, port))
+        // Bound the per-server management call so one unreachable responder can't stall the
+        // serial sweep (these run back-to-back across every discovered server).
+        for (const ConfiguredDevice& d : configuredDevices(host, port, 2000))
             if (iequals(d.deviceType, deviceType))
                 out.push_back(DeviceAddress { host, port, deviceType, d.deviceNumber });
     }
@@ -991,7 +1032,7 @@ std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int por
     if (!curl)
         return out;
     std::ostringstream url;
-    url << "http://" << host << ":" << port << "/management/v1/configureddevices?ClientID=1&ClientTransactionID=1";
+    url << "http://" << urlHost(host) << ":" << port << "/management/v1/configureddevices?ClientID=1&ClientTransactionID=1";
     std::string body;
     curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);

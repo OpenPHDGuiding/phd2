@@ -131,7 +131,7 @@ bool CameraAlpaca::EnumCameras(wxArrayString& names, wxArrayString& ids)
             auto colon = server.rfind(':');
             std::string host = server.substr(0, colon);
             int port = std::stoi(server.substr(colon + 1));
-            for (const auto& d : alpaca::configuredDevices(host, port))
+            for (const auto& d : alpaca::configuredDevices(host, port, 2000)) // bound stalls on unreachable responders
             {
                 if (wxString(d.deviceType).CmpNoCase("camera") != 0) // servers vary: "Camera"/"camera"
                     continue;
