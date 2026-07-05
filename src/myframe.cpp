@@ -2138,6 +2138,12 @@ bool MyFrame::Dither(double amount, bool raOnly)
         {
             throw ERROR_INFO("cannot dither if not guiding");
         }
+        if (GetSolarSystemMode())
+        {
+            // Can't throw an alert here because SSG tool window has focus
+            SsgTool::UpdateToolStatus(_("Dithering not supported for solar system guiding"));
+            throw ERROR_INFO("Dithering not supported for solar system guiding");
+        }
 
         amount *= m_ditherScaleFactor;
 
@@ -2227,6 +2233,10 @@ void MyFrame::OnClose(wxCloseEvent& event)
     bool killed = StopWorkerThread(m_pPrimaryWorkerThread);
     if (StopWorkerThread(m_pSecondaryWorkerThread))
         killed = true;
+
+    // Always restore UI to stellar guiding
+    if (GetSolarSystemMode())
+        SetSolarSystemMode(false);
 
     // disconnect all gear
     pGearDialog->Shutdown(killed);

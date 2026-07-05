@@ -264,7 +264,7 @@ SolarSysToolWin::SolarSysToolWin()
 
     wxStaticBoxSizer *blobDiametersSzr = new wxStaticBoxSizer(wxVERTICAL, m_basic_tab, _("Search Diameters"));
     wxStaticText *blobSizeClue = new wxStaticText(
-        m_basic_tab, wxID_ANY, _("To detect lunar/solar disks, start with MaxBlobSize of approximately 60 arc-min"));
+        m_basic_tab, wxID_ANY, _("To detect lunar/solar disks, start with MaxBlobSize of approximately 40 arc-min"));
     blobDiametersSzr->Add(blobSizeClue, wxSizerFlags(wxSizerFlags().Border(wxTOP, 5).Center()));
     blobDiametersSzr->AddSpacer(5);
     blobDiametersSzr->Add(blobDiamGrid, wxSizerFlags().Center());
@@ -573,23 +573,41 @@ SolarSysToolWin::~SolarSysToolWin(void)
     Debug.Write("SSG: guiding de-activated\n");
 }
 
-static double DefaultMaxBlobSize()
+static double DefaultMaxDiskSize(bool blobMode)
 {
     double pixelScale = pFrame->GetCameraPixelScale();
     double apparentSolarDiskSize = 1800 / pixelScale;
-    return apparentSolarDiskSize * 1.5;
+    if (blobMode)
+        return apparentSolarDiskSize * 1.2;
+    else
+        return apparentSolarDiskSize * 1.1;
 }
+
+static void ShowAngularSize(int val, wxStaticText *textField)
+{
+    double imgScale = pFrame->GetCameraPixelScale();
+    double angSz = val * imgScale;
+    wxString rslt;
+    if (angSz > 60)
+        rslt = wxString::Format("%0.1f arc-min", angSz / 60.0);
+    else
+        rslt = wxString::Format("%0.1f arc-sec", angSz);
+    textField->SetLabelText(rslt);
+}
+
 // Profiles can be changed while the window is active so profile-stored parameters
 // may need to be reloaded after the UI has been created.
 void SolarSysToolWin::RestoreBlobSearchParameters()
 {
     double val;
-    val = pConfig->Profile.GetInt("/PlanetTool/MinBlobDiameter", 50);
+    val = pConfig->Profile.GetInt("/PlanetTool/MinBlobDiameter", 0.8 * DefaultMaxDiskSize(true));
     m_minBlobDiameter->SetValue(val);
     m_solarSystemObj->SetMinBlobDiameter(val);
-    val = pConfig->Profile.GetInt("/PlanetTool/MaxBlobDiameter", DefaultMaxBlobSize());
+    ShowAngularSize(val, m_minBlobDiameterAngle);
+    val = pConfig->Profile.GetInt("/PlanetTool/MaxBlobDiameter", DefaultMaxDiskSize(true));
     m_maxBlobDiameter->SetValue(val);
     m_solarSystemObj->SetMaxBlobDiameter(val);
+    ShowAngularSize(val, m_maxBlobDiameterAngle);
 
     val = pConfig->Profile.GetInt("/PlanetTool/BlobThreshold", 50);
     m_blobThreshold->SetValue(val);
@@ -615,18 +633,18 @@ void SolarSysToolWin::RestoreBlobSearchParameters()
 
 void SolarSysToolWin::RestoreContourSearchParameters()
 {
-    double pixelScale = pFrame->GetCameraPixelScale();
-    double apparentSolarRadius = 1800 / pixelScale;
-    double val = pConfig->Profile.GetInt("/PlanetTool/MinRadius", apparentSolarRadius - 20);
+    double val = pConfig->Profile.GetInt("/PlanetTool/MinRadius", 0.8 * DefaultMaxDiskSize(false) / 2.);
     m_minDiameter->SetValue(2.0 * val);
     wxSpinDoubleEvent evt;
     OnSpinCtrl_minDiameter(evt);
     m_solarSystemObj->SetMinRadius(val);
+    ShowAngularSize(2.0 * val, m_minContourDiameterAngle);
 
-    val = pConfig->Profile.GetInt("/PlanetTool/MaxRadius", apparentSolarRadius + 20);
+    val = pConfig->Profile.GetInt("/PlanetTool/MaxRadius", DefaultMaxDiskSize(false) / 2.);
     m_maxDiameter->SetValue(2.0 * val);
     OnSpinCtrl_maxDiameter(evt);
     m_solarSystemObj->SetMaxRadius(val);
+    ShowAngularSize(2.0 * val, m_maxContourDiameterAngle);
 
     val = pConfig->Profile.GetInt("/PlanetTool/Threshold", PT_BLOB_THRESHOLD_DEFAULT);
     m_contourEdgeThresholdSlider->SetValue(val);
@@ -644,9 +662,9 @@ void SolarSysToolWin::RestoreProfileParameters()
     RestoreContourSearchParameters();
     m_ResamplingCheckBox->SetValue(pConfig->Profile.GetBoolean("/PlanetTool/ResampleEnabled", true));
 
-    double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 1000));
+    double val = pConfig->Profile.GetDouble("/PlanetTool/ExposureTime", pConfig->Profile.GetInt("/ExposureDurationMs", 100));
     m_ExposureCtrl->SetValue(val);
-    val = pConfig->Profile.GetInt("/PlanetTool/Timelapse", 500.);
+    val = pConfig->Profile.GetInt("/PlanetTool/Timelapse", 1000.);
     m_CadenceCtrl->SetValue(val);
     wxSpinDoubleEvent evt;
     OnExposureChanged(evt);
@@ -722,18 +740,6 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
     ClearStats();
 }
 
-static void ShowAngularSize(int val, wxStaticText *textField)
-{
-    double imgScale = pFrame->GetCameraPixelScale();
-    double angSz = val * imgScale;
-    wxString rslt;
-    if (angSz > 60)
-        rslt = wxString::Format("%0.1f arc-min", angSz / 60.0);
-    else
-        rslt = wxString::Format("%0.1f arc-sec", angSz);
-    textField->SetLabelText(rslt);
-}
-
 void SolarSysToolWin::OnSpinCtrl_minDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_minDiameter->GetValue();
@@ -756,9 +762,8 @@ void SolarSysToolWin::OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_minBlobDiameter->GetValue();
     v = wxMin(v, m_maxDiameter->GetValue() - 5);
-    if (v != m_minBlobDiameter->GetValue())
-        m_minBlobDiameter->SetValue(v);
-    m_solarSystemObj->SetMinBlobDiameter(v);
+    if (v != m_solarSystemObj->GetMinBlobDiameter())
+        m_solarSystemObj->SetMinBlobDiameter(v);
     ShowAngularSize(v, m_minBlobDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Blob min diam", v);
 }
@@ -767,9 +772,8 @@ void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
 {
     int v = m_maxBlobDiameter->GetValue();
     v = wxMax(v, m_minBlobDiameter->GetValue() + 5);
-    if (v != m_maxBlobDiameter->GetValue())
-        m_maxBlobDiameter->SetValue(v);
-    m_solarSystemObj->SetMaxBlobDiameter(v);
+    if (v != m_solarSystemObj->GetMaxBlobDiameter())
+        m_solarSystemObj->SetMaxBlobDiameter(v);
     ShowAngularSize(v, m_maxBlobDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Blob max diam", v);
 }
@@ -865,7 +869,7 @@ void SolarSysToolWin::OnAutoAdjustButton(wxCommandEvent& event)
         m_maxBlobDiameter->SetValue(val);
     }
     else
-        m_maxBlobDiameter->SetValue(DefaultMaxBlobSize());
+        m_maxBlobDiameter->SetValue(DefaultMaxDiskSize(true));
     wxSpinDoubleEvent evt;
     OnSpinCtrl_maxBlobDiameter(evt);
     // Setting the MinBlobDiameter this large will invariably trigger retries
@@ -1329,6 +1333,8 @@ void SolarSysToolWin::NotifyMountConnectionChange(bool Connected)
 void SolarSysToolWin::ChangeMinBlobDiameter(int val)
 {
     m_minBlobDiameter->SetValue(val);
+    if (val != m_solarSystemObj->GetMinBlobDiameter())
+        m_solarSystemObj->SetMinBlobDiameter(val);
     ShowAngularSize(val, m_minBlobDiameterAngle);
     pFrame->NotifyGuidingParam("SolarSys: Blob min diam", val);
 }
