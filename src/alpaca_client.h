@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by mikefsq
- *  Copyright (c) 2026 mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -41,6 +41,13 @@
 // discovery and the management API for device enumeration. Images are fetched over the
 // binary ImageBytes transport (Accept: application/imagebytes).
 //
+// Errors are propagated by value, never thrown: every call that can fail returns an
+// Error (which is falsy on success), and value-returning calls write their result through
+// an out-parameter that is left untouched on failure. This matches the PHD2 convention of
+// not letting exceptions cross function boundaries. Because Error is contextually
+// convertible to bool, a sequence of required calls can be chained and short-circuited
+// with ||:  if ((err = a(&x)) || (err = b(&y))) { ...handle err... }
+//
 // Angles follow ASCOM conventions on the wire: RightAscension in hours, Declination in
 // degrees, guide rates in degrees/second.
 
@@ -50,31 +57,42 @@
 #include <cstdint>
 #include <map>
 #include <mutex>
-#include <stdexcept>
 #include <string>
 #include <vector>
+
+class JsonParser;
+struct json_value;
 
 namespace alpaca
 {
 
-// Error is thrown for any failure: transport (libcurl), HTTP status, an Alpaca device
-// error (ErrorNumber != 0), or a malformed response.
-struct Error : public std::runtime_error
+// Error describes a failure and is returned (not thrown) from every client call: a
+// transport failure (libcurl), an HTTP status error, an Alpaca device error
+// (ErrorNumber != 0), or a malformed response. A default-constructed Error (kind == None)
+// means success and is falsy; any real error is truthy.
+struct Error
 {
     enum Kind
     {
+        None = 0,
         Transport,
         Http,
         Device,
         Parse
     };
-    Kind kind;
-    long httpStatus; // for Kind::Http
-    int alpacaNumber; // for Kind::Device (Alpaca ErrorNumber)
-    Error(Kind k, const std::string& msg, long http = 0, int num = 0)
-        : std::runtime_error(msg), kind(k), httpStatus(http), alpacaNumber(num)
+    Kind kind = None;
+    std::string message;
+    long httpStatus = 0; // for Kind::Http
+    int alpacaNumber = 0; // for Kind::Device (Alpaca ErrorNumber)
+
+    Error() = default;
+    Error(Kind k, std::string msg, long http = 0, int num = 0)
+        : kind(k), message(std::move(msg)), httpStatus(http), alpacaNumber(num)
     {
     }
+
+    explicit operator bool() const { return kind != None; } // truthy when a failure occurred
+    const char *what() const { return message.c_str(); }
 };
 
 // DeviceAddress identifies one Alpaca device on a server.
@@ -84,6 +102,7 @@ struct DeviceAddress
     int port = 11111;
     std::string deviceType; // "camera" or "telescope"
     int deviceNumber = 0;
+    std::string name; // device display name (filled in by discoverDevices)
 };
 
 // ConfiguredDevice is one entry from /management/v1/configureddevices.
@@ -91,7 +110,6 @@ struct ConfiguredDevice
 {
     std::string name;
     std::string deviceType; // "Camera", "Telescope", ...
-    std::string uniqueId;
     int deviceNumber = 0;
 };
 
@@ -99,22 +117,25 @@ struct ConfiguredDevice
 // within timeoutMs. It probes, on both IP families: each local interface's IPv4 directed
 // broadcast + the limited broadcast + loopback (so multi-homed machines reach all their
 // subnets), the IPv6 discovery multicast group (ff12::a1:9aca) on every multicast-capable
-// interface, and a unicast probe to each entry in extraHosts (bare IPv4 IP/hostname — for
+// interface, and a unicast probe to each entry in extraHosts (bare IPv4 IP/hostname -- for
 // servers on other subnets the broadcast can't reach). The probe set is re-sent a few times
 // across the window to tolerate UDP loss. Best-effort; returns {} on no replies.
-// NOTE: IPv6 link-local (fe80::) responders are reported without a zone id, so connecting to
-// them isn't supported; global/ULA IPv6 and all IPv4 work.
+// NOTE: IPv6 link-local (fe80::) responders are reported with the numeric zone id of the
+// arriving interface ("fe80::1%7"). Zone ids are not stable across reboots or adapter
+// changes, so prefer an IPv4 or global IPv6 address in a saved configuration.
 std::vector<std::string> discover(int timeoutMs = 1000, const std::vector<std::string>& extraHosts = {});
 
 // configuredDevices queries a server's management API for the devices it exposes.
 std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs = 5000);
 
 // discoverDevices finds every Alpaca device of the given type ("telescope", "camera",
-// …) across all servers answering discovery, ready to construct a Device from. The
-// deviceType match is case-insensitive (servers vary on "Camera" vs "camera").
-// extraHosts is forwarded to discover() for off-broadcast servers.
+// ...) across all servers answering discovery, ready to construct a Device from (with the
+// device's display name in DeviceAddress::name). The deviceType match is case-insensitive
+// (servers vary on "Camera" vs "camera"). extraHosts is forwarded to discover() for
+// off-broadcast servers. Each discovered server's management query is bounded by
+// mgmtTimeoutMs so one unreachable responder can't stall the (serial) sweep.
 std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int timeoutMs = 1500,
-                                           const std::vector<std::string>& extraHosts = {});
+                                           const std::vector<std::string>& extraHosts = {}, int mgmtTimeoutMs = 2000);
 
 // Device is the common ASCOM device surface plus typed low-level GET/PUT helpers.
 // One Device owns one reused libcurl handle, serialized by an internal mutex, so it is
@@ -128,30 +149,29 @@ public:
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
 
-    const DeviceAddress& address() const { return m_addr; }
     void setTimeoutMs(long ms) { m_timeoutMs = ms; }
 
-    // Common ASCOM device members.
-    void setConnected(bool);
-    bool connected();
-    std::string description();
-    std::string driverInfo();
-    int interfaceVersion();
-    std::string name();
+    // Common ASCOM device members. Each returns an Error (falsy on success); getters write
+    // their result through the out-parameter.
+    Error setConnected(bool);
+    Error name(std::string *out);
 
-    // Typed low-level access to any Alpaca member. `name` is the lowercase member
-    // (e.g. "canpulseguide"); params are extra PUT form fields or GET query args.
-    bool getBool(const std::string& member);
-    int getInt(const std::string& member);
-    double getDouble(const std::string& member);
-    std::string getString(const std::string& member);
-    void put(const std::string& member, const std::map<std::string, std::string>& params = {});
+    // Typed low-level access to any Alpaca member. member is the lowercase name
+    // (e.g. "canpulseguide"); params are extra PUT form fields. Getters write through out.
+    Error getBool(const std::string& member, bool *out);
+    Error getInt(const std::string& member, int *out);
+    Error getDouble(const std::string& member, double *out);
+    Error getString(const std::string& member, std::string *out);
+    Error put(const std::string& member, const std::map<std::string, std::string>& params = {});
 
 protected:
-    // Returns the raw HTTP body for a GET, with the given extra query args. Used by the
-    // typed getters and by Camera for the ImageBytes transport (acceptImageBytes=true).
-    std::string httpGet(const std::string& member, const std::map<std::string, std::string>& query, bool acceptImageBytes,
-                        std::string *contentType);
+    // Fetches member and hands back the parsed "Value" node in *v (valid only while
+    // parser stays in scope) -- the shared preamble of the typed getters.
+    Error getValue(const std::string& member, JsonParser& parser, const json_value **v);
+
+    // Fetches the raw HTTP body for a GET into *body. Used by getValue and by Camera
+    // for the ImageBytes transport (acceptImageBytes=true).
+    Error httpGet(const std::string& member, bool acceptImageBytes, std::string *body, std::string *contentType);
 
 private:
     std::string baseUrl(const std::string& member) const;
@@ -179,54 +199,37 @@ public:
 
     using Device::Device;
 
-    bool canPulseGuide();
-    void pulseGuide(GuideDirection dir, int durationMs); // returns after the PUT; see isPulseGuiding
-    bool isPulseGuiding();
+    Error canPulseGuide(bool *out);
+    Error pulseGuide(GuideDirection dir, int durationMs); // returns after the PUT; see isPulseGuiding
+    Error isPulseGuiding(bool *out);
 
-    bool canReportCoordinates(); // true if the mount can report RA/Dec
-    double rightAscension(); // hours
-    double declination(); // degrees
-    double siderealTime(); // hours
-    bool slewing();
-    void abortSlew(); // ITelescope AbortSlew (stop a stuck pulse/slew)
-    double siteLatitude(); // degrees, +N
-    double siteLongitude(); // degrees, +E
+    Error rightAscension(double *out); // hours
+    Error declination(double *out); // degrees
+    Error siderealTime(double *out); // hours
+    Error slewing(bool *out);
+    Error abortSlew(); // ITelescope AbortSlew (stop a stuck pulse/slew)
+    Error siteLatitude(double *out); // degrees, +N
+    Error siteLongitude(double *out); // degrees, +E
 
-    bool canSlew(); // can slew to coordinates
-    bool canSlewAsync(); // supports the async (non-blocking) slew
-    void slewToCoordinatesAsync(double raHours, double decDegrees); // poll slewing() for completion
+    Error canSlew(bool *out); // can slew to coordinates
+    Error canSlewAsync(bool *out); // supports the async (non-blocking) slew
+    Error slewToCoordinatesAsync(double raHours, double decDegrees); // poll slewing() for completion
 
-    int sideOfPier(); // 0 = pierEast, 1 = pierWest, -1 = unknown
-    bool canSetGuideRates();
-    double guideRateRightAscension(); // degrees/second
-    double guideRateDeclination(); // degrees/second
+    int sideOfPier(); // 0 = pierEast, 1 = pierWest, -1 = unknown or unavailable
+    Error guideRateRightAscension(double *out); // degrees/second
+    Error guideRateDeclination(double *out); // degrees/second
 };
 
 // ---- Camera (ICameraV3 subset) ------------------------------------------------------
 
-// ASCOM ImageArrayElementTypes.
-enum class ElementType
-{
-    Unknown = 0,
-    Int16 = 1,
-    Int32 = 2,
-    Double = 3,
-    Single = 4,
-    UInt64 = 5,
-    Byte = 6,
-    Int64 = 7,
-    UInt16 = 8
-};
-
 // ImageData is a decoded ImageBytes frame, normalized to 16-bit and stored row-major
-// (raster: scanline y outer, pixel x inner) — i.e. pixels[y * width + x] — ready to copy
+// (raster: scanline y outer, pixel x inner) -- i.e. pixels[y * width + x] -- ready to copy
 // straight into a PHD2 usImage. The ImageBytes wire order is ASCOM column-major (height/y
 // fastest), so getImageBytes transposes it onto this row-major layout.
 struct ImageData
 {
     int width = 0; // ASCOM Dimension1 (x)
     int height = 0; // ASCOM Dimension2 (y)
-    ElementType transmissionType = ElementType::Unknown;
     std::vector<uint16_t> pixels;
 };
 
@@ -236,54 +239,52 @@ public:
     using Device::Device;
 
     // Sensor geometry / properties.
-    int cameraXSize();
-    int cameraYSize();
-    double pixelSizeX(); // microns
-    double pixelSizeY(); // microns
-    int maxBinX();
-    int sensorType(); // 0 = mono, 1 = colour (Bayer), 2..5 = RGGB/CMYG/... per ASCOM
-    int bayerOffsetX();
-    int bayerOffsetY();
-    int maxADU(); // saturation level → bit depth (>255 ⇒ 16-bit, else 8-bit)
-    double exposureMin(); // seconds — shortest exposure the camera accepts
-    double exposureMax(); // seconds — longest exposure the camera accepts
+    Error cameraXSize(int *out);
+    Error cameraYSize(int *out);
+    Error pixelSizeX(double *out); // microns
+    Error maxBinX(int *out);
+    Error sensorType(int *out); // 0 = mono, 1 = colour (Bayer), 2..5 = RGGB/CMYG/... per ASCOM
+    Error maxADU(int *out); // saturation level -> bit depth (>255 => 16-bit, else 8-bit)
+    Error exposureMin(double *out); // seconds -- shortest exposure the camera accepts
+    Error exposureMax(double *out); // seconds -- longest exposure the camera accepts
 
     // Gain. ASCOM has two modes: "value" mode (gain is a number in [gainMin, gainMax])
-    // and "index" mode (gainMin/gainMax throw and gain is an index into the Gains[] list).
-    int gain();
-    int gainMin();
-    int gainMax();
-    int gainsCount(); // number of entries in the Gains[] list (index mode); throws if absent
-    void setGain(int);
+    // and "index" mode (gainMin/gainMax return an error and gain is an index into the
+    // Gains[] list).
+    Error gain(int *out);
+    Error gainMin(int *out);
+    Error gainMax(int *out);
+    Error gains(std::vector<std::string> *out); // the Gains[] name list (index mode); error if absent
+    Error setGain(int);
 
     // Frame setup.
-    void setBinX(int);
-    void setBinY(int);
-    void setStartX(int);
-    void setStartY(int);
-    void setNumX(int);
-    void setNumY(int);
+    Error setBinX(int);
+    Error setBinY(int);
+    Error setStartX(int);
+    Error setStartY(int);
+    Error setNumX(int);
+    Error setNumY(int);
 
     // Exposure lifecycle.
-    void startExposure(double seconds, bool light = true);
-    bool imageReady();
-    bool canAbortExposure();
-    void abortExposure();
-    bool canStopExposure();
-    void stopExposure();
+    Error startExposure(double seconds, bool light = true);
+    Error imageReady(bool *out);
+    Error canAbortExposure(bool *out);
+    Error abortExposure();
+    Error canStopExposure(bool *out);
+    Error stopExposure();
 
     // Fetch the latest frame via the binary ImageBytes transport.
-    ImageData getImageBytes();
+    Error getImageBytes(ImageData *out);
 
-    // Cooling (optional; guarded by hasCooler/canSetCCDTemperature).
-    bool hasCooler();
-    bool canSetCCDTemperature();
-    void setCoolerOn(bool);
-    bool coolerOn();
-    void setCCDTemperature(double celsius);
-    double ccdSetpoint(); // GET setccdtemperature — the current cooler target (°C); ASCOM SetCCDTemperature is readable
-    double ccdTemperature();
-    double coolerPower();
+    // Cooling (optional; guarded by hasCooler and the capability getters).
+    Error hasCooler(bool *out);
+    Error canGetCoolerPower(bool *out);
+    Error setCoolerOn(bool);
+    Error coolerOn(bool *out);
+    Error setCCDTemperature(double celsius);
+    Error ccdSetpoint(double *out); // GET setccdtemperature -- the cooler target (deg C); readable per ASCOM
+    Error ccdTemperature(double *out);
+    Error coolerPower(double *out);
 };
 
 } // namespace alpaca

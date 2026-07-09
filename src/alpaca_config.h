@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by mikefsq
- *  Copyright (c) 2026 mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -48,7 +48,7 @@
 #include <vector>
 
 // ShowAlpacaConfigDialog shows the modal setup dialog for an Alpaca device.
-// deviceType is "camera" or "telescope". host/port/devnum are in/out — updated and
+// deviceType is "camera" or "telescope". host/port/devnum are in/out -- updated and
 // true returned on OK; false (unchanged) on Cancel. The dialog also edits the global
 // "discovery IP override" used by the Discover button and by discovery-on-connect.
 bool ShowAlpacaConfigDialog(wxWindow *parent, const wxString& deviceType, wxString& host, long& port, long& devnum);

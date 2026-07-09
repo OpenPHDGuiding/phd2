@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by mikefsq
- *  Copyright (c) 2026 mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,24 +32,30 @@
  *
  */
 
-// PHD2 mount over ASCOM Alpaca. See scope_alpaca.h.
+// PHD2 mount over ASCOM Alpaca. See scope_alpaca.h. Following the cam_ascom.cpp idiom,
+// errors propagate by return value: each alpaca::Telescope call returns an alpaca::Error
+// (falsy on success) and writes any value through an out-parameter, and we log the failing
+// member at each call site (err.what() is the Alpaca analog of ASCOM's ExcepMsg).
 
 #include "phd.h"
 
 #ifdef ALPACA_MOUNT
 
-#include "scope_alpaca.h"
-#include "alpaca_client.h"
-#include "alpaca_config.h"
+# include "scope_alpaca.h"
+# include "alpaca_client.h"
+# include "alpaca_config.h"
 
-#include <cmath>
-#include <memory>
+# include <cmath>
+# include <memory>
+# include <mutex>
 
-namespace {
+namespace
+{
 
 class ScopeAlpaca : public Scope
 {
-    std::unique_ptr<alpaca::Telescope> m_mount;
+    std::shared_ptr<alpaca::Telescope> m_mount;
+    mutable std::mutex m_mountLock;
     wxString m_host;
     long m_port;
     long m_devnum;
@@ -57,6 +63,7 @@ class ScopeAlpaca : public Scope
     bool m_canCheckSlewing;
     bool m_canSlew;
     bool m_canSlewAsync;
+    bool m_abortSlewWhenGuidingStuck;
 
 public:
     ScopeAlpaca();
@@ -67,8 +74,8 @@ public:
     bool HasNonGuiMove() override { return true; }
 
     bool CanPulseGuide() override { return m_canPulseGuide; }
-    // An Alpaca telescope reports RA/Dec by definition (core ITelescope members), so —
-    // like the ASCOM backend — report true unconditionally. This also lets PHD2 disable
+    // An Alpaca telescope reports RA/Dec by definition (core ITelescope members), so --
+    // like the ASCOM backend -- report true unconditionally. This also lets PHD2 disable
     // the redundant aux-mount controls at selection time, before we've connected.
     bool CanReportPosition() override { return true; }
     bool CanCheckSlewing() override { return m_canCheckSlewing; }
@@ -91,14 +98,24 @@ public:
 
 private:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
+    std::shared_ptr<alpaca::Telescope> telescope() const
+    {
+        std::lock_guard<std::mutex> lk(m_mountLock);
+        return m_mount;
+    }
+    void setTelescope(std::shared_ptr<alpaca::Telescope> mount)
+    {
+        std::lock_guard<std::mutex> lk(m_mountLock);
+        m_mount = std::move(mount);
+    }
     void loadProfile();
     void saveProfile() const;
     bool tryConnect(const wxString& host, long port, long devnum);
 };
 
 ScopeAlpaca::ScopeAlpaca()
-    : m_port(11111), m_devnum(0), m_canPulseGuide(false), m_canCheckSlewing(false), m_canSlew(false),
-      m_canSlewAsync(false)
+    : m_port(11111), m_devnum(0), m_canPulseGuide(false), m_canCheckSlewing(false), m_canSlew(false), m_canSlewAsync(false),
+      m_abortSlewWhenGuidingStuck(false)
 {
     loadProfile();
 }
@@ -120,48 +137,70 @@ void ScopeAlpaca::saveProfile() const
 }
 
 // tryConnect opens the telescope at host:port#devnum and reads its capabilities.
-// Returns true on success (m_mount left connected), false on any Alpaca error.
+// Returns true on success (the telescope left connected), false on any Alpaca error.
 bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
 {
-    try
+    alpaca::DeviceAddress addr;
+    addr.host = std::string(host.mb_str());
+    addr.port = (int) port;
+    addr.deviceType = "telescope";
+    addr.deviceNumber = (int) devnum;
+    auto mount = std::make_shared<alpaca::Telescope>(addr);
+
+    alpaca::Error err;
+    if ((err = mount->setConnected(true)))
     {
-        alpaca::DeviceAddress addr;
-        addr.host = std::string(host.mb_str());
-        addr.port = (int) port;
-        addr.deviceType = "telescope";
-        addr.deviceNumber = (int) devnum;
-        auto mount = std::make_unique<alpaca::Telescope>(addr);
-        mount->setConnected(true);
-        m_canPulseGuide = mount->canPulseGuide();
-        // Slewing is a standard property, but some drivers don't implement it; probe once
-        // so the "stop guiding when slewing" safeguard is only enabled when it works.
-        try
-        {
-            mount->slewing();
-            m_canCheckSlewing = true;
-        }
-        catch (const alpaca::Error&)
-        {
-            m_canCheckSlewing = false;
-        }
-        try
-        {
-            m_canSlew = mount->canSlew();
-            m_canSlewAsync = m_canSlew && mount->canSlewAsync();
-        }
-        catch (const alpaca::Error&)
-        {
-            m_canSlew = false;
-            m_canSlewAsync = false;
-        }
-        m_mount = std::move(mount);
-        return true;
-    }
-    catch (const alpaca::Error& e)
-    {
-        Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld not available: %s\n", host, port, devnum, e.what()));
+        Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld setconnected failed: %s\n", host, port, devnum, err.what()));
         return false;
     }
+    if ((err = mount->canPulseGuide(&m_canPulseGuide)))
+    {
+        Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld canpulseguide failed: %s\n", host, port, devnum, err.what()));
+        return false;
+    }
+
+    // The Gemini2 firmware (via the "Gemini Telescope .NET" driver) can leave a pulse
+    // guide stuck with IsPulseGuiding true forever; workaround is an AbortSlew. Like
+    // the ASCOM backend, enable that workaround for this driver only.
+    std::string mountName;
+    if (!(err = mount->name(&mountName)))
+    {
+        Debug.Write(wxString::Format("Alpaca mount reports its name as '%s'\n", mountName.c_str()));
+        m_abortSlewWhenGuidingStuck = mountName.find("Gemini Telescope .NET") != std::string::npos;
+        if (m_abortSlewWhenGuidingStuck)
+            Debug.Write("Alpaca mount: enabling stuck guide pulse workaround\n");
+    }
+    else
+    {
+        Debug.Write(wxString::Format("Alpaca mount: get name failed: %s\n", err.what()));
+        m_abortSlewWhenGuidingStuck = false;
+    }
+
+    // Slewing is a standard property, but some drivers don't implement it; probe once
+    // so the "stop guiding when slewing" safeguard is only enabled when it works.
+    bool slewing = false;
+    if ((err = mount->slewing(&slewing)))
+    {
+        Debug.Write(wxString::Format("Alpaca mount: slewing not supported (%s); slew safeguard disabled\n", err.what()));
+        m_canCheckSlewing = false;
+    }
+    else
+        m_canCheckSlewing = true;
+
+    // CanSlew / CanSlewAsync are optional: enable slewing only when CanSlew reads true
+    // and CanSlewAsync reads at all (all-or-nothing -- a failure reading either property
+    // leaves both disabled).
+    bool canSlew = false, canSlewAsync = false;
+    err = mount->canSlew(&canSlew);
+    if (!err && canSlew)
+        err = mount->canSlewAsync(&canSlewAsync);
+    if (err)
+        Debug.Write(wxString::Format("Alpaca mount: canslew/canslewasync failed (%s); slew disabled\n", err.what()));
+    m_canSlew = !err && canSlew;
+    m_canSlewAsync = m_canSlew && canSlewAsync;
+
+    setTelescope(mount);
+    return true;
 }
 
 bool ScopeAlpaca::Connect()
@@ -169,14 +208,24 @@ bool ScopeAlpaca::Connect()
     // 1. The configured address (a user-set host/port, or the default).
     if (tryConnect(m_host, m_port, m_devnum))
     {
-        Debug.Write(wxString::Format("Alpaca mount connected at %s:%ld#%ld, canPulseGuide=%d\n", m_host, m_port,
-                                     m_devnum, m_canPulseGuide));
+        Debug.Write(wxString::Format("Alpaca mount connected at %s:%ld#%ld, canPulseGuide=%d\n", m_host, m_port, m_devnum,
+                                     m_canPulseGuide));
         return Scope::Connect();
     }
 
-    // 2. Fall back to standard Alpaca discovery (UDP 32227) and take the first
-    //    telescope found — then remember it for next time.
-    Debug.Write("Alpaca mount: configured address has no telescope; discovering...\n");
+    // 2. If no address was ever configured, fall back to discovery, take the first
+    //    telescope found, and remember it. When an address WAS explicitly set, fail
+    //    instead: silently connecting to some other telescope on the LAN could guide
+    //    the wrong mount and would overwrite the user's configuration.
+    if (pConfig->Profile.HasEntry("/scope/alpaca/host"))
+    {
+        Debug.Write(wxString::Format("Alpaca mount connect failed: configured telescope %s:%ld#%ld not reachable\n", m_host,
+                                     m_port, m_devnum));
+        setTelescope(nullptr);
+        return true; // true == failure (PHD2 convention)
+    }
+
+    Debug.Write("Alpaca mount: no address configured; discovering...\n");
     for (const alpaca::DeviceAddress& d : alpaca::discoverDevices("telescope", 1500, AlpacaDiscoveryHosts()))
     {
         wxString host(d.host.c_str(), wxConvUTF8);
@@ -193,21 +242,20 @@ bool ScopeAlpaca::Connect()
     }
 
     Debug.Write("Alpaca mount connect failed: no telescope found via configuration or discovery\n");
-    m_mount.reset();
+    setTelescope(nullptr);
     return true; // true == failure (PHD2 convention)
 }
 
 bool ScopeAlpaca::Disconnect()
 {
-    try
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    setTelescope(nullptr);
+    if (mount)
     {
-        if (m_mount)
-            m_mount->setConnected(false);
+        alpaca::Error err = mount->setConnected(false); // best-effort
+        if (err)
+            Debug.Write(wxString::Format("Alpaca mount: setConnected(false) failed: %s\n", err.what()));
     }
-    catch (const alpaca::Error&)
-    {
-    }
-    m_mount.reset();
     return Scope::Disconnect();
 }
 
@@ -226,170 +274,201 @@ void ScopeAlpaca::SetupDialog()
 
 Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return MOVE_ERROR;
-    try
+
+    alpaca::Error err;
+
+    // If the mount has started slewing, don't issue guide pulses -- report it so PHD2
+    // can stop guiding (matches the ASCOM/INDI behavior).
+    if (m_canCheckSlewing)
     {
-        // If the mount has started slewing, don't issue guide pulses — report it so PHD2
-        // can stop guiding (matches the ASCOM/INDI behavior).
-        if (m_canCheckSlewing && m_mount->slewing())
-            return MOVE_ERROR_SLEWING;
-
-        // PHD2 NORTH/SOUTH/EAST/WEST (0/1/2/3) == Alpaca North/South/East/West.
-        alpaca::Telescope::GuideDirection ad;
-        switch (direction)
+        bool slewing = false;
+        if ((err = mount->slewing(&slewing)))
         {
-        case NORTH: ad = alpaca::Telescope::North; break;
-        case SOUTH: ad = alpaca::Telescope::South; break;
-        case EAST: ad = alpaca::Telescope::East; break;
-        case WEST: ad = alpaca::Telescope::West; break;
-        default: return MOVE_ERROR;
-        }
-
-        m_mount->pulseGuide(ad, durationMs);
-
-        // PulseGuide may be asynchronous; the guide algorithm expects Guide() to return
-        // only after the move completes. Sleep out the pulse (interruptible by a stop or
-        // terminate request), then poll until the mount reports it's done.
-        if (WorkerThread::MilliSleep(durationMs, WorkerThread::INT_ANY))
+            Debug.Write(wxString::Format("Alpaca Guide: slewing check failed: %s\n", err.what()));
             return MOVE_ERROR;
-
-        enum
-        {
-            GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
-            TIMEOUT_MS = 2000,      // ...and this long before giving up
-        };
-        wxStopWatch swatch; // time from the end of the pulse duration
-        bool didAbort = false;
-        while (m_mount->isPulseGuiding())
-        {
-            if (WorkerThread::InterruptRequested())
-                return MOVE_ERROR;
-            wxMilliSleep(20);
-            long now = swatch.Time();
-            if (!didAbort && now > GRACE_PERIOD_MS)
-            {
-                Debug.Write("Alpaca Guide: pulse still active after grace period; aborting slew\n");
-                try
-                {
-                    m_mount->abortSlew();
-                }
-                catch (const alpaca::Error&)
-                {
-                }
-                didAbort = true;
-                continue;
-            }
-            if (now > TIMEOUT_MS)
-            {
-                Debug.Write("Alpaca Guide: timed out waiting for pulse to complete\n");
-                return MOVE_ERROR;
-            }
         }
-        return MOVE_OK;
+        if (slewing)
+            return MOVE_ERROR_SLEWING;
     }
-    catch (const alpaca::Error& e)
+
+    // PHD2 NORTH/SOUTH/EAST/WEST (0/1/2/3) == Alpaca North/South/East/West.
+    alpaca::Telescope::GuideDirection ad;
+    switch (direction)
     {
-        Debug.Write(wxString::Format("Alpaca Guide error: %s\n", e.what()));
+    case NORTH:
+        ad = alpaca::Telescope::North;
+        break;
+    case SOUTH:
+        ad = alpaca::Telescope::South;
+        break;
+    case EAST:
+        ad = alpaca::Telescope::East;
+        break;
+    case WEST:
+        ad = alpaca::Telescope::West;
+        break;
+    default:
         return MOVE_ERROR;
     }
+
+    if ((err = mount->pulseGuide(ad, durationMs)))
+    {
+        Debug.Write(wxString::Format("Alpaca Guide: pulseguide failed: %s\n", err.what()));
+        return MOVE_ERROR;
+    }
+
+    // PulseGuide may be asynchronous; the guide algorithm expects Guide() to return
+    // only after the move completes. Sleep out the pulse (interruptible by a stop or
+    // terminate request), then poll until the mount reports it's done.
+    if (WorkerThread::MilliSleep(durationMs, WorkerThread::INT_ANY))
+        return MOVE_ERROR;
+
+    enum
+    {
+        GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
+        TIMEOUT_MS = 2000, // ...and this long before giving up
+    };
+    wxStopWatch swatch; // time from the end of the pulse duration
+    bool didAbort = false;
+    for (;;)
+    {
+        bool pulsing = false;
+        if ((err = mount->isPulseGuiding(&pulsing)))
+        {
+            Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
+            return MOVE_ERROR;
+        }
+        if (!pulsing)
+            break;
+
+        if (WorkerThread::InterruptRequested())
+            return MOVE_ERROR;
+        wxMilliSleep(20);
+        long now = swatch.Time();
+        if (!didAbort && now > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
+        {
+            Debug.Write("Alpaca Guide: pulse still active after grace period; aborting slew\n");
+            if ((err = mount->abortSlew())) // best-effort
+                Debug.Write(wxString::Format("Alpaca Guide: abortslew failed: %s\n", err.what()));
+            didAbort = true;
+            continue;
+        }
+        if (now > TIMEOUT_MS)
+        {
+            Debug.Write("Alpaca Guide: timed out waiting for pulse to complete\n");
+            return MOVE_ERROR;
+        }
+    }
+    return MOVE_OK;
 }
 
 bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return true;
-    try
+    auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
-        *ra = m_mount->rightAscension();    // hours
-        *dec = m_mount->declination();      // degrees
-        *siderealTime = m_mount->siderealTime();
-        return false;
-    }
-    catch (const alpaca::Error&)
-    {
+        Debug.Write(wxString::Format("Alpaca mount: get %s failed: %s\n", member, e.what()));
         return true;
-    }
+    };
+    alpaca::Error err;
+    if ((err = mount->rightAscension(ra))) // hours
+        return fail("rightascension", err);
+    if ((err = mount->declination(dec))) // degrees
+        return fail("declination", err);
+    if ((err = mount->siderealTime(siderealTime)))
+        return fail("siderealtime", err);
+    return false;
 }
 
 double ScopeAlpaca::GetDeclinationRadians()
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return UNKNOWN_DECLINATION;
-    try
+    double dec;
+    alpaca::Error err = mount->declination(&dec);
+    if (err)
     {
-        return m_mount->declination() * M_PI / 180.0;
-    }
-    catch (const alpaca::Error&)
-    {
+        Debug.Write(wxString::Format("Alpaca mount: get declination failed: %s\n", err.what()));
         return UNKNOWN_DECLINATION;
     }
+    return dec * M_PI / 180.0;
 }
 
 bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return true;
-    try
+    // ASCOM/Alpaca guide rates are degrees/second -- exactly what PHD2 wants.
+    alpaca::Error err;
+    if ((err = mount->guideRateRightAscension(pRAGuideRate)))
     {
-        // ASCOM/Alpaca guide rates are degrees/second — exactly what PHD2 wants.
-        *pRAGuideRate = m_mount->guideRateRightAscension();
-        *pDecGuideRate = m_mount->guideRateDeclination();
-        if (!ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
-            Debug.Write(wxString::Format("Alpaca mount reports out-of-range guide rates RA=%.5f Dec=%.5f deg/s\n",
-                                         *pRAGuideRate, *pDecGuideRate));
-        return false;
-    }
-    catch (const alpaca::Error&)
-    {
+        Debug.Write(wxString::Format("Alpaca mount: get guideraterightascension failed: %s\n", err.what()));
         return true; // rates unavailable
     }
+    if ((err = mount->guideRateDeclination(pDecGuideRate)))
+    {
+        Debug.Write(wxString::Format("Alpaca mount: get guideratedeclination failed: %s\n", err.what()));
+        return true; // rates unavailable
+    }
+    if (!ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
+        Debug.Write(wxString::Format("Alpaca mount reports out-of-range guide rates RA=%.5f Dec=%.5f deg/s\n", *pRAGuideRate,
+                                     *pDecGuideRate));
+    return false;
 }
 
 bool ScopeAlpaca::Slewing()
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return false;
-    try
+    bool slewing = false;
+    alpaca::Error err = mount->slewing(&slewing);
+    if (err)
     {
-        return m_mount->slewing();
-    }
-    catch (const alpaca::Error&)
-    {
+        Debug.Write(wxString::Format("Alpaca mount: get slewing failed: %s\n", err.what()));
         return false;
     }
+    return slewing;
 }
 
 bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return true;
-    try
+    alpaca::Error err;
+    if ((err = mount->siteLatitude(latitude))) // degrees, +N
     {
-        *latitude = m_mount->siteLatitude();   // degrees, +N
-        *longitude = m_mount->siteLongitude(); // degrees, +E
-        return false;
-    }
-    catch (const alpaca::Error&)
-    {
+        Debug.Write(wxString::Format("Alpaca mount: get sitelatitude failed: %s\n", err.what()));
         return true; // site coordinates unavailable
     }
+    if ((err = mount->siteLongitude(longitude))) // degrees, +E
+    {
+        Debug.Write(wxString::Format("Alpaca mount: get sitelongitude failed: %s\n", err.what()));
+        return true;
+    }
+    return false;
 }
 
 bool ScopeAlpaca::SlewToCoordinatesAsync(double ra, double dec)
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return true;
-    try
+    alpaca::Error err = mount->slewToCoordinatesAsync(ra, dec); // ra hours, dec degrees
+    if (err)
     {
-        m_mount->slewToCoordinatesAsync(ra, dec); // ra hours, dec degrees
-        return false;
-    }
-    catch (const alpaca::Error& e)
-    {
-        Debug.Write(wxString::Format("Alpaca SlewToCoordinatesAsync error: %s\n", e.what()));
+        Debug.Write(wxString::Format("Alpaca mount: slewtocoordinatesasync failed: %s\n", err.what()));
         return true;
     }
+    return false;
 }
 
 bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
@@ -397,47 +476,53 @@ bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
     // Start the async slew, then block until the mount stops slewing (mirrors INDI).
     if (SlewToCoordinatesAsync(ra, dec))
         return true;
-    try
-    {
-        wxLongLong_t deadline = ::wxGetUTCTimeMillis().GetValue() + 90 * 1000;
-        while (m_mount->slewing())
-        {
-            if (::wxGetUTCTimeMillis().GetValue() > deadline)
-                return true;
-            wxMilliSleep(200);
-            ::wxSafeYield();
-        }
-        return false;
-    }
-    catch (const alpaca::Error&)
-    {
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return true;
+    wxLongLong_t deadline = ::wxGetUTCTimeMillis().GetValue() + 90 * 1000;
+    for (;;)
+    {
+        bool slewing = false;
+        alpaca::Error err = mount->slewing(&slewing);
+        if (err)
+        {
+            Debug.Write(wxString::Format("Alpaca mount: get slewing failed during slew: %s\n", err.what()));
+            return true;
+        }
+        if (!slewing)
+            return false;
+        if (::wxGetUTCTimeMillis().GetValue() > deadline)
+            return true;
+        wxMilliSleep(200);
+        ::wxSafeYield();
     }
 }
 
 void ScopeAlpaca::AbortSlew()
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return;
-    try
-    {
-        m_mount->abortSlew();
-    }
-    catch (const alpaca::Error&)
-    {
-    }
+    alpaca::Error err = mount->abortSlew(); // best-effort
+    if (err)
+        Debug.Write(wxString::Format("Alpaca mount: abortslew failed: %s\n", err.what()));
 }
 
 PierSide ScopeAlpaca::SideOfPier()
 {
-    if (!m_mount)
+    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    if (!mount)
         return PIER_SIDE_UNKNOWN;
-    // Alpaca sideofpier 0/1/-1 maps directly onto PierSide EAST/WEST/UNKNOWN.
-    switch (m_mount->sideOfPier())
+    // Alpaca sideofpier 0/1/-1 maps directly onto PierSide EAST/WEST/UNKNOWN (-1 also
+    // covers the property being unavailable).
+    switch (mount->sideOfPier())
     {
-    case 0: return PIER_SIDE_EAST;
-    case 1: return PIER_SIDE_WEST;
-    default: return PIER_SIDE_UNKNOWN;
+    case 0:
+        return PIER_SIDE_EAST;
+    case 1:
+        return PIER_SIDE_WEST;
+    default:
+        return PIER_SIDE_UNKNOWN;
     }
 }
 

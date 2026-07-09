@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by mikefsq
- *  Copyright (c) 2026 mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license

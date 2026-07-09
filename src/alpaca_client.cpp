@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by mikefsq
- *  Copyright (c) 2026 mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -88,42 +88,57 @@ namespace
         return nullptr;
     }
 
-    double numValue(const json_value *v)
+    Error numValue(const json_value *v, double *out)
     {
         if (v->type == JSON_INT)
-            return (double) v->int_value;
+        {
+            *out = (double) v->int_value;
+            return {};
+        }
         if (v->type == JSON_FLOAT)
-            return (double) v->float_value;
+        {
+            *out = (double) v->float_value;
+            return {};
+        }
         if (v->type == JSON_STRING)
-            return std::atof(v->string_value); // tolerate a stringified number
-        throw Error(Error::Parse, "expected a numeric JSON value");
+        {
+            *out = std::atof(v->string_value); // tolerate a stringified number
+            return {};
+        }
+        return Error(Error::Parse, "expected a numeric JSON value");
     }
 
-    // Throw a Device error if the response carries a non-zero Alpaca ErrorNumber.
-    void checkDeviceError(const json_value *root)
+    Error checkDeviceError(const json_value *root)
     {
         const json_value *en = findMember(root, "ErrorNumber");
         if (en && en->type == JSON_INT && en->int_value != 0)
         {
             const json_value *em = findMember(root, "ErrorMessage");
             std::string msg = (em && em->type == JSON_STRING) ? em->string_value : "";
-            throw Error(Error::Device, msg, 0, en->int_value);
+            if (msg.empty())
+                msg = "device error " + std::to_string(en->int_value);
+            return Error(Error::Device, msg, 0, en->int_value);
         }
+        return {};
     }
 
-    // Parse an Alpaca response body into `parser`, surface any device error, and return the
-    // "Value" node (valid while `parser` stays in scope). Throws on parse / missing Value.
-    const json_value *valueOrThrow(JsonParser& parser, const std::string& body)
+    // Parse an Alpaca response body into parser, surface any device error, and hand back the
+    // "Value" node in *out (valid while parser stays in scope). Returns an error on a parse
+    // failure, a device error, or a missing Value.
+    Error readValue(JsonParser& parser, const std::string& body, const json_value **out)
     {
         if (!parser.Parse(body))
-            throw Error(Error::Parse,
-                        std::string("malformed JSON response: ") + (parser.ErrorDesc() ? parser.ErrorDesc() : "?"));
+            return Error(Error::Parse,
+                         std::string("malformed JSON response: ") + (parser.ErrorDesc() ? parser.ErrorDesc() : "?"));
         const json_value *root = parser.Root();
-        checkDeviceError(root);
+        Error e = checkDeviceError(root);
+        if (e)
+            return e;
         const json_value *v = findMember(root, "Value");
         if (!v)
-            throw Error(Error::Parse, "no Value in response");
-        return v;
+            return Error(Error::Parse, "no Value in response");
+        *out = v;
+        return {};
     }
 
     // Bracket a literal IPv6 address for use in a URL: http://[::1]:port/ . IPv4 addrs and
@@ -141,21 +156,11 @@ namespace
         return "[" + h + "]";
     }
 
-    std::string urlEncode(const std::string& v)
+    std::string curlEscape(CURL *curl, const std::string& v)
     {
-        static const char *hex = "0123456789ABCDEF";
-        std::string out;
-        for (unsigned char c : v)
-        {
-            if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
-                out += (char) c;
-            else
-            {
-                out += '%';
-                out += hex[c >> 4];
-                out += hex[c & 0xF];
-            }
-        }
+        char *e = curl_easy_escape(curl, v.c_str(), (int) v.size());
+        std::string out = e ? e : "";
+        curl_free(e);
         return out;
     }
 
@@ -170,6 +175,20 @@ namespace
     {
         return (uint32_t) p[0] | ((uint32_t) p[1] << 8) | ((uint32_t) p[2] << 16) | ((uint32_t) p[3] << 24);
     }
+
+    // ASCOM ImageArrayElementTypes -- the ImageBytes header's TransmissionElementType.
+    enum class ElementType
+    {
+        Unknown = 0,
+        Int16 = 1,
+        Int32 = 2,
+        Double = 3,
+        Single = 4,
+        UInt64 = 5,
+        Byte = 6,
+        Int64 = 7,
+        UInt16 = 8
+    };
 
     // ipv4BroadcastAddrs returns the per-interface directed-broadcast addresses (network byte
     // order) for every up, broadcast-capable IPv4 interface — so discovery reaches every local
@@ -273,9 +292,9 @@ namespace
 
 Device::Device(DeviceAddress addr, int clientId) : m_addr(std::move(addr)), m_clientId(clientId), m_txn(1)
 {
+    // curl_easy_init essentially never fails; if it does, m_curl stays null and every
+    // request returns a Transport error (see httpGet/put) rather than throwing.
     m_curl = curl_easy_init();
-    if (!m_curl)
-        throw Error(Error::Transport, "curl_easy_init failed");
 }
 
 Device::~Device()
@@ -292,26 +311,25 @@ std::string Device::baseUrl(const std::string& mbr) const
     return os.str();
 }
 
-std::string Device::httpGet(const std::string& mbr, const std::map<std::string, std::string>& query, bool acceptImageBytes,
-                            std::string *contentType)
+Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string *body, std::string *contentType)
 {
     std::lock_guard<std::mutex> lk(m_mu);
     CURL *curl = static_cast<CURL *>(m_curl);
+    if (!curl)
+        return Error(Error::Transport, "curl handle not initialized");
     curl_easy_reset(curl);
 
     std::ostringstream url;
     url << baseUrl(mbr) << "?ClientID=" << m_clientId << "&ClientTransactionID=" << m_txn++;
-    for (auto& kv : query)
-        url << "&" << urlEncode(kv.first) << "=" << urlEncode(kv.second);
 
-    std::string body;
+    std::string resp;
     struct curl_slist *hdrs = nullptr;
     if (acceptImageBytes)
         hdrs = curl_slist_append(hdrs, "Accept: application/imagebytes");
 
     curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeoutMs);
     if (hdrs)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
@@ -327,56 +345,90 @@ std::string Device::httpGet(const std::string& mbr, const std::map<std::string, 
         curl_slist_free_all(hdrs);
 
     if (rc != CURLE_OK)
-        throw Error(Error::Transport, std::string("GET ") + mbr + ": " + curl_easy_strerror(rc));
+        return Error(Error::Transport, std::string("GET ") + mbr + ": " + curl_easy_strerror(rc));
     if (status < 200 || status >= 300)
-        throw Error(Error::Http, "GET " + mbr + " HTTP " + std::to_string(status) + ": " + body, status);
-    return body;
+        return Error(Error::Http, "GET " + mbr + " HTTP " + std::to_string(status) + ": " + resp, status);
+    *body = std::move(resp);
+    return {};
 }
 
-bool Device::getBool(const std::string& mbr)
+Error Device::getValue(const std::string& mbr, JsonParser& parser, const json_value **v)
+{
+    std::string body;
+    Error e = httpGet(mbr, false, &body, nullptr);
+    if (e)
+        return e;
+    return readValue(parser, body, v);
+}
+
+Error Device::getBool(const std::string& mbr, bool *out)
 {
     JsonParser parser;
-    const json_value *v = valueOrThrow(parser, httpGet(mbr, {}, false, nullptr));
+    const json_value *v;
+    Error e = getValue(mbr, parser, &v);
+    if (e)
+        return e;
     if (v->type == JSON_BOOL || v->type == JSON_INT)
-        return v->int_value != 0;
+    {
+        *out = v->int_value != 0;
+        return {};
+    }
     if (v->type == JSON_STRING)
     {
         const char *s = v->string_value;
-        return std::strcmp(s, "true") == 0 || std::strcmp(s, "True") == 0 || std::strcmp(s, "1") == 0;
+        *out = std::strcmp(s, "true") == 0 || std::strcmp(s, "True") == 0 || std::strcmp(s, "1") == 0;
+        return {};
     }
-    throw Error(Error::Parse, "expected a boolean value for " + mbr);
+    return Error(Error::Parse, "expected a boolean value for " + mbr);
 }
 
-int Device::getInt(const std::string& mbr)
+Error Device::getInt(const std::string& mbr, int *out)
 {
-    return (int) getDouble(mbr);
+    double d;
+    Error e = getDouble(mbr, &d);
+    if (e)
+        return e;
+    *out = (int) d;
+    return {};
 }
 
-double Device::getDouble(const std::string& mbr)
+Error Device::getDouble(const std::string& mbr, double *out)
 {
     JsonParser parser;
-    return numValue(valueOrThrow(parser, httpGet(mbr, {}, false, nullptr)));
+    const json_value *v;
+    Error e = getValue(mbr, parser, &v);
+    if (e)
+        return e;
+    return numValue(v, out);
 }
 
-std::string Device::getString(const std::string& mbr)
+Error Device::getString(const std::string& mbr, std::string *out)
 {
     JsonParser parser;
-    const json_value *v = valueOrThrow(parser, httpGet(mbr, {}, false, nullptr));
+    const json_value *v;
+    Error e = getValue(mbr, parser, &v);
+    if (e)
+        return e;
     if (v->type == JSON_STRING)
-        return v->string_value;
-    throw Error(Error::Parse, "expected a string value for " + mbr);
+    {
+        *out = v->string_value;
+        return {};
+    }
+    return Error(Error::Parse, "expected a string value for " + mbr);
 }
 
-void Device::put(const std::string& mbr, const std::map<std::string, std::string>& params)
+Error Device::put(const std::string& mbr, const std::map<std::string, std::string>& params)
 {
     std::lock_guard<std::mutex> lk(m_mu);
     CURL *curl = static_cast<CURL *>(m_curl);
+    if (!curl)
+        return Error(Error::Transport, "curl handle not initialized");
     curl_easy_reset(curl);
 
     std::ostringstream form;
     form << "ClientID=" << m_clientId << "&ClientTransactionID=" << m_txn++;
     for (auto& kv : params)
-        form << "&" << urlEncode(kv.first) << "=" << urlEncode(kv.second);
+        form << "&" << curlEscape(curl, kv.first) << "=" << curlEscape(curl, kv.second);
     std::string fields = form.str();
 
     std::string body;
@@ -391,321 +443,312 @@ void Device::put(const std::string& mbr, const std::map<std::string, std::string
     long status = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
     if (rc != CURLE_OK)
-        throw Error(Error::Transport, std::string("PUT ") + mbr + ": " + curl_easy_strerror(rc));
+        return Error(Error::Transport, std::string("PUT ") + mbr + ": " + curl_easy_strerror(rc));
     if (status < 200 || status >= 300)
-        throw Error(Error::Http, "PUT " + mbr + " HTTP " + std::to_string(status) + ": " + body, status);
+        return Error(Error::Http, "PUT " + mbr + " HTTP " + std::to_string(status) + ": " + body, status);
 
     // PUTs return {ErrorNumber, ErrorMessage} (no Value); surface any device error.
     JsonParser parser;
     if (parser.Parse(body))
-        checkDeviceError(parser.Root());
+        return checkDeviceError(parser.Root());
+    return {};
 }
 
-void Device::setConnected(bool v)
+Error Device::setConnected(bool v)
 {
-    put("connected", { { "Connected", v ? "true" : "false" } });
+    return put("connected", { { "Connected", v ? "true" : "false" } });
 }
-bool Device::connected()
+Error Device::name(std::string *out)
 {
-    return getBool("connected");
-}
-std::string Device::description()
-{
-    return getString("description");
-}
-std::string Device::driverInfo()
-{
-    return getString("driverinfo");
-}
-int Device::interfaceVersion()
-{
-    return getInt("interfaceversion");
-}
-std::string Device::name()
-{
-    return getString("name");
+    return getString("name", out);
 }
 
 // ---------------------------------------------------------------------- Telescope
 
-bool Telescope::canPulseGuide()
+Error Telescope::canPulseGuide(bool *out)
 {
-    return getBool("canpulseguide");
+    return getBool("canpulseguide", out);
 }
-void Telescope::pulseGuide(GuideDirection dir, int durationMs)
+Error Telescope::pulseGuide(GuideDirection dir, int durationMs)
 {
-    put("pulseguide", { { "Direction", std::to_string((int) dir) }, { "Duration", std::to_string(durationMs) } });
+    return put("pulseguide", { { "Direction", std::to_string((int) dir) }, { "Duration", std::to_string(durationMs) } });
 }
-bool Telescope::isPulseGuiding()
+Error Telescope::isPulseGuiding(bool *out)
 {
-    return getBool("ispulseguiding");
+    return getBool("ispulseguiding", out);
 }
-bool Telescope::canReportCoordinates()
+Error Telescope::rightAscension(double *out)
 {
-    // No single ASCOM flag; treat the ability to read coordinates as reportable.
-    try
-    {
-        rightAscension();
-        return true;
-    }
-    catch (const Error&)
-    {
-        return false;
-    }
+    return getDouble("rightascension", out);
 }
-double Telescope::rightAscension()
+Error Telescope::declination(double *out)
 {
-    return getDouble("rightascension");
+    return getDouble("declination", out);
 }
-double Telescope::declination()
+Error Telescope::siderealTime(double *out)
 {
-    return getDouble("declination");
+    return getDouble("siderealtime", out);
 }
-double Telescope::siderealTime()
+Error Telescope::slewing(bool *out)
 {
-    return getDouble("siderealtime");
+    return getBool("slewing", out);
 }
-bool Telescope::slewing()
+Error Telescope::abortSlew()
 {
-    return getBool("slewing");
+    return put("abortslew");
 }
-void Telescope::abortSlew()
+Error Telescope::siteLatitude(double *out)
 {
-    put("abortslew");
+    return getDouble("sitelatitude", out);
 }
-double Telescope::siteLatitude()
+Error Telescope::siteLongitude(double *out)
 {
-    return getDouble("sitelatitude");
+    return getDouble("sitelongitude", out);
 }
-double Telescope::siteLongitude()
+Error Telescope::canSlew(bool *out)
 {
-    return getDouble("sitelongitude");
+    return getBool("canslew", out);
 }
-bool Telescope::canSlew()
+Error Telescope::canSlewAsync(bool *out)
 {
-    return getBool("canslew");
+    return getBool("canslewasync", out);
 }
-bool Telescope::canSlewAsync()
+Error Telescope::slewToCoordinatesAsync(double raHours, double decDegrees)
 {
-    return getBool("canslewasync");
-}
-void Telescope::slewToCoordinatesAsync(double raHours, double decDegrees)
-{
-    put("slewtocoordinatesasync",
-        { { "RightAscension", std::to_string(raHours) }, { "Declination", std::to_string(decDegrees) } });
+    return put("slewtocoordinatesasync",
+               { { "RightAscension", std::to_string(raHours) }, { "Declination", std::to_string(decDegrees) } });
 }
 int Telescope::sideOfPier()
 {
-    try
-    {
-        return getInt("sideofpier");
-    }
-    catch (const Error&)
-    {
-        return -1;
-    }
+    int v;
+    return getInt("sideofpier", &v) ? -1 : v; // -1 == unknown / unavailable
 }
-bool Telescope::canSetGuideRates()
+Error Telescope::guideRateRightAscension(double *out)
 {
-    return getBool("cansetguiderates");
+    return getDouble("guideraterightascension", out);
 }
-double Telescope::guideRateRightAscension()
+Error Telescope::guideRateDeclination(double *out)
 {
-    return getDouble("guideraterightascension");
-}
-double Telescope::guideRateDeclination()
-{
-    return getDouble("guideratedeclination");
+    return getDouble("guideratedeclination", out);
 }
 
 // ------------------------------------------------------------------------- Camera
 
-int Camera::cameraXSize()
+Error Camera::cameraXSize(int *out)
 {
-    return getInt("cameraxsize");
+    return getInt("cameraxsize", out);
 }
-int Camera::cameraYSize()
+Error Camera::cameraYSize(int *out)
 {
-    return getInt("cameraysize");
+    return getInt("cameraysize", out);
 }
-double Camera::pixelSizeX()
+Error Camera::pixelSizeX(double *out)
 {
-    return getDouble("pixelsizex");
+    return getDouble("pixelsizex", out);
 }
-double Camera::pixelSizeY()
+Error Camera::maxBinX(int *out)
 {
-    return getDouble("pixelsizey");
+    return getInt("maxbinx", out);
 }
-int Camera::maxBinX()
+Error Camera::sensorType(int *out)
 {
-    return getInt("maxbinx");
+    return getInt("sensortype", out);
 }
-int Camera::sensorType()
+Error Camera::maxADU(int *out)
 {
-    return getInt("sensortype");
+    return getInt("maxadu", out);
 }
-int Camera::bayerOffsetX()
+Error Camera::exposureMin(double *out)
 {
-    return getInt("bayeroffsetx");
+    return getDouble("exposuremin", out);
 }
-int Camera::bayerOffsetY()
+Error Camera::exposureMax(double *out)
 {
-    return getInt("bayeroffsety");
+    return getDouble("exposuremax", out);
 }
-int Camera::maxADU()
+Error Camera::gain(int *out)
 {
-    return getInt("maxadu");
+    return getInt("gain", out);
 }
-double Camera::exposureMin()
+Error Camera::gainMin(int *out)
 {
-    return getDouble("exposuremin");
+    return getInt("gainmin", out);
 }
-double Camera::exposureMax()
+Error Camera::gainMax(int *out)
 {
-    return getDouble("exposuremax");
+    return getInt("gainmax", out);
 }
-int Camera::gain()
+Error Camera::setGain(int g)
 {
-    return getInt("gain");
+    return put("gain", { { "Gain", std::to_string(g) } });
 }
-int Camera::gainMin()
+Error Camera::gains(std::vector<std::string> *out)
 {
-    return getInt("gainmin");
-}
-int Camera::gainMax()
-{
-    return getInt("gainmax");
-}
-void Camera::setGain(int g)
-{
-    put("gain", { { "Gain", std::to_string(g) } });
-}
-int Camera::gainsCount()
-{
-    // "gains" is a JSON array of gain names; return its element count.
+    // "gains" is a JSON array of gain setting names ("100", "200", ... or "Low", ...),
+    // indexed by the Gain property in index mode.
     JsonParser parser;
-    const json_value *v = valueOrThrow(parser, httpGet("gains", {}, false, nullptr));
+    const json_value *v;
+    Error e = getValue("gains", parser, &v);
+    if (e)
+        return e;
     if (v->type != JSON_ARRAY)
-        throw Error(Error::Parse, "gains is not an array");
-    int n = 0;
-    json_for_each(e, v)++ n;
-    return n;
+        return Error(Error::Parse, "gains is not an array");
+    std::vector<std::string> names;
+    json_for_each(el, v)
+    {
+        if (el->type == JSON_STRING)
+            names.push_back(el->string_value);
+        else if (el->type == JSON_INT)
+            names.push_back(std::to_string(el->int_value));
+        else
+            names.push_back(std::string());
+    }
+    *out = std::move(names);
+    return {};
 }
 
-void Camera::setBinX(int n)
+Error Camera::setBinX(int n)
 {
-    put("binx", { { "BinX", std::to_string(n) } });
+    return put("binx", { { "BinX", std::to_string(n) } });
 }
-void Camera::setBinY(int n)
+Error Camera::setBinY(int n)
 {
-    put("biny", { { "BinY", std::to_string(n) } });
+    return put("biny", { { "BinY", std::to_string(n) } });
 }
-void Camera::setStartX(int n)
+Error Camera::setStartX(int n)
 {
-    put("startx", { { "StartX", std::to_string(n) } });
+    return put("startx", { { "StartX", std::to_string(n) } });
 }
-void Camera::setStartY(int n)
+Error Camera::setStartY(int n)
 {
-    put("starty", { { "StartY", std::to_string(n) } });
+    return put("starty", { { "StartY", std::to_string(n) } });
 }
-void Camera::setNumX(int n)
+Error Camera::setNumX(int n)
 {
-    put("numx", { { "NumX", std::to_string(n) } });
+    return put("numx", { { "NumX", std::to_string(n) } });
 }
-void Camera::setNumY(int n)
+Error Camera::setNumY(int n)
 {
-    put("numy", { { "NumY", std::to_string(n) } });
-}
-
-void Camera::startExposure(double seconds, bool light)
-{
-    put("startexposure", { { "Duration", std::to_string(seconds) }, { "Light", light ? "true" : "false" } });
-}
-bool Camera::imageReady()
-{
-    return getBool("imageready");
-}
-bool Camera::canAbortExposure()
-{
-    return getBool("canabortexposure");
-}
-void Camera::abortExposure()
-{
-    put("abortexposure");
-}
-bool Camera::canStopExposure()
-{
-    return getBool("canstopexposure");
-}
-void Camera::stopExposure()
-{
-    put("stopexposure");
+    return put("numy", { { "NumY", std::to_string(n) } });
 }
 
-bool Camera::hasCooler()
+Error Camera::startExposure(double seconds, bool light)
 {
-    return getBool("cangetcoolerpower") || getBool("cansetccdtemperature");
+    return put("startexposure", { { "Duration", std::to_string(seconds) }, { "Light", light ? "true" : "false" } });
 }
-bool Camera::canSetCCDTemperature()
+Error Camera::imageReady(bool *out)
 {
-    return getBool("cansetccdtemperature");
+    return getBool("imageready", out);
 }
-void Camera::setCoolerOn(bool v)
+Error Camera::canAbortExposure(bool *out)
 {
-    put("cooleron", { { "CoolerOn", v ? "true" : "false" } });
+    return getBool("canabortexposure", out);
 }
-bool Camera::coolerOn()
+Error Camera::abortExposure()
 {
-    return getBool("cooleron");
+    return put("abortexposure");
 }
-void Camera::setCCDTemperature(double c)
+Error Camera::canStopExposure(bool *out)
 {
-    put("setccdtemperature", { { "SetCCDTemperature", std::to_string(c) } });
+    return getBool("canstopexposure", out);
 }
-double Camera::ccdSetpoint()
+Error Camera::stopExposure()
 {
-    return getDouble("setccdtemperature");
-}
-double Camera::ccdTemperature()
-{
-    return getDouble("ccdtemperature");
-}
-double Camera::coolerPower()
-{
-    return getDouble("coolerpower");
+    return put("stopexposure");
 }
 
-ImageData Camera::getImageBytes()
+Error Camera::hasCooler(bool *out)
+{
+    bool canGetPower = false;
+    Error e = getBool("cangetcoolerpower", &canGetPower);
+    if (e)
+        return e;
+    if (canGetPower)
+    {
+        *out = true;
+        return {};
+    }
+    return getBool("cansetccdtemperature", out);
+}
+Error Camera::canGetCoolerPower(bool *out)
+{
+    return getBool("cangetcoolerpower", out);
+}
+Error Camera::setCoolerOn(bool v)
+{
+    return put("cooleron", { { "CoolerOn", v ? "true" : "false" } });
+}
+Error Camera::coolerOn(bool *out)
+{
+    return getBool("cooleron", out);
+}
+Error Camera::setCCDTemperature(double c)
+{
+    return put("setccdtemperature", { { "SetCCDTemperature", std::to_string(c) } });
+}
+Error Camera::ccdSetpoint(double *out)
+{
+    return getDouble("setccdtemperature", out);
+}
+Error Camera::ccdTemperature(double *out)
+{
+    return getDouble("ccdtemperature", out);
+}
+Error Camera::coolerPower(double *out)
+{
+    return getDouble("coolerpower", out);
+}
+
+Error Camera::getImageBytes(ImageData *out)
 {
     std::string ct;
-    std::string body = httpGet("imagearray", {}, /*acceptImageBytes=*/true, &ct);
+    std::string body;
+    Error e = httpGet("imagearray", /*acceptImageBytes=*/true, &body, &ct);
+    if (e)
+        return e;
     if (ct.find("imagebytes") == std::string::npos)
-        throw Error(Error::Parse, "server did not return ImageBytes (content-type: " + ct + ")");
+        return Error(Error::Parse, "server did not return ImageBytes (content-type: " + ct + ")");
     if (body.size() < 44)
-        throw Error(Error::Parse, "ImageBytes response too short");
+        return Error(Error::Parse, "ImageBytes response too short");
 
+    // Every header field comes off the wire, so validate each before use, and do the
+    // size/offset arithmetic in 64 bits -- a hostile or buggy server must not be able
+    // to wrap the bounds checks (or index the pixel buffer out of range) on any
+    // platform, 32-bit builds included.
     const unsigned char *p = reinterpret_cast<const unsigned char *>(body.data());
-    int metaVersion = (int) rdU32(p + 0);
-    int errNum = (int) rdU32(p + 4);
-    int dataStart = (int) rdU32(p + 16);
-    int txElem = (int) rdU32(p + 24);
-    int rank = (int) rdU32(p + 28);
-    int dim1 = (int) rdU32(p + 32); // x / width
-    int dim2 = (int) rdU32(p + 36); // y / height
+    const uint32_t metaVersion = rdU32(p + 0);
+    const int errNum = (int) rdU32(p + 4);
+    const uint32_t dataStart = rdU32(p + 16);
+    const uint32_t txElem = rdU32(p + 24);
+    const uint32_t rank = rdU32(p + 28);
+    const uint32_t dim1 = rdU32(p + 32); // x / width
+    const uint32_t dim2 = rdU32(p + 36); // y / height
     if (metaVersion != 1)
-        throw Error(Error::Parse, "unsupported ImageBytes metadata version " + std::to_string(metaVersion));
+        return Error(Error::Parse, "unsupported ImageBytes metadata version " + std::to_string(metaVersion));
     if (errNum != 0)
-        throw Error(Error::Device, body.substr(dataStart < (int) body.size() ? dataStart : body.size()), 0, errNum);
+    {
+        // The error text, if any, follows the header at dataStart.
+        std::string msg;
+        if (dataStart >= 44 && (uint64_t) dataStart < (uint64_t) body.size())
+            msg = body.substr(dataStart);
+        if (msg.empty())
+            msg = "device error " + std::to_string(errNum);
+        return Error(Error::Device, msg, 0, errNum);
+    }
     if (rank != 2)
-        throw Error(Error::Parse, "unexpected ImageBytes rank " + std::to_string(rank));
+        return Error(Error::Parse, "unexpected ImageBytes rank " + std::to_string(rank));
+    if (dim1 == 0 || dim2 == 0 || dim1 > 65535 || dim2 > 65535)
+        return Error(Error::Parse, "implausible ImageBytes dimensions " + std::to_string(dim1) + "x" + std::to_string(dim2));
+    if (dataStart < 44 || (uint64_t) dataStart > (uint64_t) body.size())
+        return Error(Error::Parse, "invalid ImageBytes data offset " + std::to_string(dataStart));
 
     ImageData img;
-    img.width = dim1;
-    img.height = dim2;
-    img.transmissionType = (ElementType) txElem;
+    img.width = (int) dim1;
+    img.height = (int) dim2;
+    const ElementType txType = (ElementType) (int) txElem;
 
     int elemSize;
-    switch (img.transmissionType)
+    switch (txType)
     {
     case ElementType::Byte:
         elemSize = 1;
@@ -718,40 +761,44 @@ ImageData Camera::getImageBytes()
         elemSize = 4;
         break;
     default:
-        throw Error(Error::Parse, "unsupported ImageBytes element type " + std::to_string(txElem));
+        return Error(Error::Parse, "unsupported ImageBytes element type " + std::to_string(txElem));
     }
 
-    const size_t count = (size_t) dim1 * dim2;
-    if (body.size() < (size_t) dataStart + count * elemSize)
-        throw Error(Error::Parse, "ImageBytes payload truncated");
+    // Dims are bounded to 16 bits each above, so count*elemSize fits in 64 bits with
+    // no possibility of wraparound; and once this check passes, count is no larger
+    // than body.size(), so the size_t casts below are exact on every platform.
+    const uint64_t count64 = (uint64_t) dim1 * dim2;
+    if ((uint64_t) body.size() - dataStart < count64 * elemSize)
+        return Error(Error::Parse, "ImageBytes payload truncated");
+    const size_t count = (size_t) count64;
 
     const unsigned char *d = p + dataStart;
     img.pixels.resize(count);
     // ASCOM ImageBytes is a [Dimension1=width, Dimension2=height] array serialized with
-    // the SECOND dimension (height/y) varying fastest — column-major in image terms. The
+    // the SECOND dimension (height/y) varying fastest -- column-major in image terms. The
     // PHD2 usImage is row-major (pixels[y*width + x]), so transpose while copying: wire
     // element k maps to image (x = k / height, y = k % height). (goalpaca's encoder emits
     // this column-major order per the ASCOM standard, matching N.I.N.A. et al.)
     const size_t W = (size_t) dim1, H = (size_t) dim2;
     for (size_t k = 0; k < count; ++k)
     {
-        const unsigned char *e = d + k * elemSize;
+        const unsigned char *e2 = d + k * elemSize;
         uint32_t raw = 0;
         switch (elemSize)
         {
         case 1:
-            raw = e[0];
+            raw = e2[0];
             break;
         case 2:
-            raw = (uint32_t) e[0] | ((uint32_t) e[1] << 8);
+            raw = (uint32_t) e2[0] | ((uint32_t) e2[1] << 8);
             break;
         case 4:
-            raw = rdU32(e);
+            raw = rdU32(e2);
             break;
         }
-        long v = (img.transmissionType == ElementType::Int16) ? (long) (int16_t) raw
-            : (img.transmissionType == ElementType::Int32)    ? (long) (int32_t) raw
-                                                              : (long) raw;
+        long v = (txType == ElementType::Int16) ? (long) (int16_t) raw
+            : (txType == ElementType::Int32)    ? (long) (int32_t) raw
+                                                : (long) raw;
         if (v < 0)
             v = 0;
         if (v > 0xFFFF)
@@ -759,7 +806,8 @@ ImageData Camera::getImageBytes()
         const size_t x = k / H, y = k % H;
         img.pixels[y * W + x] = (uint16_t) v;
     }
-    return img;
+    *out = std::move(img);
+    return {};
 }
 
 // ----------------------------------------------------------- discovery + management
@@ -817,7 +865,7 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
 
     // Send one round of probes: every IPv4 destination, every IPv6 interface, plus a unicast
     // probe to each user-configured extra host (an IPv4 IP/subnet-broadcast the local
-    // broadcast can't reach — e.g. a device on another subnet). ":port" suffixes are ignored.
+    // broadcast can't reach -- e.g. a device on another subnet). ":port" suffixes are ignored.
     auto sendProbes = [&]()
     {
         if (s4 >= 0)
@@ -874,7 +922,7 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
                 }
             }
             // Loopback unicast (::1): a localhost server binds ::1 and answers unicast but
-            // often doesn't join the discovery multicast group — the IPv6 analog of the
+            // often doesn't join the discovery multicast group -- the IPv6 analog of the
             // 127.0.0.1 probe above.
             struct sockaddr_in6 lo6;
             std::memset(&lo6, 0, sizeof(lo6));
@@ -925,7 +973,7 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
             // A link-local responder is reachable only via the interface the reply arrived on,
             // so carry the arrival zone id (numeric, for portability) into the host. Without it
             // the follow-up http://[fe80::...]/ management request is unroutable and stalls until
-            // the curl timeout — repeated per responder, that is the discovery "hang".
+            // the curl timeout -- repeated per responder, that is the discovery "hang".
             if (IN6_IS_ADDR_LINKLOCAL(&s6a->sin6_addr) && s6a->sin6_scope_id)
                 host += "%" + std::to_string(s6a->sin6_scope_id);
         }
@@ -1006,7 +1054,7 @@ namespace
 } // namespace
 
 std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int timeoutMs,
-                                           const std::vector<std::string>& extraHosts)
+                                           const std::vector<std::string>& extraHosts, int mgmtTimeoutMs)
 {
     std::vector<DeviceAddress> out;
     for (const std::string& server : discover(timeoutMs, extraHosts))
@@ -1016,11 +1064,12 @@ std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int ti
             continue;
         std::string host = server.substr(0, colon);
         int port = std::atoi(server.substr(colon + 1).c_str());
-        // Bound the per-server management call so one unreachable responder can't stall the
-        // serial sweep (these run back-to-back across every discovered server).
-        for (const ConfiguredDevice& d : configuredDevices(host, port, 2000))
+        // mgmtTimeoutMs bounds the per-server management call so one unreachable
+        // responder can't stall the serial sweep (these run back-to-back across every
+        // discovered server).
+        for (const ConfiguredDevice& d : configuredDevices(host, port, mgmtTimeoutMs))
             if (iequals(d.deviceType, deviceType))
-                out.push_back(DeviceAddress { host, port, deviceType, d.deviceNumber });
+                out.push_back(DeviceAddress { host, port, deviceType, d.deviceNumber, d.name });
     }
     return out;
 }
@@ -1054,14 +1103,11 @@ std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int por
         ConfiguredDevice d;
         const json_value *name = findMember(obj, "DeviceName");
         const json_value *type = findMember(obj, "DeviceType");
-        const json_value *uid = findMember(obj, "UniqueID");
         const json_value *num = findMember(obj, "DeviceNumber");
         if (name && name->type == JSON_STRING)
             d.name = name->string_value;
         if (type && type->type == JSON_STRING)
             d.deviceType = type->string_value;
-        if (uid && uid->type == JSON_STRING)
-            d.uniqueId = uid->string_value;
         if (num)
         {
             if (num->type == JSON_INT)
