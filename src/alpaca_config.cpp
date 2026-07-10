@@ -42,6 +42,7 @@
 # include "alpaca_client.h"
 
 # include <wx/button.h>
+# include <wx/checkbox.h>
 # include <wx/dialog.h>
 # include <wx/listbox.h>
 # include <wx/sizer.h>
@@ -84,9 +85,11 @@ class AlpacaConfigDialog : public wxDialog
     wxSpinCtrl *m_devnum;
     wxButton *m_useManual;
     wxTextCtrl *m_discoveryIP;
+    wxCheckBox *m_showIPv6;
     wxListBox *m_list;
     wxButton *m_useSelected;
-    std::vector<alpaca::DeviceAddress> m_found;
+    std::vector<alpaca::DeviceAddress> m_all; // full discovery results
+    std::vector<alpaca::DeviceAddress> m_found; // filtered results shown in m_list
 
 public:
     // deviceType is the Alpaca API token ("camera"/"telescope"); map it to a translated
@@ -143,9 +146,20 @@ public:
         m_list->Bind(wxEVT_LISTBOX, &AlpacaConfigDialog::OnListSelect, this);
         m_list->Bind(wxEVT_LISTBOX_DCLICK, &AlpacaConfigDialog::OnUseSelected, this);
         discBox->Add(m_list, 1, wxLEFT | wxRIGHT | wxEXPAND, 8);
+
+        // Servers typically answer discovery on both IP families, so IPv6 entries mostly
+        // duplicate the IPv4 ones (and link-local zone ids don't survive reboots); hide
+        // them by default.
+        wxBoxSizer *brow = new wxBoxSizer(wxHORIZONTAL);
+        m_showIPv6 = new wxCheckBox(this, wxID_ANY, _("Show IPv6 devices"));
+        m_showIPv6->SetValue(pConfig->Global.GetBoolean("/alpaca/showipv6", false));
+        m_showIPv6->Bind(wxEVT_CHECKBOX, &AlpacaConfigDialog::OnShowIPv6, this);
+        brow->Add(m_showIPv6, 0, wxALIGN_CENTER_VERTICAL);
+        brow->AddStretchSpacer();
         m_useSelected = new wxButton(this, wxID_ANY, _("Use Selected Device"));
         m_useSelected->Bind(wxEVT_BUTTON, &AlpacaConfigDialog::OnUseSelected, this);
-        discBox->Add(m_useSelected, 0, wxALL | wxALIGN_RIGHT, 8);
+        brow->Add(m_useSelected, 0, wxALIGN_CENTER_VERTICAL);
+        discBox->Add(brow, 0, wxALL | wxEXPAND, 8);
         top->Add(discBox, 1, wxLEFT | wxRIGHT | wxEXPAND, 10);
 
         top->Add(CreateButtonSizer(wxCANCEL), 0, wxALL | wxALIGN_RIGHT, 10);
@@ -192,19 +206,38 @@ private:
     void DoDiscover()
     {
         wxBusyCursor busy;
-        m_list->Clear();
-        m_found.clear();
         // discoverDevices bounds each server's management query (2s default) so a stale
         // responder can't stall the dialog, which runs this on the UI thread.
-        m_found = alpaca::discoverDevices(std::string(m_type.mb_str()), 1500, splitHosts(m_discoveryIP->GetValue()));
-        for (const alpaca::DeviceAddress& d : m_found)
+        m_all = alpaca::discoverDevices(std::string(m_type.mb_str()), 1500, splitHosts(m_discoveryIP->GetValue()));
+        RefreshList();
+    }
+
+    // Rebuild the list from the discovery results, filtering out IPv6 entries (host
+    // contains ':') unless the checkbox has them shown.
+    void RefreshList()
+    {
+        m_list->Clear();
+        m_found.clear();
+        bool showIPv6 = m_showIPv6->GetValue();
+        for (const alpaca::DeviceAddress& d : m_all)
+        {
+            if (!showIPv6 && d.host.find(':') != std::string::npos)
+                continue;
+            m_found.push_back(d);
             m_list->Append(wxString::Format("%s  (%s:%d#%d)", d.name.c_str(), d.host.c_str(), d.port, d.deviceNumber));
+        }
         if (m_found.empty())
-            m_list->Append(_("(no devices found)"));
+            m_list->Append(m_all.empty() ? _("(no devices found)") : _("(no IPv4 devices found)"));
         UpdateButtonStates(); // Clear() dropped any selection
     }
 
     void OnDiscover(wxCommandEvent&) { DoDiscover(); }
+
+    void OnShowIPv6(wxCommandEvent&)
+    {
+        pConfig->Global.SetBoolean("/alpaca/showipv6", m_showIPv6->GetValue());
+        RefreshList();
+    }
     void OnHostText(wxCommandEvent&) { UpdateButtonStates(); }
     void OnListSelect(wxCommandEvent&) { UpdateButtonStates(); }
 
