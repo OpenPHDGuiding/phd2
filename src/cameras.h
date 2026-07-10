@@ -193,7 +193,7 @@
 # endif
 
 // ASCOM Alpaca camera backend (REST/JSON over libcurl)
-#define ALPACA_CAMERA
+# define ALPACA_CAMERA
 
 // Currently unused
 // #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
