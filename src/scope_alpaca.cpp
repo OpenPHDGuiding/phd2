@@ -52,6 +52,30 @@
 namespace
 {
 
+// Alert-suppression keys live under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain()
+// resets them, and are per-profile. Same key names as the ASCOM backend, so a user's
+// existing "don't show again" choices apply to both.
+wxString SlewWarningEnabledKey()
+{
+    return wxString::Format("/Confirm/%d/SlewWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+void SuppressSlewAlert(intptr_t)
+{
+    // If the user doesn't want to see these, we shouldn't be checking for the condition
+    TheScope()->EnableStopGuidingWhenSlewing(false);
+}
+
+wxString PulseGuideFailedAlertEnabledKey()
+{
+    return wxString::Format("/Confirm/%d/PulseGuideFailedAlertEnabled", pConfig->GetCurrentProfileId());
+}
+
+void SuppressPulseGuideFailedAlert(intptr_t)
+{
+    pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
+}
+
 class ScopeAlpaca : public Scope
 {
     std::shared_ptr<alpaca::Telescope> m_mount;
@@ -68,6 +92,7 @@ class ScopeAlpaca : public Scope
     bool m_canGetGuideRates;
     bool m_canGetSiteLatLong;
     bool m_abortSlewWhenGuidingStuck;
+    wxString m_connectFailReason; // why the most recent tryConnect failed (for the connect alert)
 
 public:
     ScopeAlpaca();
@@ -102,6 +127,7 @@ public:
 
 private:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
+    MOVE_RESULT GuideImpl(GUIDE_DIRECTION direction, int durationMs);
     std::shared_ptr<alpaca::Telescope> telescope() const
     {
         std::lock_guard<std::mutex> lk(m_mountLock);
@@ -156,11 +182,13 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     if ((err = mount->setConnected(true)))
     {
         Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld setconnected failed: %s\n", host, port, devnum, err.what()));
+        m_connectFailReason = wxString(err.what());
         return false;
     }
     if ((err = mount->canPulseGuide(&m_canPulseGuide)))
     {
         Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld canpulseguide failed: %s\n", host, port, devnum, err.what()));
+        m_connectFailReason = wxString(err.what());
         return false;
     }
 
@@ -251,6 +279,7 @@ bool ScopeAlpaca::Connect()
         Debug.Write(wxString::Format("Alpaca mount connect failed: configured telescope %s:%ld#%ld not reachable\n", m_host,
                                      m_port, m_devnum));
         setTelescope(nullptr);
+        pFrame->Alert(wxString::Format(_("Alpaca mount connect failed: %s"), m_connectFailReason));
         return true; // true == failure (PHD2 convention)
     }
 
@@ -301,7 +330,29 @@ void ScopeAlpaca::SetupDialog()
     }
 }
 
+// Guide wraps GuideImpl with the same end-of-guide alert policy as the ASCOM backend:
+// a failed pulse (other than a user interrupt) raises the suppressible pulse-guide
+// alert; a detected slew raises the suppressible slew alert.
 Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
+{
+    MOVE_RESULT result = GuideImpl(direction, durationMs);
+
+    if (result == MOVE_ERROR && !WorkerThread::InterruptRequested())
+    {
+        pFrame->SuppressibleAlert(PulseGuideFailedAlertEnabledKey(),
+                                  _("PulseGuide command to mount has failed - guiding is likely to be ineffective."),
+                                  SuppressPulseGuideFailedAlert, 0);
+    }
+    else if (result == MOVE_ERROR_SLEWING)
+    {
+        pFrame->SuppressibleAlert(SlewWarningEnabledKey(), _("Guiding stopped: the scope started slewing."), SuppressSlewAlert,
+                                  0);
+    }
+
+    return result;
+}
+
+Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int durationMs)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
@@ -314,6 +365,7 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
     // changed on the fly (same guard as the ASCOM backend).
     if (!m_canPulseGuide)
     {
+        pFrame->Alert(_("ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."));
         Debug.Write("Alpaca Guide: guide command issued but PulseGuide is not supported\n");
         return MOVE_ERROR;
     }
@@ -495,8 +547,20 @@ bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
         return true; // rates unavailable
     }
     if (!ValidGuideRates(*pRAGuideRate, *pDecGuideRate))
+    {
         Debug.Write(wxString::Format("Alpaca mount reports out-of-range guide rates RA=%.5f Dec=%.5f deg/s\n", *pRAGuideRate,
                                      *pDecGuideRate));
+        // Same one-time alert and error return as the ASCOM backend: invalid rates
+        // must not be handed to the caller as good data.
+        if (!m_bogusGuideRatesFlagged)
+        {
+            pFrame->Alert(_("The mount's ASCOM driver is reporting invalid guide speeds. Some guiding functions including "
+                            "PPEC will be impaired. Contact the ASCOM driver provider or mount vendor for support."),
+                          0, wxEmptyString, 0, 0, true);
+            m_bogusGuideRatesFlagged = true;
+        }
+        return true;
+    }
     return false;
 }
 
