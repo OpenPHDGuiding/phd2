@@ -546,13 +546,29 @@ Error Camera::pixelSizeX(double *out)
 {
     return getDouble("pixelsizex", out);
 }
+Error Camera::pixelSizeY(double *out)
+{
+    return getDouble("pixelsizey", out);
+}
 Error Camera::maxBinX(int *out)
 {
     return getInt("maxbinx", out);
 }
+Error Camera::maxBinY(int *out)
+{
+    return getInt("maxbiny", out);
+}
 Error Camera::sensorType(int *out)
 {
     return getInt("sensortype", out);
+}
+Error Camera::interfaceVersion(int *out)
+{
+    return getInt("interfaceversion", out);
+}
+Error Camera::hasShutter(bool *out)
+{
+    return getBool("hasshutter", out);
 }
 Error Camera::maxADU(int *out)
 {
@@ -673,6 +689,10 @@ Error Camera::hasCooler(bool *out)
 Error Camera::canGetCoolerPower(bool *out)
 {
     return getBool("cangetcoolerpower", out);
+}
+Error Camera::canSetCCDTemperature(bool *out)
+{
+    return getBool("cansetccdtemperature", out);
 }
 Error Camera::setCoolerOn(bool v)
 {

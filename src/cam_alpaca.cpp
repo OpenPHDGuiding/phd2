@@ -69,7 +69,7 @@ class CameraAlpaca : public GuideCamera
     bool m_canAbortExposure;
     bool m_canStopExposure;
     bool m_canGetCoolerPower;
-    bool m_canReadSetpoint;
+    bool m_canSetCoolerTemperature;
     int m_gainMin, m_gainMax, m_lastSetGain;
     double m_expMin, m_expMax;
     wxByte m_bpp;
@@ -119,7 +119,7 @@ private:
 
 CameraAlpaca::CameraAlpaca()
     : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_canAbortExposure(false),
-      m_canStopExposure(false), m_canGetCoolerPower(false), m_canReadSetpoint(false), m_gainMin(0), m_gainMax(0),
+      m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false), m_gainMin(0), m_gainMax(0),
       m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_bpp(16)
 {
     Connected = false;
@@ -130,6 +130,7 @@ CameraAlpaca::CameraAlpaca()
     HasFrameLimiting = true;
     HasCooler = false;
     HasBayer = false;
+    HasShutter = false; // set from the camera at Connect; a shutterless camera can't take darks
     MaxHwBinning = 1;
     m_hasGuideOutput = false;
     loadProfile();
@@ -183,25 +184,70 @@ bool CameraAlpaca::Connect(const wxString& camId)
     else
         Debug.Write(wxString::Format("Alpaca cam: get name failed: %s\n", err.what()));
 
-    // Required geometry/properties -- any failure here aborts the connect.
-    int fullW = 0, fullH = 0, maxbin = 0, stype = 0;
-    double pixX = 0.0;
+    // Required geometry -- sensor size and pixel size in X must be present.
+    int fullW = 0, fullH = 0;
+    double pixX = 0.0, pixY = 0.0;
     if ((err = cam->cameraXSize(&fullW)))
         return fail("get cameraxsize", err);
     if ((err = cam->cameraYSize(&fullH)))
         return fail("get cameraysize", err);
     if ((err = cam->pixelSizeX(&pixX)))
         return fail("get pixelsizex", err);
-    if ((err = cam->maxBinX(&maxbin)))
-        return fail("get maxbinx", err);
-    if ((err = cam->sensorType(&stype)))
-        return fail("get sensortype", err);
+    // PixelSizeY is optional (fall back to X); use the larger dimension for the scale,
+    // matching cam_ascom's wxMax of the two (matters for non-square pixels).
+    if ((err = cam->pixelSizeY(&pixY)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get pixelsizey failed, using pixelsizex: %s\n", err.what()));
+        pixY = pixX;
+    }
     m_fullW = fullW;
     m_fullH = fullH;
     FrameSize = wxSize(m_fullW, m_fullH);
-    SetCameraPixelSize(pixX);
-    MaxHwBinning = (wxByte) std::max(1, maxbin);
-    HasBayer = stype != 0;
+    SetCameraPixelSize(std::max(pixX, pixY));
+
+    // Max binning is optional -- a driver that doesn't report it bins 1x1. Take the
+    // smaller of X/Y (the usable square-binning limit) and clamp the current setting,
+    // exactly as cam_ascom does.
+    int maxBinX = 1, maxBinY = 1;
+    if ((err = cam->maxBinX(&maxBinX)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get maxbinx failed, assuming 1: %s\n", err.what()));
+        maxBinX = 1;
+    }
+    if ((err = cam->maxBinY(&maxBinY)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get maxbiny failed, assuming 1: %s\n", err.what()));
+        maxBinY = 1;
+    }
+    MaxHwBinning = (wxByte) std::max(1, std::min(maxBinX, maxBinY));
+    if (HwBinning > MaxHwBinning)
+        HwBinning = MaxHwBinning;
+
+    // SensorType is optional and only valid on interface version > 1 (older drivers
+    // predate the property). A mosaic sensor is SensorType > 1; value 1 is a colour
+    // sensor with no Bayer pattern, so it must NOT be debayered. Mirrors cam_ascom.
+    int driverVersion = 1;
+    if ((err = cam->interfaceVersion(&driverVersion)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get interfaceversion failed, assuming 1: %s\n", err.what()));
+        driverVersion = 1;
+    }
+    HasBayer = false;
+    if (driverVersion > 1)
+    {
+        int stype = 0;
+        if ((err = cam->sensorType(&stype)))
+            Debug.Write(wxString::Format("Alpaca cam: get sensortype failed, assuming mono: %s\n", err.what()));
+        else
+            HasBayer = stype > 1;
+    }
+
+    // Optional shutter -- a shutterless camera can't take a dark by closing a shutter,
+    // so a dark request must not be sent to it (see the Capture light/dark logic).
+    bool hasShutter = false;
+    if ((err = cam->hasShutter(&hasShutter)))
+        Debug.Write(wxString::Format("Alpaca cam: get hasshutter failed, assuming no shutter: %s\n", err.what()));
+    HasShutter = hasShutter;
 
     // Optional cooler -- treat any failure as "no cooler".
     bool hasCooler = false;
@@ -213,11 +259,10 @@ bool CameraAlpaca::Connect(const wxString& camId)
     HasCooler = hasCooler;
 
     // Probe the cooler-status capabilities once so the periodic status poll only
-    // issues requests that can succeed (mirrors cam_ascom's m_canGetCoolerPower /
-    // m_canSetCoolerTemperature). The setpoint has no ASCOM capability flag -- probe
-    // it with one read.
+    // issues requests that can succeed, and so the cooler setters can be gated on
+    // support (mirrors cam_ascom's m_canGetCoolerPower / m_canSetCoolerTemperature).
     m_canGetCoolerPower = false;
-    m_canReadSetpoint = false;
+    m_canSetCoolerTemperature = false;
     if (HasCooler)
     {
         if ((err = cam->canGetCoolerPower(&m_canGetCoolerPower)))
@@ -225,10 +270,11 @@ bool CameraAlpaca::Connect(const wxString& camId)
             Debug.Write(wxString::Format("Alpaca cam: get cangetcoolerpower failed: %s\n", err.what()));
             m_canGetCoolerPower = false;
         }
-        double sp;
-        m_canReadSetpoint = !cam->ccdSetpoint(&sp);
-        if (!m_canReadSetpoint)
-            Debug.Write("Alpaca cam: setccdtemperature is not readable; will report current temp as the setpoint\n");
+        if ((err = cam->canSetCCDTemperature(&m_canSetCoolerTemperature)))
+        {
+            Debug.Write(wxString::Format("Alpaca cam: get cansetccdtemperature failed: %s\n", err.what()));
+            m_canSetCoolerTemperature = false;
+        }
     }
 
     // Whether an in-flight exposure can be cancelled (used when a stop request
@@ -469,7 +515,10 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         secs = m_expMin;
     if (m_expMax > 0.0 && secs > m_expMax)
         secs = m_expMax;
-    if ((err = cam->startExposure(secs, /*light=*/!ShutterClosed)))
+    // A dark can only be taken by a camera that has a shutter; on a shutterless
+    // camera always request a light frame (mirrors cam_ascom's takeDark gating).
+    bool light = !(HasShutter && ShutterClosed);
+    if ((err = cam->startExposure(secs, light)))
         return fail("startexposure", err);
 
     CameraWatchdog watchdog(params.duration, GetTimeoutMs());
@@ -548,7 +597,9 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
 
     if (params.captureOptions & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (HasBayer && (params.captureOptions & CAPTURE_RECON))
+    // Only debayer an unbinned frame: binning destroys the Bayer mosaic, so running
+    // the recon on a binned color frame corrupts the guide image (matches cam_ascom).
+    if ((params.captureOptions & CAPTURE_RECON) && HasBayer && params.CombinedBinning() == 1)
         QuickLRecon(img);
 
     return false;
@@ -585,12 +636,20 @@ bool CameraAlpaca::GetDevicePixelSize(double *devPixelSize)
         Debug.Write("Alpaca cam: cannot get pixel size when not connected\n");
         return true;
     }
-    alpaca::Error err = cam->pixelSizeX(devPixelSize);
+    double pixX = 0.0, pixY = 0.0;
+    alpaca::Error err = cam->pixelSizeX(&pixX);
     if (err)
     {
         Debug.Write(wxString::Format("Alpaca cam: get pixelsizex failed: %s\n", err.what()));
         return true;
     }
+    // PixelSizeY is optional; use the larger dimension to match the Connect-time value.
+    if ((err = cam->pixelSizeY(&pixY)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get pixelsizey failed, using pixelsizex: %s\n", err.what()));
+        pixY = pixX;
+    }
+    *devPixelSize = std::max(pixX, pixY);
     return false;
 }
 
@@ -623,6 +682,11 @@ void CameraAlpaca::ShowPropertyDialog()
 
 bool CameraAlpaca::SetCoolerOn(bool on)
 {
+    if (!HasCooler)
+    {
+        Debug.Write("Alpaca cam: has no cooler\n");
+        return true;
+    }
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
@@ -643,6 +707,11 @@ bool CameraAlpaca::SetCoolerOn(bool on)
 
 bool CameraAlpaca::SetCoolerSetpoint(double temperature)
 {
+    if (!HasCooler || !m_canSetCoolerTemperature)
+    {
+        Debug.Write("Alpaca cam: cannot set cooler temperature\n");
+        return true;
+    }
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
@@ -660,6 +729,8 @@ bool CameraAlpaca::SetCoolerSetpoint(double temperature)
 
 bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, double *temperature)
 {
+    if (!HasCooler)
+        return true;
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
@@ -680,7 +751,7 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
     // Only issue the setpoint/power requests when the Connect-time probe found the
     // driver supports them -- this poll runs on the UI thread, so a request that can
     // only fail is a wasted network round-trip on every poll.
-    if (m_canReadSetpoint)
+    if (m_canSetCoolerTemperature)
     {
         if ((err = cam->ccdSetpoint(setpoint))) // ASCOM SetCCDTemperature is readable (the target)
         {
@@ -690,15 +761,18 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
     }
     else
         *setpoint = *temperature; // driver doesn't expose the setpoint; report current temp
-    *power = 0.0;
+    // Default to full power when the driver can't report it, matching cam_ascom (a
+    // running cooler with no power readout is assumed to be at 100%, not 0%).
     if (m_canGetCoolerPower)
     {
         if ((err = cam->coolerPower(power)))
         {
             Debug.Write(wxString::Format("Alpaca cam: get coolerpower failed: %s\n", err.what()));
-            *power = 0.0;
+            *power = 100.0;
         }
     }
+    else
+        *power = 100.0;
     return false;
 }
 

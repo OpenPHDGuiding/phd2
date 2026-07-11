@@ -242,8 +242,12 @@ public:
     Error cameraXSize(int *out);
     Error cameraYSize(int *out);
     Error pixelSizeX(double *out); // microns
+    Error pixelSizeY(double *out); // microns
     Error maxBinX(int *out);
-    Error sensorType(int *out); // 0 = mono, 1 = colour (Bayer), 2..5 = RGGB/CMYG/... per ASCOM
+    Error maxBinY(int *out);
+    Error sensorType(int *out); // 0 = mono, 1 = colour (no Bayer mosaic), 2..5 = RGGB/CMYG/... per ASCOM
+    Error interfaceVersion(int *out); // driver interface version; SensorType is valid only when > 1
+    Error hasShutter(bool *out); // false => a dark cannot be taken by closing a shutter
     Error maxADU(int *out); // saturation level -> bit depth (>255 => 16-bit, else 8-bit)
     Error exposureMin(double *out); // seconds -- shortest exposure the camera accepts
     Error exposureMax(double *out); // seconds -- longest exposure the camera accepts
@@ -279,6 +283,7 @@ public:
     // Cooling (optional; guarded by hasCooler and the capability getters).
     Error hasCooler(bool *out);
     Error canGetCoolerPower(bool *out);
+    Error canSetCCDTemperature(bool *out);
     Error setCoolerOn(bool);
     Error coolerOn(bool *out);
     Error setCCDTemperature(double celsius);
