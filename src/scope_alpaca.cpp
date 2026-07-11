@@ -143,7 +143,7 @@ private:
     }
     void loadProfile();
     void saveProfile() const;
-    bool tryConnect(const wxString& host, long port, long devnum);
+    bool tryConnect(const wxString& host, long port, long devnum, RunInBg *bg);
 };
 
 ScopeAlpaca::ScopeAlpaca()
@@ -171,8 +171,10 @@ void ScopeAlpaca::saveProfile() const
 }
 
 // tryConnect opens the telescope at host:port#devnum and reads its capabilities.
-// Returns true on success (the telescope left connected), false on any Alpaca error.
-bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
+// Returns true on success (the telescope left connected), false on any Alpaca error or
+// when the user cancels (the caller distinguishes via bg->IsCanceled()). Runs on the
+// RunInBg background thread -- every call here is a network round-trip.
+bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum, RunInBg *bg)
 {
     alpaca::DeviceAddress addr;
     addr.host = std::string(host.mb_str());
@@ -180,6 +182,10 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     addr.deviceType = "telescope";
     addr.deviceNumber = (int) devnum;
     auto mount = std::make_shared<alpaca::Telescope>(addr);
+    // Connect-phase timeout: short enough that Cancel is honored within a few seconds
+    // per round-trip and a hung server can't pin the connect for 30 s per probe;
+    // restored to the normal default once the sequence succeeds.
+    mount->setTimeoutMs(5000);
 
     alpaca::Error err;
     if ((err = mount->setConnected(true)))
@@ -198,6 +204,9 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     }
     if (!m_canPulseGuide)
         Debug.Write("Connecting to Alpaca mount that does not support PulseGuide\n");
+
+    if (bg->IsCanceled())
+        return false;
 
     // The Gemini2 firmware (via the "Gemini Telescope .NET" driver) can leave a pulse
     // guide stuck with IsPulseGuiding true forever; workaround is an AbortSlew. Like
@@ -251,6 +260,9 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     m_canSlew = !err && canSlew;
     m_canSlewAsync = m_canSlew && canSlewAsync;
 
+    if (bg->IsCanceled())
+        return false;
+
     // Probe each coordinate/guide-rate/site read for NotImplemented and cache the answer.
     // The getters gate on these instead of re-issuing requests a driver has already said
     // it can't serve.
@@ -261,6 +273,10 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     m_canGetGuideRates = !mount->guideRateRightAscension(&d) && !mount->guideRateDeclination(&d);
     if (!m_canGetGuideRates)
         Debug.Write("Alpaca mount: cannot read guide rates\n");
+
+    if (bg->IsCanceled())
+        return false;
+
     m_canGetSiteLatLong = !mount->siteLatitude(&d) && !mount->siteLongitude(&d);
     if (!m_canGetSiteLatLong)
         Debug.Write("Alpaca mount: cannot read site latitude/longitude\n");
@@ -276,52 +292,102 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     if (!m_canCheckPulseGuiding)
         Debug.Write("Alpaca mount: cannot check IsPulseGuiding; will rely on pulse timing\n");
 
+    mount->setTimeoutMs(30000); // connect sequence done; restore the normal default
+
     setTelescope(mount);
     return true;
 }
 
 bool ScopeAlpaca::Connect()
 {
-    // 1. The configured address (a user-set host/port, or the default).
-    if (tryConnect(m_host, m_port, m_devnum))
-    {
-        Debug.Write(wxString::Format("Alpaca mount connected at %s:%ld#%ld, canPulseGuide=%d\n", m_host, m_port, m_devnum,
-                                     m_canPulseGuide));
-        return Scope::Connect();
-    }
+    // The whole connect sequence -- the configured-address attempt, its capability
+    // probes, and the discovery fallback (a multi-second UDP sweep plus per-server
+    // management queries) -- is network I/O, so it runs on a background thread while
+    // the UI thread pumps a cancelable "Connecting to Mount..." popup (mirrors
+    // scope_ascom's ConnectMountInBg; scope_indi is the precedent for running the
+    // entire sequence in Entry()). Config reads/writes and alerts stay on this thread.
+    bool hostConfigured = pConfig->Profile.HasEntry("/scope/alpaca/host");
+    std::vector<std::string> discoveryHosts = hostConfigured ? std::vector<std::string>() : AlpacaDiscoveryHosts();
 
-    // 2. If no address was ever configured, fall back to discovery, take the first
-    //    telescope found, and remember it. When an address WAS explicitly set, fail
-    //    instead: silently connecting to some other telescope on the LAN could guide
-    //    the wrong mount and would overwrite the user's configuration.
-    if (pConfig->Profile.HasEntry("/scope/alpaca/host"))
+    struct ConnectInBg : public ConnectMountInBg
     {
-        Debug.Write(wxString::Format("Alpaca mount connect failed: configured telescope %s:%ld#%ld not reachable\n", m_host,
-                                     m_port, m_devnum));
+        ScopeAlpaca *sa;
+        bool hostConfigured;
+        std::vector<std::string> discoveryHosts;
+        bool discovered = false; // connected via the discovery fallback
+        alpaca::DeviceAddress found; // ...at this address
+        ConnectInBg(ScopeAlpaca *sa_, bool hc, std::vector<std::string> dh)
+            : sa(sa_), hostConfigured(hc), discoveryHosts(std::move(dh))
+        {
+        }
+        bool Entry() override
+        {
+            // 1. The configured address (a user-set host/port, or the default).
+            if (sa->tryConnect(sa->m_host, sa->m_port, sa->m_devnum, this))
+                return false;
+            if (IsCanceled())
+                return true;
+
+            // 2. If no address was ever configured, fall back to discovery, take the
+            //    first telescope found, and remember it. When an address WAS explicitly
+            //    set, fail instead: silently connecting to some other telescope on the
+            //    LAN could guide the wrong mount and would overwrite the user's
+            //    configuration.
+            if (hostConfigured)
+            {
+                Debug.Write(wxString::Format("Alpaca mount connect failed: configured telescope %s:%ld#%ld not reachable\n",
+                                             sa->m_host, sa->m_port, sa->m_devnum));
+                SetErrorMsg(sa->m_connectFailReason);
+                return true;
+            }
+
+            Debug.Write("Alpaca mount: no address configured; discovering...\n");
+            for (const alpaca::DeviceAddress& d : alpaca::discoverDevices("telescope", 1500, discoveryHosts))
+            {
+                if (IsCanceled())
+                    return true;
+                wxString host(d.host.c_str(), wxConvUTF8);
+                if (sa->tryConnect(host, d.port, d.deviceNumber, this))
+                {
+                    found = d;
+                    discovered = true;
+                    return false;
+                }
+            }
+
+            Debug.Write("Alpaca mount connect failed: no telescope found via configuration or discovery\n");
+            SetErrorMsg(_("No Alpaca telescope found via configuration or discovery"));
+            return true;
+        }
+    };
+    ConnectInBg bg(this, hostConfigured, std::move(discoveryHosts));
+
+    if (bg.Run())
+    {
         setTelescope(nullptr);
-        pFrame->Alert(wxString::Format(_("Alpaca mount connect failed: %s"), m_connectFailReason));
+        // Alert with the specific reason when the configured mount is unreachable (the
+        // A5 behavior); a user cancel fails quietly.
+        if (!bg.IsCanceled() && hostConfigured)
+            pFrame->Alert(wxString::Format(_("Alpaca mount connect failed: %s"), m_connectFailReason));
         return true; // true == failure (PHD2 convention)
     }
 
-    Debug.Write("Alpaca mount: no address configured; discovering...\n");
-    for (const alpaca::DeviceAddress& d : alpaca::discoverDevices("telescope", 1500, AlpacaDiscoveryHosts()))
+    if (bg.discovered)
     {
-        wxString host(d.host.c_str(), wxConvUTF8);
-        if (tryConnect(host, d.port, d.deviceNumber))
-        {
-            m_host = host;
-            m_port = d.port;
-            m_devnum = d.deviceNumber;
-            saveProfile();
-            Debug.Write(wxString::Format("Alpaca mount discovered at %s:%d#%d, canPulseGuide=%d\n", m_host, d.port,
-                                         d.deviceNumber, m_canPulseGuide));
-            return Scope::Connect();
-        }
+        m_host = wxString(bg.found.host.c_str(), wxConvUTF8);
+        m_port = bg.found.port;
+        m_devnum = bg.found.deviceNumber;
+        saveProfile(); // wxConfig writes stay on the UI thread
+        Debug.Write(wxString::Format("Alpaca mount discovered at %s:%ld#%ld, canPulseGuide=%d\n", m_host, m_port, m_devnum,
+                                     m_canPulseGuide));
+    }
+    else
+    {
+        Debug.Write(wxString::Format("Alpaca mount connected at %s:%ld#%ld, canPulseGuide=%d\n", m_host, m_port, m_devnum,
+                                     m_canPulseGuide));
     }
 
-    Debug.Write("Alpaca mount connect failed: no telescope found via configuration or discovery\n");
-    setTelescope(nullptr);
-    return true; // true == failure (PHD2 convention)
+    return Scope::Connect();
 }
 
 bool ScopeAlpaca::Disconnect()
@@ -440,9 +506,11 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
         {
             Debug.Write("Alpaca Guide: entered guide while a pulse is still active; draining\n");
             int i;
-            for (i = 0; i < 20; i++)
+            // 10 x 100 ms keeps scope_ascom's ~1 s drain bound with half the HTTP
+            // round-trips (each pass is two GETs over the network, not free COM calls).
+            for (i = 0; i < 10; i++)
             {
-                wxMilliSleep(50);
+                wxMilliSleep(100);
                 if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
                     return slewResult;
                 if ((err = mount->isPulseGuiding(&pulsing)))
@@ -453,7 +521,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
                 if (!pulsing)
                     break;
             }
-            if (i == 20)
+            if (i == 10)
             {
                 Debug.Write("Alpaca Guide: pulse still active after 1s; aborting\n");
                 return MOVE_ERROR;
@@ -551,7 +619,9 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
 
             if (WorkerThread::InterruptRequested())
                 return MOVE_ERROR;
-            wxMilliSleep(20);
+            // 100 ms, not scope_ascom's 20 ms: each pass below is up to two HTTP
+            // round-trips (ispulseguiding + the slew re-check), not free COM calls.
+            wxMilliSleep(100);
 
             // A slew starting mid-pulse must stop guiding (mirrors scope_ascom's
             // CheckSlewing inside the completion loop).

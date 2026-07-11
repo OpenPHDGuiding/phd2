@@ -171,6 +171,14 @@ namespace
         return size * nmemb;
     }
 
+    // xferAbort is the curl progress callback backing httpGet's abortCheck: a nonzero
+    // return makes curl fail the in-flight transfer with CURLE_ABORTED_BY_CALLBACK.
+    int xferAbort(void *userdata, curl_off_t, curl_off_t, curl_off_t, curl_off_t)
+    {
+        auto *abortCheck = static_cast<const std::function<bool()> *>(userdata);
+        return (*abortCheck)() ? 1 : 0;
+    }
+
     uint32_t rdU32(const unsigned char *p)
     {
         return (uint32_t) p[0] | ((uint32_t) p[1] << 8) | ((uint32_t) p[2] << 16) | ((uint32_t) p[3] << 24);
@@ -311,7 +319,8 @@ std::string Device::baseUrl(const std::string& mbr) const
     return os.str();
 }
 
-Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string *body, std::string *contentType)
+Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string *body, std::string *contentType,
+                      const std::function<bool()>& abortCheck)
 {
     std::lock_guard<std::mutex> lk(m_mu);
     CURL *curl = static_cast<CURL *>(m_curl);
@@ -333,6 +342,21 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeoutMs);
     if (hdrs)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
+    if (abortCheck)
+    {
+        // abortCheck outlives curl_easy_perform (it's the caller's reference), so
+        // handing curl its address is safe; curl polls it throughout the transfer.
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, xferAbort);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, (void *) &abortCheck);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    }
+    if (acceptImageBytes)
+    {
+        // A stalled multi-MB frame download should die in seconds, not wait out the
+        // full request timeout: abort when under 256 B/s for 10 s.
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, 256L);
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 10L);
+    }
 
     CURLcode rc = curl_easy_perform(curl);
     long status = 0;
@@ -344,6 +368,8 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
     if (hdrs)
         curl_slist_free_all(hdrs);
 
+    if (rc == CURLE_ABORTED_BY_CALLBACK)
+        return Error(Error::Aborted, std::string("GET ") + mbr + ": interrupted");
     if (rc != CURLE_OK)
         return Error(Error::Transport, std::string("GET ") + mbr + ": " + curl_easy_strerror(rc));
     if (status < 200 || status >= 300)
@@ -668,6 +694,10 @@ Error Camera::imageReady(bool *out)
 {
     return getBool("imageready", out);
 }
+Error Camera::cameraState(int *out)
+{
+    return getInt("camerastate", out);
+}
 Error Camera::canAbortExposure(bool *out)
 {
     return getBool("canabortexposure", out);
@@ -921,11 +951,11 @@ static Error decodeJsonImageArray(const std::string& body, ImageData *out)
     return {};
 }
 
-Error Camera::getImageBytes(ImageData *out)
+Error Camera::getImageBytes(ImageData *out, const std::function<bool()>& abortCheck)
 {
     std::string ct;
     std::string body;
-    Error e = httpGet("imagearray", /*acceptImageBytes=*/true, &body, &ct);
+    Error e = httpGet("imagearray", /*acceptImageBytes=*/true, &body, &ct, abortCheck);
     if (e)
         return e;
     // The Accept: application/imagebytes header goes out on every fetch; a server that

@@ -55,6 +55,16 @@
 namespace
 {
 
+// Capture readout-wait tuning. Each imageready poll is an HTTP round-trip (unlike
+// cam_ascom's free 20 ms local COM poll), and the exposure body is slept out before
+// polling starts, so the poll cadence only paces the readout/download tail. The
+// camerastate fail-fast check rides every Nth poll, at roughly this interval.
+enum
+{
+    IMAGE_READY_POLL_MS = 50,
+    CAMERA_STATE_CHECK_MS = 1000,
+};
+
 class CameraAlpaca : public GuideCamera
 {
     std::shared_ptr<alpaca::Camera> m_cam;
@@ -119,6 +129,7 @@ private:
         m_statusCam = std::move(statusCam);
     }
     bool AbortExposure(alpaca::Camera *cam);
+    bool ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera> *cam, std::shared_ptr<alpaca::Camera> *statusCam);
     void loadProfile();
     void saveProfile() const;
 };
@@ -164,24 +175,70 @@ bool CameraAlpaca::Connect(const wxString& camId)
     // is the single source of the device address.
     (void) camId;
 
+    // The whole connect sequence is network I/O (~15 round-trips), so it runs on a
+    // background thread while the UI thread pumps a cancelable "Connecting to Camera..."
+    // popup (cam_ascom's ConnectCameraInBg; scope_indi is the precedent for running the
+    // entire sequence in Entry()). Alerts (CamConnectFailed) and the Connected flag stay
+    // on this thread, after the background thread has finished.
+    struct ConnectInBg : public ConnectCameraInBg
+    {
+        CameraAlpaca *ca;
+        std::shared_ptr<alpaca::Camera> cam; // filled in by Entry() on success
+        std::shared_ptr<alpaca::Camera> statusCam;
+        ConnectInBg(CameraAlpaca *ca_) : ca(ca_) { }
+        bool Entry() override { return ca->ConnectInBgEntry(this, &cam, &statusCam); }
+    };
+    ConnectInBg bg(this);
+
+    if (bg.Run())
+    {
+        if (bg.IsCanceled())
+            return true; // user canceled: fail the connect without an alert
+        return CamConnectFailed(bg.GetErrorMsg());
+    }
+
+    setCameras(bg.cam, bg.statusCam);
+    Connected = true;
+    Debug.Write(wxString::Format(
+        "Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n", m_fullW, m_fullH,
+        m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput, m_gainMin, m_gainMax, m_bpp));
+    return false;
+}
+
+// ConnectInBgEntry is the background-thread body of Connect: setConnected plus every
+// property read is a network round-trip. Member writes here are safe -- nothing reads
+// them until Connect() completes (the scope_indi pattern). On failure the reason lands
+// in the RunInBg error message and the UI thread raises CamConnectFailed from it.
+bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera> *pcam,
+                                    std::shared_ptr<alpaca::Camera> *pstatusCam)
+{
     alpaca::DeviceAddress addr;
     addr.host = std::string(m_host.mb_str());
     addr.port = (int) m_port;
     addr.deviceType = "camera";
     addr.deviceNumber = (int) m_devnum;
     auto cam = std::make_shared<alpaca::Camera>(addr);
+    // Connect-phase timeout: short enough that Cancel is honored within a few seconds
+    // per round-trip and a hung server can't pin the connect for 30 s per probe;
+    // restored to the capture-grade default once the sequence succeeds.
+    cam->setTimeoutMs(5000);
 
-    // A required-property failure logs which member failed and reports the failure to
-    // the user (mirrors the per-property handling in cam_ascom.cpp).
+    // A required-property failure logs which member failed and carries the reason back
+    // to the UI thread, which raises CamConnectFailed from it (mirrors the per-property
+    // handling in cam_ascom.cpp).
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
         Debug.Write(wxString::Format("Alpaca cam: %s failed: %s\n", member, e.what()));
-        return CamConnectFailed(wxString::Format(_("Alpaca camera connect failed: %s"), e.what()));
+        bg->SetErrorMsg(wxString::Format(_("Alpaca camera connect failed: %s"), e.what()));
+        return true;
     };
 
     alpaca::Error err;
     if ((err = cam->setConnected(true)))
         return fail("setconnected", err);
+
+    if (bg->IsCanceled())
+        return true;
 
     // The device name is nice-to-have; keep the default label if the driver won't report it.
     std::string devName;
@@ -214,6 +271,9 @@ bool CameraAlpaca::Connect(const wxString& camId)
     // change to warn about invalidated dark/bad-pixel libraries after a camera swap.
     // Setting it at connect makes prev == new (ratio 1.0) and defeats that warning.
     m_devPixelSize = std::max(pixX, pixY);
+
+    if (bg->IsCanceled())
+        return true;
 
     // Max binning is optional -- a driver that doesn't report it bins 1x1. Take the
     // smaller of X/Y (the usable square-binning limit) and clamp the current setting,
@@ -286,6 +346,9 @@ bool CameraAlpaca::Connect(const wxString& camId)
             m_canSetCoolerTemperature = false;
         }
     }
+
+    if (bg->IsCanceled())
+        return true;
 
     // On-camera ST4 guide output: the camera can pulse-guide the mount directly.
     // Optional -- a driver that doesn't report it just has no guide output (unlike
@@ -360,6 +423,10 @@ bool CameraAlpaca::Connect(const wxString& camId)
         }
     }
     m_lastSetGain = -1;
+
+    if (bg->IsCanceled())
+        return true;
+
     m_curBin = 0; // unknown until the first capture programs it
     m_lastSetBin = 0; // force the first capture to program binning...
     m_lastROI = wxRect(); // ...and the ROI (a reconnected server may have lost both)
@@ -389,17 +456,16 @@ bool CameraAlpaca::Connect(const wxString& camId)
         m_expMax = 0.0;
     }
 
+    cam->setTimeoutMs(30000); // connect sequence done; restore the capture-grade default
+
     // Second connection for the UI-thread status calls: its own curl handle (no
     // queueing behind an image download) and a short timeout so a hung server can't
     // freeze the GUI for the capture-grade 30 s.
     auto statusCam = std::make_shared<alpaca::Camera>(addr, /*clientId=*/2);
     statusCam->setTimeoutMs(3000);
 
-    setCameras(cam, statusCam);
-    Connected = true;
-    Debug.Write(wxString::Format(
-        "Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n", m_fullW, m_fullH,
-        m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput, m_gainMin, m_gainMax, m_bpp));
+    *pcam = std::move(cam);
+    *pstatusCam = std::move(statusCam);
     return false;
 }
 
@@ -572,6 +638,8 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     }
 
     // Now poll the remaining exposure tail and the readout/download window.
+    int polls = 0;
+    bool checkState = true; // cleared if the driver can't report camerastate
     for (;;)
     {
         bool ready = false;
@@ -579,6 +647,26 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
             return fail("get imageready", err);
         if (ready)
             break;
+        // Fail fast on a server-side exposure error: imageready just stays false when
+        // the exposure has failed, which would otherwise burn the whole capture
+        // watchdog before giving up. Check CameraState about once a second and bail
+        // immediately on cameraError -- exceeds cam_ascom, which has this blind spot.
+        // A driver that can't report the state is asked only once.
+        if (checkState && ++polls % (CAMERA_STATE_CHECK_MS / IMAGE_READY_POLL_MS) == 0)
+        {
+            int state = 0;
+            if ((err = cam->cameraState(&state)))
+            {
+                Debug.Write(wxString::Format("Alpaca capture: get camerastate failed; not checking again: %s\n", err.what()));
+                checkState = false;
+            }
+            else if (state == 5) // ASCOM CameraStates::cameraError
+            {
+                Debug.Write("Alpaca capture: camera reports cameraError; abandoning the exposure wait\n");
+                DisconnectWithAlert(_("Alpaca camera reported an exposure error."), RECONNECT);
+                return true;
+            }
+        }
         if (WorkerThread::InterruptRequested() && (WorkerThread::TerminateRequested() || AbortExposure(cam.get())))
             return true;
         if (watchdog.Expired())
@@ -586,12 +674,25 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
             DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
-        wxMilliSleep(20);
+        wxMilliSleep(IMAGE_READY_POLL_MS);
     }
 
     alpaca::ImageData frame;
-    if ((err = cam->getImageBytes(&frame)))
+    // The frame download is the one long transfer in the capture loop; let a Stop or
+    // terminate request abort it mid-flight instead of blocking until curl's timeout.
+    // An abort is a clean user stop, not a device fault -- no disconnect, no alert
+    // (mirrors the interrupt handling in the wait loops above). The exposure itself has
+    // already completed at this point, so there is nothing to cancel on the camera.
+    err = cam->getImageBytes(&frame, [] { return WorkerThread::InterruptRequested(); });
+    if (err)
+    {
+        if (err.kind == alpaca::Error::Aborted)
+        {
+            Debug.Write("Alpaca capture: image download interrupted\n");
+            return true;
+        }
         return fail("get imagearray", err);
+    }
 
     // Some drivers return the image array with its axes transposed. Mirror cam_ascom's
     // m_swapAxes handling: when the returned dimensions are exactly the transpose of the

@@ -56,6 +56,7 @@
 #define ALPACA_CLIENT_H
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <string>
@@ -69,8 +70,10 @@ namespace alpaca
 
 // Error describes a failure and is returned (not thrown) from every client call: a
 // transport failure (libcurl), an HTTP status error, an Alpaca device error
-// (ErrorNumber != 0), or a malformed response. A default-constructed Error (kind == None)
-// means success and is falsy; any real error is truthy.
+// (ErrorNumber != 0), a malformed response, or a transfer interrupted by the caller's
+// abort predicate (Aborted -- a user stop, not a device/network fault; callers should
+// treat it as a clean interruption, not a failure to alert on). A default-constructed
+// Error (kind == None) means success and is falsy; any real error is truthy.
 struct Error
 {
     enum Kind
@@ -79,7 +82,8 @@ struct Error
         Transport,
         Http,
         Device,
-        Parse
+        Parse,
+        Aborted
     };
     Kind kind = None;
     std::string message;
@@ -171,8 +175,13 @@ protected:
     Error getValue(const std::string& member, JsonParser& parser, const json_value **v);
 
     // Fetches the raw HTTP body for a GET into *body. Used by getValue and by Camera
-    // for the ImageBytes transport (acceptImageBytes=true).
-    Error httpGet(const std::string& member, bool acceptImageBytes, std::string *body, std::string *contentType);
+    // for the ImageBytes transport (acceptImageBytes=true). When abortCheck is set it is
+    // polled during the transfer (curl's progress callback); returning true interrupts
+    // the request mid-flight with Error::Aborted. ImageBytes requests additionally get a
+    // low-speed abort so a stalled multi-MB download dies in seconds rather than waiting
+    // out the full request timeout.
+    Error httpGet(const std::string& member, bool acceptImageBytes, std::string *body, std::string *contentType,
+                  const std::function<bool()>& abortCheck = {});
 
 private:
     std::string baseUrl(const std::string& member) const;
@@ -287,6 +296,7 @@ public:
     // Exposure lifecycle.
     Error startExposure(double seconds, bool light = true);
     Error imageReady(bool *out);
+    Error cameraState(int *out); // ASCOM CameraStates: 0 idle, 1 waiting, 2 exposing, 3 reading, 4 download, 5 cameraError
     Error canAbortExposure(bool *out);
     Error abortExposure();
     Error canStopExposure(bool *out);
@@ -294,8 +304,10 @@ public:
 
     // Fetch the latest frame: binary ImageBytes when the server supports it, falling
     // back to the standard JSON ImageArray when it doesn't (the response content type
-    // selects the decoder -- no probe, no extra round-trip).
-    Error getImageBytes(ImageData *out);
+    // selects the decoder -- no probe, no extra round-trip). abortCheck, when set, can
+    // interrupt the download mid-flight (returns Error::Aborted) -- this is the one long
+    // transfer in the capture loop, so it is the one worth making interruptible.
+    Error getImageBytes(ImageData *out, const std::function<bool()>& abortCheck = {});
 
     // Cooling (optional; guarded by hasCooler and the capability getters).
     Error hasCooler(bool *out);
