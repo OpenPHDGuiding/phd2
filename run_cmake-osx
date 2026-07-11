@@ -20,10 +20,7 @@ if [[ $os > $sonoma || $os == $sonoma ]]; then
     cmake_extra_args+=(-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0)
 fi
 
-# Build for the host architecture by default (matches a stock Homebrew install).
-# For a distributable universal binary, override e.g. APPLE_ARCH="arm64;x86_64"
-# -- that requires universal builds of wxWidgets/cfitsio/libusb/libnova too.
-APPLE_ARCH=${APPLE_ARCH:-$(uname -m)}
+APPLE_ARCH=x86_64
 
 WXWIN=$(wx-config --prefix)
 [[ -d $WXWIN ]] || {
