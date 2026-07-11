@@ -60,9 +60,13 @@ class ScopeAlpaca : public Scope
     long m_port;
     long m_devnum;
     bool m_canPulseGuide;
+    bool m_canCheckPulseGuiding;
     bool m_canCheckSlewing;
     bool m_canSlew;
     bool m_canSlewAsync;
+    bool m_canGetCoordinates;
+    bool m_canGetGuideRates;
+    bool m_canGetSiteLatLong;
     bool m_abortSlewWhenGuidingStuck;
 
 public:
@@ -114,8 +118,9 @@ private:
 };
 
 ScopeAlpaca::ScopeAlpaca()
-    : m_port(11111), m_devnum(0), m_canPulseGuide(false), m_canCheckSlewing(false), m_canSlew(false), m_canSlewAsync(false),
-      m_abortSlewWhenGuidingStuck(false)
+    : m_port(11111), m_devnum(0), m_canPulseGuide(false), m_canCheckPulseGuiding(false), m_canCheckSlewing(false),
+      m_canSlew(false), m_canSlewAsync(false), m_canGetCoordinates(false), m_canGetGuideRates(false),
+      m_canGetSiteLatLong(false), m_abortSlewWhenGuidingStuck(false)
 {
     loadProfile();
 }
@@ -166,6 +171,8 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     if (!(err = mount->name(&mountName)))
     {
         Debug.Write(wxString::Format("Alpaca mount reports its name as '%s'\n", mountName.c_str()));
+        wxString name(mountName.c_str(), wxConvUTF8);
+        m_Name = name.Find(_T("Alpaca")) != wxNOT_FOUND ? name : name + _T(" (Alpaca)");
         m_abortSlewWhenGuidingStuck = mountName.find("Gemini Telescope .NET") != std::string::npos;
         if (m_abortSlewWhenGuidingStuck)
             Debug.Write("Alpaca mount: enabling stuck guide pulse workaround\n");
@@ -173,6 +180,7 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     else
     {
         Debug.Write(wxString::Format("Alpaca mount: get name failed: %s\n", err.what()));
+        m_Name = _T("Alpaca Mount");
         m_abortSlewWhenGuidingStuck = false;
     }
 
@@ -198,6 +206,27 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
         Debug.Write(wxString::Format("Alpaca mount: canslew/canslewasync failed (%s); slew disabled\n", err.what()));
     m_canSlew = !err && canSlew;
     m_canSlewAsync = m_canSlew && canSlewAsync;
+
+    // Probe each coordinate/guide-rate/site read for NotImplemented and cache the answer.
+    // The getters gate on these instead of re-issuing requests a driver has already said
+    // it can't serve.
+    double d;
+    m_canGetCoordinates = !mount->rightAscension(&d) && !mount->declination(&d) && !mount->siderealTime(&d);
+    if (!m_canGetCoordinates)
+        Debug.Write("Alpaca mount: cannot read coordinates; position reporting disabled\n");
+    m_canGetGuideRates = !mount->guideRateRightAscension(&d) && !mount->guideRateDeclination(&d);
+    if (!m_canGetGuideRates)
+        Debug.Write("Alpaca mount: cannot read guide rates\n");
+    m_canGetSiteLatLong = !mount->siteLatitude(&d) && !mount->siteLongitude(&d);
+    if (!m_canGetSiteLatLong)
+        Debug.Write("Alpaca mount: cannot read site latitude/longitude\n");
+
+    // IsPulseGuiding is also probed once; when unsupported, Guide() relies on the
+    // pulse timing alone rather than failing every pulse.
+    bool pulsing = false;
+    m_canCheckPulseGuiding = !mount->isPulseGuiding(&pulsing);
+    if (!m_canCheckPulseGuiding)
+        Debug.Write("Alpaca mount: cannot check IsPulseGuiding; will rely on pulse timing\n");
 
     setTelescope(mount);
     return true;
@@ -278,6 +307,14 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
     if (!mount)
         return MOVE_ERROR;
 
+    // Could happen if the move command is issued on the aux mount, or CanPulseGuide
+    // changed on the fly (same guard as the ASCOM backend).
+    if (!m_canPulseGuide)
+    {
+        Debug.Write("Alpaca Guide: guide command issued but PulseGuide is not supported\n");
+        return MOVE_ERROR;
+    }
+
     alpaca::Error err;
 
     // If the mount has started slewing, don't issue guide pulses -- report it so PHD2
@@ -326,40 +363,49 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
     if (WorkerThread::MilliSleep(durationMs, WorkerThread::INT_ANY))
         return MOVE_ERROR;
 
-    enum
+    // When the driver can't report IsPulseGuiding, the sleep above is the best
+    // available completion signal -- skip the poll rather than fail the pulse
+    // (matches the ASCOM backend when IsPulseGuiding is unavailable).
+    if (m_canCheckPulseGuiding)
     {
-        GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
-        TIMEOUT_MS = 2000, // ...and this long before giving up
-    };
-    wxStopWatch swatch; // time from the end of the pulse duration
-    bool didAbort = false;
-    for (;;)
-    {
-        bool pulsing = false;
-        if ((err = mount->isPulseGuiding(&pulsing)))
+        enum
         {
-            Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
-            return MOVE_ERROR;
-        }
-        if (!pulsing)
-            break;
+            GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
+            TIMEOUT_MS = 2000, // ...and this long before giving up
+        };
+        wxStopWatch swatch; // time from the end of the pulse duration
+        bool didAbort = false;
+        for (;;)
+        {
+            bool pulsing = false;
+            if ((err = mount->isPulseGuiding(&pulsing)))
+            {
+                // A failed check means the pulse state is unknown, not that the move
+                // failed; treat the pulse as complete (mirrors ASCOM's IsGuiding
+                // returning false on a failed read).
+                Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
+                break;
+            }
+            if (!pulsing)
+                break;
 
-        if (WorkerThread::InterruptRequested())
-            return MOVE_ERROR;
-        wxMilliSleep(20);
-        long now = swatch.Time();
-        if (!didAbort && now > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
-        {
-            Debug.Write("Alpaca Guide: pulse still active after grace period; aborting slew\n");
-            if ((err = mount->abortSlew())) // best-effort
-                Debug.Write(wxString::Format("Alpaca Guide: abortslew failed: %s\n", err.what()));
-            didAbort = true;
-            continue;
-        }
-        if (now > TIMEOUT_MS)
-        {
-            Debug.Write("Alpaca Guide: timed out waiting for pulse to complete\n");
-            return MOVE_ERROR;
+            if (WorkerThread::InterruptRequested())
+                return MOVE_ERROR;
+            wxMilliSleep(20);
+            long now = swatch.Time();
+            if (!didAbort && now > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
+            {
+                Debug.Write("Alpaca Guide: pulse still active after grace period; aborting slew\n");
+                if ((err = mount->abortSlew())) // best-effort
+                    Debug.Write(wxString::Format("Alpaca Guide: abortslew failed: %s\n", err.what()));
+                didAbort = true;
+                continue;
+            }
+            if (now > TIMEOUT_MS)
+            {
+                Debug.Write("Alpaca Guide: timed out waiting for pulse to complete\n");
+                return MOVE_ERROR;
+            }
         }
     }
     return MOVE_OK;
@@ -368,7 +414,7 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount)
+    if (!mount || !m_canGetCoordinates)
         return true;
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
@@ -388,13 +434,16 @@ bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 double ScopeAlpaca::GetDeclinationRadians()
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount)
+    if (!mount || !m_canGetCoordinates)
         return UNKNOWN_DECLINATION;
     double dec;
     alpaca::Error err = mount->declination(&dec);
     if (err)
     {
+        // This runs every guide frame; a failing driver would otherwise be re-asked
+        // forever. Stop asking after a failure, like the ASCOM backend.
         Debug.Write(wxString::Format("Alpaca mount: get declination failed: %s\n", err.what()));
+        m_canGetCoordinates = false;
         return UNKNOWN_DECLINATION;
     }
     return dec * M_PI / 180.0;
@@ -403,7 +452,7 @@ double ScopeAlpaca::GetDeclinationRadians()
 bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount)
+    if (!mount || !m_canGetGuideRates)
         return true;
     // ASCOM/Alpaca guide rates are degrees/second -- exactly what PHD2 wants.
     alpaca::Error err;
@@ -441,7 +490,7 @@ bool ScopeAlpaca::Slewing()
 bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount)
+    if (!mount || !m_canGetSiteLatLong)
         return true;
     alpaca::Error err;
     if ((err = mount->siteLatitude(latitude))) // degrees, +N
