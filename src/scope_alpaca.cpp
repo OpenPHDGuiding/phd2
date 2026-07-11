@@ -318,8 +318,9 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
     alpaca::Error err;
 
     // If the mount has started slewing, don't issue guide pulses -- report it so PHD2
-    // can stop guiding (matches the ASCOM/INDI behavior).
-    if (m_canCheckSlewing)
+    // can stop guiding. Only when the user's "stop guiding when mount slews" setting is
+    // enabled (same gating as the ASCOM backend's CheckSlewing).
+    if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled())
     {
         bool slewing = false;
         if ((err = mount->slewing(&slewing)))
