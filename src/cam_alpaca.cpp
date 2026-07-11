@@ -72,6 +72,7 @@ class CameraAlpaca : public GuideCamera
     bool m_canSetCoolerTemperature;
     int m_gainMin, m_gainMax, m_lastSetGain;
     double m_expMin, m_expMax;
+    double m_devPixelSize; // pixel size read from the driver; served to GetDevicePixelSize
     wxByte m_bpp;
 
 public:
@@ -82,6 +83,8 @@ public:
     bool Disconnect() override;
 
     bool HasNonGuiCapture() override { return true; }
+    bool ST4HasNonGuiMove() override { return true; }
+    bool ST4PulseGuideScope(int direction, int duration) override;
     wxByte BitsPerPixel() override { return m_bpp; }
     bool Capture(usImage& img, const CaptureParams& params) override;
 
@@ -120,7 +123,7 @@ private:
 CameraAlpaca::CameraAlpaca()
     : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_canAbortExposure(false),
       m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false), m_gainMin(0), m_gainMax(0),
-      m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_bpp(16)
+      m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_devPixelSize(0.0), m_bpp(16)
 {
     Connected = false;
     Name = _T("Alpaca Camera");
@@ -203,7 +206,11 @@ bool CameraAlpaca::Connect(const wxString& camId)
     m_fullW = fullW;
     m_fullH = fullH;
     FrameSize = wxSize(m_fullW, m_fullH);
-    SetCameraPixelSize(std::max(pixX, pixY));
+    // Cache the pixel size but do NOT write it into the profile here: gear_dialog samples
+    // the previous profile pixel size before calling GetDevicePixelSize, and uses the
+    // change to warn about invalidated dark/bad-pixel libraries after a camera swap.
+    // Setting it at connect makes prev == new (ratio 1.0) and defeats that warning.
+    m_devPixelSize = std::max(pixX, pixY);
 
     // Max binning is optional -- a driver that doesn't report it bins 1x1. Take the
     // smaller of X/Y (the usable square-binning limit) and clamp the current setting,
@@ -276,6 +283,17 @@ bool CameraAlpaca::Connect(const wxString& camId)
             m_canSetCoolerTemperature = false;
         }
     }
+
+    // On-camera ST4 guide output: the camera can pulse-guide the mount directly.
+    // Optional -- a driver that doesn't report it just has no guide output (unlike
+    // cam_ascom, which requires the property; a simple Alpaca camera may omit it).
+    bool hasGuideOutput = false;
+    if ((err = cam->canPulseGuide(&hasGuideOutput)))
+    {
+        Debug.Write(wxString::Format("Alpaca cam: get canpulseguide failed, assuming no guide output: %s\n", err.what()));
+        hasGuideOutput = false;
+    }
+    m_hasGuideOutput = hasGuideOutput;
 
     // Whether an in-flight exposure can be cancelled (used when a stop request
     // arrives mid-exposure); treat a failed probe as "no".
@@ -374,8 +392,9 @@ bool CameraAlpaca::Connect(const wxString& camId)
 
     setCameras(cam, statusCam);
     Connected = true;
-    Debug.Write(wxString::Format("Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d gain=%d..%d bpp=%d\n", m_fullW,
-                                 m_fullH, GetCameraPixelSize(), MaxHwBinning, HasBayer, m_gainMin, m_gainMax, m_bpp));
+    Debug.Write(wxString::Format("Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n",
+                                 m_fullW, m_fullH, m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput,
+                                 m_gainMin, m_gainMax, m_bpp));
     return false;
 }
 
@@ -628,28 +647,73 @@ bool CameraAlpaca::AbortExposure(alpaca::Camera *cam)
     return false;
 }
 
-bool CameraAlpaca::GetDevicePixelSize(double *devPixelSize)
+// Drive the mount through the camera's ST4 guide port. Mirrors CameraASCOM's
+// ST4PulseGuideScope: issue PulseGuide, then wait out the move by polling
+// IsPulseGuiding under a watchdog. Returns true on error, false on success (the
+// PHD2 ST4 convention). Direction values match: PHD2 GUIDE_DIRECTION (NORTH/SOUTH/
+// EAST/WEST = 0/1/2/3) == Alpaca GuideDirection, so it passes through untouched.
+bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
 {
+    if (!m_hasGuideOutput)
+        return true;
+
+    if (!pMount || !pMount->IsConnected())
+        return false;
+
     std::shared_ptr<alpaca::Camera> cam = camera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot get pixel size when not connected\n");
+        Debug.Write("Alpaca cam: cannot ST4 pulse guide when not connected\n");
         return true;
     }
-    double pixX = 0.0, pixY = 0.0;
-    alpaca::Error err = cam->pixelSizeX(&pixX);
+
+    MountWatchdog watchdog(duration, 5000);
+
+    alpaca::Error err = cam->pulseGuide((alpaca::Camera::GuideDirection) direction, duration);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca cam: get pixelsizex failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca cam: ST4 pulseguide failed: %s\n", err.what()));
         return true;
     }
-    // PixelSizeY is optional; use the larger dimension to match the Connect-time value.
-    if ((err = cam->pixelSizeY(&pixY)))
+
+    // If PulseGuide returned before the pulse finished (the usual asynchronous case),
+    // poll IsPulseGuiding until the move completes.
+    if (watchdog.Time() < duration)
     {
-        Debug.Write(wxString::Format("Alpaca cam: get pixelsizey failed, using pixelsizex: %s\n", err.what()));
-        pixY = pixX;
+        for (;;)
+        {
+            bool pulsing = false;
+            if ((err = cam->isPulseGuiding(&pulsing)))
+            {
+                // Unknown state -- treat the pulse as complete rather than fail
+                // (mirrors cam_ascom's ASCOM_IsMoving returning false on a failed read).
+                Debug.Write(wxString::Format("Alpaca cam: ST4 ispulseguiding failed: %s\n", err.what()));
+                break;
+            }
+            if (!pulsing)
+                break;
+            wxMilliSleep(50);
+            if (WorkerThread::TerminateRequested())
+                return true;
+            if (watchdog.Expired())
+            {
+                Debug.Write("Alpaca cam: ST4 watchdog timed out waiting for pulse to complete\n");
+                return true;
+            }
+        }
     }
-    *devPixelSize = std::max(pixX, pixY);
+
+    return false;
+}
+
+bool CameraAlpaca::GetDevicePixelSize(double *devPixelSize)
+{
+    // Serve the value cached at connect (mirrors cam_ascom's m_driverPixelSize). Reading
+    // it live here would be redundant and, more importantly, gear_dialog relies on the
+    // profile pixel size still being the *previous* camera's value at this point.
+    if (!Connected)
+        return true;
+    *devPixelSize = m_devPixelSize;
     return false;
 }
 

@@ -269,6 +269,19 @@ public:
     Error setNumX(int);
     Error setNumY(int);
 
+    // On-camera ST4 guide output (ICamera pulse guiding -- its own members, distinct
+    // from the telescope's). Direction values match ASCOM GuideDirections.
+    enum GuideDirection
+    {
+        North = 0,
+        South = 1,
+        East = 2,
+        West = 3
+    };
+    Error canPulseGuide(bool *out);
+    Error pulseGuide(GuideDirection dir, int durationMs); // returns after the PUT; see isPulseGuiding
+    Error isPulseGuiding(bool *out);
+
     // Exposure lifecycle.
     Error startExposure(double seconds, bool light = true);
     Error imageReady(bool *out);

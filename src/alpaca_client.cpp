@@ -648,6 +648,19 @@ Error Camera::setNumY(int n)
     return put("numy", { { "NumY", std::to_string(n) } });
 }
 
+Error Camera::canPulseGuide(bool *out)
+{
+    return getBool("canpulseguide", out);
+}
+Error Camera::pulseGuide(GuideDirection dir, int durationMs)
+{
+    return put("pulseguide", { { "Direction", std::to_string((int) dir) }, { "Duration", std::to_string(durationMs) } });
+}
+Error Camera::isPulseGuiding(bool *out)
+{
+    return getBool("ispulseguiding", out);
+}
+
 Error Camera::startExposure(double seconds, bool light)
 {
     return put("startexposure", { { "Duration", std::to_string(seconds) }, { "Light", light ? "true" : "false" } });

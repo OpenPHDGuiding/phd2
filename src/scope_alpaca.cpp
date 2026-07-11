@@ -128,6 +128,7 @@ public:
 private:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
     MOVE_RESULT GuideImpl(GUIDE_DIRECTION direction, int durationMs);
+    MOVE_RESULT CheckSlewing(alpaca::Telescope *mount);
     std::shared_ptr<alpaca::Telescope> telescope() const
     {
         std::lock_guard<std::mutex> lk(m_mountLock);
@@ -333,6 +334,26 @@ void ScopeAlpaca::SetupDialog()
 // Guide wraps GuideImpl with the same end-of-guide alert policy as the ASCOM backend:
 // a failed pulse (other than a user interrupt) raises the suppressible pulse-guide
 // alert; a detected slew raises the suppressible slew alert.
+// Mirrors scope_ascom's CheckSlewing: when the user's stop-guiding-when-slewing setting
+// is enabled and the mount can report it, treat a slew in progress as a reason to stop
+// guiding. Returns MOVE_OK to continue, MOVE_ERROR_SLEWING if the mount is slewing, or
+// MOVE_ERROR on a failed read.
+Mount::MOVE_RESULT ScopeAlpaca::CheckSlewing(alpaca::Telescope *mount)
+{
+    if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled())
+    {
+        bool slewing = false;
+        alpaca::Error err = mount->slewing(&slewing);
+        if (err)
+        {
+            Debug.Write(wxString::Format("Alpaca Guide: slewing check failed: %s\n", err.what()));
+            return MOVE_ERROR;
+        }
+        if (slewing)
+            return MOVE_ERROR_SLEWING;
+    }
+    return MOVE_OK;
+}
 Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 {
     MOVE_RESULT result = GuideImpl(direction, durationMs);
@@ -373,18 +394,50 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     alpaca::Error err;
 
     // If the mount has started slewing, don't issue guide pulses -- report it so PHD2
-    // can stop guiding. Only when the user's "stop guiding when mount slews" setting is
-    // enabled (same gating as the ASCOM backend's CheckSlewing).
-    if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled())
+    // can stop guiding (gated on the user's stop-guiding-when-slewing setting).
+    MOVE_RESULT slewResult = CheckSlewing(mount.get());
+    if (slewResult != MOVE_OK)
+        return slewResult;
+
+    // If a previous pulse is still executing, wait for it to finish before issuing the
+    // next one (mirrors scope_ascom). Bounded to ~1 s, re-checking slewing each pass;
+    // still moving after that is an error. Skipped when the driver can't report pulse
+    // state -- there is then nothing to poll, and the post-pulse sleep is the only
+    // completion signal.
+    if (m_canCheckPulseGuiding)
     {
-        bool slewing = false;
-        if ((err = mount->slewing(&slewing)))
+        bool pulsing = false;
+        if ((err = mount->isPulseGuiding(&pulsing)))
         {
-            Debug.Write(wxString::Format("Alpaca Guide: slewing check failed: %s\n", err.what()));
-            return MOVE_ERROR;
+            // Unknown state, not a failure -- proceed rather than block (matches ASCOM's
+            // IsGuiding returning false on a failed read).
+            Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
+            pulsing = false;
         }
-        if (slewing)
-            return MOVE_ERROR_SLEWING;
+        if (pulsing)
+        {
+            Debug.Write("Alpaca Guide: entered guide while a pulse is still active; draining\n");
+            int i;
+            for (i = 0; i < 20; i++)
+            {
+                wxMilliSleep(50);
+                if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
+                    return slewResult;
+                if ((err = mount->isPulseGuiding(&pulsing)))
+                {
+                    Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
+                    break; // state unknown -- treat as drained
+                }
+                if (!pulsing)
+                    break;
+            }
+            if (i == 20)
+            {
+                Debug.Write("Alpaca Guide: pulse still active after 1s; aborting\n");
+                return MOVE_ERROR;
+            }
+            Debug.Write("Alpaca Guide: prior pulse drained; continuing\n");
+        }
     }
 
     // PHD2 NORTH/SOUTH/EAST/WEST (0/1/2/3) == Alpaca North/South/East/West.
@@ -407,16 +460,22 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
         return MOVE_ERROR;
     }
 
+    // Time the PUT: the pulse starts when the server processes the request, so the HTTP
+    // round-trip counts toward the pulse duration and must be subtracted from the sleep
+    // below (mirrors scope_ascom, which stopwatches PulseGuide). On a slow link this
+    // round-trip is otherwise added on top of every pulse.
+    wxStopWatch pulseTimer;
     if ((err = mount->pulseGuide(ad, durationMs)))
     {
         Debug.Write(wxString::Format("Alpaca Guide: pulseguide failed: %s\n", err.what()));
         return MOVE_ERROR;
     }
+    long elapsed = pulseTimer.Time();
 
     // PulseGuide may be asynchronous; the guide algorithm expects Guide() to return
-    // only after the move completes. Sleep out the pulse (interruptible by a stop or
-    // terminate request), then poll until the mount reports it's done.
-    if (WorkerThread::MilliSleep(durationMs, WorkerThread::INT_ANY))
+    // only after the move completes. Sleep out the remaining pulse time (interruptible
+    // by a stop or terminate request), then poll until the mount reports it's done.
+    if (elapsed < durationMs && WorkerThread::MilliSleep(durationMs - elapsed + 10, WorkerThread::INT_ANY))
         return MOVE_ERROR;
 
     // When the driver can't report IsPulseGuiding, the sleep above is the best
@@ -448,6 +507,12 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
             if (WorkerThread::InterruptRequested())
                 return MOVE_ERROR;
             wxMilliSleep(20);
+
+            // A slew starting mid-pulse must stop guiding (mirrors scope_ascom's
+            // CheckSlewing inside the completion loop).
+            if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
+                return slewResult;
+
             long now = swatch.Time();
             if (!didAbort && now > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
             {
