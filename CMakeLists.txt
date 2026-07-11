@@ -655,6 +655,10 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      # The Makefile generator ignores MACOSX_PACKAGE_LOCATION for a linked .dylib, so stage
+      # it into the bundle explicitly before install_name_tool rewrites its load paths.
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${asiCamera2} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @loader_path/libASICamera2.dylib
                    @executable_path/../Frameworks/libASICamera2.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @loader_path/libusb-1.0.0.dylib
@@ -670,6 +674,8 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${qhylib} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libqhyccd.20.dylib
                    @executable_path/../Frameworks/libqhyccd.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change /usr/local/lib/libusb-1.0.0.dylib
@@ -688,6 +694,8 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${toupcam} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libtoupcam.dylib
                    @executable_path/../Frameworks/libtoupcam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libtoupcam.dylib"
@@ -700,6 +708,8 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${ogmacam} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libogmacam.dylib
                    @executable_path/../Frameworks/libogmacam.dylib $<TARGET_FILE:phd2>
       COMMENT "Updating dylib path for libogmacam.dylib"
@@ -711,6 +721,8 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${SVBCameraSDK} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change @rpath/libSVBCameraSDK.dylib
                    @executable_path/../Frameworks/libSVBCameraSDK.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @rpath/libusb-1.0.0.dylib
@@ -725,6 +737,8 @@ if(APPLE)
     add_custom_command(
       TARGET phd2
       POST_BUILD
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp ${playerone} $<TARGET_FILE_DIR:phd2>/../Frameworks/
       COMMAND install_name_tool -change libPlayerOneCamera.3.dylib
                    @executable_path/../Frameworks/libPlayerOneCamera.dylib $<TARGET_FILE:phd2>
       COMMAND install_name_tool -change @rpath/libusb-1.0.0.dylib
@@ -852,6 +866,9 @@ endif()
 
 # properties of the project common to all platforms
 target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+if(wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.3")
+  target_compile_definitions(phd2 PRIVATE wxNO_REQUIRE_LITERAL_MSGIDS)
+endif()
 target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 if(APPLE)
   # suppress warnings about "overrides a member function but is not marked 'override'" with wxDECLARE_EVENT_TABLE

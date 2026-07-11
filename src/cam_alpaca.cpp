@@ -59,10 +59,22 @@ namespace
 // cam_ascom's free 20 ms local COM poll), and the exposure body is slept out before
 // polling starts, so the poll cadence only paces the readout/download tail. The
 // camerastate fail-fast check rides every Nth poll, at roughly this interval.
+// Routes the alpaca client's internal diagnostics (absorbed retries) into the debug log.
+void AlpacaDiagLog(const char *msg)
+{
+    Debug.Write(wxString::Format("Alpaca client: %s\n", msg));
+}
+
 enum
 {
     IMAGE_READY_POLL_MS = 50,
     CAMERA_STATE_CHECK_MS = 1000,
+    // Control-call timeout (everything but the image download, which uses the Device's
+    // separate 30 s image timeout plus its own stall abort): small requests should fail
+    // in seconds on a dead server, not 30. The status connection is shorter still --
+    // it serves UI-thread polls that must never hang the GUI.
+    CONTROL_TIMEOUT_MS = 5000,
+    STATUS_TIMEOUT_MS = 3000,
 };
 
 class CameraAlpaca : public GuideCamera
@@ -84,6 +96,7 @@ class CameraAlpaca : public GuideCamera
     bool m_canGetCoolerPower;
     bool m_canSetCoolerTemperature;
     int m_gainMin, m_gainMax, m_lastSetGain;
+    int m_clampLoggedDuration; // requested duration (ms) already logged as clamped
     double m_expMin, m_expMax;
     double m_devPixelSize; // pixel size read from the driver; served to GetDevicePixelSize
     wxByte m_bpp;
@@ -137,11 +150,16 @@ private:
 CameraAlpaca::CameraAlpaca()
     : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_swapAxes(false),
       m_canAbortExposure(false), m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false),
-      m_gainMin(0), m_gainMax(0), m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_devPixelSize(0.0), m_bpp(16)
+      m_gainMin(0), m_gainMax(0), m_lastSetGain(-1), m_clampLoggedDuration(0), m_expMin(0.0), m_expMax(0.0),
+      m_devPixelSize(0.0), m_bpp(16)
 {
+    // Installed at construction (not connect) so discovery runs from the setup dialog
+    // and profile wizard are covered too.
+    alpaca::setDiagnosticLog(&AlpacaDiagLog);
+    alpaca::setVerboseLogging(pConfig->Global.GetBoolean("/alpaca/verboselogging", false));
     Connected = false;
     Name = _T("Alpaca Camera");
-    PropertyDialogType = PROPDLG_ANY; // setup reachable connected or not; changes apply on next connect
+    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED; // address changes apply on next connect; matches cam_ascom
     HasGainControl = false; // set from the camera at Connect
     HasSubframes = true;
     HasFrameLimiting = true;
@@ -218,10 +236,10 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     addr.deviceType = "camera";
     addr.deviceNumber = (int) m_devnum;
     auto cam = std::make_shared<alpaca::Camera>(addr);
-    // Connect-phase timeout: short enough that Cancel is honored within a few seconds
-    // per round-trip and a hung server can't pin the connect for 30 s per probe;
-    // restored to the capture-grade default once the sequence succeeds.
-    cam->setTimeoutMs(5000);
+    // Control timeout, in force for the life of the connection: during connect it keeps
+    // Cancel honored within a few seconds per round-trip, and afterwards every non-image
+    // call is a small control request that should fail fast on a dead server.
+    cam->setTimeoutMs(CONTROL_TIMEOUT_MS);
 
     // A required-property failure logs which member failed and carries the reason back
     // to the UI thread, which raises CamConnectFailed from it (mirrors the per-property
@@ -423,6 +441,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
         }
     }
     m_lastSetGain = -1;
+    m_clampLoggedDuration = 0;
 
     if (bg->IsCanceled())
         return true;
@@ -456,13 +475,11 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
         m_expMax = 0.0;
     }
 
-    cam->setTimeoutMs(30000); // connect sequence done; restore the capture-grade default
-
     // Second connection for the UI-thread status calls: its own curl handle (no
     // queueing behind an image download) and a short timeout so a hung server can't
-    // freeze the GUI for the capture-grade 30 s.
+    // freeze the GUI.
     auto statusCam = std::make_shared<alpaca::Camera>(addr, /*clientId=*/2);
-    statusCam->setTimeoutMs(3000);
+    statusCam->setTimeoutMs(STATUS_TIMEOUT_MS);
 
     *pcam = std::move(cam);
     *pstatusCam = std::move(statusCam);
@@ -481,6 +498,7 @@ bool CameraAlpaca::Disconnect()
     }
     HasCooler = false; // the config dialog gates cooler calls on this, even when disconnected
     Connected = false;
+    Debug.Write("Alpaca cam disconnected\n");
     return false;
 }
 
@@ -604,17 +622,26 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         {
             if ((err = cam->setGain(g)))
                 return fail("set gain", err);
+            Debug.Write(wxString::Format("Alpaca capture: gain %d programmed (slider %d)\n", g, params.gain));
             m_lastSetGain = g;
         }
     }
 
     // Clamp to the camera's accepted exposure range so a short guide exposure isn't
-    // rejected outright by the device (which would disconnect with an alert).
+    // rejected outright by the device (which would disconnect with an alert). When the
+    // clamp engages the frames are longer/shorter than the user asked for -- log it,
+    // once per distinct requested duration (not per frame).
     double secs = (double) params.duration / 1000.0;
+    double reqSecs = secs;
     if (m_expMin > 0.0 && secs < m_expMin)
         secs = m_expMin;
     if (m_expMax > 0.0 && secs > m_expMax)
         secs = m_expMax;
+    if (secs != reqSecs && params.duration != m_clampLoggedDuration)
+    {
+        Debug.Write(wxString::Format("Alpaca capture: exposure %.3f s clamped to camera limit %.3f s\n", reqSecs, secs));
+        m_clampLoggedDuration = params.duration;
+    }
     // A dark can only be taken by a camera that has a shutter; on a shutterless
     // camera always request a light frame (mirrors cam_ascom's takeDark gating).
     bool light = !(HasShutter && ShutterClosed);
@@ -788,11 +815,15 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
 // exposure out -- the same contract as CameraASCOM::AbortExposure.
 bool CameraAlpaca::AbortExposure(alpaca::Camera *cam)
 {
+    // Aborts are rare, user-triggered events worth a line either way (cam_ascom logs
+    // its abort result too).
     if (m_canAbortExposure)
     {
         alpaca::Error err = cam->abortExposure();
         if (err)
             Debug.Write(wxString::Format("Alpaca cam: abortexposure failed: %s\n", err.what()));
+        else
+            Debug.Write("Alpaca cam: exposure aborted (abortexposure)\n");
         return !err;
     }
     if (m_canStopExposure)
@@ -800,8 +831,11 @@ bool CameraAlpaca::AbortExposure(alpaca::Camera *cam)
         alpaca::Error err = cam->stopExposure();
         if (err)
             Debug.Write(wxString::Format("Alpaca cam: stopexposure failed: %s\n", err.what()));
+        else
+            Debug.Write("Alpaca cam: exposure cancelled (stopexposure)\n");
         return !err;
     }
+    Debug.Write("Alpaca cam: cannot cancel the exposure (no abort/stop support); waiting it out\n");
     return false;
 }
 
@@ -827,12 +861,19 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
 
     MountWatchdog watchdog(duration, 5000);
 
+    // A synchronous driver may block the PulseGuide PUT for the whole pulse; give this
+    // one call a pulse-length budget on top of the control timeout, then restore.
+    cam->setTimeoutMs(duration + CONTROL_TIMEOUT_MS);
+    wxStopWatch pulseTimer;
     alpaca::Error err = cam->pulseGuide((alpaca::Camera::GuideDirection) direction, duration);
+    cam->setTimeoutMs(CONTROL_TIMEOUT_MS);
     if (err)
     {
         Debug.Write(wxString::Format("Alpaca cam: ST4 pulseguide failed: %s\n", err.what()));
         return true;
     }
+    Debug.Write(wxString::Format("Alpaca cam: ST4 pulse dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, duration,
+                                 pulseTimer.Time()));
 
     // If PulseGuide returned before the pulse finished (the usual asynchronous case),
     // poll IsPulseGuiding until the move completes.
@@ -843,9 +884,11 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
             bool pulsing = false;
             if ((err = cam->isPulseGuiding(&pulsing)))
             {
-                // Unknown state -- treat the pulse as complete rather than fail
-                // (mirrors cam_ascom's ASCOM_IsMoving returning false on a failed read).
+                // Unknown state -- treat the pulse as complete rather than fail, and alert
+                // the user (mirrors cam_ascom's ASCOM_IsMoving: it raises this alert and
+                // returns false on a failed IsPulseGuiding read).
                 Debug.Write(wxString::Format("Alpaca cam: ST4 ispulseguiding failed: %s\n", err.what()));
+                pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."));
                 break;
             }
             if (!pulsing)
@@ -977,8 +1020,11 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
     {
         if ((err = cam->ccdSetpoint(setpoint))) // ASCOM SetCCDTemperature is readable (the target)
         {
-            Debug.Write(wxString::Format("Alpaca cam: get setccdtemperature failed, reporting current temp: %s\n", err.what()));
-            *setpoint = *temperature;
+            // A driver that advertises CanSetCCDTemperature but fails the setpoint read is
+            // reporting bad cooler status; error out rather than passing off the current
+            // temperature as the setpoint (matches cam_ascom's GetCoolerStatus).
+            Debug.Write(wxString::Format("Alpaca cam: get setccdtemperature failed: %s\n", err.what()));
+            return true;
         }
     }
     else

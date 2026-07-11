@@ -86,6 +86,7 @@ class AlpacaConfigDialog : public wxDialog
     wxButton *m_useManual;
     wxTextCtrl *m_discoveryIP;
     wxCheckBox *m_showIPv6;
+    wxCheckBox *m_verbose;
     wxListBox *m_list;
     wxButton *m_useSelected;
     std::vector<alpaca::DeviceAddress> m_all; // full discovery results
@@ -162,7 +163,19 @@ public:
         discBox->Add(brow, 0, wxALL | wxEXPAND, 8);
         top->Add(discBox, 1, wxLEFT | wxRIGHT | wxEXPAND, 10);
 
-        top->Add(CreateButtonSizer(wxCANCEL), 0, wxALL | wxALIGN_RIGHT, 10);
+        // Verbose logging: one debug-log line per Alpaca GET/PUT (member, status, ms).
+        // Off by default; mirroring the INDI backend's "Verbose logging" option.
+        wxBoxSizer *bottomRow = new wxBoxSizer(wxHORIZONTAL);
+        m_verbose = new wxCheckBox(this, wxID_ANY, _("Verbose logging (all Alpaca devices)"));
+        m_verbose->SetValue(pConfig->Global.GetBoolean("/alpaca/verboselogging", false));
+        m_verbose->SetToolTip(_("Log every Alpaca request (with its response time) to the debug log. Useful for "
+                                "diagnosing slow or unreliable network connections. This is a global setting -- it "
+                                "applies to every Alpaca camera and mount, not just this device."));
+        m_verbose->Bind(wxEVT_CHECKBOX, &AlpacaConfigDialog::OnVerbose, this);
+        bottomRow->Add(m_verbose, 0, wxALIGN_CENTER_VERTICAL);
+        bottomRow->AddStretchSpacer();
+        bottomRow->Add(CreateButtonSizer(wxCANCEL), 0, wxALIGN_CENTER_VERTICAL);
+        top->Add(bottomRow, 0, wxALL | wxEXPAND, 10);
         SetSizerAndFit(top);
 
         UpdateButtonStates();
@@ -237,6 +250,14 @@ private:
     {
         pConfig->Global.SetBoolean("/alpaca/showipv6", m_showIPv6->GetValue());
         RefreshList();
+    }
+
+    void OnVerbose(wxCommandEvent&)
+    {
+        bool on = m_verbose->GetValue();
+        pConfig->Global.SetBoolean("/alpaca/verboselogging", on);
+        alpaca::setVerboseLogging(on); // live -- no reconnect needed
+        Debug.Write(wxString::Format("Alpaca verbose logging %s\n", on ? "enabled" : "disabled"));
     }
     void OnHostText(wxCommandEvent&) { UpdateButtonStates(); }
     void OnListSelect(wxCommandEvent&) { UpdateButtonStates(); }

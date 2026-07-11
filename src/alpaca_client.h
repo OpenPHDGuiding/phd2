@@ -118,6 +118,19 @@ struct ConfiguredDevice
     int deviceNumber = 0;
 };
 
+// setDiagnosticLog installs a sink for client-internal diagnostics (absorbed-retry
+// notices, discovery/management failures, and -- when verbose logging is on -- one line
+// per GET/PUT). The client itself stays wx-free, so PHD2's backends point this at the
+// debug log at construction. Pass nullptr to disable. The sink must be thread-safe
+// (PHD2's Debug.Write is).
+void setDiagnosticLog(void (*log)(const char *msg));
+
+// setVerboseLogging toggles per-request GET/PUT logging (member, HTTP status, elapsed
+// ms) through the diagnostic sink. Off by default; can be flipped live. Errors and
+// absorbed retries are always logged regardless of this flag -- verbose adds only the
+// success traffic (~6-10 lines/guide-cycle), mirroring the INDI backend's opt-in.
+void setVerboseLogging(bool on);
+
 // discover returns "host:port" for every Alpaca server answering UDP 32227 discovery
 // within timeoutMs. It probes, on both IP families: each local interface's IPv4 directed
 // broadcast + the limited broadcast + loopback (so multi-homed machines reach all their
@@ -154,7 +167,12 @@ public:
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
 
+    // Two timeout classes: the control timeout applies to every request except the
+    // image fetch (control calls are small and should fail fast on a dead server); the
+    // image timeout applies only to the ImageBytes/ImageArray request, which is
+    // legitimately a long transfer (and additionally has a low-speed stall abort).
     void setTimeoutMs(long ms) { m_timeoutMs = ms; }
+    void setImageTimeoutMs(long ms) { m_imageTimeoutMs = ms; }
 
     // Common ASCOM device members. Each returns an Error (falsy on success); getters write
     // their result through the out-parameter.
@@ -190,6 +208,7 @@ private:
     int m_clientId;
     uint32_t m_txn;
     long m_timeoutMs = 30000;
+    long m_imageTimeoutMs = 30000;
     std::mutex m_mu;
     void *m_curl; // CURL* (opaque to keep curl out of the header)
 };
@@ -319,6 +338,9 @@ public:
     Error ccdSetpoint(double *out); // GET setccdtemperature -- the cooler target (deg C); readable per ASCOM
     Error ccdTemperature(double *out);
     Error coolerPower(double *out);
+
+private:
+    bool m_jsonFallbackLogged = false; // one-time notice when the JSON ImageArray fallback engages
 };
 
 } // namespace alpaca

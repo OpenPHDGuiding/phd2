@@ -76,9 +76,26 @@ void SuppressPulseGuideFailedAlert(intptr_t)
     pConfig->Global.SetBoolean(PulseGuideFailedAlertEnabledKey(), false);
 }
 
+// Routes the alpaca client's internal diagnostics (absorbed retries) into the debug log.
+void AlpacaDiagLog(const char *msg)
+{
+    Debug.Write(wxString::Format("Alpaca client: %s\n", msg));
+}
+
+// Request timeouts. Every mount call is a small control request that should fail in
+// seconds on a dead server, not 30 (R1); the UI-thread status connection is shorter
+// still. A synchronous driver can block the PulseGuide PUT for the pulse duration, so
+// that one call gets a pulse-length budget on top of the control timeout.
+enum
+{
+    CONTROL_TIMEOUT_MS = 5000,
+    STATUS_TIMEOUT_MS = 3000,
+};
+
 class ScopeAlpaca : public Scope
 {
     std::shared_ptr<alpaca::Telescope> m_mount;
+    std::shared_ptr<alpaca::Telescope> m_statusMount;
     mutable std::mutex m_mountLock;
     wxString m_host;
     long m_port;
@@ -136,10 +153,16 @@ private:
         std::lock_guard<std::mutex> lk(m_mountLock);
         return m_mount;
     }
-    void setTelescope(std::shared_ptr<alpaca::Telescope> mount)
+    std::shared_ptr<alpaca::Telescope> statusTelescope() const
+    {
+        std::lock_guard<std::mutex> lk(m_mountLock);
+        return m_statusMount;
+    }
+    void setTelescopes(std::shared_ptr<alpaca::Telescope> mount, std::shared_ptr<alpaca::Telescope> statusMount)
     {
         std::lock_guard<std::mutex> lk(m_mountLock);
         m_mount = std::move(mount);
+        m_statusMount = std::move(statusMount);
     }
     void loadProfile();
     void saveProfile() const;
@@ -151,6 +174,10 @@ ScopeAlpaca::ScopeAlpaca()
       m_canSlew(false), m_canSlewAsync(false), m_canGetCoordinates(false), m_canGetGuideRates(false),
       m_canGetSiteLatLong(false), m_canGetSideOfPier(false), m_abortSlewWhenGuidingStuck(false), m_checkForSyncPulseGuide(false)
 {
+    // Installed at construction (not connect) so discovery runs from the setup dialog
+    // are covered too.
+    alpaca::setDiagnosticLog(&AlpacaDiagLog);
+    alpaca::setVerboseLogging(pConfig->Global.GetBoolean("/alpaca/verboselogging", false));
     loadProfile();
 }
 
@@ -182,10 +209,10 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum, RunIn
     addr.deviceType = "telescope";
     addr.deviceNumber = (int) devnum;
     auto mount = std::make_shared<alpaca::Telescope>(addr);
-    // Connect-phase timeout: short enough that Cancel is honored within a few seconds
-    // per round-trip and a hung server can't pin the connect for 30 s per probe;
-    // restored to the normal default once the sequence succeeds.
-    mount->setTimeoutMs(5000);
+    // Control timeout, in force for the life of the connection: during connect it keeps
+    // Cancel honored within a few seconds per round-trip, and afterwards every mount
+    // call is a small control request that should fail fast on a dead server.
+    mount->setTimeoutMs(CONTROL_TIMEOUT_MS);
 
     alpaca::Error err;
     if ((err = mount->setConnected(true)))
@@ -292,9 +319,13 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum, RunIn
     if (!m_canCheckPulseGuiding)
         Debug.Write("Alpaca mount: cannot check IsPulseGuiding; will rely on pulse timing\n");
 
-    mount->setTimeoutMs(30000); // connect sequence done; restore the normal default
+    // Second connection for the UI-thread calls (SideOfPier, coordinates, the slew
+    // tools): its own curl handle, so a dialog never queues behind -- or delays -- a
+    // guide-loop call, and a short timeout so a hung server can't freeze the GUI.
+    auto statusMount = std::make_shared<alpaca::Telescope>(addr, /*clientId=*/2);
+    statusMount->setTimeoutMs(STATUS_TIMEOUT_MS);
 
-    setTelescope(mount);
+    setTelescopes(mount, statusMount);
     return true;
 }
 
@@ -364,7 +395,7 @@ bool ScopeAlpaca::Connect()
 
     if (bg.Run())
     {
-        setTelescope(nullptr);
+        setTelescopes(nullptr, nullptr);
         // Alert with the specific reason when the configured mount is unreachable (the
         // A5 behavior); a user cancel fails quietly.
         if (!bg.IsCanceled() && hostConfigured)
@@ -392,14 +423,12 @@ bool ScopeAlpaca::Connect()
 
 bool ScopeAlpaca::Disconnect()
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
-    setTelescope(nullptr);
-    if (mount)
-    {
-        alpaca::Error err = mount->setConnected(false); // best-effort
-        if (err)
-            Debug.Write(wxString::Format("Alpaca mount: setConnected(false) failed: %s\n", err.what()));
-    }
+    // Deliberately do NOT PUT Connected=false on the device: an Alpaca mount is commonly
+    // shared (a planetarium or another client may be connected to the same server), and
+    // setting Connected=false disconnects it for everyone. scope_ascom makes the same
+    // choice.
+    setTelescopes(nullptr, nullptr);
+    Debug.Write("Alpaca mount disconnected (device left connected for other clients)\n");
     return Scope::Disconnect();
 }
 
@@ -554,8 +583,13 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     // round-trip counts toward the pulse duration and must be subtracted from the sleep
     // below (mirrors scope_ascom, which stopwatches PulseGuide). On a slow link this
     // round-trip is otherwise added on top of every pulse.
+    // A synchronous driver may block the PulseGuide PUT for the whole pulse; give this
+    // one call a pulse-length budget on top of the control timeout, then restore.
+    mount->setTimeoutMs(durationMs + CONTROL_TIMEOUT_MS);
     wxStopWatch pulseTimer;
-    if ((err = mount->pulseGuide(ad, durationMs)))
+    err = mount->pulseGuide(ad, durationMs);
+    mount->setTimeoutMs(CONTROL_TIMEOUT_MS);
+    if (err)
     {
         Debug.Write(wxString::Format("Alpaca Guide: pulseguide failed: %s\n", err.what()));
         // Make sure nothing got by us and the mount can really handle pulse guide --
@@ -571,6 +605,10 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
         return MOVE_ERROR;
     }
     long elapsed = pulseTimer.Time();
+
+    // One line per pulse including the PUT round-trip -- the number that diagnoses
+    // sluggish guiding over a slow link (scope_ascom's per-pulse Dir/Dur line, plus RTT).
+    Debug.Write(wxString::Format("Alpaca Guide: dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, durationMs, elapsed));
 
     // A long pulse whose PUT returned only around/after the pulse duration indicates a
     // synchronous pulse guide or slow dispatch (mirrors scope_ascom's AstroPhysicsV2
@@ -649,7 +687,9 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
 
 bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    // Pointing-info reads come from the UI/event-server side; use the status connection
+    // (short timeout, never queued behind a guide-loop call).
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot get coordinates when not connected\n");
@@ -703,7 +743,7 @@ double ScopeAlpaca::GetDeclinationRadians()
 
 bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot get guide rates when not connected\n");
@@ -746,7 +786,9 @@ bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 
 bool ScopeAlpaca::Slewing()
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    // The public Slewing() serves UI/event-server callers; the guide loop uses
+    // CheckSlewing on the main connection.
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot check Slewing when not connected\n");
@@ -764,7 +806,7 @@ bool ScopeAlpaca::Slewing()
 
 bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot get site latitude/longitude when not connected\n");
@@ -788,10 +830,19 @@ bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 
 bool ScopeAlpaca::SlewToCoordinatesAsync(double ra, double dec)
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    // Slews are driven from UI-thread tools (drift align, polar alignment); use the
+    // status connection so they can't collide with the guide loop.
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot slew when not connected\n");
+        return true;
+    }
+    // Redundant internal capability guard (higher layers gate on CanSlewAsync(), but
+    // mirror scope_ascom's belt-and-braces check here too).
+    if (!m_canSlewAsync)
+    {
+        Debug.Write("Alpaca mount: not capable of async slewing\n");
         return true;
     }
     alpaca::Error err = mount->slewToCoordinatesAsync(ra, dec); // ra hours, dec degrees
@@ -805,10 +856,20 @@ bool ScopeAlpaca::SlewToCoordinatesAsync(double ra, double dec)
 
 bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
 {
-    // Start the async slew, then block until the mount stops slewing (mirrors INDI).
+    // Redundant internal capability guard, mirroring scope_ascom (higher layers gate on
+    // CanSlew() first). The emulated sync slew is driven by the async slew below, so the
+    // async guard also applies -- this is the ASCOM-parallel top-level check.
+    if (!m_canSlew)
+    {
+        Debug.Write("Alpaca mount: not capable of slewing\n");
+        return true;
+    }
+    // Start the async slew, then block until the mount stops slewing. This is a
+    // blocking call, exactly like scope_ascom's synchronous SlewToCoordinates (a single
+    // blocking COM invoke): it is only reached for a mount that can't slew async.
     if (SlewToCoordinatesAsync(ra, dec))
         return true;
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot slew when not connected\n");
@@ -829,13 +890,12 @@ bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
         if (::wxGetUTCTimeMillis().GetValue() > deadline)
             return true;
         wxMilliSleep(200);
-        ::wxSafeYield();
     }
 }
 
 void ScopeAlpaca::AbortSlew()
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot abort slew when not connected\n");
@@ -848,7 +908,7 @@ void ScopeAlpaca::AbortSlew()
 
 PierSide ScopeAlpaca::SideOfPier()
 {
-    std::shared_ptr<alpaca::Telescope> mount = telescope();
+    std::shared_ptr<alpaca::Telescope> mount = statusTelescope();
     if (!mount)
     {
         Debug.Write("Alpaca mount: cannot get side of pier when not connected\n");

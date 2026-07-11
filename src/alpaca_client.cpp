@@ -38,11 +38,13 @@
 #include "json_parser.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cctype>
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include <thread>
 
 #include <curl/curl.h>
 
@@ -68,6 +70,34 @@ using socklen_t = int;
 
 namespace alpaca
 {
+
+// --------------------------------------------------------------- diagnostics sink
+
+static std::atomic<void (*)(const char *)> s_diagLog { nullptr };
+static std::atomic<bool> s_verbose { false };
+
+void setDiagnosticLog(void (*log)(const char *msg))
+{
+    s_diagLog.store(log);
+}
+
+void setVerboseLogging(bool on)
+{
+    s_verbose.store(on);
+}
+
+namespace
+{
+    void logDiag(const std::string& msg)
+    {
+        if (auto *f = s_diagLog.load())
+            f(msg.c_str());
+    }
+    bool verbose()
+    {
+        return s_verbose.load();
+    }
+} // namespace
 
 // ---------------------------------------------------------------- JSON helpers
 // Alpaca responses are parsed with PHD2's JsonParser (src/json_parser.*). The parse is
@@ -178,6 +208,22 @@ namespace
         auto *abortCheck = static_cast<const std::function<bool()> *>(userdata);
         return (*abortCheck)() ? 1 : 0;
     }
+
+    // Transient fast-fail transport errors worth one retry: connection refused/reset,
+    // a send/receive error, or the server closing the connection without a response
+    // (all fail in milliseconds, and libcurl's own single dead-keep-alive retry has
+    // already been consumed by the time one of these surfaces). Timeouts are
+    // deliberately excluded -- a timeout means a hung server, and retrying it just
+    // doubles the hang before the failure is reported.
+    bool transientCurlError(CURLcode rc)
+    {
+        return rc == CURLE_COULDNT_CONNECT || rc == CURLE_GOT_NOTHING || rc == CURLE_SEND_ERROR || rc == CURLE_RECV_ERROR;
+    }
+
+    enum
+    {
+        RETRY_BACKOFF_MS = 200
+    };
 
     uint32_t rdU32(const unsigned char *p)
     {
@@ -339,7 +385,7 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
     curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeoutMs);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, acceptImageBytes ? m_imageTimeoutMs : m_timeoutMs);
     if (hdrs)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
     if (abortCheck)
@@ -358,7 +404,19 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
         curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 10L);
     }
 
+    auto t0 = std::chrono::steady_clock::now();
     CURLcode rc = curl_easy_perform(curl);
+    if (transientCurlError(rc) && !(abortCheck && abortCheck()))
+    {
+        // GETs are reads and therefore idempotent, so one silent retry after a brief
+        // backoff absorbs a momentary network blip before the backends (and the user)
+        // ever see a failure. PUTs are never retried -- see put(). The absorbed
+        // failure is still logged so a degrading link is visible in the debug log.
+        logDiag("GET " + mbr + " failed (" + curl_easy_strerror(rc) + "); retrying");
+        std::this_thread::sleep_for(std::chrono::milliseconds(RETRY_BACKOFF_MS));
+        resp.clear();
+        rc = curl_easy_perform(curl);
+    }
     long status = 0;
     char *ct = nullptr;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
@@ -367,6 +425,13 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
         *contentType = ct ? ct : "";
     if (hdrs)
         curl_slist_free_all(hdrs);
+
+    if (verbose())
+    {
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+        logDiag("GET " + mbr + " -> " + (rc == CURLE_OK ? std::to_string(status) : std::string(curl_easy_strerror(rc))) + " (" +
+                std::to_string(ms) + " ms)");
+    }
 
     if (rc == CURLE_ABORTED_BY_CALLBACK)
         return Error(Error::Aborted, std::string("GET ") + mbr + ": interrupted");
@@ -465,9 +530,20 @@ Error Device::put(const std::string& mbr, const std::map<std::string, std::strin
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeoutMs);
 
+    // PUTs are never retried, even on a transient transport error (contrast httpGet):
+    // an action PUT that was lost on the wire may still have been executed by the
+    // server -- a retried pulseguide double-moves the mount, a retried startexposure
+    // restarts the integration. The failure surfaces to the caller instead.
+    auto t0 = std::chrono::steady_clock::now();
     CURLcode rc = curl_easy_perform(curl);
     long status = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
+    if (verbose())
+    {
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+        logDiag("PUT " + mbr + " -> " + (rc == CURLE_OK ? std::to_string(status) : std::string(curl_easy_strerror(rc))) + " (" +
+                std::to_string(ms) + " ms)");
+    }
     if (rc != CURLE_OK)
         return Error(Error::Transport, std::string("PUT ") + mbr + ": " + curl_easy_strerror(rc));
     if (status < 200 || status >= 300)
@@ -964,6 +1040,12 @@ Error Camera::getImageBytes(ImageData *out, const std::function<bool()>& abortCh
     // frame, with no probe and no extra round-trip.
     if (ct.find("imagebytes") != std::string::npos)
         return decodeImageBytes(body, out);
+    if (!m_jsonFallbackLogged)
+    {
+        // The single biggest per-frame performance fact about a session; say it once.
+        logDiag("server does not support ImageBytes; using the slower JSON ImageArray fallback");
+        m_jsonFallbackLogged = true;
+    }
     return decodeJsonImageArray(body, out);
 }
 
@@ -1007,6 +1089,7 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
 
     if (s4 < 0 && s6 < 0)
     {
+        logDiag("discovery: could not create a discovery socket");
 #ifdef _WIN32
         WSACleanup();
 #endif
@@ -1194,6 +1277,7 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
     // A server can answer multiple probes; dedupe identical host:port entries.
     std::sort(servers.begin(), servers.end());
     servers.erase(std::unique(servers.begin(), servers.end()), servers.end());
+    logDiag("discovery: " + std::to_string(servers.size()) + " server(s) responded");
     return servers;
 }
 
@@ -1247,11 +1331,19 @@ std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int por
     CURLcode rc = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
     if (rc != CURLE_OK)
+    {
+        // "Answers discovery but fails the management query" is a classic
+        // can't-find-my-device case; leave evidence.
+        logDiag("management query for " + host + ":" + std::to_string(port) + " failed: " + curl_easy_strerror(rc));
         return out;
+    }
 
     JsonParser parser;
     if (!parser.Parse(body))
+    {
+        logDiag("management response from " + host + ":" + std::to_string(port) + " is not valid JSON");
         return out;
+    }
     const json_value *val = findMember(parser.Root(), "Value");
     if (!val || val->type != JSON_ARRAY)
         return out;
