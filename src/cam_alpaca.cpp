@@ -352,7 +352,10 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
 {
     std::shared_ptr<alpaca::Camera> cam = camera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot capture when not connected\n");
         return true;
+    }
 
     int bin = params.hwBinning > 0 ? params.hwBinning : 1;
     int binnedW = m_fullW / bin;
@@ -578,7 +581,10 @@ bool CameraAlpaca::GetDevicePixelSize(double *devPixelSize)
 {
     std::shared_ptr<alpaca::Camera> cam = camera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot get pixel size when not connected\n");
         return true;
+    }
     alpaca::Error err = cam->pixelSizeX(devPixelSize);
     if (err)
     {
@@ -619,11 +625,17 @@ bool CameraAlpaca::SetCoolerOn(bool on)
 {
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot set cooler on/off when not connected\n");
         return true;
+    }
     alpaca::Error err = cam->setCoolerOn(on);
     if (err)
     {
         Debug.Write(wxString::Format("Alpaca cam: set cooleron=%d failed: %s\n", on, err.what()));
+        // Same alert as the ASCOM backend, with the device's reason appended.
+        pFrame->Alert(wxString::Format(_("ASCOM error turning camera cooler %s"), on ? _("on") : _("off")) + ":\n" +
+                      wxString(err.what()));
         return true;
     }
     return false;
@@ -633,7 +645,10 @@ bool CameraAlpaca::SetCoolerSetpoint(double temperature)
 {
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot set cooler setpoint when not connected\n");
         return true;
+    }
     alpaca::Error err = cam->setCCDTemperature(temperature);
     if (err)
     {
@@ -647,7 +662,10 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
 {
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot get cooler status when not connected\n");
         return true;
+    }
     alpaca::Error err;
     if ((err = cam->coolerOn(on)))
     {
@@ -688,7 +706,10 @@ bool CameraAlpaca::GetSensorTemperature(double *temperature)
 {
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
+    {
+        Debug.Write("Alpaca cam: cannot get sensor temperature when not connected\n");
         return true;
+    }
     alpaca::Error err = cam->ccdTemperature(temperature);
     if (err)
     {
