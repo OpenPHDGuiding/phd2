@@ -305,7 +305,10 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot guide when not connected\n");
         return MOVE_ERROR;
+    }
 
     // Could happen if the move command is issued on the aux mount, or CanPulseGuide
     // changed on the fly (same guard as the ASCOM backend).
@@ -415,8 +418,16 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount || !m_canGetCoordinates)
+    if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot get coordinates when not connected\n");
         return true;
+    }
+    if (!m_canGetCoordinates)
+    {
+        Debug.Write("Alpaca mount: not capable of getting coordinates\n");
+        return true;
+    }
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
         Debug.Write(wxString::Format("Alpaca mount: get %s failed: %s\n", member, e.what()));
@@ -435,8 +446,16 @@ bool ScopeAlpaca::GetCoordinates(double *ra, double *dec, double *siderealTime)
 double ScopeAlpaca::GetDeclinationRadians()
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount || !m_canGetCoordinates)
+    if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot get declination when not connected\n");
         return UNKNOWN_DECLINATION;
+    }
+    if (!m_canGetCoordinates)
+    {
+        Debug.Write("Alpaca mount: not capable of getting declination\n");
+        return UNKNOWN_DECLINATION;
+    }
     double dec;
     alpaca::Error err = mount->declination(&dec);
     if (err)
@@ -453,8 +472,16 @@ double ScopeAlpaca::GetDeclinationRadians()
 bool ScopeAlpaca::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount || !m_canGetGuideRates)
+    if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot get guide rates when not connected\n");
         return true;
+    }
+    if (!m_canGetGuideRates)
+    {
+        Debug.Write("Alpaca mount: not capable of getting guide rates\n");
+        return true;
+    }
     // ASCOM/Alpaca guide rates are degrees/second -- exactly what PHD2 wants.
     alpaca::Error err;
     if ((err = mount->guideRateRightAscension(pRAGuideRate)))
@@ -477,7 +504,10 @@ bool ScopeAlpaca::Slewing()
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot check Slewing when not connected\n");
         return false;
+    }
     bool slewing = false;
     alpaca::Error err = mount->slewing(&slewing);
     if (err)
@@ -491,8 +521,13 @@ bool ScopeAlpaca::Slewing()
 bool ScopeAlpaca::GetSiteLatLong(double *latitude, double *longitude)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
-    if (!mount || !m_canGetSiteLatLong)
+    if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot get site latitude/longitude when not connected\n");
         return true;
+    }
+    if (!m_canGetSiteLatLong)
+        return true; // unavailability logged once at connect (ASCOM is silent here too)
     alpaca::Error err;
     if ((err = mount->siteLatitude(latitude))) // degrees, +N
     {
@@ -511,7 +546,10 @@ bool ScopeAlpaca::SlewToCoordinatesAsync(double ra, double dec)
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot slew when not connected\n");
         return true;
+    }
     alpaca::Error err = mount->slewToCoordinatesAsync(ra, dec); // ra hours, dec degrees
     if (err)
     {
@@ -528,7 +566,10 @@ bool ScopeAlpaca::SlewToCoordinates(double ra, double dec)
         return true;
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot slew when not connected\n");
         return true;
+    }
     wxLongLong_t deadline = ::wxGetUTCTimeMillis().GetValue() + 90 * 1000;
     for (;;)
     {
@@ -552,7 +593,10 @@ void ScopeAlpaca::AbortSlew()
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot abort slew when not connected\n");
         return;
+    }
     alpaca::Error err = mount->abortSlew(); // best-effort
     if (err)
         Debug.Write(wxString::Format("Alpaca mount: abortslew failed: %s\n", err.what()));
@@ -562,7 +606,10 @@ PierSide ScopeAlpaca::SideOfPier()
 {
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
+    {
+        Debug.Write("Alpaca mount: cannot get side of pier when not connected\n");
         return PIER_SIDE_UNKNOWN;
+    }
     // Alpaca sideofpier 0/1/-1 maps directly onto PierSide EAST/WEST/UNKNOWN (-1 also
     // covers the property being unavailable).
     switch (mount->sideOfPier())
