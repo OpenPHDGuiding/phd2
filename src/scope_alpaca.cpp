@@ -90,6 +90,12 @@ enum
 {
     CONTROL_TIMEOUT_MS = 5000,
     STATUS_TIMEOUT_MS = 3000,
+    // Guide-pulse drain/completion poll cadence. Each pass is an HTTP round-trip (up to
+    // two: ispulseguiding + the slew re-check), unlike scope_ascom's free 20 ms local COM
+    // poll; 50 ms matches the camera's IMAGE_READY_POLL_MS. The pre-pulse drain is bounded
+    // to ~PULSE_DRAIN_MS (its iteration count is derived so the bound holds at any cadence).
+    PULSE_POLL_MS = 50,
+    PULSE_DRAIN_MS = 1000,
 };
 
 class ScopeAlpaca : public Scope
@@ -535,11 +541,12 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
         {
             Debug.Write("Alpaca Guide: entered guide while a pulse is still active; draining\n");
             int i;
-            // 10 x 100 ms keeps scope_ascom's ~1 s drain bound with half the HTTP
-            // round-trips (each pass is two GETs over the network, not free COM calls).
-            for (i = 0; i < 10; i++)
+            // Bound the drain to ~PULSE_DRAIN_MS at the PULSE_POLL_MS cadence (mirrors
+            // scope_ascom's ~1 s bound), re-checking slewing and pulse state each pass.
+            const int drainPasses = PULSE_DRAIN_MS / PULSE_POLL_MS;
+            for (i = 0; i < drainPasses; i++)
             {
-                wxMilliSleep(100);
+                wxMilliSleep(PULSE_POLL_MS);
                 if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
                     return slewResult;
                 if ((err = mount->isPulseGuiding(&pulsing)))
@@ -550,7 +557,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
                 if (!pulsing)
                     break;
             }
-            if (i == 10)
+            if (i == drainPasses)
             {
                 Debug.Write("Alpaca Guide: pulse still active after 1s; aborting\n");
                 return MOVE_ERROR;
@@ -657,9 +664,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
 
             if (WorkerThread::InterruptRequested())
                 return MOVE_ERROR;
-            // 100 ms, not scope_ascom's 20 ms: each pass below is up to two HTTP
-            // round-trips (ispulseguiding + the slew re-check), not free COM calls.
-            wxMilliSleep(100);
+            wxMilliSleep(PULSE_POLL_MS);
 
             // A slew starting mid-pulse must stop guiding (mirrors scope_ascom's
             // CheckSlewing inside the completion loop).
