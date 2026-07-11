@@ -50,6 +50,7 @@
 # include <cstdlib>
 # include <memory>
 # include <mutex>
+# include <vector>
 
 namespace
 {
@@ -66,6 +67,8 @@ class CameraAlpaca : public GuideCamera
     int m_curBin;
     int m_lastSetBin;
     wxRect m_lastROI;
+    wxSize m_adoptedSize; // driver's actual full-frame size when it differs from maxSize / bin
+    bool m_swapAxes;
     bool m_canAbortExposure;
     bool m_canStopExposure;
     bool m_canGetCoolerPower;
@@ -121,9 +124,9 @@ private:
 };
 
 CameraAlpaca::CameraAlpaca()
-    : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_canAbortExposure(false),
-      m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false), m_gainMin(0), m_gainMax(0),
-      m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_devPixelSize(0.0), m_bpp(16)
+    : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_swapAxes(false),
+      m_canAbortExposure(false), m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false),
+      m_gainMin(0), m_gainMax(0), m_lastSetGain(-1), m_expMin(0.0), m_expMax(0.0), m_devPixelSize(0.0), m_bpp(16)
 {
     Connected = false;
     Name = _T("Alpaca Camera");
@@ -360,6 +363,8 @@ bool CameraAlpaca::Connect(const wxString& camId)
     m_curBin = 0; // unknown until the first capture programs it
     m_lastSetBin = 0; // force the first capture to program binning...
     m_lastROI = wxRect(); // ...and the ROI (a reconnected server may have lost both)
+    m_swapAxes = false; // re-detect transposed axes on the fresh connection
+    m_adoptedSize = UNDEFINED_FRAME_SIZE; // ...and re-learn the driver's actual frame size
 
     // Bit depth from the saturation level (RAW16 => 65535, RAW8 => 255); default to 16-bit.
     int maxadu = 0;
@@ -392,9 +397,9 @@ bool CameraAlpaca::Connect(const wxString& camId)
 
     setCameras(cam, statusCam);
     Connected = true;
-    Debug.Write(wxString::Format("Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n",
-                                 m_fullW, m_fullH, m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput,
-                                 m_gainMin, m_gainMax, m_bpp));
+    Debug.Write(wxString::Format(
+        "Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n", m_fullW, m_fullH,
+        m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput, m_gainMin, m_gainMax, m_bpp));
     return false;
 }
 
@@ -423,8 +428,18 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     }
 
     int bin = params.hwBinning > 0 ? params.hwBinning : 1;
+    if (bin != m_curBin)
+        m_adoptedSize = UNDEFINED_FRAME_SIZE; // adopted geometry is per-binning
     int binnedW = m_fullW / bin;
     int binnedH = m_fullH / bin;
+    // Once a full frame of a different size has been adopted (below, mirroring
+    // cam_ascom), the driver's actual geometry is the sensor geometry: subsequent
+    // captures request it, and subframe / limit-frame bounds are checked against it.
+    if (m_adoptedSize != UNDEFINED_FRAME_SIZE)
+    {
+        binnedW = m_adoptedSize.GetWidth();
+        binnedH = m_adoptedSize.GetHeight();
+    }
     wxRect sensor(0, 0, binnedW, binnedH);
 
     // LimitFrame restricts full-frame captures to a sub-region of the sensor (empty =
@@ -578,14 +593,56 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     if ((err = cam->getImageBytes(&frame)))
         return fail("get imagearray", err);
 
+    // Some drivers return the image array with its axes transposed. Mirror cam_ascom's
+    // m_swapAxes handling: when the returned dimensions are exactly the transpose of the
+    // requested ROI, log it once and transpose the frame back into the requested
+    // orientation. (A transposed frame from a square ROI is undetectable -- the same
+    // blind spot cam_ascom has.)
+    if (frame.width == roi.height && frame.height == roi.width && roi.width != roi.height)
+    {
+        if (!m_swapAxes)
+        {
+            Debug.Write(wxString::Format("Alpaca camera: array axes are flipped (%dx%d) vs (%dx%d)\n", frame.width,
+                                         frame.height, roi.width, roi.height));
+            m_swapAxes = true;
+        }
+        std::vector<uint16_t> t((size_t) roi.width * roi.height);
+        for (int y = 0; y < roi.height; ++y)
+        {
+            const uint16_t *src = &frame.pixels[(size_t) y]; // walk column y of the transposed frame
+            for (int x = 0; x < roi.width; ++x)
+                t[(size_t) y * roi.width + x] = src[(size_t) x * roi.height];
+        }
+        frame.pixels = std::move(t);
+        std::swap(frame.width, frame.height);
+    }
+
     // The server must honor the ROI we requested; otherwise the copies below would
-    // read past the returned buffer. Bail rather than risk an out-of-bounds read.
+    // read past the returned buffer. One exception, mirroring cam_ascom's adoption of
+    // the driver's reported size: a plain full frame (no subframe, no limit frame) of an
+    // unexpected size means the driver's real binned geometry differs from maxSize / bin
+    // (non-divisible size, readout constraints). The frame is still complete and
+    // self-consistent, so adopt its size -- this capture proceeds with it, and
+    // subsequent captures request it. A subframe or limit-frame capture must match
+    // exactly (its copy lands inside an image whose geometry was already fixed); bail
+    // on those rather than risk an out-of-bounds read.
     if (frame.width != roi.width || frame.height != roi.height)
     {
-        Debug.Write(wxString::Format("Alpaca capture: returned frame %dx%d != requested ROI %dx%d\n", frame.width, frame.height,
-                                     roi.width, roi.height));
-        DisconnectWithAlert(_("Alpaca camera returned a frame that does not match the requested size."), RECONNECT);
-        return true;
+        if (!useSub && limitFrame.IsEmpty())
+        {
+            Debug.Write(wxString::Format("Alpaca capture: full frame %dx%d != requested %dx%d; adopting the driver's size\n",
+                                         frame.width, frame.height, roi.width, roi.height));
+            m_adoptedSize.Set(frame.width, frame.height);
+            roi = wxRect(0, 0, frame.width, frame.height);
+            FrameSize = m_adoptedSize;
+        }
+        else
+        {
+            Debug.Write(wxString::Format("Alpaca capture: returned frame %dx%d != requested ROI %dx%d\n", frame.width,
+                                         frame.height, roi.width, roi.height));
+            DisconnectWithAlert(_("Alpaca camera returned a frame that does not match the requested size."), RECONNECT);
+            return true;
+        }
     }
 
     if (img.Init(FrameSize))

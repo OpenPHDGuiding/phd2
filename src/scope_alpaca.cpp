@@ -91,7 +91,9 @@ class ScopeAlpaca : public Scope
     bool m_canGetCoordinates;
     bool m_canGetGuideRates;
     bool m_canGetSiteLatLong;
+    bool m_canGetSideOfPier;
     bool m_abortSlewWhenGuidingStuck;
+    bool m_checkForSyncPulseGuide;
     wxString m_connectFailReason; // why the most recent tryConnect failed (for the connect alert)
 
 public:
@@ -147,7 +149,7 @@ private:
 ScopeAlpaca::ScopeAlpaca()
     : m_port(11111), m_devnum(0), m_canPulseGuide(false), m_canCheckPulseGuiding(false), m_canCheckSlewing(false),
       m_canSlew(false), m_canSlewAsync(false), m_canGetCoordinates(false), m_canGetGuideRates(false),
-      m_canGetSiteLatLong(false), m_abortSlewWhenGuidingStuck(false)
+      m_canGetSiteLatLong(false), m_canGetSideOfPier(false), m_abortSlewWhenGuidingStuck(false), m_checkForSyncPulseGuide(false)
 {
     loadProfile();
 }
@@ -186,12 +188,16 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
         m_connectFailReason = wxString(err.what());
         return false;
     }
+    // CanPulseGuide is optional: a failed read means no pulse-guide support, not a failed
+    // connect (mirrors scope_ascom) -- a position-only/aux mount is still usable, and
+    // Guide() raises the clear no-PulseGuide alert if a pulse is ever attempted.
     if ((err = mount->canPulseGuide(&m_canPulseGuide)))
     {
-        Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld canpulseguide failed: %s\n", host, port, devnum, err.what()));
-        m_connectFailReason = wxString(err.what());
-        return false;
+        Debug.Write(wxString::Format("Alpaca mount: canpulseguide failed, assuming no pulse guiding: %s\n", err.what()));
+        m_canPulseGuide = false;
     }
+    if (!m_canPulseGuide)
+        Debug.Write("Connecting to Alpaca mount that does not support PulseGuide\n");
 
     // The Gemini2 firmware (via the "Gemini Telescope .NET" driver) can leave a pulse
     // guide stuck with IsPulseGuiding true forever; workaround is an AbortSlew. Like
@@ -205,12 +211,21 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
         m_abortSlewWhenGuidingStuck = mountName.find("Gemini Telescope .NET") != std::string::npos;
         if (m_abortSlewWhenGuidingStuck)
             Debug.Write("Alpaca mount: enabling stuck guide pulse workaround\n");
+        // The Astro-Physics VB6 driver can execute PulseGuide synchronously (or dispatch it
+        // late) under load; like the ASCOM backend, log one diagnostic when a long pulse
+        // returns only after its duration has elapsed (log-only -- an alert would just
+        // confuse users). The driver is reachable here through ASCOM Remote's Alpaca front
+        // end, so the check is worth keeping.
+        m_checkForSyncPulseGuide = mountName.find("AstroPhysicsV2") != std::string::npos;
+        if (m_checkForSyncPulseGuide)
+            Debug.Write("Alpaca mount: enabling sync pulse guide check\n");
     }
     else
     {
         Debug.Write(wxString::Format("Alpaca mount: get name failed: %s\n", err.what()));
         m_Name = _T("Alpaca Mount");
         m_abortSlewWhenGuidingStuck = false;
+        m_checkForSyncPulseGuide = false;
     }
 
     // Slewing is a standard property, but some drivers don't implement it; probe once
@@ -249,6 +264,10 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum)
     m_canGetSiteLatLong = !mount->siteLatitude(&d) && !mount->siteLongitude(&d);
     if (!m_canGetSiteLatLong)
         Debug.Write("Alpaca mount: cannot read site latitude/longitude\n");
+    int sop;
+    m_canGetSideOfPier = !mount->sideOfPier(&sop);
+    if (!m_canGetSideOfPier)
+        Debug.Write("Alpaca mount: cannot read side of pier\n");
 
     // IsPulseGuiding is also probed once; when unsupported, Guide() relies on the
     // pulse timing alone rather than failing every pulse.
@@ -336,8 +355,11 @@ void ScopeAlpaca::SetupDialog()
 // alert; a detected slew raises the suppressible slew alert.
 // Mirrors scope_ascom's CheckSlewing: when the user's stop-guiding-when-slewing setting
 // is enabled and the mount can report it, treat a slew in progress as a reason to stop
-// guiding. Returns MOVE_OK to continue, MOVE_ERROR_SLEWING if the mount is slewing, or
-// MOVE_ERROR on a failed read.
+// guiding. Returns MOVE_OK to continue or MOVE_ERROR_SLEWING if the mount is slewing.
+// A failed read is unknown state, not a detected slew: treat it as "not slewing" and
+// keep guiding (over a lossy link this check is a network round-trip, and one transient
+// failure must not kill the pulse) -- matches ASCOM's IsSlewing returning false on a
+// failed read, and this backend's own isPulseGuiding failed-read tolerance.
 Mount::MOVE_RESULT ScopeAlpaca::CheckSlewing(alpaca::Telescope *mount)
 {
     if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled())
@@ -347,7 +369,7 @@ Mount::MOVE_RESULT ScopeAlpaca::CheckSlewing(alpaca::Telescope *mount)
         if (err)
         {
             Debug.Write(wxString::Format("Alpaca Guide: slewing check failed: %s\n", err.what()));
-            return MOVE_ERROR;
+            return MOVE_OK;
         }
         if (slewing)
             return MOVE_ERROR_SLEWING;
@@ -468,9 +490,32 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     if ((err = mount->pulseGuide(ad, durationMs)))
     {
         Debug.Write(wxString::Format("Alpaca Guide: pulseguide failed: %s\n", err.what()));
+        // Make sure nothing got by us and the mount can really handle pulse guide --
+        // CanPulseGuide may have changed on the fly (mirrors scope_ascom). Clearing the
+        // flag makes the next Guide() raise the clear no-PulseGuide alert. Only a
+        // successful re-read reporting false disables it; a failed re-read proves nothing.
+        bool can = false;
+        if (!mount->canPulseGuide(&can) && !can)
+        {
+            Debug.Write("Alpaca Guide: tried to guide a mount that has no PulseGuide support\n");
+            m_canPulseGuide = false;
+        }
         return MOVE_ERROR;
     }
     long elapsed = pulseTimer.Time();
+
+    // A long pulse whose PUT returned only around/after the pulse duration indicates a
+    // synchronous pulse guide or slow dispatch (mirrors scope_ascom's AstroPhysicsV2
+    // check; same log string for support-grep parity). Note elapsed includes the HTTP
+    // round-trip, so a very slow link could also trip this -- it logs once, then disarms.
+    if (m_checkForSyncPulseGuide && durationMs >= 250 && elapsed >= durationMs - 30)
+    {
+        Debug.Write(wxString::Format("SyncPulseGuide alert: sync pulseguide or slow thread dispatch detected. "
+                                     "Duration = %d Elapsed = %ld\n",
+                                     durationMs, elapsed));
+        // only log the event once
+        m_checkForSyncPulseGuide = false;
+    }
 
     // PulseGuide may be asynchronous; the guide algorithm expects Guide() to return
     // only after the move completes. Sleep out the remaining pulse time (interruptible
@@ -739,9 +784,21 @@ PierSide ScopeAlpaca::SideOfPier()
         Debug.Write("Alpaca mount: cannot get side of pier when not connected\n");
         return PIER_SIDE_UNKNOWN;
     }
-    // Alpaca sideofpier 0/1/-1 maps directly onto PierSide EAST/WEST/UNKNOWN (-1 also
-    // covers the property being unavailable).
-    switch (mount->sideOfPier())
+    if (!m_canGetSideOfPier)
+    {
+        Debug.Write("Alpaca mount: not capable of getting side of pier\n");
+        return PIER_SIDE_UNKNOWN;
+    }
+    int sop;
+    alpaca::Error err = mount->sideOfPier(&sop);
+    if (err)
+    {
+        Debug.Write(wxString::Format("Alpaca mount: get sideofpier failed: %s\n", err.what()));
+        return PIER_SIDE_UNKNOWN;
+    }
+    // ASCOM PierSide: 0 = pierEast, 1 = pierWest; anything else (incl. -1 pierUnknown)
+    // maps to unknown.
+    switch (sop)
     {
     case 0:
         return PIER_SIDE_EAST;

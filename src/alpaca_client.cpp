@@ -518,10 +518,9 @@ Error Telescope::slewToCoordinatesAsync(double raHours, double decDegrees)
     return put("slewtocoordinatesasync",
                { { "RightAscension", std::to_string(raHours) }, { "Declination", std::to_string(decDegrees) } });
 }
-int Telescope::sideOfPier()
+Error Telescope::sideOfPier(int *out)
 {
-    int v;
-    return getInt("sideofpier", &v) ? -1 : v; // -1 == unknown / unavailable
+    return getInt("sideofpier", out);
 }
 Error Telescope::guideRateRightAscension(double *out)
 {
@@ -688,6 +687,18 @@ Error Camera::stopExposure()
 
 Error Camera::hasCooler(bool *out)
 {
+    // A camera has a cooler iff CoolerOn is readable -- how cam_ascom probes. This also
+    // finds an on/off-only cooler (readable CoolerOn but neither CanGetCoolerPower nor
+    // CanSetCCDTemperature), which the capability flags alone would miss. When the
+    // CoolerOn read fails (NotImplemented on a coolerless camera), fall back to the
+    // capability flags before concluding "no cooler", in case a driver errors the read
+    // while still advertising cooler control.
+    bool on = false;
+    if (!getBool("cooleron", &on))
+    {
+        *out = true;
+        return {};
+    }
     bool canGetPower = false;
     Error e = getBool("cangetcoolerpower", &canGetPower);
     if (e)
@@ -732,15 +743,9 @@ Error Camera::coolerPower(double *out)
     return getDouble("coolerpower", out);
 }
 
-Error Camera::getImageBytes(ImageData *out)
+// decodeImageBytes decodes a binary ImageBytes response body into *out.
+static Error decodeImageBytes(const std::string& body, ImageData *out)
 {
-    std::string ct;
-    std::string body;
-    Error e = httpGet("imagearray", /*acceptImageBytes=*/true, &body, &ct);
-    if (e)
-        return e;
-    if (ct.find("imagebytes") == std::string::npos)
-        return Error(Error::Parse, "server did not return ImageBytes (content-type: " + ct + ")");
     if (body.size() < 44)
         return Error(Error::Parse, "ImageBytes response too short");
 
@@ -841,6 +846,95 @@ Error Camera::getImageBytes(ImageData *out)
     }
     *out = std::move(img);
     return {};
+}
+
+// decodeJsonImageArray decodes the standard JSON ImageArray response -- the fallback
+// transport for servers that don't implement ImageBytes. Value is a
+// [Dimension1=width][Dimension2=height] array of arrays (column-major, the same
+// convention as the ImageBytes wire order), transposed here onto the row-major
+// ImageData. Far slower than the binary path (multi-MB text, one JSON node per pixel),
+// but slow beats broken.
+static Error decodeJsonImageArray(const std::string& body, ImageData *out)
+{
+    JsonParser parser;
+    if (!parser.Parse(body))
+        return Error(Error::Parse,
+                     std::string("malformed ImageArray response: ") + (parser.ErrorDesc() ? parser.ErrorDesc() : "?"));
+    const json_value *root = parser.Root();
+    Error e = checkDeviceError(root);
+    if (e)
+        return e;
+    const json_value *rank = findMember(root, "Rank");
+    if (rank && rank->type == JSON_INT && rank->int_value != 2)
+        return Error(Error::Parse, "unexpected ImageArray rank " + std::to_string(rank->int_value));
+    const json_value *v = findMember(root, "Value");
+    if (!v || v->type != JSON_ARRAY)
+        return Error(Error::Parse, "no Value array in ImageArray response");
+
+    // First pass: width = the number of columns, height = the (uniform) column length.
+    int width = 0, height = -1;
+    json_for_each(col, v)
+    {
+        if (col->type != JSON_ARRAY)
+            return Error(Error::Parse, "ImageArray element is not an array");
+        int h = 0;
+        json_for_each(px, col)
+        {
+            ++h;
+        }
+        if (height < 0)
+            height = h;
+        else if (h != height)
+            return Error(Error::Parse, "ImageArray columns have differing lengths");
+        ++width;
+    }
+    if (width <= 0 || height <= 0 || width > 65535 || height > 65535)
+        return Error(Error::Parse, "implausible ImageArray dimensions " + std::to_string(width) + "x" + std::to_string(height));
+
+    ImageData img;
+    img.width = width;
+    img.height = height;
+    img.pixels.resize((size_t) width * height);
+    size_t x = 0;
+    json_for_each(col, v)
+    {
+        size_t y = 0;
+        json_for_each(px, col)
+        {
+            long val;
+            if (px->type == JSON_INT)
+                val = px->int_value;
+            else if (px->type == JSON_FLOAT)
+                val = (long) px->float_value;
+            else
+                return Error(Error::Parse, "non-numeric ImageArray pixel");
+            if (val < 0)
+                val = 0;
+            if (val > 0xFFFF)
+                val = 0xFFFF;
+            img.pixels[y * (size_t) width + x] = (uint16_t) val;
+            ++y;
+        }
+        ++x;
+    }
+    *out = std::move(img);
+    return {};
+}
+
+Error Camera::getImageBytes(ImageData *out)
+{
+    std::string ct;
+    std::string body;
+    Error e = httpGet("imagearray", /*acceptImageBytes=*/true, &body, &ct);
+    if (e)
+        return e;
+    // The Accept: application/imagebytes header goes out on every fetch; a server that
+    // implements the binary transport answers with it, and one that doesn't answers
+    // with the standard JSON ImageArray -- so the content type selects the decoder per
+    // frame, with no probe and no extra round-trip.
+    if (ct.find("imagebytes") != std::string::npos)
+        return decodeImageBytes(body, out);
+    return decodeJsonImageArray(body, out);
 }
 
 // ----------------------------------------------------------- discovery + management

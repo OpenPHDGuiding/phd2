@@ -39,7 +39,8 @@
 //
 // Scope: just the ICameraV3 / ITelescopeV3 members PHD2 needs for guiding, plus Alpaca
 // discovery and the management API for device enumeration. Images are fetched over the
-// binary ImageBytes transport (Accept: application/imagebytes).
+// binary ImageBytes transport (Accept: application/imagebytes), with automatic per-frame
+// fallback to the standard JSON ImageArray for servers without ImageBytes support.
 //
 // Errors are propagated by value, never thrown: every call that can fail returns an
 // Error (which is falsy on success), and value-returning calls write their result through
@@ -215,17 +216,18 @@ public:
     Error canSlewAsync(bool *out); // supports the async (non-blocking) slew
     Error slewToCoordinatesAsync(double raHours, double decDegrees); // poll slewing() for completion
 
-    int sideOfPier(); // 0 = pierEast, 1 = pierWest, -1 = unknown or unavailable
+    Error sideOfPier(int *out); // ASCOM PierSide: 0 = pierEast, 1 = pierWest, -1 = pierUnknown
     Error guideRateRightAscension(double *out); // degrees/second
     Error guideRateDeclination(double *out); // degrees/second
 };
 
 // ---- Camera (ICameraV3 subset) ------------------------------------------------------
 
-// ImageData is a decoded ImageBytes frame, normalized to 16-bit and stored row-major
-// (raster: scanline y outer, pixel x inner) -- i.e. pixels[y * width + x] -- ready to copy
-// straight into a PHD2 usImage. The ImageBytes wire order is ASCOM column-major (height/y
-// fastest), so getImageBytes transposes it onto this row-major layout.
+// ImageData is a decoded image frame (from either transport), normalized to 16-bit and
+// stored row-major (raster: scanline y outer, pixel x inner) -- i.e. pixels[y * width + x]
+// -- ready to copy straight into a PHD2 usImage. The wire order of both ImageBytes and the
+// JSON ImageArray is ASCOM column-major (height/y fastest), so getImageBytes transposes
+// onto this row-major layout.
 struct ImageData
 {
     int width = 0; // ASCOM Dimension1 (x)
@@ -290,7 +292,9 @@ public:
     Error canStopExposure(bool *out);
     Error stopExposure();
 
-    // Fetch the latest frame via the binary ImageBytes transport.
+    // Fetch the latest frame: binary ImageBytes when the server supports it, falling
+    // back to the standard JSON ImageArray when it doesn't (the response content type
+    // selects the decoder -- no probe, no extra round-trip).
     Error getImageBytes(ImageData *out);
 
     // Cooling (optional; guarded by hasCooler and the capability getters).
