@@ -55,6 +55,7 @@
 #ifndef ALPACA_CLIENT_H
 #define ALPACA_CLIENT_H
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -138,22 +139,34 @@ void setVerboseLogging(bool on);
 // interface, and a unicast probe to each entry in extraHosts (bare IPv4 IP/hostname -- for
 // servers on other subnets the broadcast can't reach). The probe set is re-sent a few times
 // across the window to tolerate UDP loss. Best-effort; returns {} on no replies.
+// If cancel is non-null and becomes true, the probe/harvest loop exits at its next poll
+// slice (<= 200 ms) with whatever replies arrived so far.
 // NOTE: IPv6 link-local (fe80::) responders are reported with the numeric zone id of the
 // arriving interface ("fe80::1%7"). Zone ids are not stable across reboots or adapter
 // changes, so prefer an IPv4 or global IPv6 address in a saved configuration.
-std::vector<std::string> discover(int timeoutMs = 1000, const std::vector<std::string>& extraHosts = {});
+std::vector<std::string> discover(int timeoutMs = 1000, const std::vector<std::string>& extraHosts = {},
+                                  const std::atomic<bool> *cancel = nullptr);
 
-// configuredDevices queries a server's management API for the devices it exposes.
-std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs = 5000);
+// configuredDevices queries a server's management API for the devices it exposes. If
+// cancel is non-null and becomes true, the in-flight HTTP request is aborted promptly
+// (via curl's progress callback) and an empty list is returned.
+std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs = 5000,
+                                                const std::atomic<bool> *cancel = nullptr);
 
 // discoverDevices finds every Alpaca device of the given type ("telescope", "camera",
 // ...) across all servers answering discovery, ready to construct a Device from (with the
 // device's display name in DeviceAddress::name). The deviceType match is case-insensitive
 // (servers vary on "Camera" vs "camera"). extraHosts is forwarded to discover() for
 // off-broadcast servers. Each discovered server's management query is bounded by
-// mgmtTimeoutMs so one unreachable responder can't stall the (serial) sweep.
+// mgmtTimeoutMs, and the queries run concurrently so one unreachable responder can't stall
+// the sweep. Blocks until every query finishes (or times out); run it off the UI thread.
+// If cancel is non-null and becomes true, the sweep aborts promptly: the UDP probe phase
+// stops at its next poll slice, in-flight management queries are aborted, and unstarted
+// queries are skipped. Results are returned in discovery order (deterministic regardless
+// of query completion order).
 std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int timeoutMs = 1500,
-                                           const std::vector<std::string>& extraHosts = {}, int mgmtTimeoutMs = 2000);
+                                           const std::vector<std::string>& extraHosts = {}, int mgmtTimeoutMs = 2000,
+                                           const std::atomic<bool> *cancel = nullptr);
 
 // Device is the common ASCOM device surface plus typed low-level GET/PUT helpers.
 // One Device owns one reused libcurl handle, serialized by an internal mutex, so it is

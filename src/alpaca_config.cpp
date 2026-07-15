@@ -51,7 +51,10 @@
 # include <wx/textctrl.h>
 # include <wx/tokenzr.h>
 
+# include <atomic>
 # include <cstdlib>
+# include <memory>
+# include <thread>
 # include <vector>
 
 namespace
@@ -91,6 +94,14 @@ class AlpacaConfigDialog : public wxDialog
     wxButton *m_useSelected;
     std::vector<alpaca::DeviceAddress> m_all; // full discovery results
     std::vector<alpaca::DeviceAddress> m_found; // filtered results shown in m_list
+    // Discovery runs on a background thread (the sweep does blocking network I/O).
+    // m_discCancel is the current sweep's cancel token: setting it makes the sweep abort
+    // its network work promptly, and the delivery lambda re-checks it on the UI thread --
+    // where the dtor and any superseding sweep also set it -- so a stale delivery is
+    // dropped without touching the dialog. The thread is joined (dtor and re-Discover)
+    // rather than detached, so it can never outlive the dialog or race app shutdown.
+    std::shared_ptr<std::atomic<bool>> m_discCancel;
+    std::thread m_discThread;
 
 public:
     // deviceType is the Alpaca API token ("camera"/"telescope"); map it to a translated
@@ -187,6 +198,19 @@ public:
         CallAfter(&AlpacaConfigDialog::DoDiscover);
     }
 
+    ~AlpacaConfigDialog() override
+    {
+        // Stop an in-flight sweep and wait for its thread. Cancellation reaches the
+        // sweep's UDP poll loop and in-flight curl transfers, so the join is brief
+        // (~a 200 ms poll slice). A delivery the worker already queued is dropped when
+        // its lambda re-checks the token -- set here, on the UI thread, before any
+        // queued delivery can run.
+        if (m_discCancel)
+            m_discCancel->store(true);
+        if (m_discThread.joinable())
+            m_discThread.join();
+    }
+
     wxString Host() const { return m_host->GetValue(); }
     long Port() const { return m_port->GetValue(); }
     long Devnum() const { return m_devnum->GetValue(); }
@@ -218,11 +242,43 @@ private:
 
     void DoDiscover()
     {
-        wxBusyCursor busy;
-        // discoverDevices bounds each server's management query (2s default) so a stale
-        // responder can't stall the dialog, which runs this on the UI thread.
-        m_all = alpaca::discoverDevices(std::string(m_type.mb_str()), 1500, splitHosts(m_discoveryIP->GetValue()));
-        RefreshList();
+        // Run the sweep on a worker thread: discoverDevices does blocking network I/O (a UDP
+        // listen plus a management query per responder) that would otherwise freeze the UI for
+        // seconds on a busy LAN. Supersede any prior sweep (cancel makes its join brief -- see
+        // the dtor), then read the UI inputs here (the worker must not touch wx widgets) and
+        // hand only plain data to the thread.
+        if (m_discCancel)
+            m_discCancel->store(true);
+        if (m_discThread.joinable())
+            m_discThread.join();
+        m_discCancel = std::make_shared<std::atomic<bool>>(false);
+        std::shared_ptr<std::atomic<bool>> cancel = m_discCancel;
+        std::string type(m_type.mb_str());
+        std::vector<std::string> hosts = splitHosts(m_discoveryIP->GetValue());
+
+        m_list->Clear();
+        m_found.clear();
+        m_list->Append(_("(searching...)"));
+        UpdateButtonStates(); // no selection while the search runs
+
+        m_discThread = std::thread(
+            [this, cancel, type, hosts]()
+            {
+                std::vector<alpaca::DeviceAddress> results = alpaca::discoverDevices(type, 1500, hosts, 2000, cancel.get());
+                // Deliver on the UI thread. The dialog outlives this thread (the dtor joins
+                // it), so the app object is always alive here; the delivery lambda may still
+                // run after the dialog is gone, so it re-checks the cancel token -- set on
+                // the UI thread by the dtor or a superseding sweep before any queued
+                // delivery can run -- and returns before touching the dialog.
+                PhdApp::ExecInMainThread(
+                    [this, cancel, results = std::move(results)]() mutable
+                    {
+                        if (cancel->load())
+                            return;
+                        m_all = std::move(results);
+                        RefreshList();
+                    });
+            });
     }
 
     // Rebuild the list from the discovery results, filtering out IPv6 entries (host

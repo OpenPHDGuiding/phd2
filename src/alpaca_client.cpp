@@ -386,6 +386,11 @@ Error Device::httpGet(const std::string& mbr, bool acceptImageBytes, std::string
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, acceptImageBytes ? m_imageTimeoutMs : m_timeoutMs);
+    // Device requests run on worker threads (capture loop, guide pulses, background
+    // connect), concurrently with the UI thread and the discovery pool; NOSIGNAL keeps
+    // libcurl's default resolver from arming SIGALRM for DNS timeouts, which is unsafe
+    // in a multithreaded process. Set per request: curl_easy_reset above wiped it.
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
     if (hdrs)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hdrs);
     if (abortCheck)
@@ -529,6 +534,7 @@ Error Device::put(const std::string& mbr, const std::map<std::string, std::strin
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeoutMs);
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L); // multithreaded SIGALRM hazard; see httpGet
 
     // PUTs are never retried, even on a transient transport error (contrast httpGet):
     // an action PUT that was lost on the wire may still have been executed by the
@@ -1051,7 +1057,7 @@ Error Camera::getImageBytes(ImageData *out, const std::function<bool()>& abortCh
 
 // ----------------------------------------------------------- discovery + management
 
-std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>& extraHosts)
+std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>& extraHosts, const std::atomic<bool> *cancel)
 {
     std::vector<std::string> servers;
 #ifdef _WIN32
@@ -1227,6 +1233,9 @@ std::vector<std::string> discover(int timeoutMs, const std::vector<std::string>&
 
     while (steady_clock::now() < deadline)
     {
+        if (cancel && cancel->load())
+            break; // caller gave up (dialog closed / sweep superseded); stop probing now
+
         auto now = steady_clock::now();
         if (now >= nextSend)
         {
@@ -1295,27 +1304,56 @@ namespace
 } // namespace
 
 std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int timeoutMs,
-                                           const std::vector<std::string>& extraHosts, int mgmtTimeoutMs)
+                                           const std::vector<std::string>& extraHosts, int mgmtTimeoutMs,
+                                           const std::atomic<bool> *cancel)
 {
-    std::vector<DeviceAddress> out;
-    for (const std::string& server : discover(timeoutMs, extraHosts))
+    std::vector<std::string> servers = discover(timeoutMs, extraHosts, cancel);
+
+    // Query each server's management API concurrently. mgmtTimeoutMs bounds each call, but
+    // a run of unreachable-but-answering responders would stall a serial sweep for the sum
+    // of their timeouts (servers * mgmtTimeoutMs) -- with a busy LAN that is many seconds,
+    // frozen if run on the UI thread. Fanning out over a small pool caps the total near a
+    // single mgmtTimeoutMs. Each worker writes into its server's own slot, so the merged
+    // result stays in discovery order regardless of completion order.
+    std::vector<std::vector<DeviceAddress>> perServer(servers.size());
+    std::atomic<size_t> nextIdx { 0 };
+
+    auto worker = [&]()
     {
-        auto colon = server.rfind(':');
-        if (colon == std::string::npos)
-            continue;
-        std::string host = server.substr(0, colon);
-        int port = std::atoi(server.substr(colon + 1).c_str());
-        // mgmtTimeoutMs bounds the per-server management call so one unreachable
-        // responder can't stall the serial sweep (these run back-to-back across every
-        // discovered server).
-        for (const ConfiguredDevice& d : configuredDevices(host, port, mgmtTimeoutMs))
-            if (iequals(d.deviceType, deviceType))
-                out.push_back(DeviceAddress { host, port, deviceType, d.deviceNumber, d.name });
-    }
+        for (;;)
+        {
+            size_t i = nextIdx.fetch_add(1);
+            if (i >= servers.size())
+                return;
+            if (cancel && cancel->load())
+                continue; // abandon remaining queries; keep draining the index
+            auto colon = servers[i].rfind(':');
+            if (colon == std::string::npos)
+                continue;
+            std::string host = servers[i].substr(0, colon);
+            int port = std::atoi(servers[i].substr(colon + 1).c_str());
+            for (const ConfiguredDevice& d : configuredDevices(host, port, mgmtTimeoutMs, cancel))
+                if (iequals(d.deviceType, deviceType))
+                    perServer[i].push_back(DeviceAddress { host, port, deviceType, d.deviceNumber, d.name });
+        }
+    };
+
+    unsigned nThreads = std::min<size_t>(8, servers.size());
+    std::vector<std::thread> pool;
+    pool.reserve(nThreads);
+    for (unsigned t = 0; t < nThreads; ++t)
+        pool.emplace_back(worker);
+    for (std::thread& th : pool)
+        th.join();
+
+    std::vector<DeviceAddress> out;
+    for (std::vector<DeviceAddress>& slot : perServer)
+        for (DeviceAddress& d : slot)
+            out.push_back(std::move(d));
     return out;
 }
 
-std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs)
+std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs, const std::atomic<bool> *cancel)
 {
     std::vector<ConfiguredDevice> out;
     CURL *curl = curl_easy_init();
@@ -1328,13 +1366,30 @@ std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int por
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, (long) timeoutMs);
+    // Safe to call off the main thread: without NOSIGNAL libcurl's default resolver arms
+    // SIGALRM for DNS timeouts, which is unsafe in a multithreaded process. discoverDevices
+    // runs these concurrently on a worker pool.
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+    std::function<bool()> cancelled;
+    if (cancel)
+    {
+        // cancelled outlives curl_easy_perform (local to this call), so handing curl its
+        // address is safe; curl polls it throughout the transfer, so cancellation aborts
+        // an in-flight request instead of waiting out timeoutMs.
+        cancelled = [cancel]() { return cancel->load(); };
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, xferAbort);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, (void *) &cancelled);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    }
     CURLcode rc = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
     if (rc != CURLE_OK)
     {
         // "Answers discovery but fails the management query" is a classic
-        // can't-find-my-device case; leave evidence.
-        logDiag("management query for " + host + ":" + std::to_string(port) + " failed: " + curl_easy_strerror(rc));
+        // can't-find-my-device case; leave evidence. A cancelled query is the caller's
+        // doing, not a server failure -- don't log misleading evidence for it.
+        if (rc != CURLE_ABORTED_BY_CALLBACK)
+            logDiag("management query for " + host + ":" + std::to_string(port) + " failed: " + curl_easy_strerror(rc));
         return out;
     }
 

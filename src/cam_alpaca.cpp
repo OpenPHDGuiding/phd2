@@ -47,6 +47,7 @@
 # include "alpaca_client.h"
 # include "alpaca_config.h"
 
+# include <cmath>
 # include <cstdlib>
 # include <memory>
 # include <mutex>
@@ -65,6 +66,43 @@ void AlpacaDiagLog(const char *msg)
     Debug.Write(wxString::Format("Alpaca client: %s\n", msg));
 }
 
+// The slow-frame-delivery warning is per-profile and dismissible, keyed under "/Confirm"
+// so ConfirmDialog::ResetAllDontAskAgain() clears it. No ASCOM analog -- a local camera
+// has no network delivery to be slow.
+wxString FrameDeliveryAlertEnabledKey()
+{
+    return wxString::Format("/Confirm/%d/AlpacaFrameDeliveryAlertEnabled", pConfig->GetCurrentProfileId());
+}
+
+void SuppressFrameDeliveryAlert(intptr_t)
+{
+    pConfig->Global.SetBoolean(FrameDeliveryAlertEnabledKey(), false);
+}
+
+// DeliveryStats tracks the mean and jitter (population std dev, Welford one-pass) of a
+// per-frame quantity in O(1) state -- here the frame-delivery overhead, to gauge the guide
+// loop's network dead time. Reset each connection.
+struct DeliveryStats
+{
+    unsigned n = 0;
+    double mean = 0.0; // ms
+    double m2 = 0.0;
+    void reset()
+    {
+        n = 0;
+        mean = 0.0;
+        m2 = 0.0;
+    }
+    void add(double x)
+    {
+        ++n;
+        double d = x - mean;
+        mean += d / n;
+        m2 += d * (x - mean);
+    }
+    double jitter() const { return n > 1 ? std::sqrt(m2 / n) : 0.0; }
+};
+
 enum
 {
     IMAGE_READY_POLL_MS = 50,
@@ -75,6 +113,14 @@ enum
     // it serves UI-thread polls that must never hang the GUI.
     CONTROL_TIMEOUT_MS = 5000,
     STATUS_TIMEOUT_MS = 3000,
+    // Frame-delivery health (R2). The per-frame network+readout overhead beyond the
+    // exposure is variable dead time in the guide servo loop; warn once per session when it
+    // is large or jittery enough to matter. Conservative floors so a healthy LAN (tens of ms,
+    // little spread) never trips them; a laggy WiFi/remote link does. Tunable.
+    DELIVERY_MIN_SAMPLES = 20, // require a stable estimate before judging
+    DELIVERY_LOG_EVERY = 50, // periodic support-log summary cadence (frames)
+    DELIVERY_DELAY_WARN_MS = 1500, // mean overhead beyond the exposure -> link is the bottleneck
+    DELIVERY_JITTER_WARN_MS = 300, // std dev of that overhead -> variable dead time destabilizes guiding
 };
 
 class CameraAlpaca : public GuideCamera
@@ -100,6 +146,8 @@ class CameraAlpaca : public GuideCamera
     double m_expMin, m_expMax;
     double m_devPixelSize; // pixel size read from the driver; served to GetDevicePixelSize
     wxByte m_bpp;
+    DeliveryStats m_delivery; // per-frame delivery-time mean + jitter (reset each connect)
+    bool m_slowDeliveryFlagged; // one-time guard for the slow/variable-delivery alert
 
 public:
     CameraAlpaca();
@@ -151,7 +199,7 @@ CameraAlpaca::CameraAlpaca()
     : m_port(11111), m_devnum(0), m_fullW(0), m_fullH(0), m_curBin(0), m_lastSetBin(0), m_swapAxes(false),
       m_canAbortExposure(false), m_canStopExposure(false), m_canGetCoolerPower(false), m_canSetCoolerTemperature(false),
       m_gainMin(0), m_gainMax(0), m_lastSetGain(-1), m_clampLoggedDuration(0), m_expMin(0.0), m_expMax(0.0),
-      m_devPixelSize(0.0), m_bpp(16)
+      m_devPixelSize(0.0), m_bpp(16), m_slowDeliveryFlagged(false)
 {
     // Installed at construction (not connect) so discovery runs from the setup dialog
     // and profile wizard are covered too.
@@ -451,6 +499,8 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     m_lastROI = wxRect(); // ...and the ROI (a reconnected server may have lost both)
     m_swapAxes = false; // re-detect transposed axes on the fresh connection
     m_adoptedSize = UNDEFINED_FRAME_SIZE; // ...and re-learn the driver's actual frame size
+    m_delivery.reset(); // fresh delivery-timing stats for this session
+    m_slowDeliveryFlagged = false;
 
     // Bit depth from the saturation level (RAW16 => 65535, RAW8 => 255); default to 16-bit.
     int maxadu = 0;
@@ -648,6 +698,10 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     if ((err = cam->startExposure(secs, light)))
         return fail("startexposure", err);
 
+    // Time from exposure command accepted to frame in hand: subtracting the exposure yields
+    // the readout+download overhead, the network dead time this frame adds to the guide loop.
+    wxStopWatch deliveryTimer;
+
     CameraWatchdog watchdog(params.duration, GetTimeoutMs());
 
     // Sleep out the exposure locally first -- the frame cannot be ready until the
@@ -719,6 +773,29 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
             return true;
         }
         return fail("get imagearray", err);
+    }
+
+    // Record this frame's delivery overhead (readout + download beyond the exposure) and,
+    // once the session estimate is stable, warn once if the link is slow or jittery enough
+    // to add meaningful variable dead time to the guide servo loop. A local COM/USB camera
+    // has no such overhead, so this exceeds the ASCOM backend.
+    long overheadMs = deliveryTimer.Time() - (long) (secs * 1000.0);
+    m_delivery.add(overheadMs > 0 ? overheadMs : 0);
+    if (m_delivery.n % DELIVERY_LOG_EVERY == 0)
+        Debug.Write(wxString::Format("Alpaca cam: frame delivery avg=%.0fms jitter=%.0fms over %u frames\n", m_delivery.mean,
+                                     m_delivery.jitter(), m_delivery.n));
+    if (!m_slowDeliveryFlagged && m_delivery.n >= DELIVERY_MIN_SAMPLES &&
+        (m_delivery.mean > DELIVERY_DELAY_WARN_MS || m_delivery.jitter() > DELIVERY_JITTER_WARN_MS))
+    {
+        m_slowDeliveryFlagged = true;
+        Debug.Write(wxString::Format("Alpaca cam: slow/variable frame delivery (avg=%.0fms jitter=%.0fms over %u frames)\n",
+                                     m_delivery.mean, m_delivery.jitter(), m_delivery.n));
+        pFrame->SuppressibleAlert(FrameDeliveryAlertEnabledKey(),
+                                  wxString::Format(_("Alpaca camera frame delivery is slow or variable on this network "
+                                                     "(average %.0f ms, jitter %.0f ms per frame beyond the exposure). "
+                                                     "Guiding may be less stable; a faster or steadier connection helps."),
+                                                   m_delivery.mean, m_delivery.jitter()),
+                                  SuppressFrameDeliveryAlert, 0);
     }
 
     // Some drivers return the image array with its axes transposed. Mirror cam_ascom's
