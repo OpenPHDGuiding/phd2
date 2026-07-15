@@ -145,7 +145,7 @@ public:
     bool SlewToCoordinatesAsync(double ra, double dec) override;
     void AbortSlew() override;
 
-    wxString GetMountClassName() const override { return wxString("alpaca"); }
+    wxString GetMountClassName() const override { return wxString("scope"); }
 
     bool HasSetupDialog() const override { return true; }
     void SetupDialog() override;
