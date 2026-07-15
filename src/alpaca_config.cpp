@@ -108,7 +108,7 @@ public:
     // display label for the title rather than showing the raw token.
     AlpacaConfigDialog(wxWindow *parent, const wxString& deviceType, const wxString& host, long port, long devnum)
         : wxDialog(parent, wxID_ANY,
-                   wxString::Format(_("Alpaca %s Setup"), deviceType.CmpNoCase("camera") == 0 ? _("Camera") : _("Telescope"))),
+                   deviceType.CmpNoCase("camera") == 0 ? _("Alpaca Camera Setup") : _("Alpaca Telescope Setup")),
           m_type(deviceType)
     {
         wxBoxSizer *top = new wxBoxSizer(wxVERTICAL);

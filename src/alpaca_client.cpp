@@ -1353,7 +1353,8 @@ std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int ti
     return out;
 }
 
-std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs, const std::atomic<bool> *cancel)
+std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs,
+                                                const std::atomic<bool> *cancel)
 {
     std::vector<ConfiguredDevice> out;
     CURL *curl = curl_easy_init();

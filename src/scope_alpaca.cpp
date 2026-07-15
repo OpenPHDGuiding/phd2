@@ -117,7 +117,6 @@ class ScopeAlpaca : public Scope
     bool m_canGetSideOfPier;
     bool m_abortSlewWhenGuidingStuck;
     bool m_checkForSyncPulseGuide;
-    wxString m_connectFailReason; // why the most recent tryConnect failed (for the connect alert)
 
 public:
     ScopeAlpaca();
@@ -224,7 +223,6 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum, RunIn
     if ((err = mount->setConnected(true)))
     {
         Debug.Write(wxString::Format("Alpaca mount %s:%ld#%ld setconnected failed: %s\n", host, port, devnum, err.what()));
-        m_connectFailReason = wxString(err.what());
         return false;
     }
     // CanPulseGuide is optional: a failed read means no pulse-guide support, not a failed
@@ -374,7 +372,7 @@ bool ScopeAlpaca::Connect()
             {
                 Debug.Write(wxString::Format("Alpaca mount connect failed: configured telescope %s:%ld#%ld not reachable\n",
                                              sa->m_host, sa->m_port, sa->m_devnum));
-                SetErrorMsg(sa->m_connectFailReason);
+                SetErrorMsg(_("Could not connect to the Alpaca mount. See the debug log for more information."));
                 return true;
             }
 
@@ -402,10 +400,11 @@ bool ScopeAlpaca::Connect()
     if (bg.Run())
     {
         setTelescopes(nullptr, nullptr);
-        // Alert with the specific reason when the configured mount is unreachable (the
-        // A5 behavior); a user cancel fails quietly.
+        // Alert when the configured mount is unreachable; a user cancel fails quietly. The
+        // specific reason (English, from the wire/curl) is in the debug log per PHD2's
+        // log-is-English / UI-is-translated policy.
         if (!bg.IsCanceled() && hostConfigured)
-            pFrame->Alert(wxString::Format(_("Alpaca mount connect failed: %s"), m_connectFailReason));
+            pFrame->Alert(_("Could not connect to the Alpaca mount. See the debug log for details."));
         return true; // true == failure (PHD2 convention)
     }
 

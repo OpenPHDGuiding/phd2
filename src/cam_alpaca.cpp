@@ -66,19 +66,6 @@ void AlpacaDiagLog(const char *msg)
     Debug.Write(wxString::Format("Alpaca client: %s\n", msg));
 }
 
-// The slow-frame-delivery warning is per-profile and dismissible, keyed under "/Confirm"
-// so ConfirmDialog::ResetAllDontAskAgain() clears it. No ASCOM analog -- a local camera
-// has no network delivery to be slow.
-wxString FrameDeliveryAlertEnabledKey()
-{
-    return wxString::Format("/Confirm/%d/AlpacaFrameDeliveryAlertEnabled", pConfig->GetCurrentProfileId());
-}
-
-void SuppressFrameDeliveryAlert(intptr_t)
-{
-    pConfig->Global.SetBoolean(FrameDeliveryAlertEnabledKey(), false);
-}
-
 // DeliveryStats tracks the mean and jitter (population std dev, Welford one-pass) of a
 // per-frame quantity in O(1) state -- here the frame-delivery overhead, to gauge the guide
 // loop's network dead time. Reset each connection.
@@ -107,20 +94,14 @@ enum
 {
     IMAGE_READY_POLL_MS = 50,
     CAMERA_STATE_CHECK_MS = 1000,
-    // Control-call timeout (everything but the image download, which uses the Device's
-    // separate 30 s image timeout plus its own stall abort): small requests should fail
-    // in seconds on a dead server, not 30. The status connection is shorter still --
-    // it serves UI-thread polls that must never hang the GUI.
+    // status and control-call timeout
     CONTROL_TIMEOUT_MS = 5000,
     STATUS_TIMEOUT_MS = 3000,
-    // Frame-delivery health (R2). The per-frame network+readout overhead beyond the
-    // exposure is variable dead time in the guide servo loop; warn once per session when it
-    // is large or jittery enough to matter. Conservative floors so a healthy LAN (tens of ms,
-    // little spread) never trips them; a laggy WiFi/remote link does. Tunable.
-    DELIVERY_MIN_SAMPLES = 20, // require a stable estimate before judging
+    // Frame-delivery health, debug-log diagnostic only.
+    DELIVERY_MIN_SAMPLES = 20, // require a stable estimate before noting
     DELIVERY_LOG_EVERY = 50, // periodic support-log summary cadence (frames)
-    DELIVERY_DELAY_WARN_MS = 1500, // mean overhead beyond the exposure -> link is the bottleneck
-    DELIVERY_JITTER_WARN_MS = 300, // std dev of that overhead -> variable dead time destabilizes guiding
+    DELIVERY_DELAY_WARN_MS = 1500, // mean overhead beyond the exposure worth a one-time log note
+    DELIVERY_JITTER_WARN_MS = 300, // std dev of that overhead worth a one-time log note
 };
 
 class CameraAlpaca : public GuideCamera
@@ -147,7 +128,7 @@ class CameraAlpaca : public GuideCamera
     double m_devPixelSize; // pixel size read from the driver; served to GetDevicePixelSize
     wxByte m_bpp;
     DeliveryStats m_delivery; // per-frame delivery-time mean + jitter (reset each connect)
-    bool m_slowDeliveryFlagged; // one-time guard for the slow/variable-delivery alert
+    bool m_slowDeliveryFlagged; // one-time guard for the slow/variable-delivery log note
 
 public:
     CameraAlpaca();
@@ -295,7 +276,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
         Debug.Write(wxString::Format("Alpaca cam: %s failed: %s\n", member, e.what()));
-        bg->SetErrorMsg(wxString::Format(_("Alpaca camera connect failed: %s"), e.what()));
+        bg->SetErrorMsg(_("Could not connect to the Alpaca camera. See the debug log for details."));
         return true;
     };
 
@@ -634,7 +615,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
         Debug.Write(wxString::Format("Alpaca capture: %s failed: %s\n", member, e.what()));
-        DisconnectWithAlert(wxString::Format(_("Alpaca capture failed: %s"), e.what()), RECONNECT);
+        DisconnectWithAlert(_("The Alpaca camera capture failed. See the debug log for details."), RECONNECT);
         return true;
     };
 
@@ -775,10 +756,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         return fail("get imagearray", err);
     }
 
-    // Record this frame's delivery overhead (readout + download beyond the exposure) and,
-    // once the session estimate is stable, warn once if the link is slow or jittery enough
-    // to add meaningful variable dead time to the guide servo loop. A local COM/USB camera
-    // has no such overhead, so this exceeds the ASCOM backend.
+    // Record this frame's delivery overhead to the debug log.
     long overheadMs = deliveryTimer.Time() - (long) (secs * 1000.0);
     m_delivery.add(overheadMs > 0 ? overheadMs : 0);
     if (m_delivery.n % DELIVERY_LOG_EVERY == 0)
@@ -790,12 +768,6 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         m_slowDeliveryFlagged = true;
         Debug.Write(wxString::Format("Alpaca cam: slow/variable frame delivery (avg=%.0fms jitter=%.0fms over %u frames)\n",
                                      m_delivery.mean, m_delivery.jitter(), m_delivery.n));
-        pFrame->SuppressibleAlert(FrameDeliveryAlertEnabledKey(),
-                                  wxString::Format(_("Alpaca camera frame delivery is slow or variable on this network "
-                                                     "(average %.0f ms, jitter %.0f ms per frame beyond the exposure). "
-                                                     "Guiding may be less stable; a faster or steadier connection helps."),
-                                                   m_delivery.mean, m_delivery.jitter()),
-                                  SuppressFrameDeliveryAlert, 0);
     }
 
     // Some drivers return the image array with its axes transposed. Mirror cam_ascom's
@@ -965,7 +937,7 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
                 // the user (mirrors cam_ascom's ASCOM_IsMoving: it raises this alert and
                 // returns false on a failed IsPulseGuiding read).
                 Debug.Write(wxString::Format("Alpaca cam: ST4 ispulseguiding failed: %s\n", err.what()));
-                pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding. See the debug log for more information."));
+                pFrame->Alert(_("Alpaca driver failed checking IsPulseGuiding. See the debug log for more information."));
                 break;
             }
             if (!pulsing)
@@ -1040,7 +1012,7 @@ bool CameraAlpaca::SetCoolerOn(bool on)
     {
         Debug.Write(wxString::Format("Alpaca cam: set cooleron=%d failed: %s\n", on, err.what()));
         // Same alert as the ASCOM backend, with the device's reason appended.
-        pFrame->Alert(wxString::Format(_("ASCOM error turning camera cooler %s"), on ? _("on") : _("off")) + ":\n" +
+        pFrame->Alert(wxString::Format(_("Alpaca error turning camera cooler %s"), on ? _("on") : _("off")) + ":\n" +
                       wxString(err.what()));
         return true;
     }
