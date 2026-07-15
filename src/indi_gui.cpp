@@ -766,8 +766,8 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent& event)
 void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 {
 #if defined(_WIN64)
-    unsigned long long lo = (unsigned long long) event.GetInt();
-    unsigned long long hi = (unsigned long long) event.GetExtraLong();
+    unsigned long long lo = (unsigned int) event.GetInt();
+    unsigned long long hi = (unsigned long) event.GetExtraLong();
     IndiProp *indiProp = (IndiProp *) ((hi << 32) | lo);
 #else
     IndiProp *indiProp = (IndiProp *) event.GetExtraLong();
