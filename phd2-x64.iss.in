@@ -46,7 +46,7 @@ Source: Release\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
 ; 32-bit Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
 ; 32-bit Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
 ; 32-bit Source: Release\tbb.dll; DestDir: {app}; Flags: replacesameversion
-; 32-bit Source: Release\toupcam.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\toupcam.dll; DestDir: {app}; Flags: replacesameversion
 ; 32-bit Source: Release\SVBCameraSDK.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\PlayerOneCamera.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\LIBCURL.DLL; DestDir: {app}; Flags: replacesameversion
@@ -64,6 +64,8 @@ Source: Release\libcurl.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\liblzma.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libwebp.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libwebpdecoder.dll; DestDir: {app}; Flags: replacesameversion
+Source: _deps\vcpkg-src\installed\x64-windows\bin\libwebpdemux.dll; DestDir: {app}; Flags: replacesameversion
+Source: _deps\vcpkg-src\installed\x64-windows\bin\libwebpmux.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libsharpyuv.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libpng16.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\tiff.dll; DestDir: {app}; Flags: replacesameversion
