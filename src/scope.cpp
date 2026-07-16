@@ -371,7 +371,7 @@ wxArrayString Scope::MountList()
     ScopeList.Add(INDIMountName());
 #endif
 #ifdef ALPACA_MOUNT
-    ScopeList.Add(_T("Alpaca Mount"));
+    ScopeList.Add(_T("Alpaca Mount (Experimental)"));
 #endif
 
     ScopeList.Sort(&CompareNoCase);
@@ -395,7 +395,7 @@ wxArrayString Scope::AuxMountList()
     scopeList.Add(INDIMountName());
 #endif
 #ifdef ALPACA_MOUNT
-    scopeList.Add(_T("Alpaca Mount"));
+    scopeList.Add(_T("Alpaca Mount (Experimental)"));
 #endif
 
     scopeList.Add(ScopeManualPointing::GetDisplayName());
@@ -429,7 +429,7 @@ Scope *Scope::Factory(const wxString& choice)
             pReturn = INDIScopeFactory::MakeINDIScope();
 #endif
 #ifdef ALPACA_MOUNT
-        else if (choice == _T("Alpaca Mount"))
+        else if (choice.Contains(_T("Alpaca Mount")))
             pReturn = AlpacaScopeFactory::MakeAlpacaScope();
 #endif
         else if (choice == _("None"))

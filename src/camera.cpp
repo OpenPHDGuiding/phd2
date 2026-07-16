@@ -373,7 +373,7 @@ wxArrayString GuideCamera::GuideCameraList()
     CameraList.Add(INDICamName());
 #endif
 #if defined(ALPACA_CAMERA)
-    CameraList.Add(_T("Alpaca Camera"));
+    CameraList.Add(_T("Alpaca Camera (Experimental)"));
 #endif
 #if defined(V4L_CAMERA)
     if (true == Camera_VIDEODEVICE.ProbeDevices())
