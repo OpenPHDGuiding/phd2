@@ -588,6 +588,8 @@ if(WIN32)
       ${VCPKG_DEBUG_BIN}/liblzma.dll
       ${VCPKG_DEBUG_BIN}/libwebp.dll
       ${VCPKG_DEBUG_BIN}/libwebpdecoder.dll
+      ${VCPKG_DEBUG_BIN}/libwebpdemux.dll
+      ${VCPKG_DEBUG_BIN}/libwebpmux.dll
       ${VCPKG_DEBUG_BIN}/libsharpyuv.dll
   )
   list(APPEND PHD_COPY_EXTERNAL_REL
@@ -602,6 +604,8 @@ if(WIN32)
       ${VCPKG_RELEASE_BIN}/liblzma.dll
       ${VCPKG_RELEASE_BIN}/libwebp.dll
       ${VCPKG_RELEASE_BIN}/libwebpdecoder.dll
+      ${VCPKG_RELEASE_BIN}/libwebpdemux.dll
+      ${VCPKG_RELEASE_BIN}/libwebpmux.dll
       ${VCPKG_RELEASE_BIN}/libsharpyuv.dll
   )
 endif()
