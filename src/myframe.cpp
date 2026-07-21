@@ -1345,8 +1345,8 @@ void MyFrame::Alert(const wxString& msg, int flags)
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
 {
 #if defined(_WIN64)
-    unsigned long long lo = (unsigned long long) event.GetInt();
-    unsigned long long hi = (unsigned long long) event.GetExtraLong();
+    unsigned long long lo = (unsigned int) event.GetInt();
+    unsigned long long hi = (unsigned long) event.GetExtraLong();
     alert_params *params = (alert_params *) ((hi << 32) | lo);
 #else
     alert_params *params = (alert_params *) event.GetExtraLong();
