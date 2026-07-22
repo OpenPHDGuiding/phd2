@@ -247,7 +247,7 @@ bool CameraAlpaca::Connect(const wxString& camId)
     setCameras(bg.cam, bg.statusCam);
     Connected = true;
     Debug.Write(wxString::Format(
-        "Alpaca cam connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n", m_fullW, m_fullH,
+        "Alpaca camera connected %dx%d pix=%.2f maxbin=%d bayer=%d shutter=%d st4=%d gain=%d..%d bpp=%d\n", m_fullW, m_fullH,
         m_devPixelSize, MaxHwBinning, HasBayer, HasShutter, m_hasGuideOutput, m_gainMin, m_gainMax, m_bpp));
     return false;
 }
@@ -275,7 +275,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     // handling in cam_ascom.cpp).
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
-        Debug.Write(wxString::Format("Alpaca cam: %s failed: %s\n", member, e.what()));
+        Debug.Write(wxString::Format("Alpaca camera: %s failed: %s\n", member, e.what()));
         bg->SetErrorMsg(_("Could not connect to the Alpaca camera. See the debug log for details."));
         return true;
     };
@@ -292,7 +292,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     if (!(err = cam->name(&devName)))
         Name = wxString::Format(_T("Alpaca: %s"), wxString(devName.c_str(), wxConvUTF8));
     else
-        Debug.Write(wxString::Format("Alpaca cam: get name failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get name failed: %s\n", err.what()));
 
     // Required geometry -- sensor size and pixel size in X must be present.
     int fullW = 0, fullH = 0;
@@ -307,7 +307,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     // matching cam_ascom's wxMax of the two (matters for non-square pixels).
     if ((err = cam->pixelSizeY(&pixY)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get pixelsizey failed, using pixelsizex: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get pixelsizey failed, using pixelsizex: %s\n", err.what()));
         pixY = pixX;
     }
     m_fullW = fullW;
@@ -328,12 +328,12 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     int maxBinX = 1, maxBinY = 1;
     if ((err = cam->maxBinX(&maxBinX)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get maxbinx failed, assuming 1: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get maxbinx failed, assuming 1: %s\n", err.what()));
         maxBinX = 1;
     }
     if ((err = cam->maxBinY(&maxBinY)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get maxbiny failed, assuming 1: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get maxbiny failed, assuming 1: %s\n", err.what()));
         maxBinY = 1;
     }
     MaxHwBinning = (wxByte) std::max(1, std::min(maxBinX, maxBinY));
@@ -346,7 +346,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     int driverVersion = 1;
     if ((err = cam->interfaceVersion(&driverVersion)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get interfaceversion failed, assuming 1: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get interfaceversion failed, assuming 1: %s\n", err.what()));
         driverVersion = 1;
     }
     HasBayer = false;
@@ -354,7 +354,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     {
         int stype = 0;
         if ((err = cam->sensorType(&stype)))
-            Debug.Write(wxString::Format("Alpaca cam: get sensortype failed, assuming mono: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: get sensortype failed, assuming mono: %s\n", err.what()));
         else
             HasBayer = stype > 1;
     }
@@ -363,14 +363,14 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     // so a dark request must not be sent to it (see the Capture light/dark logic).
     bool hasShutter = false;
     if ((err = cam->hasShutter(&hasShutter)))
-        Debug.Write(wxString::Format("Alpaca cam: get hasshutter failed, assuming no shutter: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get hasshutter failed, assuming no shutter: %s\n", err.what()));
     HasShutter = hasShutter;
 
     // Optional cooler -- treat any failure as "no cooler".
     bool hasCooler = false;
     if ((err = cam->hasCooler(&hasCooler)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: cooler probe failed, assuming no cooler: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: cooler probe failed, assuming no cooler: %s\n", err.what()));
         hasCooler = false;
     }
     HasCooler = hasCooler;
@@ -384,12 +384,12 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     {
         if ((err = cam->canGetCoolerPower(&m_canGetCoolerPower)))
         {
-            Debug.Write(wxString::Format("Alpaca cam: get cangetcoolerpower failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: get cangetcoolerpower failed: %s\n", err.what()));
             m_canGetCoolerPower = false;
         }
         if ((err = cam->canSetCCDTemperature(&m_canSetCoolerTemperature)))
         {
-            Debug.Write(wxString::Format("Alpaca cam: get cansetccdtemperature failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: get cansetccdtemperature failed: %s\n", err.what()));
             m_canSetCoolerTemperature = false;
         }
     }
@@ -403,7 +403,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     bool hasGuideOutput = false;
     if ((err = cam->canPulseGuide(&hasGuideOutput)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get canpulseguide failed, assuming no guide output: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get canpulseguide failed, assuming no guide output: %s\n", err.what()));
         hasGuideOutput = false;
     }
     m_hasGuideOutput = hasGuideOutput;
@@ -412,12 +412,12 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     // arrives mid-exposure); treat a failed probe as "no".
     if ((err = cam->canAbortExposure(&m_canAbortExposure)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get canabortexposure failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get canabortexposure failed: %s\n", err.what()));
         m_canAbortExposure = false;
     }
     if ((err = cam->canStopExposure(&m_canStopExposure)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get canstopexposure failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get canstopexposure failed: %s\n", err.what()));
         m_canStopExposure = false;
     }
 
@@ -457,7 +457,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
             }
             else
             {
-                Debug.Write(wxString::Format("Alpaca cam: gains list (%u entries) is not numeric-ascending; "
+                Debug.Write(wxString::Format("Alpaca camera: gains list (%u entries) is not numeric-ascending; "
                                              "gain control disabled\n",
                                              (unsigned int) names.size()));
                 HasGainControl = false;
@@ -465,7 +465,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
         }
         else
         {
-            Debug.Write(wxString::Format("Alpaca cam: no gain control (gains list unavailable: %s)\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: no gain control (gains list unavailable: %s)\n", err.what()));
             HasGainControl = false;
         }
     }
@@ -487,7 +487,7 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     int maxadu = 0;
     if ((err = cam->maxADU(&maxadu)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get maxadu failed, assuming 16bpp: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get maxadu failed, assuming 16bpp: %s\n", err.what()));
         m_bpp = 16;
     }
     else
@@ -497,12 +497,12 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
     // Unknown limits (property absent) just mean no clamp.
     if ((err = cam->exposureMin(&m_expMin)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get exposuremin failed, no lower clamp: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get exposuremin failed, no lower clamp: %s\n", err.what()));
         m_expMin = 0.0;
     }
     if ((err = cam->exposureMax(&m_expMax)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get exposuremax failed, no upper clamp: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get exposuremax failed, no upper clamp: %s\n", err.what()));
         m_expMax = 0.0;
     }
 
@@ -525,11 +525,11 @@ bool CameraAlpaca::Disconnect()
     {
         alpaca::Error err = cam->setConnected(false); // best-effort
         if (err)
-            Debug.Write(wxString::Format("Alpaca cam: setConnected(false) failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: setConnected(false) failed: %s\n", err.what()));
     }
     HasCooler = false; // the config dialog gates cooler calls on this, even when disconnected
     Connected = false;
-    Debug.Write("Alpaca cam disconnected\n");
+    Debug.Write("Alpaca camera disconnected\n");
     return false;
 }
 
@@ -538,7 +538,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     std::shared_ptr<alpaca::Camera> cam = camera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot capture when not connected\n");
+        Debug.Write("Alpaca camera: cannot capture when not connected\n");
         return true;
     }
 
@@ -591,7 +591,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         }
         else
         {
-            Debug.Write(wxString::Format("Alpaca capture: subframe %dx%d@%d,%d out of bounds; taking full frame\n",
+            Debug.Write(wxString::Format("Alpaca camera: subframe %dx%d@%d,%d out of bounds; taking full frame\n",
                                          params.subframe.width, params.subframe.height, params.subframe.x, params.subframe.y));
             useSub = false;
         }
@@ -614,7 +614,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     // disconnect (mirrors cam_ascom.cpp).
     auto fail = [&](const char *member, const alpaca::Error& e) -> bool
     {
-        Debug.Write(wxString::Format("Alpaca capture: %s failed: %s\n", member, e.what()));
+        Debug.Write(wxString::Format("Alpaca camera: %s failed: %s\n", member, e.what()));
         DisconnectWithAlert(_("The Alpaca camera capture failed. See the debug log for details."), RECONNECT);
         return true;
     };
@@ -653,7 +653,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         {
             if ((err = cam->setGain(g)))
                 return fail("set gain", err);
-            Debug.Write(wxString::Format("Alpaca capture: gain %d programmed (slider %d)\n", g, params.gain));
+            Debug.Write(wxString::Format("Alpaca camera: gain %d programmed (slider %d)\n", g, params.gain));
             m_lastSetGain = g;
         }
     }
@@ -670,7 +670,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         secs = m_expMax;
     if (secs != reqSecs && params.duration != m_clampLoggedDuration)
     {
-        Debug.Write(wxString::Format("Alpaca capture: exposure %.3f s clamped to camera limit %.3f s\n", reqSecs, secs));
+        Debug.Write(wxString::Format("Alpaca camera: exposure %.3f s clamped to camera limit %.3f s\n", reqSecs, secs));
         m_clampLoggedDuration = params.duration;
     }
     // A dark can only be taken by a camera that has a shutter; on a shutterless
@@ -719,12 +719,12 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
             int state = 0;
             if ((err = cam->cameraState(&state)))
             {
-                Debug.Write(wxString::Format("Alpaca capture: get camerastate failed; not checking again: %s\n", err.what()));
+                Debug.Write(wxString::Format("Alpaca camera: get camerastate failed; not checking again: %s\n", err.what()));
                 checkState = false;
             }
             else if (state == 5) // ASCOM CameraStates::cameraError
             {
-                Debug.Write("Alpaca capture: camera reports cameraError; abandoning the exposure wait\n");
+                Debug.Write("Alpaca camera: camera reports cameraError; abandoning the exposure wait\n");
                 DisconnectWithAlert(_("Alpaca camera reported an exposure error."), RECONNECT);
                 return true;
             }
@@ -750,7 +750,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     {
         if (err.kind == alpaca::Error::Aborted)
         {
-            Debug.Write("Alpaca capture: image download interrupted\n");
+            Debug.Write("Alpaca camera: image download interrupted\n");
             return true;
         }
         return fail("get imagearray", err);
@@ -760,13 +760,13 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     long overheadMs = deliveryTimer.Time() - (long) (secs * 1000.0);
     m_delivery.add(overheadMs > 0 ? overheadMs : 0);
     if (m_delivery.n % DELIVERY_LOG_EVERY == 0)
-        Debug.Write(wxString::Format("Alpaca cam: frame delivery avg=%.0fms jitter=%.0fms over %u frames\n", m_delivery.mean,
+        Debug.Write(wxString::Format("Alpaca camera: frame delivery avg=%.0fms jitter=%.0fms over %u frames\n", m_delivery.mean,
                                      m_delivery.jitter(), m_delivery.n));
     if (!m_slowDeliveryFlagged && m_delivery.n >= DELIVERY_MIN_SAMPLES &&
         (m_delivery.mean > DELIVERY_DELAY_WARN_MS || m_delivery.jitter() > DELIVERY_JITTER_WARN_MS))
     {
         m_slowDeliveryFlagged = true;
-        Debug.Write(wxString::Format("Alpaca cam: slow/variable frame delivery (avg=%.0fms jitter=%.0fms over %u frames)\n",
+        Debug.Write(wxString::Format("Alpaca camera: slow/variable frame delivery (avg=%.0fms jitter=%.0fms over %u frames)\n",
                                      m_delivery.mean, m_delivery.jitter(), m_delivery.n));
     }
 
@@ -807,7 +807,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
     {
         if (!useSub && limitFrame.IsEmpty())
         {
-            Debug.Write(wxString::Format("Alpaca capture: full frame %dx%d != requested %dx%d; adopting the driver's size\n",
+            Debug.Write(wxString::Format("Alpaca camera: full frame %dx%d != requested %dx%d; adopting the driver's size\n",
                                          frame.width, frame.height, roi.width, roi.height));
             m_adoptedSize.Set(frame.width, frame.height);
             roi = wxRect(0, 0, frame.width, frame.height);
@@ -815,7 +815,7 @@ bool CameraAlpaca::Capture(usImage& img, const CaptureParams& params)
         }
         else
         {
-            Debug.Write(wxString::Format("Alpaca capture: returned frame %dx%d != requested ROI %dx%d\n", frame.width,
+            Debug.Write(wxString::Format("Alpaca camera: returned frame %dx%d != requested ROI %dx%d\n", frame.width,
                                          frame.height, roi.width, roi.height));
             DisconnectWithAlert(_("Alpaca camera returned a frame that does not match the requested size."), RECONNECT);
             return true;
@@ -870,21 +870,21 @@ bool CameraAlpaca::AbortExposure(alpaca::Camera *cam)
     {
         alpaca::Error err = cam->abortExposure();
         if (err)
-            Debug.Write(wxString::Format("Alpaca cam: abortexposure failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: abortexposure failed: %s\n", err.what()));
         else
-            Debug.Write("Alpaca cam: exposure aborted (abortexposure)\n");
+            Debug.Write("Alpaca camera: exposure aborted (abortexposure)\n");
         return !err;
     }
     if (m_canStopExposure)
     {
         alpaca::Error err = cam->stopExposure();
         if (err)
-            Debug.Write(wxString::Format("Alpaca cam: stopexposure failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: stopexposure failed: %s\n", err.what()));
         else
-            Debug.Write("Alpaca cam: exposure cancelled (stopexposure)\n");
+            Debug.Write("Alpaca camera: exposure cancelled (stopexposure)\n");
         return !err;
     }
-    Debug.Write("Alpaca cam: cannot cancel the exposure (no abort/stop support); waiting it out\n");
+    Debug.Write("Alpaca camera: cannot cancel the exposure (no abort/stop support); waiting it out\n");
     return false;
 }
 
@@ -904,7 +904,7 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
     std::shared_ptr<alpaca::Camera> cam = camera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot ST4 pulse guide when not connected\n");
+        Debug.Write("Alpaca camera: cannot ST4 pulse guide when not connected\n");
         return true;
     }
 
@@ -918,10 +918,10 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
     cam->setTimeoutMs(CONTROL_TIMEOUT_MS);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca cam: ST4 pulseguide failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: ST4 pulseguide failed: %s\n", err.what()));
         return true;
     }
-    Debug.Write(wxString::Format("Alpaca cam: ST4 pulse dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, duration,
+    Debug.Write(wxString::Format("Alpaca camera: ST4 pulse dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, duration,
                                  pulseTimer.Time()));
 
     // If PulseGuide returned before the pulse finished (the usual asynchronous case),
@@ -936,7 +936,7 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
                 // Unknown state -- treat the pulse as complete rather than fail, and alert
                 // the user (mirrors cam_ascom's ASCOM_IsMoving: it raises this alert and
                 // returns false on a failed IsPulseGuiding read).
-                Debug.Write(wxString::Format("Alpaca cam: ST4 ispulseguiding failed: %s\n", err.what()));
+                Debug.Write(wxString::Format("Alpaca camera: ST4 ispulseguiding failed: %s\n", err.what()));
                 pFrame->Alert(_("Alpaca driver failed checking IsPulseGuiding. See the debug log for more information."));
                 break;
             }
@@ -947,7 +947,7 @@ bool CameraAlpaca::ST4PulseGuideScope(int direction, int duration)
                 return true;
             if (watchdog.Expired())
             {
-                Debug.Write("Alpaca cam: ST4 watchdog timed out waiting for pulse to complete\n");
+                Debug.Write("Alpaca camera: ST4 watchdog timed out waiting for pulse to complete\n");
                 return true;
             }
         }
@@ -976,7 +976,7 @@ int CameraAlpaca::GetDefaultCameraGain()
         alpaca::Error err = cam->gain(&g);
         if (!err)
             return (int) ((double) (g - m_gainMin) * 100.0 / (m_gainMax - m_gainMin) + 0.5);
-        Debug.Write(wxString::Format("Alpaca cam: get gain failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get gain failed: %s\n", err.what()));
     }
     return 95; // PHD2's DefaultGuideCameraGain
 }
@@ -998,19 +998,19 @@ bool CameraAlpaca::SetCoolerOn(bool on)
 {
     if (!HasCooler)
     {
-        Debug.Write("Alpaca cam: has no cooler\n");
+        Debug.Write("Alpaca camera: has no cooler\n");
         return true;
     }
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot set cooler on/off when not connected\n");
+        Debug.Write("Alpaca camera: cannot set cooler on/off when not connected\n");
         return true;
     }
     alpaca::Error err = cam->setCoolerOn(on);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca cam: set cooleron=%d failed: %s\n", on, err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: set cooleron=%d failed: %s\n", on, err.what()));
         // Same alert as the ASCOM backend, with the device's reason appended.
         pFrame->Alert(wxString::Format(_("Alpaca error turning camera cooler %s"), on ? _("on") : _("off")) + ":\n" +
                       wxString(err.what()));
@@ -1023,19 +1023,19 @@ bool CameraAlpaca::SetCoolerSetpoint(double temperature)
 {
     if (!HasCooler || !m_canSetCoolerTemperature)
     {
-        Debug.Write("Alpaca cam: cannot set cooler temperature\n");
+        Debug.Write("Alpaca camera: cannot set cooler temperature\n");
         return true;
     }
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot set cooler setpoint when not connected\n");
+        Debug.Write("Alpaca camera: cannot set cooler setpoint when not connected\n");
         return true;
     }
     alpaca::Error err = cam->setCCDTemperature(temperature);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca cam: set setccdtemperature failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: set setccdtemperature failed: %s\n", err.what()));
         return true;
     }
     return false;
@@ -1048,18 +1048,18 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot get cooler status when not connected\n");
+        Debug.Write("Alpaca camera: cannot get cooler status when not connected\n");
         return true;
     }
     alpaca::Error err;
     if ((err = cam->coolerOn(on)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get cooleron failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get cooleron failed: %s\n", err.what()));
         return true;
     }
     if ((err = cam->ccdTemperature(temperature)))
     {
-        Debug.Write(wxString::Format("Alpaca cam: get ccdtemperature failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get ccdtemperature failed: %s\n", err.what()));
         return true;
     }
     // Only issue the setpoint/power requests when the Connect-time probe found the
@@ -1072,7 +1072,7 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
             // A driver that advertises CanSetCCDTemperature but fails the setpoint read is
             // reporting bad cooler status; error out rather than passing off the current
             // temperature as the setpoint (matches cam_ascom's GetCoolerStatus).
-            Debug.Write(wxString::Format("Alpaca cam: get setccdtemperature failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: get setccdtemperature failed: %s\n", err.what()));
             return true;
         }
     }
@@ -1084,7 +1084,7 @@ bool CameraAlpaca::GetCoolerStatus(bool *on, double *setpoint, double *power, do
     {
         if ((err = cam->coolerPower(power)))
         {
-            Debug.Write(wxString::Format("Alpaca cam: get coolerpower failed: %s\n", err.what()));
+            Debug.Write(wxString::Format("Alpaca camera: get coolerpower failed: %s\n", err.what()));
             *power = 100.0;
         }
     }
@@ -1098,13 +1098,13 @@ bool CameraAlpaca::GetSensorTemperature(double *temperature)
     std::shared_ptr<alpaca::Camera> cam = statusCamera();
     if (!cam)
     {
-        Debug.Write("Alpaca cam: cannot get sensor temperature when not connected\n");
+        Debug.Write("Alpaca camera: cannot get sensor temperature when not connected\n");
         return true;
     }
     alpaca::Error err = cam->ccdTemperature(temperature);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca cam: get ccdtemperature failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca camera: get ccdtemperature failed: %s\n", err.what()));
         return true;
     }
     return false;

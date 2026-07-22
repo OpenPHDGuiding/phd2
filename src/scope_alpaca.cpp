@@ -153,6 +153,8 @@ private:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
     MOVE_RESULT GuideImpl(GUIDE_DIRECTION direction, int durationMs);
     MOVE_RESULT CheckSlewing(alpaca::Telescope *mount);
+    bool IsGuiding(alpaca::Telescope *mount);
+    bool IsSlewing(alpaca::Telescope *mount);
     std::shared_ptr<alpaca::Telescope> telescope() const
     {
         std::lock_guard<std::mutex> lk(m_mountLock);
@@ -450,32 +452,56 @@ void ScopeAlpaca::SetupDialog()
     }
 }
 
-// Guide wraps GuideImpl with the same end-of-guide alert policy as the ASCOM backend:
-// a failed pulse (other than a user interrupt) raises the suppressible pulse-guide
-// alert; a detected slew raises the suppressible slew alert.
-// Mirrors scope_ascom's CheckSlewing: when the user's stop-guiding-when-slewing setting
-// is enabled and the mount can report it, treat a slew in progress as a reason to stop
-// guiding. Returns MOVE_OK to continue or MOVE_ERROR_SLEWING if the mount is slewing.
-// A failed read is unknown state, not a detected slew: treat it as "not slewing" and
-// keep guiding (over a lossy link this check is a network round-trip, and one transient
-// failure must not kill the pulse) -- matches ASCOM's IsSlewing returning false on a
-// failed read, and this backend's own isPulseGuiding failed-read tolerance.
+// CheckSlewing mirrors scope_ascom's CheckSlewing: when the user's stop-guiding-when-
+// slewing setting is enabled and the mount can report slewing, a slew in progress is a
+// reason to stop guiding. Returns MOVE_OK to continue or MOVE_ERROR_SLEWING if slewing.
+// The read (and its failed-read tolerance) lives in IsSlewing.
 Mount::MOVE_RESULT ScopeAlpaca::CheckSlewing(alpaca::Telescope *mount)
 {
-    if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled())
-    {
-        bool slewing = false;
-        alpaca::Error err = mount->slewing(&slewing);
-        if (err)
-        {
-            Debug.Write(wxString::Format("Alpaca Guide: slewing check failed: %s\n", err.what()));
-            return MOVE_OK;
-        }
-        if (slewing)
-            return MOVE_ERROR_SLEWING;
-    }
+    if (m_canCheckSlewing && IsStopGuidingWhenSlewingEnabled() && IsSlewing(mount))
+        return MOVE_ERROR_SLEWING;
     return MOVE_OK;
 }
+
+// IsGuiding wraps isPulseGuiding and logs "IsGuiding returns %d" on every call, so the
+// Alpaca drain/completion loops leave the same per-poll trace as scope_ascom's IsGuiding
+// (scope_ascom.cpp). A failed read is unknown state, not a detected move: treat it as
+// "not guiding" (returns false) and keep going, mirroring ASCOM's IsGuiding returning
+// false on a failed read. Callers only invoke this under m_canCheckPulseGuiding.
+bool ScopeAlpaca::IsGuiding(alpaca::Telescope *mount)
+{
+    bool pulsing = false;
+    alpaca::Error err = mount->isPulseGuiding(&pulsing);
+    if (err)
+    {
+        Debug.Write(wxString::Format("Alpaca mount: ispulseguiding failed: %s\n", err.what()));
+        pulsing = false;
+    }
+    Debug.Write(wxString::Format("IsGuiding returns %d\n", pulsing));
+    return pulsing;
+}
+
+// IsSlewing wraps slewing() and logs "IsSlewing returns %d" on every successful read, so
+// CheckSlewing leaves the same per-poll trace as scope_ascom's IsSlewing (scope_ascom.cpp).
+// A failed read is unknown state, not a detected slew: log it and return false (keep
+// guiding), mirroring ASCOM's IsSlewing returning false on a failed read -- over a lossy
+// link this check is a network round-trip, and one transient failure must not kill the pulse.
+bool ScopeAlpaca::IsSlewing(alpaca::Telescope *mount)
+{
+    bool slewing = false;
+    alpaca::Error err = mount->slewing(&slewing);
+    if (err)
+    {
+        Debug.Write(wxString::Format("Alpaca mount: slewing check failed: %s\n", err.what()));
+        return false;
+    }
+    Debug.Write(wxString::Format("IsSlewing returns %d\n", slewing));
+    return slewing;
+}
+
+// Guide wraps GuideImpl with the same end-of-guide alert policy as the ASCOM backend:
+// a failed pulse (other than a user interrupt) raises the suppressible pulse-guide alert;
+// a detected slew raises the suppressible slew alert.
 Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 {
     MOVE_RESULT result = GuideImpl(direction, durationMs);
@@ -497,10 +523,13 @@ Mount::MOVE_RESULT ScopeAlpaca::Guide(GUIDE_DIRECTION direction, int durationMs)
 
 Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int durationMs)
 {
+    // Same per-pulse entry line as scope_ascom ("Guiding  Dir = <n>, Dur = <ms>").
+    Debug.Write(wxString::Format("Guiding  Dir = %d, Dur = %d\n", direction, durationMs));
+
     std::shared_ptr<alpaca::Telescope> mount = telescope();
     if (!mount)
     {
-        Debug.Write("Alpaca mount: cannot guide when not connected\n");
+        Debug.Write("Alpaca mount: attempt to guide when not connected\n");
         return MOVE_ERROR;
     }
 
@@ -509,7 +538,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     if (!m_canPulseGuide)
     {
         pFrame->Alert(_("ASCOM driver does not support PulseGuide. Check your ASCOM driver settings."));
-        Debug.Write("Alpaca Guide: guide command issued but PulseGuide is not supported\n");
+        Debug.Write("Alpaca mount: guide command issued but PulseGuide not supported\n");
         return MOVE_ERROR;
     }
 
@@ -528,17 +557,9 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     // completion signal.
     if (m_canCheckPulseGuiding)
     {
-        bool pulsing = false;
-        if ((err = mount->isPulseGuiding(&pulsing)))
+        if (IsGuiding(mount.get()))
         {
-            // Unknown state, not a failure -- proceed rather than block (matches ASCOM's
-            // IsGuiding returning false on a failed read).
-            Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
-            pulsing = false;
-        }
-        if (pulsing)
-        {
-            Debug.Write("Alpaca Guide: entered guide while a pulse is still active; draining\n");
+            Debug.Write("Entered PulseGuideScope while moving\n");
             int i;
             // Bound the drain to ~PULSE_DRAIN_MS at the PULSE_POLL_MS cadence (mirrors
             // scope_ascom's ~1 s bound), re-checking slewing and pulse state each pass.
@@ -548,20 +569,15 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
                 wxMilliSleep(PULSE_POLL_MS);
                 if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
                     return slewResult;
-                if ((err = mount->isPulseGuiding(&pulsing)))
-                {
-                    Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
-                    break; // state unknown -- treat as drained
-                }
-                if (!pulsing)
+                if (!IsGuiding(mount.get()))
                     break;
             }
             if (i == drainPasses)
             {
-                Debug.Write("Alpaca Guide: pulse still active after 1s; aborting\n");
+                Debug.Write("Alpaca mount: pulse still active after 1s; aborting\n");
                 return MOVE_ERROR;
             }
-            Debug.Write("Alpaca Guide: prior pulse drained; continuing\n");
+            Debug.Write("Alpaca mount: prior pulse drained; continuing\n");
         }
     }
 
@@ -597,7 +613,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
     mount->setTimeoutMs(CONTROL_TIMEOUT_MS);
     if (err)
     {
-        Debug.Write(wxString::Format("Alpaca Guide: pulseguide failed: %s\n", err.what()));
+        Debug.Write(wxString::Format("Alpaca mount: pulseguide failed: %s\n", err.what()));
         // Make sure nothing got by us and the mount can really handle pulse guide --
         // CanPulseGuide may have changed on the fly (mirrors scope_ascom). Clearing the
         // flag makes the next Guide() raise the clear no-PulseGuide alert. Only a
@@ -605,7 +621,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
         bool can = false;
         if (!mount->canPulseGuide(&can) && !can)
         {
-            Debug.Write("Alpaca Guide: tried to guide a mount that has no PulseGuide support\n");
+            Debug.Write("Alpaca mount: tried to guide a mount that has no PulseGuide support\n");
             m_canPulseGuide = false;
         }
         return MOVE_ERROR;
@@ -614,7 +630,7 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
 
     // One line per pulse including the PUT round-trip -- the number that diagnoses
     // sluggish guiding over a slow link (scope_ascom's per-pulse Dir/Dur line, plus RTT).
-    Debug.Write(wxString::Format("Alpaca Guide: dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, durationMs, elapsed));
+    Debug.Write(wxString::Format("Alpaca mount: dir %d dur %d ms (pulseguide rtt %ld ms)\n", direction, durationMs, elapsed));
 
     // A long pulse whose PUT returned only around/after the pulse duration indicates a
     // synchronous pulse guide or slow dispatch (mirrors scope_ascom's AstroPhysicsV2
@@ -631,58 +647,64 @@ Mount::MOVE_RESULT ScopeAlpaca::GuideImpl(GUIDE_DIRECTION direction, int duratio
 
     // PulseGuide may be asynchronous; the guide algorithm expects Guide() to return
     // only after the move completes. Sleep out the remaining pulse time (interruptible
-    // by a stop or terminate request), then poll until the mount reports it's done.
-    if (elapsed < durationMs && WorkerThread::MilliSleep(durationMs - elapsed + 10, WorkerThread::INT_ANY))
-        return MOVE_ERROR;
+    // by a stop or terminate request), then poll until the mount reports it's done. The
+    // completion-tracking log strings below match scope_ascom's verbatim, so the Alpaca
+    // and ASCOM guide logs read the same and support tooling can grep both alike.
+    if (elapsed < durationMs)
+    {
+        long rem = durationMs - elapsed;
+        Debug.Write(wxString::Format("PulseGuide returned control before completion, sleep %ld\n", rem + 10));
+        if (WorkerThread::MilliSleep(rem + 10, WorkerThread::INT_ANY))
+            return MOVE_ERROR;
+    }
 
     // When the driver can't report IsPulseGuiding, the sleep above is the best
     // available completion signal -- skip the poll rather than fail the pulse
     // (matches the ASCOM backend when IsPulseGuiding is unavailable).
     if (m_canCheckPulseGuiding)
     {
-        enum
+        if (IsGuiding(mount.get()))
         {
-            GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
-            TIMEOUT_MS = 2000, // ...and this long before giving up
-        };
-        wxStopWatch swatch; // time from the end of the pulse duration
-        bool didAbort = false;
-        for (;;)
-        {
-            bool pulsing = false;
-            if ((err = mount->isPulseGuiding(&pulsing)))
-            {
-                // A failed check means the pulse state is unknown, not that the move
-                // failed; treat the pulse as complete (mirrors ASCOM's IsGuiding
-                // returning false on a failed read).
-                Debug.Write(wxString::Format("Alpaca Guide: ispulseguiding failed: %s\n", err.what()));
-                break;
-            }
-            if (!pulsing)
-                break;
+            Debug.Write("scope still moving after pulse duration time elapsed\n");
 
-            if (WorkerThread::InterruptRequested())
-                return MOVE_ERROR;
-            wxMilliSleep(PULSE_POLL_MS);
-
-            // A slew starting mid-pulse must stop guiding (mirrors scope_ascom's
-            // CheckSlewing inside the completion loop).
-            if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
-                return slewResult;
-
-            long now = swatch.Time();
-            if (!didAbort && now > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
+            enum
             {
-                Debug.Write("Alpaca Guide: pulse still active after grace period; aborting slew\n");
-                if ((err = mount->abortSlew())) // best-effort
-                    Debug.Write(wxString::Format("Alpaca Guide: abortslew failed: %s\n", err.what()));
-                didAbort = true;
-                continue;
-            }
-            if (now > TIMEOUT_MS)
+                GRACE_PERIOD_MS = 1000, // wait this long past the pulse before forcing an abort
+                TIMEOUT_MS = 2000, // ...and this long before giving up
+            };
+            bool didAbort = false;
+            for (;;)
             {
-                Debug.Write("Alpaca Guide: timed out waiting for pulse to complete\n");
-                return MOVE_ERROR;
+                if (WorkerThread::InterruptRequested())
+                    return MOVE_ERROR;
+                wxMilliSleep(PULSE_POLL_MS);
+
+                // A slew starting mid-pulse must stop guiding (mirrors scope_ascom's
+                // CheckSlewing inside the completion loop).
+                if ((slewResult = CheckSlewing(mount.get())) != MOVE_OK)
+                    return slewResult;
+
+                long past = pulseTimer.Time() - durationMs; // ms elapsed past the nominal pulse end
+                if (!IsGuiding(mount.get()))
+                {
+                    Debug.Write(wxString::Format("scope move finished after %d + %ld ms\n", durationMs, past));
+                    break;
+                }
+                if (!didAbort && past > GRACE_PERIOD_MS && m_abortSlewWhenGuidingStuck)
+                {
+                    Debug.Write(
+                        wxString::Format("scope still moving after %d + %ld ms, try aborting slew\n", durationMs, past));
+                    Debug.Write("ScopeAlpaca: AbortSlew\n"); // logged on every invoke, like scope_ascom
+                    if ((err = mount->abortSlew())) // best-effort
+                        Debug.Write(wxString::Format("Alpaca mount: abortslew failed: %s\n", err.what()));
+                    didAbort = true;
+                    continue;
+                }
+                if (past > TIMEOUT_MS)
+                {
+                    Debug.Write("Alpaca mount: timed out waiting for pulse to complete\n");
+                    return MOVE_ERROR;
+                }
             }
         }
     }
@@ -905,6 +927,7 @@ void ScopeAlpaca::AbortSlew()
         Debug.Write("Alpaca mount: cannot abort slew when not connected\n");
         return;
     }
+    Debug.Write("ScopeAlpaca: AbortSlew\n"); // logged on every invoke, like scope_ascom
     alpaca::Error err = mount->abortSlew(); // best-effort
     if (err)
         Debug.Write(wxString::Format("Alpaca mount: abortslew failed: %s\n", err.what()));
