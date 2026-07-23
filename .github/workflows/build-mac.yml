@@ -29,7 +29,8 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install dependencies
-      run: brew install eigen gettext
+      # autoconf/automake/libtool are needed to regenerate libnova's configure
+      run: brew install eigen gettext autoconf automake libtool
 
     - name: Put gettext on PATH
       run: echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
@@ -79,13 +80,14 @@ jobs:
         # libnova
         curl -fLO "http://deb.debian.org/debian/pool/main/libn/libnova/libnova_$LIBNOVA_VERSION.orig.tar.xz"
         tar xf "libnova_$LIBNOVA_VERSION.orig.tar.xz"
-        # libnova 0.16 asks for cmake 2.6 but  CMake 4 needs min version set
-        cmake -S libnova -B build-libnova \
-              -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBRARY=OFF \
-              -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-              -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
-        cmake --build build-libnova -j"$cores"
-        cmake --install build-libnova
+        cd libnova
+        echo "$LIBNOVA_VERSION" > .tarball-version
+        PATH="$(brew --prefix libtool)/libexec/gnubin:$PATH" autoreconf -i
+        ./configure --prefix="$prefix" --disable-shared --enable-static \
+                    CFLAGS="-mmacosx-version-min=14.0"
+        make -j"$cores"
+        make install
+        cd ..
 
         # Fail if anything came out shared
         test -f "$prefix/lib/libcfitsio.a"
