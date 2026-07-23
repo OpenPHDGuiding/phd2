@@ -1,4 +1,4 @@
-name: macOS Build
+name: macOS Packages
 on:
   push:
     tags:
@@ -7,6 +7,11 @@ on:
     branches:
     - 'macos-build'
   workflow_dispatch:
+
+env:
+  WX_VERSION: "3.2.6"
+  CFITSIO_VERSION: "4.6.4"
+  LIBNOVA_VERSION: "0.16"
 
 jobs:
   build-mac:
@@ -23,19 +28,80 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install dependencies
-      run: brew install wxwidgets cfitsio libnova libusb eigen gettext
+      run: brew install eigen gettext
 
     - name: Put gettext on PATH
       run: echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
 
-    - name: Configure
-      run: ./run_cmake-osx -DPHD_MACOS_STATIC_DEPS=OFF
+    - name: Cache static dependencies
+      id: deps-cache
+      uses: actions/cache@v5
+      with:
+        path: ~/macdeps
+        key: macdeps-${{ matrix.arch }}-wx${{ env.WX_VERSION }}-cfitsio${{ env.CFITSIO_VERSION }}-libnova${{ env.LIBNOVA_VERSION }}
+
+    - name: Build static dependencies
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        set -eux
+        prefix=$HOME/macdeps
+        cores=$(sysctl -n hw.logicalcpu)
+        mkdir -p ~/depsrc && cd ~/depsrc
+
+        # wxWidgets: --disable-shared is what makes wx-config report static libs,
+        # which is how thirdparty.cmake picks them up on macOS.
+        curl -fLO "https://github.com/wxWidgets/wxWidgets/releases/download/v$WX_VERSION/wxWidgets-$WX_VERSION.tar.bz2"
+        tar xf "wxWidgets-$WX_VERSION.tar.bz2"
+        cd "wxWidgets-$WX_VERSION"
+        # version-min matches what run_cmake-osx passes on Sonoma and later, so the
+        # static libs and PHD2 itself target the same OS
+        ./configure --prefix="$prefix" --disable-shared --with-osx_cocoa \
+                    --with-macosx-version-min=14.0
+        make -j"$cores"
+        make install
+        cd ..
+
+        # cfitsio
+        curl -fLO "https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-$CFITSIO_VERSION.tar.gz"
+        tar xf "cfitsio-$CFITSIO_VERSION.tar.gz"
+        cmake -S "cfitsio-$CFITSIO_VERSION" -B build-cfitsio \
+              -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBS=OFF \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
+        cmake --build build-cfitsio -j"$cores"
+        cmake --install build-cfitsio
+
+        # libnova. Its CMake gate is BUILD_SHARED_LIBRARY, not BUILD_SHARED_LIBS.
+        curl -fLO "http://deb.debian.org/debian/pool/main/libn/libnova/libnova_$LIBNOVA_VERSION.orig.tar.xz"
+        tar xf "libnova_$LIBNOVA_VERSION.orig.tar.xz"
+        cmake -S libnova -B build-libnova \
+              -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBRARY=OFF \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
+        cmake --build build-libnova -j"$cores"
+        cmake --install build-libnova
+
+        # Fail now rather than during the PHD2 link if anything came out shared.
+        test -f "$prefix/lib/libcfitsio.a"
+        test -f "$prefix/lib/libnova.a"
+        test -x "$prefix/bin/wx-config"
+        ! ls "$prefix"/lib/*.dylib 2>/dev/null
 
     - name: Build
       run: |
-        cores=$(sysctl -n hw.logicalcpu)
-        make -C tmp -j"$cores" indi
-        make -C tmp -j"$cores"
+        export PATH="$HOME/macdeps/bin:$PATH"
+        export CMAKE_PREFIX_PATH="$HOME/macdeps"
+        build/build-mac
 
-    - name: Test
-      run: ctest --test-dir tmp --output-on-failure
+    - name: Package as DMG
+      run: |
+        cd tmp
+        base=$(basename "$(ls PHD2-*.zip | head -1)" .zip)
+        cpack -G DragNDrop -D CPACK_PACKAGE_FILE_NAME="$base"
+
+    - name: Upload app
+      uses: actions/upload-artifact@v6
+      with:
+        name: phd2-macos-${{ matrix.arch }}
+        path: |
+          tmp/PHD2-*.zip
+          tmp/PHD2-*.dmg
+        if-no-files-found: error
