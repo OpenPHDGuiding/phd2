@@ -758,8 +758,9 @@ double ScopeAlpaca::GetDeclinationRadians()
     alpaca::Error err = mount->declination(&dec);
     if (err)
     {
-        // This runs every guide frame; a failing driver would otherwise be re-asked
-        // forever. Stop asking after a failure, like the ASCOM backend.
+        // Latch the failure so a driver that can't report declination isn't
+        // re-asked on every subsequent call (guiding start, Calibration Assistant,
+        // Drift Align, etc.), like the ASCOM backend.
         Debug.Write(wxString::Format("Alpaca mount: get declination failed: %s\n", err.what()));
         m_canGetCoordinates = false;
         return UNKNOWN_DECLINATION;
