@@ -13,6 +13,8 @@ env:
   WX_VERSION: "3.2.11"
   CFITSIO_VERSION: "4.6.4"
   LIBNOVA_VERSION: "0.16"
+  # Homebrew's eigen is 5.x, so track debian trixie version
+  EIGEN_VERSION: "3.4.0"
 
 jobs:
   build-mac:
@@ -30,7 +32,7 @@ jobs:
 
     - name: Install dependencies
       # autoconf/automake/libtool are needed to regenerate libnova's configure
-      run: brew install eigen gettext autoconf automake libtool
+      run: brew install gettext autoconf automake libtool
 
     - name: Put gettext on PATH
       run: echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
@@ -40,7 +42,7 @@ jobs:
       uses: actions/cache@v5
       with:
         path: ~/macdeps
-        key: macdeps-${{ matrix.arch }}-wx${{ env.WX_VERSION }}-cfitsio${{ env.CFITSIO_VERSION }}-libnova${{ env.LIBNOVA_VERSION }}
+        key: macdeps-${{ matrix.arch }}-wx${{ env.WX_VERSION }}-cfitsio${{ env.CFITSIO_VERSION }}-libnova${{ env.LIBNOVA_VERSION }}-eigen${{ env.EIGEN_VERSION }}
 
     - name: Build static dependencies
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -89,10 +91,18 @@ jobs:
         make install
         cd ..
 
+        # Eigen
+        curl -fLO "https://gitlab.com/libeigen/eigen/-/archive/$EIGEN_VERSION/eigen-$EIGEN_VERSION.tar.gz"
+        tar xf "eigen-$EIGEN_VERSION.tar.gz"
+        cmake -S "eigen-$EIGEN_VERSION" -B build-eigen \
+              -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_TESTING=OFF
+        cmake --install build-eigen
+
         # Fail if anything came out shared
         test -f "$prefix/lib/libcfitsio.a"
         test -f "$prefix/lib/libnova.a"
         test -x "$prefix/bin/wx-config"
+        test -d "$prefix/include/eigen3/Eigen"
         ! ls "$prefix"/lib/*.dylib 2>/dev/null
 
     - name: Build

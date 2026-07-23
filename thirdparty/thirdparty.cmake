@@ -151,7 +151,14 @@ else()
       SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
       find_package(CFITSIO)
       set(CMAKE_FIND_LIBRARY_SUFFIXES ${_save_CMAKE_FIND_LIBRARY_SUFFIXES})
-      if(NOT CFITSIO_FOUND)
+      # Test the library path rather than CFITSIO_FOUND. FindCFITSIO only sets
+      # CFITSIO_FOUND when it actually searches; once CFITSIO_LIBRARIES is in the
+      # cache it takes an early-out branch and leaves CFITSIO_FOUND unset, so a
+      # re-configure -- which make does routinely -- would fail this check even
+      # though cfitsio was found. Matching on .a also keeps the check meaningful:
+      # it verifies the library is static, not merely present, so switching
+      # PHD_MACOS_STATIC_DEPS back on over a cached shared build is caught.
+      if(NOT CFITSIO_LIBRARIES MATCHES "\\.a$")
         message(FATAL_ERROR
           "Could not find a static cfitsio (libcfitsio.a). Set "
           "-DPHD_MACOS_STATIC_DEPS=OFF to link a shared cfitsio instead (e.g. "
