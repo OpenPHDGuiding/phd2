@@ -407,9 +407,9 @@ else()
   find_package(Eigen3 REQUIRED)
   set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
   if(NOT EIGEN_SRC)
-    # Modern Eigen3Config.cmake (e.g. Homebrew) exports only the Eigen3::Eigen
-    # imported target and leaves EIGEN3_INCLUDE_DIR unset; pull the include dir
-    # from the target so the gaussian-process subproject can find <Eigen/Dense>.
+    # Modern Eigen3Config.cmake exports only the Eigen3::Eigen imported target and
+    # leaves EIGEN3_INCLUDE_DIR unset; pull the include dir from the target so the
+    # gaussian-process subproject can find <Eigen/Dense>.
     get_target_property(EIGEN_SRC Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
   endif()
   message(STATUS "Using system's Eigen3: ${EIGEN_SRC}")

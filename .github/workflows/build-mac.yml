@@ -1,0 +1,41 @@
+name: macOS Build
+on:
+  push:
+    tags:
+    - 'v*'
+    # TEMPORARY - A push to this branch triggers the workflow
+    branches:
+    - 'macos-build'
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    name: macos/${{ matrix.arch }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { arch: arm64, runs-on: macos-15 }
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Install dependencies
+      run: brew install wxwidgets cfitsio libnova libusb eigen gettext
+
+    - name: Put gettext on PATH
+      run: echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
+
+    - name: Configure
+      run: ./run_cmake-osx -DPHD_MACOS_STATIC_DEPS=OFF
+
+    - name: Build
+      run: |
+        cores=$(sysctl -n hw.logicalcpu)
+        make -C tmp -j"$cores" indi
+        make -C tmp -j"$cores"
+
+    - name: Test
+      run: ctest --test-dir tmp --output-on-failure
