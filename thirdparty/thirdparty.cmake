@@ -437,6 +437,11 @@ else()
   )
   # For Windows: Prevent overriding the parent project's compiler/linker settings
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  # gtest is a test-only dependency. Without this its install() rules run at package
+  # time and leak include/gtest, include/gmock, the static libs and their cmake and
+  # pkgconfig files into the package prefix -- they were shipping inside the macOS
+  # dmg. Disabling INSTALL_GTEST keeps the package to just PHD2 itself.
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 endif()
 

@@ -94,8 +94,16 @@ jobs:
       run: |
         cd tmp
         base=$(basename "$(ls PHD2-*.zip | head -1)" .zip)
-        hdiutil create -volname PHD2 -srcfolder PHD2.app \
+        # Stage into a clean directory first: hdiutil -srcfolder copies the *contents*
+        # of its argument to the image root, so pointing it straight at PHD2.app would
+        # spill Contents/ loose and drop the .app wrapper. Imaging a directory that
+        # contains PHD2.app gives a dmg whose root is the bundle, matching what cpack
+        # produced. ditto (not cp) preserves the bundle's xattrs and any signature.
+        staging=$(mktemp -d)
+        ditto PHD2.app "$staging/PHD2.app"
+        hdiutil create -volname PHD2 -srcfolder "$staging" \
                        -ov -format UDZO "$base.dmg"
+        rm -rf "$staging"
 
     - name: Sign, notarise and staple DMG
       if: vars.MACOS_SIGN == 'true'
