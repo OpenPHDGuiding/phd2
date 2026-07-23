@@ -49,15 +49,20 @@ jobs:
         cores=$(sysctl -n hw.logicalcpu)
         mkdir -p ~/depsrc && cd ~/depsrc
 
-        # wxWidgets: --disable-shared is what makes wx-config report static libs,
-        # which is how thirdparty.cmake picks them up on macOS.
+        # wxWidgets
         curl -fLO "https://github.com/wxWidgets/wxWidgets/releases/download/v$WX_VERSION/wxWidgets-$WX_VERSION.tar.bz2"
         tar xf "wxWidgets-$WX_VERSION.tar.bz2"
         cd "wxWidgets-$WX_VERSION"
-        # version-min matches what run_cmake-osx passes on Sonoma and later, so the
-        # static libs and PHD2 itself target the same OS
+
         ./configure --prefix="$prefix" --disable-shared --with-osx_cocoa \
-                    --with-macosx-version-min=14.0
+                    --with-macosx-version-min=14.0 \
+                    --with-libpng=builtin \
+                    --with-libjpeg=builtin \
+                    --with-libtiff=builtin \
+                    --with-regex=builtin \
+                    --with-expat=builtin \
+                    --disable-tests \
+                    --disable-precomp-headers
         make -j"$cores"
         make install
         cd ..
@@ -71,7 +76,7 @@ jobs:
         cmake --build build-cfitsio -j"$cores"
         cmake --install build-cfitsio
 
-        # libnova. Its CMake gate is BUILD_SHARED_LIBRARY, not BUILD_SHARED_LIBS.
+        # libnova
         curl -fLO "http://deb.debian.org/debian/pool/main/libn/libnova/libnova_$LIBNOVA_VERSION.orig.tar.xz"
         tar xf "libnova_$LIBNOVA_VERSION.orig.tar.xz"
         cmake -S libnova -B build-libnova \
@@ -80,7 +85,7 @@ jobs:
         cmake --build build-libnova -j"$cores"
         cmake --install build-libnova
 
-        # Fail now rather than during the PHD2 link if anything came out shared.
+        # Fail if anything came out shared
         test -f "$prefix/lib/libcfitsio.a"
         test -f "$prefix/lib/libnova.a"
         test -x "$prefix/bin/wx-config"
