@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  WX_VERSION: "3.2.6"
+  # wx >= 3.2.11 for bundled libpng to avoid TARGET_OS_MAC
+  WX_VERSION: "3.2.11"
   CFITSIO_VERSION: "4.6.4"
   LIBNOVA_VERSION: "0.16"
 
