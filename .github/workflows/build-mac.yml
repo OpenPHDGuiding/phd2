@@ -79,8 +79,10 @@ jobs:
         # libnova
         curl -fLO "http://deb.debian.org/debian/pool/main/libn/libnova/libnova_$LIBNOVA_VERSION.orig.tar.xz"
         tar xf "libnova_$LIBNOVA_VERSION.orig.tar.xz"
+        # libnova 0.16 asks for cmake 2.6 but  CMake 4 needs min version set
         cmake -S libnova -B build-libnova \
               -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBRARY=OFF \
+              -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
               -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
         cmake --build build-libnova -j"$cores"
         cmake --install build-libnova
