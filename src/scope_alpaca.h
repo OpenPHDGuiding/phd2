@@ -1,9 +1,9 @@
 /*
- *  scopes.h
+ *  scope_alpaca.h - PHD2 mount backend over ASCOM Alpaca (REST/JSON)
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by mikefsq
+ *  Copyright (c) 2026 PHD2 Developers
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of openphdguiding.org nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,55 +32,17 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+// Thin adapter: translates Scope's guide/position virtuals into alpaca::Telescope
+// calls. Protocol logic lives in alpaca_client.{h,cpp}. The concrete ScopeAlpaca class
+// is defined in scope_alpaca.cpp; only this factory is referenced from scope.cpp.
 
-#if defined(__WINDOWS__)
+#ifndef SCOPE_ALPACA_H_INCLUDED
+#define SCOPE_ALPACA_H_INCLUDED
 
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_ASCOM
-# ifdef HAVE_SHOESTRING
-#  define GUIDE_GPUSB
-#  define GUIDE_GPINT
-# endif
-# define GUIDE_INDI
+class AlpacaScopeFactory
+{
+public:
+    static Scope *MakeAlpacaScope();
+};
 
-#elif defined(__APPLE__)
-
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_GPUSB
-# define GUIDE_GCUSBST4
-# define GUIDE_INDI
-# define GUIDE_EQUINOX
-// #define GUIDE_VOYAGER
-// #define GUIDE_NEB
-# define GUIDE_EQMAC
-
-#elif defined(__linux__) || defined(__FreeBSD__)
-
-# define GUIDE_ONCAMERA
-# define GUIDE_ONSTEPGUIDER
-# define GUIDE_INDI
-
-#endif // WINDOWS/APPLE/LINUX
-
-#include "scope.h"
-#include "scope_oncamera.h"
-#include "scope_onstepguider.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
-#include "scope_indi.h"
-#include "scope_manual_pointing.h"
-
-// ASCOM Alpaca mount backend (REST/JSON over libcurl)
-#define ALPACA_MOUNT
-#include "scope_alpaca.h"
-
-#endif /* SCOPES_H_INCLUDED */
+#endif
