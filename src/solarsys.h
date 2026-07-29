@@ -60,8 +60,6 @@ private:
     bool m_paramDetectionPaused;
     bool m_paramRoiEnabled;
     usImage *m_preProcessedImage;
-    bool m_preProcessedImageValid;
-    bool m_paramShowPreProcessed;
     double m_paramMinRadius;
     double m_paramMaxRadius;
     int m_paramLowThreshold;
@@ -108,9 +106,7 @@ private:
     float m_prevSearchRegion;
     double m_paramMinBlobDiameter;
     double m_paramMaxBlobDiameter;
-    double m_paramBlobThreshold;
     bool m_paramInvertBlob;
-    bool m_paramBlobAutoThreshold;
     int m_paramGuiderCadence;
     bool m_paramRetriesEnabled;
     bool m_paramRetryAutofindsOnly;
@@ -150,18 +146,10 @@ public:
     void SetDetectionPausedState(bool paused);
     double GetMinBlobDiameter() { return m_paramMinBlobDiameter; }
     double GetMaxBlobDiameter() { return m_paramMaxBlobDiameter; }
-    double GetBlobThreshold() { return m_paramBlobThreshold; }
-    double GetBlobAutoThreshold() { return m_paramBlobAutoThreshold; }
-    usImage *GetPreProcessedImage() { return m_preProcessedImage; }
-    bool PreProcessedImageValid() { return m_preProcessedImageValid; }
-    bool ShowPreProcessedImage() { return m_paramShowPreProcessed; }
     void SetMinBlobDiameter(double val);
     void SetMaxBlobDiameter(double val);
-    void SetBlobThreshold(double val);
     void SetBlobInversion(bool val);
-    void SetBlobAutoThreshold(bool val);
     void SetMinRadius(double val);
-    void SetShowPreProcessedImage(bool val);
     double GetMinRadius() { return m_paramMinRadius; }
     void SetMaxRadius(double val);
     double GetMaxRadius() { return m_paramMaxRadius; }
@@ -196,6 +184,7 @@ public:
 
 private:
     wxStopWatch m_SolarSystemObjWatchdog;
+    long m_lastElapsedTime;
     typedef struct
     {
         float x;

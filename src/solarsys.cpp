@@ -66,7 +66,6 @@ SolarSystemObject::SolarSystemObject()
     m_measuringSharpnessMode = false;
     m_unknownHFD = true;
     m_focusSharpness = 0;
-    m_paramShowPreProcessed = false;
     m_paramResamplingEnabled = false;
     m_lostTargetEvents = 0;
     m_totalGuidedSamples = 0;
@@ -86,6 +85,7 @@ SolarSystemObject::SolarSystemObject()
     m_frameHeight = 0;
     m_eccentricity = 0;
     m_angle = 0;
+    m_lastElapsedTime = 0;
 
     // Build gaussian weighting function table used for circle feature detection
     float sigma = 1.0;
@@ -104,7 +104,6 @@ SolarSystemObject::SolarSystemObject()
     // Remove the alert dialog setting for pausing SSG detection
     pConfig->Global.DeleteEntry(PauseSsgDetectionAlertEnabledKey());
     m_preProcessedImage = new usImage(); // so we always have one
-    m_preProcessedImageValid = false;
     m_distanceStats = new DescriptiveStats();
     m_retryingFind = false;
 }
@@ -154,7 +153,6 @@ void SolarSystemObject::InitializeDetectionParams()
     m_paramHighThreshold = PT_HIGH_THRESHOLD_DEFAULT;
     m_paramMinBlobDiameter = PT_MIN_BLOB_DIAMETER_DEFAULT;
     m_paramMaxBlobDiameter = PT_MAX_BLOB_DIAMETER_DEFAULT;
-    m_paramBlobThreshold = PT_BLOB_THRESHOLD_DEFAULT;
 }
 
 void SolarSystemObject::SetDetectionMode(DetectionModes mode)
@@ -176,27 +174,10 @@ void SolarSystemObject::SetMaxBlobDiameter(double val)
     Debug.Write(wxString::Format("SSG: Param BlobMaxDiameter set to %0.1f\n", val));
 }
 
-void SolarSystemObject::SetBlobThreshold(double val)
-{
-    m_paramBlobThreshold = val;
-    Debug.Write(wxString::Format("SSG: Param BlobThresh set to %0.1f\n", val));
-}
-
 void SolarSystemObject::SetBlobInversion(bool val)
 {
     m_paramInvertBlob = val;
     Debug.Write(wxString::Format("SSG: Param BlobInversion set to %s\n", val ? "true" : "false"));
-}
-
-void SolarSystemObject::SetBlobAutoThreshold(bool val)
-{
-    m_paramBlobAutoThreshold = val;
-    Debug.Write(wxString::Format("SSG: Param BlobAutoThreshold set to %s\n", val ? "true" : "false"));
-}
-
-void SolarSystemObject::SetShowPreProcessedImage(bool val)
-{
-    m_paramShowPreProcessed = val;
 }
 
 void SolarSystemObject::SetMinRadius(double val)
@@ -340,14 +321,22 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
     {
         m_syncLock.Lock();
 
-        // Draw contour points in SSG mode
+        // Draw contour points in blob mode
         if (m_detectionMode != DetectionModes::modeContours && m_blobContour.size() > 0)
         {
             dc.SetPen(wxPen(wxColour(255, 255, 0), 2, wxPENSTYLE_SOLID));
             for (const Point2f& contourPoint : m_blobContour)
+            {
                 dc.DrawCircle((contourPoint.x + m_roiRect.x) * scaleFactor, (contourPoint.y + m_roiRect.y) * scaleFactor, 2);
+                float xVal = contourPoint.x;
+                float ctr = int(primaryStar.X * scaleFactor + 0.5);
+                if (xVal < primaryStar.X - (ctr / 2.0) || !m_detected)
+                {
+                    int fMe = 12;
+                }
+            }
         }
-        else if (m_diskContour.size())
+        else if (m_diskContour.size() > 1)
         {
             dc.SetPen(wxPen(wxColour(230, 0, 0), 2, wxPENSTYLE_SOLID));
             for (const Point2f& contourPoint : m_diskContour)
@@ -920,8 +909,6 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
         return true;
     }
 
-    m_preProcessedImageValid = false; // Pre-processed image isn't useful for contour detection
-
     return false;
 }
 
@@ -935,8 +922,16 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
     bool found = false;
     int retryCount = 0;
     int origMinBlob = m_paramMinBlobDiameter;
+    int retryLimit;
+    if (m_lastElapsedTime != 0)
+    {
+        retryLimit = wxMin(50, std::ceil(2000. / m_lastElapsedTime)); // Don't spend more than 2 sec doing retries
+    }
+    else
+        retryLimit = 50;
     m_paramMinBlobDiameter = 0.8 * m_paramMaxBlobDiameter;
-    Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
+    Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d, retry limit of %d\n",
+                                 (int) m_paramMinBlobDiameter, retryLimit));
     while (!done)
     {
         found = FindBlobCentroid(img8, roiX, roiY, centroidInfo, blobContour);
@@ -955,7 +950,7 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
         }
         else
         {
-            if (retryCount++ < 50 && m_paramMinBlobDiameter > 5)
+            if (retryCount++ < retryLimit && m_paramMinBlobDiameter > 5)
             {
                 m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
                 Debug.Write(
@@ -991,9 +986,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     SimpleBlobDetector::Params params;
     Mat preppedMat;
 
-    Debug.Write(wxString::Format("SSG: Blob find thresh:%s, minD=%d,maxD=%d\n",
-                                 m_paramBlobAutoThreshold ? "Auto" : std::to_string(m_paramBlobThreshold),
-                                 (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
+    Debug.Write(wxString::Format("SSG: MinD=%d,maxD=%d\n", (int) m_paramMinBlobDiameter, (int) m_paramMaxBlobDiameter));
 
     params.filterByCircularity = false;
     params.filterByConvexity = false;
@@ -1006,18 +999,12 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     // Filter by Color.
     params.filterByColor = true;
     params.blobColor = 255;
-    if (m_paramBlobAutoThreshold)
-    {
-        // Apply auto-thresholding if enabled
-        params.minThreshold = 20;
-        params.maxThreshold = 220;
-        params.thresholdStep = 10;
-        preppedMat = img8;
-    }
-    else
-    {
-        cv::threshold(img8, preppedMat, m_paramBlobThreshold, 255, cv::THRESH_BINARY);
-    }
+    // Apply auto-thresholding
+    params.minThreshold = 20;
+    params.maxThreshold = 220;
+    params.thresholdStep = 10;
+    preppedMat = img8;
+
     if (m_paramInvertBlob)
         cv::bitwise_not(preppedMat, preppedMat);
 
@@ -1033,14 +1020,42 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     blobContour.clear();
     detector->detect(preppedMat, keypoints);
     centroidInfo.mode = DetectionModes::modeBlob;
-    if (keypoints.size() == 1)
+    if (keypoints.size() > 0)
     {
         centroidInfo.centroidX = keypoints[0].pt.x + roiX;
         centroidInfo.centroidY = keypoints[0].pt.y + roiY;
         centroidInfo.objectSize = keypoints[0].size;
         std::vector<std::vector<cv::Point>> contours;
         contours = detector->getBlobContours();
-        blobContour = contours.front();
+        // Contours in the collection can include vectors that didn't satisfy the filter criteria.  So find the contour whose
+        // centroid matches the centroid result from the filtered blob search.  This happens rarely and only when user is
+        // looking at contours.
+        if (contours.size() > 1)
+        {
+            int contourCounter = 0;
+            for (auto pCtr = contours.begin(); pCtr != contours.end(); pCtr++)
+            {
+                cv::Moments moment = cv::moments(contours[contourCounter]);
+                double area = moment.m00;
+                if (area > 1)
+                {
+                    int cx = static_cast<int>(moment.m10 / moment.m00);
+                    int cy = static_cast<int>(moment.m01 / moment.m00);
+                    int reportedX = static_cast<int>(centroidInfo.centroidX);
+                    int reportedY = static_cast<int>(centroidInfo.centroidY);
+                    blobContour = contours.front(); // Belt and suspenders in case the search fails
+                    if (std::abs(reportedX - cx) < 10 && std::abs(reportedY - cy) < 10)
+                    {
+                        Debug.Write(wxString::Format("SSG: Choosing contour# %d of %d\n", contourCounter, contours.size()));
+                        blobContour = contours.at(contourCounter);
+                        break;
+                    }
+                }
+                contourCounter++;
+            }
+        }
+        else
+            blobContour = contours.front();
         Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
                                      centroidInfo.centroidY, centroidInfo.objectSize));
     }
@@ -1049,20 +1064,7 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
         centroidInfo.centroidX = -1.0;
         centroidInfo.centroidY = -1.0;
     }
-    // Optionally keep a re-scaled version of the pre-processed image if user is doing manual threshold adjustment
-    if (m_paramShowPreProcessed)
-    {
-        Mat rescaled;
-        preppedMat.convertTo(rescaled, CV_16U, 1 << 8);
-        int width = rescaled.cols;
-        int height = rescaled.rows;
-        int dataSize = width * height * 2;
-        m_preProcessedImage->Init(width, height); // no cost if dimensions don't change
-        memcpy(m_preProcessedImage->ImageData, rescaled.data, dataSize);
-        m_preProcessedImageValid = true;
-    }
-    else
-        m_preProcessedImageValid = false;
+
     return centroidInfo.centroidX != -1.0;
 }
 
@@ -1388,10 +1390,6 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
     bool detectionResult = false;
     try
     {
-        // Do slight image blurring to decrease noise impact on results
-        Mat imgFiltered;
-        GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
-
         // Find object depending on the selected detection mode
         // Object centers are in absolute sensor coordinates regardless of ROI use
         if (m_detectionMode == DetectionModes::modeBlob)
@@ -1403,13 +1401,18 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
             }
 
             detectionResult = FindBlobCentroid(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
-            if (!detectionResult && autoRetry)
+            if (detectionResult)
+                m_lastElapsedTime = m_SolarSystemObjWatchdog.Time();
+            else if (autoRetry)
             {
                 detectionResult = RetryBlobDetection(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
             }
         }
         else
         {
+            // Do slight image blurring to decrease noise impact on results
+            Mat imgFiltered;
+            GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
             detectionResult = FindContoursCentroid(imgFiltered, roiActive, clickedPoint, roiRect, activeRoiLimits,
                                                    distanceRoiMax, m_lastCentroidResult);
         }

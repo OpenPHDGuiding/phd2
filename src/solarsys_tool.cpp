@@ -59,9 +59,7 @@ struct SolarSysToolWin : public wxDialog
     wxSpinCtrlDouble *m_maxBlobDiameter;
     wxStaticText *m_maxBlobDiameterAngle;
     wxStaticText *m_contourModeWarning;
-    wxSpinCtrlDouble *m_blobThreshold;
     wxCheckBox *m_blobInvert;
-    wxCheckBox *m_useAutoThresh;
     wxButton *m_restoreBlobParams;
     wxButton *m_autoAdjustBtn;
 
@@ -95,7 +93,6 @@ struct SolarSysToolWin : public wxDialog
     wxCheckBox *m_ResamplingCheckBox;
     wxCheckBox *m_ShowContours;
     wxCheckBox *m_ShowDiameters;
-    wxCheckBox *m_ShowDiagnosticImage;
     wxCheckBox *m_retryLostTargets;
     wxRadioButton *m_retryOnlyAutoFinds;
     wxRadioButton *m_retryAny;
@@ -115,9 +112,7 @@ struct SolarSysToolWin : public wxDialog
     void OnDetectionModeClick(wxCommandEvent& event);
     void OnSpinCtrl_minBlobDiameter(wxSpinDoubleEvent& event);
     void OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event);
-    void OnSpinCtrl_blobThreshold(wxSpinDoubleEvent& event);
     void OnBlobInvertClick(wxCommandEvent& event);
-    void OnAutoThreshClick(wxCommandEvent& event);
     void OnBlobRestoreParamsClick(wxCommandEvent& event);
 
     void OnEdgeThresholdChanged(wxCommandEvent& event);
@@ -128,7 +123,6 @@ struct SolarSysToolWin : public wxDialog
     void OnRoiModeClick(wxCommandEvent& event);
     void OnShowContoursClick(wxCommandEvent& event);
     void OnShowDiameters(wxCommandEvent& event);
-    void OnShowDiagnosticImage(wxCommandEvent& event);
     void OnMountTrackingRateClick(wxCommandEvent& event);
     void OnResamplingClick(wxCommandEvent& event);
     void OnRetriesEnabledClick(wxCommandEvent& event);
@@ -247,17 +241,6 @@ SolarSysToolWin::SolarSysToolWin()
     blobDiamGrid->AddSpacer(10);
     blobDiamGrid->Add(m_maxBlobDiameterAngle);
 
-    wxStaticText *blobThreshold_Label = new wxStaticText(m_basic_tab, wxID_ANY, _("Brightness threshold:"));
-    m_blobThreshold = new wxSpinCtrlDouble(m_basic_tab, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1),
-                                           wxSP_ARROW_KEYS, 20, 200, 50, 10.0);
-    m_blobThreshold->SetToolTip(
-        _("Pixel brightness threshold for blob detection. Values below this threshold will be set to zero "
-          "and values above it will be set to 255"));
-    m_useAutoThresh = new wxCheckBox(m_basic_tab, wxID_ANY, _("Use auto-threshold"));
-    m_useAutoThresh->SetValue(true);
-    m_useAutoThresh->SetToolTip(_("Let detection algorithm search for best threshold value"));
-
-    m_blobThreshold->Enable(false);
     m_blobInvert = new wxCheckBox(m_basic_tab, wxID_ANY, _("Invert Image"));
     m_blobInvert->SetToolTip(_("Check this for dark objects against a brighter background."));
     m_blobInvert->SetValue(false);
@@ -276,18 +259,10 @@ SolarSysToolWin::SolarSysToolWin()
     retrySzr->Add(m_retryOnlyAutoFinds, wxSizerFlags().Border(wxLEFT, 10));
     blobDiametersSzr->Add(retrySzr, wxSizerFlags().Border(wxTOP, 5).Center());
 
-    wxBoxSizer *blobSizer2 = new wxBoxSizer(wxHORIZONTAL);
-    blobSizer2->Add(blobThreshold_Label, wxSizerFlags().Border(wxLEFT, 4));
-    blobSizer2->Add(m_blobThreshold);
-    blobSizer2->AddSpacer(30);
-    blobSizer2->Add(m_useAutoThresh, wxSizerFlags().Border(wxLEFT, 20));
-
     blob_vSizer->AddSpacer(10);
     blob_vSizer->Add(m_blobModeWarning, wxSizerFlags().Center());
     blob_vSizer->AddSpacer(10);
     blob_vSizer->Add(blobDiametersSzr, 0, wxEXPAND, 5);
-    blob_vSizer->AddSpacer(15);
-    blob_vSizer->Add(blobSizer2, wxSizerFlags().Center());
     blob_vSizer->AddSpacer(10);
     blob_vSizer->Add(m_blobInvert, wxSizerFlags().Center());
 
@@ -411,15 +386,10 @@ SolarSysToolWin::SolarSysToolWin()
     m_ShowDiameters = new wxCheckBox(this, wxID_ANY, _("Bounding diameters"));
     m_ShowDiameters->SetToolTip(_("Show the min/max search region being used to identify the target. "
                                   "Use this option to adjust the sizes if the target object isn't being selected."));
-    m_ShowDiagnosticImage = new wxCheckBox(this, wxID_ANY, _("Thresholding result"));
-    m_ShowDiagnosticImage->SetToolTip(_("For setting manual threshold values, this option will show the image "
-                                        "after the threshold value has been applied"));
 
     pVisElements->Add(m_ShowContours, 0, wxLEFT | wxTOP, 10);
-    pVisElements->AddSpacer(20);
+    pVisElements->AddSpacer(40);
     pVisElements->Add(m_ShowDiameters, 0, wxLEFT | wxTOP, 10);
-    pVisElements->AddSpacer(20);
-    pVisElements->Add(m_ShowDiagnosticImage, 0, wxLEFT | wxTOP, 10);
 
     // Mount settings group
     wxFlexGridSizer *pMountTable = new wxFlexGridSizer(1, 6, 2, 10);
@@ -488,12 +458,12 @@ SolarSysToolWin::SolarSysToolWin()
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pStatusBarText->SetFont(font);
 
-    topSizer->AddSpacer(5);
+    // topSizer->AddSpacer(5);
     topSizer->Add(topControls, 0, wxLEFT, 10);
     topSizer->AddSpacer(20);
     topSizer->Add(m_tabs, 0, wxEXPAND | wxALL, 5);
     topSizer->AddSpacer(5);
-    topSizer->Add(pVisElements, 0, wxLEFT | wxALIGN_LEFT, 5);
+    topSizer->Add(pVisElements, wxSizerFlags().Border(wxTOP, 5).Border(wxBOTTOM, 5).Center());
     topSizer->AddSpacer(5);
     topSizer->Add(pMountTable, 0, wxEXPAND | wxALL, 5);
     topSizer->Add(pCamGroup, 0, wxEXPAND | wxALL, 5);
@@ -513,7 +483,6 @@ SolarSysToolWin::SolarSysToolWin()
     m_retryOnlyAutoFinds->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnRetryAutofindsOnlyClick, this);
     m_ShowContours->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowContoursClick, this);
     m_ShowDiameters->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiameters, this);
-    m_ShowDiagnosticImage->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnShowDiagnosticImage, this);
     m_mountTrackingRate->Bind(wxEVT_CHOICE, &SolarSysToolWin::OnMountTrackingRateClick, this);
     Bind(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(SolarSysToolWin::OnClose), this);
 
@@ -523,10 +492,7 @@ SolarSysToolWin::SolarSysToolWin()
                                NULL, this);
     m_maxBlobDiameter->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_maxBlobDiameter),
                                NULL, this);
-    m_blobThreshold->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SolarSysToolWin::OnSpinCtrl_blobThreshold), NULL,
-                             this);
     m_autoAdjustBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &SolarSysToolWin::OnAutoAdjustButton, this);
-    m_useAutoThresh->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnAutoThreshClick, this);
     m_blobInvert->Bind(wxEVT_CHECKBOX, &SolarSysToolWin::OnBlobInvertClick, this);
     m_contourEdgeThresholdSlider->Bind(wxEVT_SLIDER, &SolarSysToolWin::OnEdgeThresholdChanged, this);
     m_detectionBlob->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SolarSysToolWin::OnDetectionModeClick, this);
@@ -542,7 +508,6 @@ SolarSysToolWin::SolarSysToolWin()
     m_solarSystemObj->ShowVisualElements(false);
 
     m_detectionBlob->SetValue(true);
-    m_ShowDiagnosticImage->SetValue(false);
     m_detectionContours->SetValue(false);
     wxCommandEvent evt;
     OnDetectionModeClick(evt);
@@ -552,7 +517,6 @@ SolarSysToolWin::SolarSysToolWin()
     m_ResamplingCheckBox->SetValue(true);
     OnResamplingClick(evt);
     m_ShowDiameters->SetValue(true); // We start out with no disk found, so show the bounding boxes
-    OnShowDiagnosticImage(evt);
     Layout();
 
     RestoreProfileParameters();
@@ -608,16 +572,6 @@ void SolarSysToolWin::RestoreBlobSearchParameters()
     m_maxBlobDiameter->SetValue(val);
     m_solarSystemObj->SetMaxBlobDiameter(val);
     ShowAngularSize(val, m_maxBlobDiameterAngle);
-
-    val = pConfig->Profile.GetInt("/PlanetTool/BlobThreshold", 50);
-    m_blobThreshold->SetValue(val);
-    m_solarSystemObj->SetBlobThreshold(val);
-
-    val = pConfig->Profile.GetBoolean("/PlanetTool/BlobAutoThreshold", true);
-    m_useAutoThresh->SetValue(val);
-    wxCommandEvent ev;
-    OnAutoThreshClick(ev);
-    m_solarSystemObj->SetBlobAutoThreshold(val);
 
     val = pConfig->Profile.GetBoolean("/PlanetTool/RetryLostTargets", true);
     m_retryLostTargets->SetValue(val);
@@ -698,8 +652,6 @@ void SolarSysToolWin::SaveProfileParameters()
     pConfig->Profile.SetInt("/PlanetTool/pos.y", y);
     pConfig->Profile.SetInt("/PlanetTool/MinBlobDiameter", m_solarSystemObj->GetMinBlobDiameter());
     pConfig->Profile.SetInt("/PlanetTool/MaxBlobDiameter", m_solarSystemObj->GetMaxBlobDiameter());
-    pConfig->Profile.SetInt("/PlanetTool/BlobThreshold", m_solarSystemObj->GetBlobThreshold());
-    pConfig->Profile.SetBoolean("/PlanetTool/BlobAutoThreshold", m_solarSystemObj->GetBlobAutoThreshold());
     pConfig->Profile.SetBoolean("/PlanetTool/ResampleEnabled", m_solarSystemObj->GetResamplingEnabled());
     pConfig->Profile.SetBoolean("/PlanetTool/RetryLostTargets", m_solarSystemObj->GetRetriesEnabled());
     pConfig->Profile.SetBoolean("/PlanetTool/RetryOnlyAutoFinds", m_solarSystemObj->GetRetriesAutofindOnly());
@@ -721,7 +673,6 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeBlob);
         m_tabs->SetSelection(0);
-        m_ShowDiagnosticImage->Enable(!m_useAutoThresh->IsChecked());
         Debug.Write("SSG: guiding via simple blob detection\n");
         detectionMode = "Blob";
         HandleWarningMsgs(0);
@@ -730,7 +681,6 @@ void SolarSysToolWin::OnDetectionModeClick(wxCommandEvent& event)
     {
         m_solarSystemObj->SetDetectionMode(DetectionModes::modeContours);
         m_tabs->SetSelection(1);
-        m_ShowDiagnosticImage->Enable(false);
         Debug.Write("SSG: guiding via contour detection\n");
         detectionMode = "Contours";
         HandleWarningMsgs(1);
@@ -778,27 +728,11 @@ void SolarSysToolWin::OnSpinCtrl_maxBlobDiameter(wxSpinDoubleEvent& event)
     pFrame->NotifyGuidingParam("SolarSys: Blob max diam", v);
 }
 
-void SolarSysToolWin::OnSpinCtrl_blobThreshold(wxSpinDoubleEvent& event)
-{
-    int v = m_blobThreshold->GetValue();
-    m_solarSystemObj->SetBlobThreshold(v);
-    pFrame->NotifyGuidingParam("SolarSys: Blob threshold", v);
-}
-
 void SolarSysToolWin::OnBlobInvertClick(wxCommandEvent& event)
 {
     bool enabled = m_blobInvert->IsChecked();
     m_solarSystemObj->SetBlobInversion(enabled);
     pFrame->NotifyGuidingParam("SolarSys : Blob inversion", enabled);
-}
-
-void SolarSysToolWin::OnAutoThreshClick(wxCommandEvent& event)
-{
-    bool enabled = m_useAutoThresh->IsChecked();
-    m_blobThreshold->Enable(!enabled);
-    m_ShowDiagnosticImage->Enable(!enabled);
-    m_solarSystemObj->SetBlobAutoThreshold(enabled);
-    pFrame->NotifyGuidingParam("SolarSys: Blob auto-threshold", enabled);
 }
 
 void SolarSysToolWin::OnBlobRestoreParamsClick(wxCommandEvent& event)
@@ -927,11 +861,6 @@ void SolarSysToolWin::OnShowContoursClick(wxCommandEvent& event)
 void SolarSysToolWin::OnShowDiameters(wxCommandEvent& event)
 {
     m_solarSystemObj->m_showMinMaxDiameters = m_ShowDiameters->IsChecked();
-}
-
-void SolarSysToolWin::OnShowDiagnosticImage(wxCommandEvent& event)
-{
-    m_solarSystemObj->SetShowPreProcessedImage(m_ShowDiagnosticImage->IsChecked());
 }
 
 void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
