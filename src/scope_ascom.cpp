@@ -319,6 +319,18 @@ bool ScopeASCOM::Connect()
             dispid_abortslew = DISPID_UNKNOWN;
         }
 
+        if (!pScopeDriver.GetDispatchId(&dispid_trackingrate, L"TrackingRate"))
+        {
+            Debug.Write("cannot get dispid_trackingrate\n");
+            dispid_trackingrate = DISPID_UNKNOWN;
+        }
+
+        if (!pScopeDriver.GetDispatchId(&dispid_tracking, L"Tracking"))
+        {
+            Debug.Write("cannot get dispid_tracking\n");
+            dispid_tracking = DISPID_UNKNOWN;
+        }
+
         struct ConnectInBg : public ConnectMountInBg
         {
             ScopeASCOM *sa;
@@ -419,18 +431,6 @@ bool ScopeASCOM::Connect()
             m_canSetTracking = (vRes.boolVal == VARIANT_TRUE);
         }
 
-        if (!pScopeDriver.GetDispatchId(&dispid_trackingrate, L"TrackingRate"))
-        {
-            Debug.Write("cannot get dispid_trackingrate\n");
-            dispid_trackingrate = DISPID_UNKNOWN;
-        }
-
-        if (!pScopeDriver.GetDispatchId(&dispid_tracking, L"Tracking"))
-        {
-            Debug.Write("cannot get dispid_tracking\n");
-            dispid_trackingrate = DISPID_UNKNOWN;
-        }
-
         Debug.Write(wxString::Format("%s connected\n", Name()));
 
         Scope::Connect();
@@ -516,7 +516,7 @@ void ScopeASCOM::EnumerateTrackingRates()
             if (iList.GetProp(&vCount, L"Count"))
             {
                 unsigned int const ratesCount = vCount.intVal;
-                if (ratesCount > 1)
+                if (ratesCount > 0)
                     m_supportedTrackingRates.clear(); // Default scope constructor puts "Sidereal" in the vector
                 Debug.Write(wxString::Format("ASCOM scope: reports count=%d of tracking rates\n", ratesCount));
                 for (unsigned int i = 1; i <= ratesCount; ++i)
@@ -939,6 +939,9 @@ double ScopeASCOM::GetDeclinationRadians()
 
 bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
 {
+    if (dispid_trackingrate == DISPID_UNKNOWN)
+        return true;
+
     bool bError = false;
 
     try
@@ -987,6 +990,9 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
 
 bool ScopeASCOM::SetTrackingRate(enum TrackingRates rate)
 {
+    if (dispid_trackingrate == DISPID_UNKNOWN)
+        return true;
+
     bool bError = false;
 
     try
@@ -1050,6 +1056,9 @@ bool ScopeASCOM::SetTrackingRateOffsets(double raRateOffset, double decRateOffse
 
 bool ScopeASCOM::GetTracking(bool *tracking)
 {
+    if (dispid_tracking == DISPID_UNKNOWN)
+        return true;
+
     bool bError = false;
 
     try
@@ -1084,6 +1093,9 @@ bool ScopeASCOM::GetTracking(bool *tracking)
 
 bool ScopeASCOM::SetTracking(bool tracking)
 {
+    if (dispid_tracking == DISPID_UNKNOWN)
+        return true;
+
     bool bError = false;
 
     try
