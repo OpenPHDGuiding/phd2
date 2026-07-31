@@ -398,10 +398,10 @@ SolarSysToolWin::SolarSysToolWin()
     rates.Add(_("Sidereal"));
     m_mountTrackingRate = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, rates);
     m_mountTrackingRate->SetSelection(0);
-    AddTableEntryPair(this, pMountTable, _("Mount tracking rate"), m_mountTrackingRate,
+    AddTableEntryPair(this, pMountTable, _("Mount tracking rate \n reported by driver"), m_mountTrackingRate,
                       _("Select the desired tracking rate for the mount"));
     m_restoreSidereal = new wxCheckBox(this, wxID_ANY, _(" Restore to sidereal rate\n when Tool window closes"));
-    pMountTable->Add(m_restoreSidereal, wxALL | wxALIGN_CENTER_VERTICAL, 10);
+    pMountTable->Add(m_restoreSidereal, wxSizerFlags().Border(wxTOP, 8));
 
     // Camera settings group
     wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera settings"));

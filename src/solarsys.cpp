@@ -324,15 +324,14 @@ void SolarSystemObject::VisualHelper(wxDC& dc, Star primaryStar, double scaleFac
         // Draw contour points in blob mode
         if (m_detectionMode != DetectionModes::modeContours && m_blobContour.size() > 0)
         {
-            dc.SetPen(wxPen(wxColour(255, 255, 0), 2, wxPENSTYLE_SOLID));
-            for (const Point2f& contourPoint : m_blobContour)
+            if (!m_roiActive) // For some reason SimpleBlobDetector::getBlobContours() doesn't return reliable results with roi
+                              // active
             {
-                dc.DrawCircle((contourPoint.x + m_roiRect.x) * scaleFactor, (contourPoint.y + m_roiRect.y) * scaleFactor, 2);
-                float xVal = contourPoint.x;
-                float ctr = int(primaryStar.X * scaleFactor + 0.5);
-                if (xVal < primaryStar.X - (ctr / 2.0) || !m_detected)
+                dc.SetPen(wxPen(wxColour(255, 255, 0), 2, wxPENSTYLE_SOLID));
+                for (auto contourPoint = m_blobContour.begin(); contourPoint < m_blobContour.end(); contourPoint++)
                 {
-                    int fMe = 12;
+                    dc.DrawCircle((contourPoint->x + m_roiRect.x) * scaleFactor, (contourPoint->y + m_roiRect.y) * scaleFactor,
+                                  2);
                 }
             }
         }
@@ -1041,10 +1040,10 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
                 {
                     int cx = static_cast<int>(moment.m10 / moment.m00);
                     int cy = static_cast<int>(moment.m01 / moment.m00);
-                    int reportedX = static_cast<int>(centroidInfo.centroidX);
-                    int reportedY = static_cast<int>(centroidInfo.centroidY);
+                    int resultX = static_cast<int>(centroidInfo.centroidX - roiX);
+                    int resultY = static_cast<int>(centroidInfo.centroidY - roiY);
                     blobContour = contours.front(); // Belt and suspenders in case the search fails
-                    if (std::abs(reportedX - cx) < 10 && std::abs(reportedY - cy) < 10)
+                    if (std::abs(resultX - cx) < 10 && std::abs(resultY - cy) < 10)
                     {
                         Debug.Write(wxString::Format("SSG: Choosing contour# %d of %d\n", contourCounter, contours.size()));
                         blobContour = contours.at(contourCounter);
