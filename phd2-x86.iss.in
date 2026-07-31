@@ -67,6 +67,8 @@ Source: Release\libcurl.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\liblzma.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libwebp.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libwebpdecoder.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebpdemux.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\libwebpmux.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libsharpyuv.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\libpng16.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\tiff.dll; DestDir: {app}; Flags: replacesameversion

@@ -79,4 +79,8 @@
 #include "scope_indi.h"
 #include "scope_manual_pointing.h"
 
+// ASCOM Alpaca mount backend (REST/JSON over libcurl)
+#define ALPACA_MOUNT
+#include "scope_alpaca.h"
+
 #endif /* SCOPES_H_INCLUDED */
