@@ -71,11 +71,14 @@ const double Scope::DEFAULT_MOUNT_GUIDE_SPEED = 0.5;
 Scope::Scope()
     : m_maxDecDuration(0), m_maxRaDuration(0), m_decGuideMode(DEC_NONE), m_raLimitReachedDirection(NONE),
       m_raLimitReachedCount(0), m_decLimitReachedDirection(NONE), m_decLimitReachedCount(0), m_bogusGuideRatesFlagged(0)
+
 {
     m_calibrationSteps = 0;
     m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
     m_graphControlPane = nullptr;
     m_CalDetailsValidated = false;
+    m_canSetTracking = false;
+    m_supportedTrackingRates.push_back({ "Sidereal", TrackingRates::rateSidereal });
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -1802,6 +1805,35 @@ double Scope::GetDeclinationRadians()
 
 // Baseline implementations for non-ASCOM subclasses.  Methods will
 // return a sensible default or an error (true)
+
+void Scope::EnumerateTrackingRates() { }
+
+bool Scope::GetTracking(bool *tracking)
+{
+    return true; // error
+}
+
+bool Scope::SetTracking(bool tracking)
+{
+    return true; // error
+}
+
+bool Scope::CanSetTracking()
+{
+    return false;
+}
+
+bool Scope::GetTrackingRate(TrackingRateInfo& rateInfo)
+{
+    rateInfo = m_supportedTrackingRates[0]; // sidereal
+    return false;
+}
+
+bool Scope::SetTrackingRate(enum TrackingRates rate)
+{
+    return true; // error
+}
+
 bool Scope::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
