@@ -453,7 +453,7 @@ bool ScopeASCOM::Connect()
 }
 
 // Enumerate all supported tracking rates
-void ScopeASCOM::EnumerateTrackingRates()
+std::vector<Scope::TrackingRateInfo> ScopeASCOM::EnumerateTrackingRates()
 {
     // Get all supported tracking rates
     try
@@ -485,20 +485,20 @@ void ScopeASCOM::EnumerateTrackingRates()
                     Variant vRate;
                     if (iList.GetProp(&vRate, L"Item", i))
                     {
-                        enum TrackingRates driveRate = (enum TrackingRates) vRate.intVal;
+                        enum TrackingRate driveRate = (enum TrackingRate) vRate.intVal;
                         switch (driveRate)
                         {
                         case rateSidereal:
-                            m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRates::rateSidereal });
+                            m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
                             break;
                         case rateLunar:
-                            m_supportedTrackingRates.push_back({ _("Lunar"), TrackingRates::rateLunar });
+                            m_supportedTrackingRates.push_back({ _("Lunar"), TrackingRate::rateLunar });
                             break;
                         case rateSolar:
-                            m_supportedTrackingRates.push_back({ _("Solar"), TrackingRates::rateSolar });
+                            m_supportedTrackingRates.push_back({ _("Solar"), TrackingRate::rateSolar });
                             break;
                         case rateKing:
-                            m_supportedTrackingRates.push_back({ _("King"), TrackingRates::rateKing });
+                            m_supportedTrackingRates.push_back({ _("King"), TrackingRate::rateKing });
                             break;
                         }
                         Debug.Write(wxString::Format("ASCOM scope: supports tracking rate: %d\n", driveRate));
@@ -508,17 +508,21 @@ void ScopeASCOM::EnumerateTrackingRates()
             else
             {
                 Debug.Write("ASCOM scope: cannot get count of TrackingRates\n");
+                m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
             }
         }
         else
         {
             Debug.Write("ASCOM scope: cannot get list of TrackingRates\n");
+            m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
         }
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
     }
+    return m_supportedTrackingRates;
 }
 
 bool ScopeASCOM::Disconnect()
@@ -967,7 +971,7 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
             throw ERROR_INFO("ASCOM Scope: GetTrackingRate() failed: " + ExcepMsg(scope.Excep()));
         }
 
-        rateInfo.numericalID = (enum TrackingRates) vRes.iVal;
+        rateInfo.numericalID = (enum TrackingRate) vRes.iVal;
         switch (rateInfo.numericalID)
         {
         case rateSidereal:
@@ -1001,7 +1005,7 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
 // rate to sidereal.
 // Some mounts claim to support the interface but simply get it wrong
 // If this interface is important to the client's functionality, independent verification is warranted
-bool ScopeASCOM::SetTrackingRate(enum TrackingRates rate)
+bool ScopeASCOM::SetTrackingRate(enum TrackingRate rate)
 {
     bool bError = false;
 

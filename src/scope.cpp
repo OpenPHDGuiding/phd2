@@ -78,7 +78,6 @@ Scope::Scope()
     m_graphControlPane = nullptr;
     m_CalDetailsValidated = false;
     m_canSetTracking = false;
-    m_supportedTrackingRates.push_back({ "Sidereal", TrackingRates::rateSidereal });
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -1806,7 +1805,11 @@ double Scope::GetDeclinationRadians()
 // Baseline implementations for non-ASCOM subclasses.  Methods will
 // return a sensible default or an error (true)
 
-void Scope::EnumerateTrackingRates() { }
+std::vector<Scope::TrackingRateInfo> Scope::EnumerateTrackingRates()
+{
+    m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+    return m_supportedTrackingRates;
+}
 
 bool Scope::GetTracking(bool *tracking)
 {
@@ -1829,7 +1832,7 @@ bool Scope::GetTrackingRate(TrackingRateInfo& rateInfo)
     return false;
 }
 
-bool Scope::SetTrackingRate(enum TrackingRates rate)
+bool Scope::SetTrackingRate(TrackingRate rate)
 {
     return true; // error
 }
@@ -1927,6 +1930,11 @@ bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
     }
     else
         return true;
+}
+
+std::vector<Scope::TrackingRateInfo> Scope::GetSupportedTrackingRates()
+{
+    return m_supportedTrackingRates;
 }
 
 static wxString GuideSpeedSummary()

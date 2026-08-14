@@ -49,7 +49,7 @@ enum DEC_GUIDE_MODE
 };
 
 // Well known telescope tracking rates
-enum TrackingRates
+enum TrackingRate
 {
     rateSidereal = 0, // Sidereal tracking rate(15.041 arcseconds per second).
     rateLunar = 1, // Lunar tracking rate(14.685 arcseconds per second).
@@ -171,8 +171,10 @@ public:
     struct TrackingRateInfo
     {
         wxString name;
-        TrackingRates numericalID;
+        TrackingRate numericalID;
     };
+
+protected:
     std::vector<TrackingRateInfo> m_supportedTrackingRates;
 
     // Things related to the Advanced Config Dialog
@@ -272,6 +274,7 @@ public:
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
     bool ValidGuideRates(double RAGuideRate, double DecGuideRate);
+    std::vector<TrackingRateInfo> GetSupportedTrackingRates();
 
     virtual double GetDeclinationRadians(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
@@ -290,11 +293,11 @@ public:
     // Does not get called unless guiding was started interactively (by clicking the guide button)
     virtual bool PreparePositionInteractive();
     virtual bool CanPulseGuide();
-    virtual void EnumerateTrackingRates();
+    virtual std::vector<TrackingRateInfo> EnumerateTrackingRates();
     virtual bool GetTracking(bool *tracking);
     virtual bool SetTracking(bool tracking);
     virtual bool GetTrackingRate(TrackingRateInfo& rateInfo);
-    virtual bool SetTrackingRate(enum TrackingRates rate);
+    virtual bool SetTrackingRate(TrackingRate rate);
     virtual bool CanSetTracking();
 
     void StartDecDrift() override;

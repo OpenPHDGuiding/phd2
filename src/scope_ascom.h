@@ -101,12 +101,12 @@ public:
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) override;
 
     double GetDeclinationRadians() override;
-    void EnumerateTrackingRates() override;
+    std::vector<Scope::TrackingRateInfo> EnumerateTrackingRates() override;
     bool GetTracking(bool *tracking) override;
     bool SetTracking(bool tracking) override;
     bool CanSetTracking() override;
     bool GetTrackingRate(TrackingRateInfo& rateInfo) override;
-    bool SetTrackingRate(enum TrackingRates rate) override;
+    bool SetTrackingRate(enum TrackingRate rate) override;
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
     bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;
     bool GetSiteLatLong(double *latitude, double *longitude) override;
