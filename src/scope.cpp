@@ -1807,8 +1807,9 @@ double Scope::GetDeclinationRadians()
 
 std::vector<Scope::TrackingRateInfo> Scope::EnumerateTrackingRates()
 {
-    m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
-    return m_supportedTrackingRates;
+    std::vector<Scope::TrackingRateInfo> rates;
+    rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+    return rates;
 }
 
 bool Scope::GetTracking(bool *tracking)
@@ -1932,7 +1933,7 @@ bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
         return true;
 }
 
-std::vector<Scope::TrackingRateInfo> Scope::GetSupportedTrackingRates()
+const std::vector<Scope::TrackingRateInfo> Scope::GetSupportedTrackingRates()
 {
     return m_supportedTrackingRates;
 }

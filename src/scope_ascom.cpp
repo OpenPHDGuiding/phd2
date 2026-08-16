@@ -455,6 +455,7 @@ bool ScopeASCOM::Connect()
 // Enumerate all supported tracking rates
 std::vector<Scope::TrackingRateInfo> ScopeASCOM::EnumerateTrackingRates()
 {
+    std::vector<Scope::TrackingRateInfo> rates;
     // Get all supported tracking rates
     try
     {
@@ -477,28 +478,26 @@ std::vector<Scope::TrackingRateInfo> ScopeASCOM::EnumerateTrackingRates()
             if (iList.GetProp(&vCount, L"Count"))
             {
                 unsigned int const ratesCount = vCount.intVal;
-                if (ratesCount > 0)
-                    m_supportedTrackingRates.clear(); // Default scope constructor puts "Sidereal" in the vector
                 Debug.Write(wxString::Format("ASCOM scope: reports count=%d of tracking rates\n", ratesCount));
                 for (unsigned int i = 1; i <= ratesCount; ++i)
                 {
                     Variant vRate;
                     if (iList.GetProp(&vRate, L"Item", i))
                     {
-                        enum TrackingRate driveRate = (enum TrackingRate) vRate.intVal;
+                        TrackingRate driveRate = (TrackingRate) vRate.intVal;
                         switch (driveRate)
                         {
                         case rateSidereal:
-                            m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+                            rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
                             break;
                         case rateLunar:
-                            m_supportedTrackingRates.push_back({ _("Lunar"), TrackingRate::rateLunar });
+                            rates.push_back({ _("Lunar"), TrackingRate::rateLunar });
                             break;
                         case rateSolar:
-                            m_supportedTrackingRates.push_back({ _("Solar"), TrackingRate::rateSolar });
+                            rates.push_back({ _("Solar"), TrackingRate::rateSolar });
                             break;
                         case rateKing:
-                            m_supportedTrackingRates.push_back({ _("King"), TrackingRate::rateKing });
+                            rates.push_back({ _("King"), TrackingRate::rateKing });
                             break;
                         }
                         Debug.Write(wxString::Format("ASCOM scope: supports tracking rate: %d\n", driveRate));
@@ -508,21 +507,21 @@ std::vector<Scope::TrackingRateInfo> ScopeASCOM::EnumerateTrackingRates()
             else
             {
                 Debug.Write("ASCOM scope: cannot get count of TrackingRates\n");
-                m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+                rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
             }
         }
         else
         {
             Debug.Write("ASCOM scope: cannot get list of TrackingRates\n");
-            m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+            rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
         }
     }
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        m_supportedTrackingRates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+        rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
     }
-    return m_supportedTrackingRates;
+    return rates;
 }
 
 bool ScopeASCOM::Disconnect()
@@ -971,7 +970,7 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
             throw ERROR_INFO("ASCOM Scope: GetTrackingRate() failed: " + ExcepMsg(scope.Excep()));
         }
 
-        rateInfo.numericalID = (enum TrackingRate) vRes.iVal;
+        rateInfo.numericalID = (TrackingRate) vRes.iVal;
         switch (rateInfo.numericalID)
         {
         case rateSidereal:
@@ -1005,7 +1004,7 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
 // rate to sidereal.
 // Some mounts claim to support the interface but simply get it wrong
 // If this interface is important to the client's functionality, independent verification is warranted
-bool ScopeASCOM::SetTrackingRate(enum TrackingRate rate)
+bool ScopeASCOM::SetTrackingRate(TrackingRate rate)
 {
     bool bError = false;
 
