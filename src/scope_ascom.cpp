@@ -447,7 +447,7 @@ bool ScopeASCOM::Connect()
     }
 
     // Enumerate the tracking rates
-    EnumerateTrackingRates();
+    m_supportedTrackingRates = EnumerateTrackingRates();
 
     return bError;
 }

@@ -128,6 +128,7 @@ Scope::~Scope()
 // Connect().
 bool Scope::ConnectScope(Scope *scope)
 {
+    scope->m_supportedTrackingRates = scope->EnumerateTrackingRates();
     return scope->Connect();
 }
 
