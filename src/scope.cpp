@@ -123,6 +123,14 @@ Scope::~Scope()
     }
 }
 
+// ConnectScope is the one place where we call scope->Connect(). Any work done here
+// applies to all mount types, regardless of how the various mount sub-classes implement
+// Connect().
+bool Scope::ConnectScope(Scope *scope)
+{
+    return scope->Connect();
+}
+
 GUIDE_ALGORITHM Scope::DefaultXGuideAlgorithm() const
 {
     return DefaultRaGuideAlgorithm;

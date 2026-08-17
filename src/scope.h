@@ -250,6 +250,8 @@ public:
     Scope();
     virtual ~Scope();
 
+    static bool ConnectScope(Scope *scope);
+
     void SetCalibration(const Calibration& cal) override;
     void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, int binning);
     virtual void FlagCalibrationIssue(const CalibrationDetails& calDetails, CalibrationIssueType issue);

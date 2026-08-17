@@ -186,6 +186,8 @@ public:
     StepGuider();
     virtual ~StepGuider();
 
+    static bool ConnectStepGuider(StepGuider *stepGuider);
+
     static wxArrayString AOList();
     static StepGuider *Factory(const wxString& choice);
 
