@@ -71,7 +71,6 @@ const double Scope::DEFAULT_MOUNT_GUIDE_SPEED = 0.5;
 Scope::Scope()
     : m_maxDecDuration(0), m_maxRaDuration(0), m_decGuideMode(DEC_NONE), m_raLimitReachedDirection(NONE),
       m_raLimitReachedCount(0), m_decLimitReachedDirection(NONE), m_decLimitReachedCount(0), m_bogusGuideRatesFlagged(0)
-
 {
     m_calibrationSteps = 0;
     m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
@@ -128,8 +127,10 @@ Scope::~Scope()
 // Connect().
 bool Scope::ConnectScope(Scope *scope)
 {
-    scope->m_supportedTrackingRates = scope->EnumerateTrackingRates();
-    return scope->Connect();
+    bool err = scope->Connect();
+    if (!err)
+        scope->m_supportedTrackingRates = scope->EnumerateTrackingRates();
+    return err;
 }
 
 GUIDE_ALGORITHM Scope::DefaultXGuideAlgorithm() const
@@ -1942,7 +1943,7 @@ bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
         return true;
 }
 
-const std::vector<Scope::TrackingRateInfo> Scope::GetSupportedTrackingRates()
+const std::vector<Scope::TrackingRateInfo>& Scope::GetSupportedTrackingRates()
 {
     return m_supportedTrackingRates;
 }

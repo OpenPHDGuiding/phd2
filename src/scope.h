@@ -276,7 +276,7 @@ public:
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(CalibrationIssueType etype, bool val);
     bool ValidGuideRates(double RAGuideRate, double DecGuideRate);
-    const std::vector<TrackingRateInfo> GetSupportedTrackingRates();
+    const std::vector<TrackingRateInfo>& GetSupportedTrackingRates();
 
     virtual double GetDeclinationRadians(); // declination in radians, or UNKNOWN_DECLINATION
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);

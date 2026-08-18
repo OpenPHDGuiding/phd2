@@ -445,10 +445,6 @@ bool ScopeASCOM::Connect()
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
-
-    // Enumerate the tracking rates
-    m_supportedTrackingRates = EnumerateTrackingRates();
-
     return bError;
 }
 
