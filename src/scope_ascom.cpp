@@ -463,55 +463,46 @@ std::vector<Scope::TrackingRateInfo> ScopeASCOM::EnumerateTrackingRates()
         GITObjRef scope(m_gitEntry);
         Variant vTrackingRates;
         // ASCOM requires an implementation of this collection with minimal return of at least 'sidereal'
-        if (scope.GetProp(&vTrackingRates, L"TrackingRates"))
-        {
-            // Assuming vTrackingRates now holds the IDispatch* to the TrackingRates collection
-            IDispatch *pTrackingRates = vTrackingRates.pdispVal;
-            DispatchClass iListClass;
-            DispatchObj iList(pTrackingRates, &iListClass);
+        if (!scope.GetProp(&vTrackingRates, L"TrackingRates"))
+            throw ERROR_INFO("ASCOM scope: cannot get list of TrackingRates\n");
 
-            Variant vCount;
-            if (iList.GetProp(&vCount, L"Count"))
-            {
-                unsigned int const ratesCount = vCount.intVal;
-                Debug.Write(wxString::Format("ASCOM scope: reports count=%d of tracking rates\n", ratesCount));
-                for (unsigned int i = 1; i <= ratesCount; ++i)
-                {
-                    Variant vRate;
-                    if (iList.GetProp(&vRate, L"Item", i))
-                    {
-                        TrackingRate driveRate = (TrackingRate) vRate.intVal;
-                        switch (driveRate)
-                        {
-                        case rateSidereal:
-                            rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
-                            break;
-                        case rateLunar:
-                            rates.push_back({ _("Lunar"), TrackingRate::rateLunar });
-                            break;
-                        case rateSolar:
-                            rates.push_back({ _("Solar"), TrackingRate::rateSolar });
-                            break;
-                        case rateKing:
-                            rates.push_back({ _("King"), TrackingRate::rateKing });
-                            break;
-                        }
-                        Debug.Write(wxString::Format("ASCOM scope: supports tracking rate: %d\n", driveRate));
-                    }
-                }
-            }
-            else
-            {
-                Debug.Write("ASCOM scope: cannot get count of TrackingRates\n");
-                rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
-            }
-        }
-        else
+        // Assuming vTrackingRates now holds the IDispatch* to the TrackingRates collection
+        IDispatch *pTrackingRates = vTrackingRates.pdispVal;
+        DispatchClass iListClass;
+        DispatchObj iList(pTrackingRates, &iListClass);
+
+        Variant vCount;
+        if (!iList.GetProp(&vCount, L"Count"))
+            throw ERROR_INFO("ASCOM scope: cannot get count of TrackingRates\n");
+
+        unsigned int const ratesCount = vCount.intVal;
+        Debug.Write(wxString::Format("ASCOM scope: reports count=%d of tracking rates\n", ratesCount));
+        for (unsigned int i = 1; i <= ratesCount; ++i)
         {
-            Debug.Write("ASCOM scope: cannot get list of TrackingRates\n");
-            rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+            Variant vRate;
+            if (iList.GetProp(&vRate, L"Item", i))
+            {
+                TrackingRate driveRate = (TrackingRate) vRate.intVal;
+                switch (driveRate)
+                {
+                case rateSidereal:
+                    rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+                    break;
+                case rateLunar:
+                    rates.push_back({ _("Lunar"), TrackingRate::rateLunar });
+                    break;
+                case rateSolar:
+                    rates.push_back({ _("Solar"), TrackingRate::rateSolar });
+                    break;
+                case rateKing:
+                    rates.push_back({ _("King"), TrackingRate::rateKing });
+                    break;
+                }
+                Debug.Write(wxString::Format("ASCOM scope: supports tracking rate: %d\n", driveRate));
+            }
         }
     }
+
     catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
@@ -938,14 +929,14 @@ double ScopeASCOM::GetDeclinationRadians()
     return dReturn;
 }
 
-bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
+bool ScopeASCOM::GetTrackingRate(TrackingRateInfo *rateInfo)
 {
     if (dispid_trackingrate == DISPID_UNKNOWN)
     {
         // Mounts should support read of tracking rates, but we can supply 'sidereal' as a backstop
         Debug.Write("ScopeASCOM::GetTracking returning default value of sidereal\n");
-        rateInfo.numericalID = rateSidereal;
-        rateInfo.name = _("Sidereal");
+        rateInfo->numericalID = rateSidereal;
+        rateInfo->name = _("Sidereal");
         return false;
     }
     bool bError = false;
@@ -966,20 +957,20 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
             throw ERROR_INFO("ASCOM Scope: GetTrackingRate() failed: " + ExcepMsg(scope.Excep()));
         }
 
-        rateInfo.numericalID = (TrackingRate) vRes.iVal;
-        switch (rateInfo.numericalID)
+        rateInfo->numericalID = (TrackingRate) vRes.iVal;
+        switch (rateInfo->numericalID)
         {
         case rateSidereal:
-            rateInfo.name = _("Sidereal");
+            rateInfo->name = _("Sidereal");
             break;
         case rateLunar:
-            rateInfo.name = _("Lunar");
+            rateInfo->name = _("Lunar");
             break;
         case rateSolar:
-            rateInfo.name = _("Solar");
+            rateInfo->name = _("Solar");
             break;
         case rateKing:
-            rateInfo.name = _("King");
+            rateInfo->name = _("King");
             break;
         }
     }
@@ -990,7 +981,7 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo& rateInfo)
     }
 
     Debug.Write(wxString::Format("ScopeASCOM::GetTrackingRate() returns %s, tracking rate = %s\n", bError ? "error" : "success",
-                                 bError ? "Unknown" : rateInfo.name));
+                                 bError ? "Unknown" : rateInfo->name));
     return bError;
 }
 

@@ -105,7 +105,7 @@ public:
     bool GetTracking(bool *tracking) override;
     bool SetTracking(bool tracking) override;
     bool CanSetTracking() override;
-    bool GetTrackingRate(TrackingRateInfo& rateInfo) override;
+    bool GetTrackingRate(TrackingRateInfo *rateInfo) override;
     bool SetTrackingRate(TrackingRate rate) override;
     bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate) override;
     bool GetCoordinates(double *ra, double *dec, double *siderealTime) override;

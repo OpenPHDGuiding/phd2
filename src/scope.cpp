@@ -1837,9 +1837,9 @@ bool Scope::CanSetTracking()
     return false;
 }
 
-bool Scope::GetTrackingRate(TrackingRateInfo& rateInfo)
+bool Scope::GetTrackingRate(TrackingRateInfo *rateInfo)
 {
-    rateInfo = m_supportedTrackingRates[0]; // sidereal
+    rateInfo = &m_supportedTrackingRates[0]; // sidereal
     return false;
 }
 

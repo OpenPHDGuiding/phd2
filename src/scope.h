@@ -298,7 +298,7 @@ public:
     virtual std::vector<TrackingRateInfo> EnumerateTrackingRates();
     virtual bool GetTracking(bool *tracking);
     virtual bool SetTracking(bool tracking);
-    virtual bool GetTrackingRate(TrackingRateInfo& rateInfo);
+    virtual bool GetTrackingRate(TrackingRateInfo *rateInfo);
     virtual bool SetTrackingRate(TrackingRate rate);
     virtual bool CanSetTracking();
 
