@@ -1839,7 +1839,7 @@ bool Scope::CanSetTracking()
 
 bool Scope::GetTrackingRate(TrackingRateInfo *rateInfo)
 {
-    rateInfo = &m_supportedTrackingRates[0]; // sidereal
+    rateInfo = &m_supportedTrackingRates.front(); // sidereal
     return false;
 }
 
