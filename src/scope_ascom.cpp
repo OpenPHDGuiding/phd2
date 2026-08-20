@@ -957,22 +957,26 @@ bool ScopeASCOM::GetTrackingRate(TrackingRateInfo *rateInfo)
             throw ERROR_INFO("ASCOM Scope: GetTrackingRate() failed: " + ExcepMsg(scope.Excep()));
         }
 
-        rateInfo->numericalID = (TrackingRate) vRes.iVal;
-        switch (rateInfo->numericalID)
+        wxString rName;
+        switch (vRes.iVal)
         {
         case rateSidereal:
-            rateInfo->name = _("Sidereal");
+            rName = _("Sidereal");
             break;
         case rateLunar:
-            rateInfo->name = _("Lunar");
+            rName = _("Lunar");
             break;
         case rateSolar:
-            rateInfo->name = _("Solar");
+            rName = _("Solar");
             break;
         case rateKing:
-            rateInfo->name = _("King");
+            rName = _("King");
             break;
+        default:
+            throw ERROR_INFO("Unknown tracking rate " + std::to_string(vRes.iVal));
         }
+        rateInfo->name = rName;
+        rateInfo->numericalID = (TrackingRate) vRes.iVal;
     }
     catch (const wxString& Msg)
     {
