@@ -1,0 +1,128 @@
+name: macOS Packages
+on:
+  push:
+    tags:
+    - 'v*'
+    # TEMPORARY - A push to this branch triggers the workflow
+    branches:
+    - 'macos-build'
+  workflow_dispatch:
+
+
+jobs:
+  build-mac:
+    name: macos/${{ matrix.arch }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { arch: arm64, runs-on: macos-15 }
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Install dependencies
+      run: brew install gettext autoconf automake libtool
+
+    - name: Put gettext on PATH
+      run: echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
+
+    - name: Cache static dependencies
+      id: deps-cache
+      uses: actions/cache@v5
+      with:
+        path: tmp_macdeps
+        key: macdeps-${{ matrix.arch }}-${{ hashFiles('build/build-macdeps') }}
+
+    - name: Build static dependencies
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: build/build-macdeps
+
+    - name: Build
+      run: |
+        export PATH="$PWD/tmp_macdeps/bin:$PATH"
+        export CMAKE_PREFIX_PATH="$PWD/tmp_macdeps"
+        build/build-mac
+
+    # --- Code signing / notarisation -------------------------------------------
+    # Disabled until the signing secrets exist. Enable by setting a repository
+    # variable MACOS_SIGN=true and adding the secrets referenced below. Secrets are
+    # not available to pull requests from forks, so signing only runs on tag / manual
+    # runs of the upstream repo -- matching the deb and Windows workflows.
+    #
+    # Ordering matters: the app is signed inside-out BEFORE the dmg is built (cpack
+    # was dropped precisely so hdiutil does not disturb the signature), then the dmg
+    # is signed, notarised and stapled AFTER it exists -- a dmg can be stapled, a zip
+    # cannot.
+
+    - name: Import signing certificate
+      if: vars.MACOS_SIGN == 'true'
+      run: |
+        keychain=$RUNNER_TEMP/signing.keychain-db
+        security create-keychain -p "${{ secrets.MACOS_KEYCHAIN_PASSWORD }}" "$keychain"
+        security set-keychain-settings -lut 21600 "$keychain"
+        security unlock-keychain -p "${{ secrets.MACOS_KEYCHAIN_PASSWORD }}" "$keychain"
+        echo "${{ secrets.MACOS_CERT_P12 }}" | base64 -d > "$RUNNER_TEMP/cert.p12"
+        security import "$RUNNER_TEMP/cert.p12" -k "$keychain" \
+          -P "${{ secrets.MACOS_CERT_PASSWORD }}" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: \
+          -s -k "${{ secrets.MACOS_KEYCHAIN_PASSWORD }}" "$keychain"
+        security list-keychains -d user -s "$keychain" login.keychain-db
+
+    - name: Sign app
+      if: vars.MACOS_SIGN == 'true'
+      # Inside-out: the bundled vendor camera dylibs (Contents/Frameworks) each need
+      # a Developer ID signature or hardened-runtime library validation rejects them,
+      # then the app itself. --options runtime is mandatory for notarisation; not
+      # --deep, which is deprecated and unreliable here.
+      env:
+        DEVID: ${{ secrets.MACOS_DEVELOPER_ID }}
+      run: |
+        cd tmp
+        for lib in PHD2.app/Contents/Frameworks/*.dylib; do
+          codesign --force --options runtime --timestamp --sign "$DEVID" "$lib"
+        done
+        codesign --force --options runtime --timestamp --sign "$DEVID" PHD2.app
+
+    - name: Package as DMG
+      # Built from the PHD2.app that build-mac produced and check_library_dependencies
+      # verified, not via cpack: cpack -G DragNDrop re-runs the install rules and can
+      # re-materialise the bundle (install_name_tool / strip), which would invalidate
+      # the signature applied above.
+      run: |
+        cd tmp
+        base=$(basename "$(ls PHD2-*.zip | head -1)" .zip)
+        # Stage into a clean directory first: hdiutil -srcfolder copies the *contents*
+        # of its argument to the image root, so pointing it straight at PHD2.app would
+        # spill Contents/ loose and drop the .app wrapper. Imaging a directory that
+        # contains PHD2.app gives a dmg whose root is the bundle, matching what cpack
+        # produced. ditto (not cp) preserves the bundle's xattrs and any signature.
+        staging=$(mktemp -d)
+        ditto PHD2.app "$staging/PHD2.app"
+        hdiutil create -volname PHD2 -srcfolder "$staging" \
+                       -ov -format UDZO "$base.dmg"
+        rm -rf "$staging"
+
+    - name: Sign, notarise and staple DMG
+      if: vars.MACOS_SIGN == 'true'
+      env:
+        DEVID: ${{ secrets.MACOS_DEVELOPER_ID }}
+      run: |
+        cd tmp
+        dmg=$(ls PHD2-*.dmg | head -1)
+        codesign --force --timestamp --sign "$DEVID" "$dmg"
+        xcrun notarytool submit "$dmg" \
+          --apple-id "${{ secrets.MACOS_NOTARY_APPLE_ID }}" \
+          --team-id "${{ secrets.MACOS_NOTARY_TEAM_ID }}" \
+          --password "${{ secrets.MACOS_NOTARY_PASSWORD }}" \
+          --wait
+        xcrun stapler staple "$dmg"
+
+    - name: Upload app
+      uses: actions/upload-artifact@v6
+      with:
+        name: phd2-macos-${{ matrix.arch }}
+        path: tmp/PHD2-*.dmg
+        if-no-files-found: error
