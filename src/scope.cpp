@@ -76,6 +76,7 @@ Scope::Scope()
     m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
     m_graphControlPane = nullptr;
     m_CalDetailsValidated = false;
+    m_canSetTracking = false;
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -126,7 +127,10 @@ Scope::~Scope()
 // Connect().
 bool Scope::ConnectScope(Scope *scope)
 {
-    return scope->Connect();
+    bool err = scope->Connect();
+    if (!err)
+        scope->m_supportedTrackingRates = scope->EnumerateTrackingRates();
+    return err;
 }
 
 GUIDE_ALGORITHM Scope::DefaultXGuideAlgorithm() const
@@ -1810,6 +1814,40 @@ double Scope::GetDeclinationRadians()
 
 // Baseline implementations for non-ASCOM subclasses.  Methods will
 // return a sensible default or an error (true)
+
+std::vector<Scope::TrackingRateInfo> Scope::EnumerateTrackingRates()
+{
+    std::vector<Scope::TrackingRateInfo> rates;
+    rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+    return rates;
+}
+
+bool Scope::GetTracking(bool *tracking)
+{
+    return true; // error
+}
+
+bool Scope::SetTracking(bool tracking)
+{
+    return true; // error
+}
+
+bool Scope::CanSetTracking()
+{
+    return false;
+}
+
+bool Scope::GetTrackingRate(TrackingRateInfo *rateInfo)
+{
+    *rateInfo = m_supportedTrackingRates.front(); // sidereal
+    return false;
+}
+
+bool Scope::SetTrackingRate(TrackingRate rate)
+{
+    return true; // error
+}
+
 bool Scope::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
@@ -1903,6 +1941,11 @@ bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
     }
     else
         return true;
+}
+
+const std::vector<Scope::TrackingRateInfo>& Scope::GetSupportedTrackingRates()
+{
+    return m_supportedTrackingRates;
 }
 
 static wxString GuideSpeedSummary()
