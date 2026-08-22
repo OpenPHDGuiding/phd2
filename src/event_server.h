@@ -36,7 +36,86 @@
 #define EVENT_SERVER_INCLUDED
 
 #include <set>
+#include <vector>
 #include "json_parser.h"
+
+struct JObj;
+struct JAry;
+
+class MultiStarReport
+{
+public:
+    class Item
+    {
+        friend class MultiStarReport;
+
+    protected:
+        double Mass;
+        double SNR;
+        double HFD;
+        double ReferenceX, ReferenceY;
+        double X, Y;
+        uint8_t status;
+        Item();
+
+        void toJObj(JObj& obj) const;
+
+    public:
+        static constexpr uint8_t Unused = 0;
+        static constexpr uint8_t Healthy = 1;
+        // Star ignore because one delta is exaclty zero
+        static constexpr uint8_t ZeroDelta = 2;
+        // Star is too far from reference
+        static constexpr uint8_t TooFar = 3;
+        // Star was reset due to beeing too far for too long
+        static constexpr uint8_t Reset = 4;
+        // Star lost
+        static constexpr uint8_t Lost = 5;
+        // Mass does not match
+        static constexpr uint8_t InvalidMass = 6;
+        static uint8_t Missed(uint8_t missCount);
+
+        static Item healthy(const GuideStar& star);
+        static Item unhealthy(const GuideStar& star, uint8_t reason);
+        static Item unused(const GuideStar& star);
+    };
+
+    std::vector<Item> stars;
+    bool stabilizing = false;
+    bool refined = false;
+
+public:
+    MultiStarReport();
+
+    void addStar(Item star);
+    void send();
+    void setRefined(bool refined);
+    void setStabilizing(bool stabilizing);
+
+    void toJObj(JObj& obj) const;
+};
+
+template<class M>
+class DeferedEvent
+{
+private:
+    bool emitted;
+
+public:
+    M value;
+    void send()
+    {
+        if (!emitted)
+        {
+            emitted = true;
+            value.send();
+        }
+    }
+
+    DeferedEvent() : value(), emitted(false) { }
+
+    ~DeferedEvent() { send(); }
+};
 
 class EventServer : public wxEvtHandler
 {
@@ -63,6 +142,7 @@ public:
     void NotifyLooping(unsigned int exposure, const Star *star, const FrameDroppedInfo *info);
     void NotifyLoopingStopped();
     void NotifySingleFrameComplete(bool succeeded, const wxString& errorMsg, const SingleExposure& info);
+    void NotifyMultiStarStatus(const MultiStarReport& p);
     void NotifyStarSelected(const PHD_Point& pos);
     void NotifyStarLost(const FrameDroppedInfo& info);
     void NotifyGuidingStarted();
