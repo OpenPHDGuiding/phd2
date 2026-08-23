@@ -775,7 +775,6 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
         {
             ShowError("Could not get coordinates from mount", true);
             throw ERROR_INFO("CA: Failed to get scope coordinates for slewing");
-            return;
         }
         bool tracking;
         if (pPointingSource->GetTracking(&tracking))
