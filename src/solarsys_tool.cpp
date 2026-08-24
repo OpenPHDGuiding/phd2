@@ -635,7 +635,7 @@ void SolarSysToolWin::RestoreProfileParameters()
     if (pPointingSource && pPointingSource->IsConnected())
     {
         Scope::TrackingRateInfo rateInfo;
-        pPointingSource->GetTrackingRate(rateInfo);
+        pPointingSource->GetTrackingRate(&rateInfo);
         m_trackingRateName = rateInfo.name;
     }
     else
@@ -875,14 +875,14 @@ void SolarSysToolWin::InitializeTrackingRates(wxString trackingRateName)
             // The 'connect' method in Scope_ASCOM populates the scope::m_supportedTrackingRates
             // vector.  Default scope constructor populates it with just 'Sidereal'
             m_mountTrackingRate->Clear();
-            for (auto pRate = pPointingSource->m_supportedTrackingRates.begin();
-                 pRate != pPointingSource->m_supportedTrackingRates.end(); pRate++)
+            std::vector<Scope::TrackingRateInfo> supportedRates = pPointingSource->GetSupportedTrackingRates();
+            for (auto pRate = supportedRates.begin(); pRate != supportedRates.end(); pRate++)
             {
                 m_mountTrackingRate->Append(pRate->name, &pRate->numericalID);
                 if (pRate->name == trackingRateName)
                 {
                     m_mountTrackingRate->SetSelection(selInx);
-                    pPointingSource->SetTrackingRate((TrackingRates) pRate->numericalID);
+                    pPointingSource->SetTrackingRate((TrackingRate) pRate->numericalID);
                 }
                 else
                     selInx++;
@@ -912,7 +912,7 @@ void SolarSysToolWin::ConfirmMountTrackingRate()
     Scope::TrackingRateInfo rateInfo;
     wxStopWatch timer;
 
-    if (!pPointingSource->GetTrackingRate(rateInfo))
+    if (!pPointingSource->GetTrackingRate(&rateInfo))
     {
         if (rateInfo.name != m_trackingRateName)
         {
@@ -942,7 +942,7 @@ void SolarSysToolWin::OnMountTrackingRateClick(wxCommandEvent& event)
         else
             m_trackingRateName = newTrackingRateName;
         int *pRate = (int *) m_mountTrackingRate->GetClientData(sel);
-        pPointingSource->SetTrackingRate((TrackingRates) *pRate);
+        pPointingSource->SetTrackingRate((TrackingRate) *pRate);
         Debug.Write(wxString::Format("SSG: requesting mount tracking rate of %s\n", m_trackingRateName));
         ShowStatus(wxString::Format(_("Requested mount tracking rate change to %s\n"), m_trackingRateName));
         pFrame->NotifyGuidingParam("SSG: mount tracking rate", m_trackingRateName);
@@ -1069,7 +1069,7 @@ void SolarSysToolWin::OnClose(wxCloseEvent& evt)
         // Based on UI choice, restore mount tracking to sidereal
         if (pPointingSource->CanSetTracking() && m_trackingRateName != _("Sidereal"))
             if (m_restoreSidereal->IsChecked())
-                pPointingSource->SetTrackingRate(TrackingRates::rateSidereal);
+                pPointingSource->SetTrackingRate(TrackingRate::rateSidereal);
 
         // Revert to a default duration of tooltip display (apparently 5 seconds)
         wxToolTip::SetAutoPop(5000);

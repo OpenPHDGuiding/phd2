@@ -70,15 +70,13 @@ const double Scope::DEFAULT_MOUNT_GUIDE_SPEED = 0.5;
 
 Scope::Scope()
     : m_maxDecDuration(0), m_maxRaDuration(0), m_decGuideMode(DEC_NONE), m_raLimitReachedDirection(NONE),
-      m_raLimitReachedCount(0), m_decLimitReachedDirection(NONE), m_decLimitReachedCount(0), m_bogusGuideRatesFlagged(0),
-      m_canSetTracking(false)
+      m_raLimitReachedCount(0), m_decLimitReachedDirection(NONE), m_decLimitReachedCount(0), m_bogusGuideRatesFlagged(0)
 {
     m_calibrationSteps = 0;
     m_limitReachedDeferralTime = wxDateTime::GetTimeNow();
     m_graphControlPane = nullptr;
     m_CalDetailsValidated = false;
     m_canSetTracking = false;
-    m_supportedTrackingRates.push_back({ "Sidereal", TrackingRates::rateSidereal });
 
     wxString prefix = "/" + GetMountClassName();
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
@@ -122,6 +120,17 @@ Scope::~Scope()
     {
         m_graphControlPane->m_pScope = nullptr;
     }
+}
+
+// ConnectScope is the one place where we call scope->Connect(). Any work done here
+// applies to all mount types, regardless of how the various mount sub-classes implement
+// Connect().
+bool Scope::ConnectScope(Scope *scope)
+{
+    bool err = scope->Connect();
+    if (!err)
+        scope->m_supportedTrackingRates = scope->EnumerateTrackingRates();
+    return err;
 }
 
 GUIDE_ALGORITHM Scope::DefaultXGuideAlgorithm() const
@@ -1803,7 +1812,15 @@ double Scope::GetDeclinationRadians()
     return UNKNOWN_DECLINATION;
 }
 
-void Scope::EnumerateTrackingRates() { }
+// Baseline implementations for non-ASCOM subclasses.  Methods will
+// return a sensible default or an error (true)
+
+std::vector<Scope::TrackingRateInfo> Scope::EnumerateTrackingRates()
+{
+    std::vector<Scope::TrackingRateInfo> rates;
+    rates.push_back({ _("Sidereal"), TrackingRate::rateSidereal });
+    return rates;
+}
 
 bool Scope::GetTracking(bool *tracking)
 {
@@ -1820,25 +1837,17 @@ bool Scope::CanSetTracking()
     return false;
 }
 
-bool Scope::GetTrackingRate(TrackingRateInfo& rateInfo)
+bool Scope::GetTrackingRate(TrackingRateInfo *rateInfo)
 {
-    rateInfo.name = _("Sidereal");
-    rateInfo.numericalID = rateSidereal;
+    *rateInfo = m_supportedTrackingRates.front(); // sidereal
     return false;
 }
 
-bool Scope::SetTrackingRate(enum TrackingRates rate)
+bool Scope::SetTrackingRate(TrackingRate rate)
 {
     return true; // error
 }
 
-bool Scope::SetTrackingRateOffsets(double raRateOffset, double decRateOffset)
-{
-    return true; // error
-}
-
-// Baseline implementations for non-ASCOM subclasses.  Methods will
-// return a sensible default or an error (true)
 bool Scope::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
@@ -1932,6 +1941,11 @@ bool Scope::ValidGuideRates(double RAGuideRate, double DecGuideRate)
     }
     else
         return true;
+}
+
+const std::vector<Scope::TrackingRateInfo>& Scope::GetSupportedTrackingRates()
+{
+    return m_supportedTrackingRates;
 }
 
 static wxString GuideSpeedSummary()

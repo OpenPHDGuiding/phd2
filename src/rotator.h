@@ -77,6 +77,8 @@ public:
     Rotator();
     virtual ~Rotator();
 
+    static bool ConnectRotator(Rotator *rotator);
+
     virtual bool Connect();
     virtual bool Disconnect();
     virtual bool IsConnected() const;

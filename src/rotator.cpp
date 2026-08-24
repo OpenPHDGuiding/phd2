@@ -133,6 +133,14 @@ Rotator::Rotator() : m_connected(false)
 
 Rotator::~Rotator() { }
 
+// ConnectRotator is the one place where we call rotator->Connect(). Any work done here
+// applies to all rotator types, regardless of how the various rotator sub-classes
+// implement Connect().
+bool Rotator::ConnectRotator(Rotator *rotator)
+{
+    return rotator->Connect();
+}
+
 bool Rotator::Connect()
 {
     m_connected = true;

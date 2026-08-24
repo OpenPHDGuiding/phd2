@@ -87,6 +87,14 @@ StepGuider::StepGuider()
 
 StepGuider::~StepGuider() { }
 
+// ConnectStepGuider is the one place where we call stepguider->Connect(). Any work done
+// here applies to all stepguider types, regardless of how the various stepguider
+// sub-classes implement Connect().
+bool StepGuider::ConnectStepGuider(StepGuider *stepGuider)
+{
+    return stepGuider->Connect();
+}
+
 GUIDE_ALGORITHM StepGuider::DefaultXGuideAlgorithm() const
 {
     return DefaultGuideAlgorithm;

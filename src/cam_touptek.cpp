@@ -703,7 +703,7 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
     {
         if (m_cam.m_bpp == 8)
         {
-            const char *src = static_cast<char *>(m_cam.m_buffer);
+            const unsigned char *src = static_cast<unsigned char *>(m_cam.m_buffer);
             for (unsigned int i = 0; i < img.NPixels; i++)
                 img.ImageData[i] = *src++;
         }

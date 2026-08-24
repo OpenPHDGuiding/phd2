@@ -1368,7 +1368,7 @@ void ProfileWizard::InitMountProps(Scope *theScope)
     if (theScope)
     {
         ShowStatus(_("Connecting to mount..."));
-        err = theScope->Connect();
+        err = Scope::ConnectScope(theScope);
         ShowStatus(wxEmptyString);
         if (err)
         {
