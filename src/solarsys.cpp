@@ -931,7 +931,7 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
     m_paramMinBlobDiameter = 0.8 * m_paramMaxBlobDiameter;
     Debug.Write(wxString::Format("SSG: AutoFind retry started with MinBlobDiameter of %d, retry limit of %d\n",
                                  (int) m_paramMinBlobDiameter, retryLimit));
-    while (!done)
+    while (!done && pFrame->CaptureActive)
     {
         found = FindBlobCentroid(img8, roiX, roiY, centroidInfo, blobContour);
         if (found)
@@ -949,9 +949,9 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
         }
         else
         {
-            if (retryCount++ < retryLimit && m_paramMinBlobDiameter > 5)
+            if (retryCount++ < retryLimit && m_paramMinBlobDiameter > 20)
             {
-                m_paramMinBlobDiameter -= wxMin(10, 0.1 * m_paramMinBlobDiameter);
+                m_paramMinBlobDiameter -= wxMax(10, 0.1 * m_paramMinBlobDiameter);
                 Debug.Write(
                     wxString::Format("SSG: Retry detection with MinBlobDiameter of %d\n", (int) m_paramMinBlobDiameter));
                 wxString msg = wxString::Format(_("Search # %d"), retryCount);
@@ -961,8 +961,7 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
             else
             {
                 Debug.Write("SSG: Retry detection, no target found, retries exhausted\n");
-                SsgTool::UpdateToolStatus(_("Object not found.  Make sure your MaxBlobDiameter is larger "
-                                            "than the apparent diameter of the target."));
+                SsgTool::UpdateToolStatus(_("Object not found.  Check Min and Max blob diameters"));
                 done = true;
             }
         }

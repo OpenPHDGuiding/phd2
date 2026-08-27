@@ -605,7 +605,7 @@ struct SimCamState
 
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
-    // Solar system related methods which are inherently file-based
+    // File-related methods used for SSG
     bool LoadDiskImage(cv::Mat& img, bool preProcess, wxSize& fullSize);
     bool LoadFitsDiskImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullsize);
     void PreProcessImage(cv::Mat& img);
@@ -787,7 +787,7 @@ bool SimCamState::ReadFitImage(usImage& img, wxString& filename, const wxRect& s
         {
             unsigned short *dst = img.ImageData + (y + subframe.y) * xsize + subframe.x;
             for (int x = 0; x < subframe.width; x++, i++)
-                *dst++ = (unsigned short) buf[i] << scale_shift;
+                *dst++ = ((unsigned short) buf[i]) << scale_shift;
         }
     }
     else
@@ -1081,7 +1081,7 @@ void SimCamState::ReadDisplacements(double& incX, double& incY)
 }
 # endif
 
-// Calculates simulated guide star displacements for simulating either star fields or solar system objects.  pGearTime is a
+// Calculates simulated guide star displacements for simulating either star fields or disk objects.  pGearTime is a
 // surrogate for elapsed time taking into account slewing and suspensions of guiding.  It is used as the time-index for
 // simulating periodic error.  It is available as an output parameter for any client that needs it for other reasons - e.g.
 // comet motion simulation.  Passing a null pointer is acceptable if the parameter isn't needed.  Returned values are
@@ -1468,6 +1468,8 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
     }
 }
 
+// Calculate an average pixel value for the border of the current image.  This will be used to
+// fill in the border gaps when the image is translated
 static double calculateBorderAverage(const cv::Mat& image)
 {
     double sum = 0;
@@ -1595,7 +1597,7 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         if (subframe.width <= 0 || subframe.height <= 0 || subframe.GetRight() >= width || subframe.GetBottom() >= height)
             usingSubframe = false;
         if (!usingSubframe)
-            subframe = wxRect(0, 0, FrameSize.GetWidth(), FrameSize.GetHeight());
+            subframe = wxRect(FrameSize);
 
         int const exptime = duration;
         int const gain = 30;
@@ -1643,19 +1645,19 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         FrameSize.x = image.size().width;
         FrameSize.y = image.size().height;
 
-        // Simulate motion from tracking errors and seeing
+        // Simulate motion from tracking errors and seeing, convert to camera coordinates
         double deltaX, deltaY;
         sim.GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
 
         // Translate the image by the calculated amounts
-        cv::Mat *disk_image = &image;
-        double borderValue = calculateBorderAverage(*disk_image);
+        double borderValue = calculateBorderAverage(image);
         cv::Mat translatedImage;
         cv::Mat transMat = cv::Mat::zeros(2, 3, CV_64FC1);
         transMat.at<double>(0, 0) = 1;
         transMat.at<double>(0, 2) = deltaX;
         transMat.at<double>(1, 1) = 1;
         transMat.at<double>(1, 2) = deltaY;
+        cv::Mat *disk_image = &image;
         cv::warpAffine(*disk_image, translatedImage, transMat, image.size(), cv::INTER_CUBIC, cv::BORDER_CONSTANT,
                        cv::Scalar(borderValue));
         // Switch to the updated image
@@ -1673,9 +1675,8 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         // Finally, render clouds
         if (SimCamParams::clouds_opacity > 0)
         {
-            if (pFrame->GetSolarSystemMode())
-                subframe = wxRect(0, 0, FrameSize.x, FrameSize.y);
-            render_clouds(img, subframe, duration, 30, 100);
+            // Sub-frames not yet supported
+            render_clouds(img, FrameSize, duration, 30, 100);
         }
         break;
     }
@@ -2076,7 +2077,7 @@ static void SetControlStates(SimCamDialog *dlg, bool captureActive)
     dlg->pSimFile->Enable(isFileMode);
     dlg->pBrowseBtn->Enable(isFileMode);
 # ifdef DEVELOPER_MODE
-    dlg->pFileIndex->Enable(isFileMode);
+    dlg->pFileIndex->Enable(isFileMode && SimCamParams::SimulatorMode == SIMMODE_FITS_DIRECTORY);
 # endif
 }
 
@@ -2166,7 +2167,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     modeFileSizer->AddSpacer(10);
     wxStaticText *fileLabel = new wxStaticText(this, wxID_ANY, _("Path: "));
     wxString fileLabelTip = _("Select an image file (BMP|PNG|TIF|JPG|FIT) to use for the simulation");
-    wxString browseTip = _T("Select an image file to use for the simulation");
+    wxString browseTip = _("Select an image file to use for the simulation");
 # ifdef DEVELOPER_MODE
     fileLabelTip += _(" or folder with sequence of FIT files (f.e. C:\\temp\\phd2\\sun_%04d.png)");
     browseTip += _(" or folder with sequence of FIT files");
@@ -2183,7 +2184,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     modeFileSizer->Add(pBrowseBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 # ifdef DEVELOPER_MODE
     wxStaticText *pFileIndexLabel = new wxStaticText(this, wxID_ANY, _("File index: "));
-    pFileIndexLabel->SetToolTip(_("File index for simulation (optional)"));
+    pFileIndexLabel->SetToolTip(_("File index for folder-based simulation (optional)"));
     pFileIndex =
         new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, -1), wxSP_ARROW_KEYS, 0, 9999, 0);
     pFileIndex->Connect(wxEVT_SPINCTRLDOUBLE, wxSpinDoubleEventHandler(SimCamDialog::OnSpinCtrlFileIndex), NULL, this);
@@ -2218,11 +2219,11 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
         NewSpinner(this, SimCamParams::dec_drift_rate * 60.0, -DEC_DRIFT_MAX, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
     pUseStiction = NewCheckBox(this, SimCamParams::use_stiction, _("Apply stiction"), _("Simulate dec axis stiction"));
     pDriftSpinRA =
-        NewSpinner(this, SimCamParams::ra_drift_rate * 60.0, -RA_DRIFT_MAX, RA_DRIFT_MAX, 0.5, _("Ra drift, arc-sec/min"));
+        NewSpinner(this, SimCamParams::ra_drift_rate * 60.0, -RA_DRIFT_MAX, RA_DRIFT_MAX, 0.5, _("RA drift, arc-sec/min"));
     AddTableEntryPair(this, pMountTable, _("Dec drift"), pDriftSpinDEC);
     pMountTable->AddSpacer(5);
     pMountTable->Add(pUseStiction, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    AddTableEntryPair(this, pMountTable, _("Ra drift"), pDriftSpinRA);
+    AddTableEntryPair(this, pMountTable, _("RA drift"), pDriftSpinRA);
     pGuideRateSpin = NewSpinner(this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
     AddTableEntryPair(this, pMountTable, _("Guide rate"), pGuideRateSpin);
     wxButton *RecenterBtn = new wxButton(this, wxID_ANY, _("Recenter"));
@@ -2259,7 +2260,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     wxFlexGridSizer *pPECustom = new wxFlexGridSizer(1, 5, 10, 10);
     pPECustomRb = new wxRadioButton(this, wxID_ANY, _("Custom curve"), wxDefaultPosition, wxDefaultSize);
     pPECustomRb->SetValue(!SimCamParams::use_default_pe_params);
-    pPECustomRb->SetToolTip(_("Use a simple sinusoidal curve. You can specify the amplitude and period."));
+    pPECustomRb->SetToolTip(_("Use a simple sinusoidal curve, specifying the amplitude and period."));
     pPECustomRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbCustomPE, this); // Event handler binding
     pPECustom->Add(pPECustomRb, wxSizerFlags().Border(wxTOP, 4));
     pPECustomAmp = AddCustomPEField(this, pPECustom, _("Amplitude"), _("Amplitude, arc-secs"), SimCamParams::custom_pe_amp);
@@ -2275,12 +2276,13 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
 
     // Now add some miscellaneous mount-related stuff (still within mount group)
     wxBoxSizer *pMiscSizer = new wxBoxSizer(wxHORIZONTAL);
-    pReverseDecPulseCbx = NewCheckBox(
-        this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on West side of pier"),
-        _("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
+    pReverseDecPulseCbx =
+        NewCheckBox(this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on West side of pier"),
+                    _("Simulate a mount that reverses guide pulse direction after a meridian flip like some ASCOM mounts."));
     pPiersideLabel = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
     pMiscSizer->Add(pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
     pPierFlip = new wxButton(this, wxID_CONVERT, _("Pier Flip"));
+    pPierFlip->SetToolTip(_("Simulate a pier flip for configurations that provide no pointing information"));
     pMiscSizer->Add(pPierFlip, wxSizerFlags().Border(wxLEFT, 30).Expand());
     pMiscSizer->Add(pPiersideLabel, wxSizerFlags().Border(wxLEFT, 30).Expand());
     UpdatePierSideLabel();
@@ -2478,7 +2480,6 @@ void CameraSimulator::ShowPropertyDialog()
             if (pSecondaryMount)
                 pSecondaryMount->ClearCalibration();
         }
-        SimCamParams::reverse_dec_pulse_on_west_side = dlg.pReverseDecPulseCbx->GetValue();
         SimCamParams::show_comet = dlg.showComet->GetValue();
         SimCamParams::clouds_opacity = dlg.pCloudSlider->GetValue() / 100.0;
         save_sim_params();
