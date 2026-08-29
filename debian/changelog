@@ -1,3 +1,21 @@
+phd2 (2.6.14dev1) unstable; urgency=low
+
+  * Additional binning options: PHD2 can now do binning in software in addition to camera hardware binning
+  * Guiding assistant: improved recommandations for binning
+  * Calibration assistant can now start mount tracking if needed
+  * Alpaca camera and mount support added
+  * CameraFrames diagnostic folders are now removed automatically after 30 days
+  * New profile wizard: improved messages regarding rotators
+  * Debug logging improvements
+  * ZWO ASI cameras: better handling of subframes when subframe size changes
+  * OGMA and ToupTek cameras: fix bug where data is not pulled from the camera correctly in 8-bit mode
+  * ZWO ASI cameras: update SDK to V1.41
+  * Touptek cameras Update Touptek lib to version 60.32226.20260808
+  * QHY Cameras: Update SDK libraries to version 25.09.29 (#1439)
+  * PlayerOne cameras: update to SDK v3.10.0 (#1437)
+
+ -- Andy Galasso <andy.galasso@gmail.com>  Sat, 29 Aug 2026 16:17:28 -0400
+
 phd2 (2.6.13dev8) unstable; urgency=low
 
   * Comet tool: disable multi-star guiding when comet tracking is enabled
