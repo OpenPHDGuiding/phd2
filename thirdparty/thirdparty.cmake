@@ -162,10 +162,38 @@ if(WIN32)
   )
 else()
   if(APPLE)
-    SET(_save_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-    find_package(CFITSIO REQUIRED)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_save_CMAKE_FIND_LIBRARY_SUFFIXES})
+    # cfitsio/libnova can be linked either statically (.a) or as shared libs.
+    # Static (the default) yields a self-contained app bundle with no external
+    # cfitsio/libnova dylib dependency, which is required for a redistributable
+    # build. Set -DPHD_MACOS_STATIC_DEPS=OFF to link shared libs instead (e.g.
+    # from Homebrew, which ships only dylibs); point CMAKE_PREFIX_PATH at the
+    # prefix that provides them.
+    option(PHD_MACOS_STATIC_DEPS
+           "Link cfitsio/libnova statically into a self-contained bundle (default). OFF links shared libs, e.g. Homebrew dylibs."
+           ON)
+
+    if(PHD_MACOS_STATIC_DEPS)
+      SET(_save_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+      SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+      find_package(CFITSIO)
+      set(CMAKE_FIND_LIBRARY_SUFFIXES ${_save_CMAKE_FIND_LIBRARY_SUFFIXES})
+      # Test the library path rather than CFITSIO_FOUND. FindCFITSIO only sets
+      # CFITSIO_FOUND when it actually searches; once CFITSIO_LIBRARIES is in the
+      # cache it takes an early-out branch and leaves CFITSIO_FOUND unset, so a
+      # re-configure -- which make does routinely -- would fail this check even
+      # though cfitsio was found. Matching on .a also keeps the check meaningful:
+      # it verifies the library is static, not merely present, so switching
+      # PHD_MACOS_STATIC_DEPS back on over a cached shared build is caught.
+      if(NOT CFITSIO_LIBRARIES MATCHES "\\.a$")
+        message(FATAL_ERROR
+          "Could not find a static cfitsio (libcfitsio.a). Set "
+          "-DPHD_MACOS_STATIC_DEPS=OFF to link a shared cfitsio instead (e.g. "
+          "Homebrew, which ships only a dylib), or install a static cfitsio for a "
+          "self-contained bundle.")
+      endif()
+    else()
+      find_package(CFITSIO REQUIRED)
+    endif()
   else()
     find_package(CFITSIO REQUIRED)
   endif()
@@ -411,7 +439,13 @@ if(WIN32)
 else()
   find_package(Eigen3 REQUIRED)
   set(EIGEN_SRC ${EIGEN3_INCLUDE_DIR})
-  message(STATUS "Using system's Eigen3.")
+  if(NOT EIGEN_SRC)
+    # Modern Eigen3Config.cmake exports only the Eigen3::Eigen imported target and
+    # leaves EIGEN3_INCLUDE_DIR unset; pull the include dir from the target so the
+    # gaussian-process subproject can find <Eigen/Dense>.
+    get_target_property(EIGEN_SRC Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+  endif()
+  message(STATUS "Using system's Eigen3: ${EIGEN_SRC}")
 endif()
 
 #############################################
@@ -429,6 +463,11 @@ else()
   )
   # For Windows: Prevent overriding the parent project's compiler/linker settings
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  # gtest is a test-only dependency. Without this its install() rules run at package
+  # time and leak include/gtest, include/gmock, the static libs and their cmake and
+  # pkgconfig files into the package prefix -- they were shipping inside the macOS
+  # dmg. Disabling INSTALL_GTEST keeps the package to just PHD2 itself.
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 endif()
 
@@ -543,13 +582,27 @@ else()
     list(APPEND PHD_LINK_EXTERNAL ${indi_INSTALL_DIR}/lib/indiclient.lib)
   else()
     list(APPEND PHD_LINK_EXTERNAL ${indi_INSTALL_DIR}/lib/libindiclient.a)
+    # The statically-linked INDI client decompresses BLOBs with zlib (uncompress),
+    # so the final phd2 link must pull in zlib explicitly.
+    find_package(ZLIB REQUIRED)
+    list(APPEND PHD_LINK_EXTERNAL ${ZLIB_LIBRARIES})
     if(APPLE)
-      # MacOS must use a static libnova to avoid introducing a homebrew or macports dylib dependency
-      find_library(LIBNOVA REQUIRED NAMES libnova.a PATHS /usr/local/lib)
+      if(PHD_MACOS_STATIC_DEPS)
+        # Release bundle: static libnova so no Homebrew/macports dylib leaks in.
+        find_library(LIBNOVA NAMES libnova.a PATHS /usr/local/lib)
+        if(NOT LIBNOVA)
+          message(FATAL_ERROR
+            "Could not find a static libnova (libnova.a). Set "
+            "-DPHD_MACOS_STATIC_DEPS=OFF to link a shared libnova instead (e.g. "
+            "Homebrew), or install a static libnova for a self-contained bundle.")
+        endif()
+      else()
+        find_library(LIBNOVA REQUIRED NAMES nova)
+      endif()
       list(APPEND PHD_LINK_EXTERNAL ${LIBNOVA})
     else()
       find_library(LIBNOVA REQUIRED NAMES nova)
-      list(APPEND PHD_LINK_EXTERNAL ${LIBNOVA} z)
+      list(APPEND PHD_LINK_EXTERNAL ${LIBNOVA})
     endif()
     ## Define LIBNOVA when building Indi from source.
     add_definitions("-DLIBNOVA")
@@ -960,17 +1013,24 @@ if(APPLE)
   #############################################
   # Camera frameworks
   #
-  find_library( sbigudFramework
-                NAMES SBIGUDrv
-                PATHS ${thirdparty_dir}/frameworks)
-  add_definitions(-DHAVE_SBIG_CAMERA=1)
-  if(NOT sbigudFramework)
-    message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
+  # SBIG: Diffraction Limited ships no arm64/Apple-Silicon driver (SBIGUDrv.framework
+  # is x86_64/i386 only), so it is disabled by default and excluded from universal and
+  # arm64 builds. Set -DPHD_ENABLE_SBIG=ON only for an Intel-only build.
+  option(PHD_ENABLE_SBIG "Enable SBIG camera support (Intel-only; no arm64 driver exists)" OFF)
+  if(PHD_ENABLE_SBIG)
+    find_library( sbigudFramework
+                  NAMES SBIGUDrv
+                  PATHS ${thirdparty_dir}/frameworks)
+    if(NOT sbigudFramework)
+      message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
+    endif()
+    include_directories(${sbigudFramework})
+    add_definitions(-DHAVE_SBIG_CAMERA=1)
+    list(APPEND PHD_LINK_EXTERNAL ${sbigudFramework})
+    list(APPEND phd2_OSX_FRAMEWORKS ${sbigudFramework})
+  else()
+    message(STATUS "SBIG camera support disabled: no arm64 driver from Diffraction Limited (enable with -DPHD_ENABLE_SBIG=ON for an Intel-only build)")
   endif()
-  include_directories(${sbigudFramework})
-  add_definitions(-DHAVE_SBIG_CAMERA=1)
-  list(APPEND PHD_LINK_EXTERNAL ${sbigudFramework})
-  list(APPEND phd2_OSX_FRAMEWORKS ${sbigudFramework})
 
   find_library( asiCamera2
                 NAMES ASICamera2
@@ -983,18 +1043,21 @@ if(APPLE)
   list(APPEND PHD_LINK_EXTERNAL ${asiCamera2})
   list(APPEND phd2_OSX_FRAMEWORKS ${asiCamera2})
 
+  # SVB (Svbony): the bundled mac lib is x86_64-only, which would break a universal
+  # build. The Svbony v1.13.x SDK ships a native Apple-Silicon lib — lipo it with the
+  # x86_64 one and drop the universal libSVBCameraSDK.dylib into
+  # cameras/svblibs/mac/universal to enable SVB. Absence is a non-fatal skip so
+  # universal / arm64 builds still succeed.
   find_library( SVBCameraSDK
                 NAMES SVBCameraSDK
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/x64)
-  if(NOT SVBCameraSDK)
-    message(FATAL_ERROR "Cannot find the Svbony SDK libs")
-  endif()
-
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/mac/universal)
   if(SVBCameraSDK)
     add_definitions(-DHAVE_SVB_CAMERA=1)
     include_directories(${PHD_PROJECT_ROOT_DIR}/cameras/svblibs/include)
     list(APPEND PHD_LINK_EXTERNAL ${SVBCameraSDK})
     list(APPEND phd2_OSX_FRAMEWORKS ${SVBCameraSDK})
+  else()
+    message(STATUS "SVB (Svbony) camera support disabled: no universal lib at cameras/svblibs/mac/universal (drop an arm64+x86_64 libSVBCameraSDK.dylib there to enable)")
   endif()
 
   find_library( qhylib
@@ -1021,7 +1084,7 @@ if(APPLE)
 
   find_library( ogmacam
                 NAMES ogmacam
-                PATHS ${ogmacamsdk_SOURCE_DIR}/mac/x64+x86)
+                PATHS ${ogmacamsdk_SOURCE_DIR}/mac/x64+arm64)
   if(NOT ogmacam)
     message(FATAL_ERROR "Cannot find the ogmacam drivers")
   endif()
