@@ -186,9 +186,9 @@ static void load_sim_params()
     SimCamParams::custom_pe_period = pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT);
 
     double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
-    SimCamParams::dec_drift_rate = range_check(dval, -DEC_DRIFT_MAX, DEC_DRIFT_MAX) / 60.0; // a-s per min is saved
+    SimCamParams::dec_drift_rate = range_check(dval, -DEC_DRIFT_MAX, DEC_DRIFT_MAX) / 60.0; // profile and UI use arc-sec/min
     double rval = pConfig->Profile.GetDouble("/SimCam/ra_drift", RA_DRIFT_DEFAULT);
-    SimCamParams::ra_drift_rate = range_check(rval, -RA_DRIFT_MAX, RA_DRIFT_MAX) / 60.0; // a-s per min is saved
+    SimCamParams::ra_drift_rate = range_check(rval, -RA_DRIFT_MAX, RA_DRIFT_MAX) / 60.0; // profile and UI use arc-sec/min
     // backlash is in arc-secs in UI - map to px for internal use
     dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
     SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) / SimCamParams::image_scale;
@@ -606,10 +606,11 @@ struct SimCamState
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
     // File-related methods used for SSG
-    bool LoadDiskImage(cv::Mat& img, bool preProcess, wxSize& fullSize);
-    bool LoadFitsDiskImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullsize);
+    bool LoadNonFitsImage(cv::Mat& img, bool preProcess, wxSize& fullSize);
+    bool LoadFitsImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullsize);
     void PreProcessImage(cv::Mat& img);
     void GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *pGearTime, bool TransformToCameraCoords);
+    bool ApplySimDisplacements(usImage& img, cv::Mat& matImage);
 };
 
 void SimCamState::Initialize()
@@ -633,7 +634,7 @@ void SimCamState::Initialize()
         else
             stars[i].inten = 0.1 + (double) (r * r * r) / 9000.0;
 
-        // force a couple stars to be close together. This is a useful test for Star::AutoFind
+        // force a couple of stars to be close together. This is a useful test for Star::AutoFind
         if (i == 3)
         {
             stars[i].pos.x = stars[i - 1].pos.x + 8;
@@ -1174,8 +1175,10 @@ void SimCamState::GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *
     // zero-point in units of pixels
     total_shift_x = pe + cum_ra_drift + ra_ofs;
     total_shift_y = cum_dec_drift + dec_ofs.val();
+#  ifdef SIMDEBUG
     Debug.Write(wxString::Format("sim offset: RA/DEC=%.2f/%.2f; Offsets:%.1f/%.1f\n", total_shift_x, total_shift_y, ra_ofs,
                                  dec_ofs.val()));
+#  endif
 
     // simulate seeing (x/y)
     if (SimCamParams::seeing_scale > 0.0)
@@ -1190,7 +1193,7 @@ void SimCamState::GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *
         total_shift_y += seeing[1];
     }
 
-# endif // not SIM_FILE_DISPLACEMENTS
+# endif // of not SIM_FILE_DISPLACEMENTS
 
     // check for pier-flip
     if (pPointingSource)
@@ -1455,7 +1458,6 @@ CameraSimulator::~CameraSimulator()
 }
 
 // Used with the SIMMODE_GENERATE mode
-
 static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
@@ -1495,24 +1497,24 @@ static double calculateBorderAverage(const cv::Mat& image)
 }
 
 // OpenCV operations for contour detection work on 8-bit grayscale data
-void SimCamState::PreProcessImage(cv::Mat& img)
+void SimCamState::PreProcessImage(cv::Mat& matImage)
 {
     // Convert to gray scale if needed
-    if (img.channels() != 1)
+    if (matImage.channels() != 1)
     {
-        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(matImage, matImage, cv::COLOR_BGR2GRAY);
     }
     // Convert to 16-bit if needed
-    if (img.depth() != CV_16U)
+    if (matImage.depth() != CV_16U)
     {
-        img.convertTo(img, CV_16UC1, 65535.0 / 255.0);
+        matImage.convertTo(matImage, CV_16UC1, 65535.0 / 255.0);
     }
 }
 
 // Loads a FITs image from disk when simulator mode is 'file', a requirement for
 // simulating solar system guiding.  The image can optionally be pre-processed
 // for gray scale and bit depth.
-bool SimCamState::LoadFitsDiskImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullSize)
+bool SimCamState::LoadFitsImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullSize)
 {
     wxFileName wxf = wxFileName(SimCamParams::SimFileTemplate);
     if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
@@ -1542,23 +1544,54 @@ bool SimCamState::LoadFitsDiskImage(usImage& img, cv::Mat& matImage, bool prePro
     else
         return true;
 }
-// Loads an image from disk when simulator mode is 'file', a requirement for
+// Loads a non-FITs image from a file when simulator mode is 'file', a requirement for
 // simulating solar system guiding.  The image will optionally be pre-processed
-// for gray scale and bit depth.
-bool SimCamState::LoadDiskImage(cv::Mat& image, bool preProcess, wxSize& fullSize)
+// for gray scale and bit depth.  Valid formats are PNG|TIF|BMP|JPG
+bool SimCamState::LoadNonFitsImage(cv::Mat& matImage, bool preProcess, wxSize& fullSize)
 {
-    image = cv::imread(SimCamParams::SimFileTemplate.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
-    fullSize.x = image.size().width;
-    fullSize.y = image.size().height;
-    if (image.empty())
+    matImage = cv::imread(SimCamParams::SimFileTemplate.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
+    fullSize.x = matImage.size().width;
+    fullSize.y = matImage.size().height;
+    if (matImage.empty())
     {
         pFrame->Alert(_("Cannot load image file"));
         return true;
     }
     if (preProcess)
     {
-        PreProcessImage(image);
+        PreProcessImage(matImage);
     }
+    return false;
+}
+
+bool SimCamState::ApplySimDisplacements(usImage& img, cv::Mat& matImage)
+{
+    // Simulate motion from tracking errors and seeing, convert to camera coordinates
+    double deltaX, deltaY;
+    GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
+
+    // Translate the image by the calculated amounts
+    double borderValue = calculateBorderAverage(matImage);
+    cv::Mat translatedImage;
+    cv::Mat transMat = cv::Mat::zeros(2, 3, CV_64FC1);
+    transMat.at<double>(0, 0) = 1;
+    transMat.at<double>(0, 2) = deltaX;
+    transMat.at<double>(1, 1) = 1;
+    transMat.at<double>(1, 2) = deltaY;
+    cv::Mat *disk_image = &matImage;
+    cv::warpAffine(*disk_image, translatedImage, transMat, matImage.size(), cv::INTER_CUBIC, cv::BORDER_CONSTANT,
+                   cv::Scalar(borderValue));
+    // Switch to the updated image
+    disk_image = &translatedImage;
+
+    // Copy the 16-bit data to result
+    int dataSize = matImage.cols * matImage.rows * 2;
+    if (img.Init(matImage.cols, matImage.rows))
+    {
+        pFrame->Alert(_("Memory allocation error"));
+        return true;
+    }
+    memcpy(img.ImageData, disk_image->data, dataSize);
     return false;
 }
 
@@ -1585,7 +1618,6 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     }
 
     switch (SimCamParams::SimulatorMode)
-
     {
     case SIMMODE_GENERATE:
     {
@@ -1613,7 +1645,6 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
             img.Clear();
 
         fill_noise(img, subframe, exptime, gain, offset);
-
         sim.FillImage(img, subframe, exptime, gain, offset);
 
         if (usingSubframe)
@@ -1625,16 +1656,16 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     }
     case SIMMODE_FILE: // Can be PNG|TIF|BMP|JPG|FIT file
     {
-        cv::Mat image;
+        cv::Mat matImg;
         wxString filename = wxString::Format(SimCamParams::SimFileTemplate, SimCamParams::SimFileIndex);
         wxFileName wxf = wxFileName(filename);
         if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
         {
-            sim.LoadFitsDiskImage(img, image, true, FrameSize);
+            sim.LoadFitsImage(img, matImg, true, FrameSize);
         }
         else
         {
-            sim.LoadDiskImage(image, true, FrameSize);
+            sim.LoadNonFitsImage(matImg, true, FrameSize);
             if (wxf.GetExt().CmpNoCase("bmp") == 0)
                 HasBayer = true;
             else
@@ -1642,35 +1673,12 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         }
 
         // Save full frame size
-        FrameSize.x = image.size().width;
-        FrameSize.y = image.size().height;
+        FrameSize.x = matImg.size().width;
+        FrameSize.y = matImg.size().height;
 
-        // Simulate motion from tracking errors and seeing, convert to camera coordinates
-        double deltaX, deltaY;
-        sim.GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
-
-        // Translate the image by the calculated amounts
-        double borderValue = calculateBorderAverage(image);
-        cv::Mat translatedImage;
-        cv::Mat transMat = cv::Mat::zeros(2, 3, CV_64FC1);
-        transMat.at<double>(0, 0) = 1;
-        transMat.at<double>(0, 2) = deltaX;
-        transMat.at<double>(1, 1) = 1;
-        transMat.at<double>(1, 2) = deltaY;
-        cv::Mat *disk_image = &image;
-        cv::warpAffine(*disk_image, translatedImage, transMat, image.size(), cv::INTER_CUBIC, cv::BORDER_CONSTANT,
-                       cv::Scalar(borderValue));
-        // Switch to the updated image
-        disk_image = &translatedImage;
-
-        // Copy the 16-bit data to result
-        int dataSize = image.cols * image.rows * 2;
-        if (img.Init(image.cols, image.rows))
-        {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
-        memcpy(img.ImageData, disk_image->data, dataSize);
+        // Simulate motion from tracking errors and seeing
+        if (sim.ApplySimDisplacements(img, matImg))
+            break;
 
         // Finally, render clouds
         if (SimCamParams::clouds_opacity > 0)
@@ -2278,7 +2286,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     wxBoxSizer *pMiscSizer = new wxBoxSizer(wxHORIZONTAL);
     pReverseDecPulseCbx =
         NewCheckBox(this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on West side of pier"),
-                    _("Simulate a mount that reverses guide pulse direction after a meridian flip like some ASCOM mounts."));
+                    _("Simulate a mount that reverses guide pulse direction after a meridian flip"));
     pPiersideLabel = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
     pMiscSizer->Add(pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
     pPierFlip = new wxButton(this, wxID_CONVERT, _("Pier Flip"));
