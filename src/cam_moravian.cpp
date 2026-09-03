@@ -523,7 +523,7 @@ void MoravianCameraDlg::LoadCamInfo()
 
     if (m_modes.empty())
     {
-        m_modeNames->AppendString(_("... connect a camera first to get read modes ..."));
+        m_modeNames->AppendString(_("[camera does not support read modes]"));
         return;
     }
 
@@ -714,16 +714,23 @@ bool MoravianCamera::Connect(const wxString& camId)
     }
     m_curGain = new_gain;
 
-    unsigned int read_mode = pConfig->Profile.GetInt("/camera/moravian/read_mode", dflt_read_mode);
-    wxString mode_name;
-    if (!m_cam.GetReadMode(&mode_name, read_mode))
-        mode_name = "unknown";
-    Debug.Write(wxString::Format("MVN: setting read mode %u (%s) bpp = %u\n", read_mode, mode_name, m_bpp));
-    if (!m_cam.SetReadMode(read_mode))
+    if (has_read_modes)
     {
-        wxString err = m_cam.LastError();
-        Disconnect();
-        return CamConnectFailed(err);
+        int read_mode = pConfig->Profile.GetInt("/camera/moravian/read_mode", dflt_read_mode);
+        if (read_mode == -1)
+            read_mode = dflt_read_mode;
+        wxString mode_name;
+        if (!m_cam.GetReadMode(&mode_name, read_mode))
+            mode_name = "unknown";
+        Debug.Write(wxString::Format("MVN: setting read mode %d (%s) bpp = %u\n", read_mode, mode_name, m_bpp));
+        // Moravian says to ignore failure to set the read mode. This is
+        // necessary for certain camera models that incorrectly report
+        // having read modes, but do not allow the read mode to be set.
+        m_cam.SetReadMode(read_mode);
+    }
+    else
+    {
+        Debug.Write("MVN: camera does not support read modes, skip setting read mode.\n");
     }
 
     Connected = true;
