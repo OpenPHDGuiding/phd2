@@ -1496,7 +1496,7 @@ static double calculateBorderAverage(const cv::Mat& image)
     return average;
 }
 
-// OpenCV operations for contour detection work on 8-bit grayscale data
+// Simulated cam images are gray-scale and in 16-bit format
 void SimCamState::PreProcessImage(cv::Mat& matImage)
 {
     // Convert to gray scale if needed
@@ -1564,9 +1564,10 @@ bool SimCamState::LoadNonFitsImage(cv::Mat& matImage, bool preProcess, wxSize& f
     return false;
 }
 
+// Simulate motion from tracking errors and seeing, convert to camera coordinates.
+// matImage contains gray-scale,16-bit data
 bool SimCamState::ApplySimDisplacements(usImage& img, cv::Mat& matImage)
 {
-    // Simulate motion from tracking errors and seeing, convert to camera coordinates
     double deltaX, deltaY;
     GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
 
@@ -1578,20 +1579,17 @@ bool SimCamState::ApplySimDisplacements(usImage& img, cv::Mat& matImage)
     transMat.at<double>(0, 2) = deltaX;
     transMat.at<double>(1, 1) = 1;
     transMat.at<double>(1, 2) = deltaY;
-    cv::Mat *disk_image = &matImage;
-    cv::warpAffine(*disk_image, translatedImage, transMat, matImage.size(), cv::INTER_CUBIC, cv::BORDER_CONSTANT,
+    cv::warpAffine(matImage, translatedImage, transMat, matImage.size(), cv::INTER_CUBIC, cv::BORDER_CONSTANT,
                    cv::Scalar(borderValue));
-    // Switch to the updated image
-    disk_image = &translatedImage;
 
-    // Copy the 16-bit data to result
+    // Finished with OpenCV ops, copy 16-bit data back into PHD2 image
     int dataSize = matImage.cols * matImage.rows * 2;
     if (img.Init(matImage.cols, matImage.rows))
     {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
-    memcpy(img.ImageData, disk_image->data, dataSize);
+    memcpy(img.ImageData, translatedImage.data, dataSize);
     return false;
 }
 
@@ -1677,6 +1675,7 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         FrameSize.y = matImg.size().height;
 
         // Simulate motion from tracking errors and seeing
+        // matImg will have 16-bit gray-scale data regardless of original image file source
         if (sim.ApplySimDisplacements(img, matImg))
             break;
 
