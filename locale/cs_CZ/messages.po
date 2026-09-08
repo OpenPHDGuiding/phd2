@@ -97,15 +97,15 @@ msgstr "Není zadána žádná montáž"
 
 #: alpaca_config.cpp:111
 msgid "Alpaca Camera Setup"
-msgstr ""
+msgstr "Nastavení Kamery Alpaca"
 
 #: alpaca_config.cpp:111
 msgid "Alpaca Telescope Setup"
-msgstr ""
+msgstr "Nastavení Dalekohledu Alpaca"
 
 #: alpaca_config.cpp:117
 msgid "Manual Device"
-msgstr ""
+msgstr "Ruční Zařízení"
 
 #: alpaca_config.cpp:119
 msgid "Host:"
@@ -117,41 +117,43 @@ msgstr ""
 
 #: alpaca_config.cpp:131
 msgid "Device #:"
-msgstr ""
+msgstr "Zařízení #:"
 
 #: alpaca_config.cpp:136
 msgid "Use This Address"
-msgstr ""
+msgstr "Použijte tuto adresu"
 
 #: alpaca_config.cpp:142
 msgid "Discovered Devices"
-msgstr ""
+msgstr "Zjištěná Zařízení"
 
 #: alpaca_config.cpp:147
 msgid "Override IP:"
-msgstr ""
+msgstr "Přepsat IP:"
 
 #: alpaca_config.cpp:149
 msgid ""
 "Optional. Extra IP/hostname (or subnet broadcast) to probe for Alpaca "
 "devices the normal broadcast can't reach. Applies to all Alpaca discovery."
 msgstr ""
+"Volitelné. Další IP adresa/název hostitele (nebo vysílání do podsítě) pro vyhledávání zařízení Alpaca,"
+"která nejsou dostupná prostřednictvím běžného vysílání. Platí pro veškeré vyhledávání zařízení Alpaca."
 
 #: alpaca_config.cpp:152
 msgid "Discover"
-msgstr ""
+msgstr "Zjistit"
 
 #: alpaca_config.cpp:166
 msgid "Show IPv6 devices"
-msgstr ""
+msgstr "Zobrazit zařízení IPv6"
 
 #: alpaca_config.cpp:171
 msgid "Use Selected Device"
-msgstr ""
+msgstr "Použít Vybrané Zařízení"
 
 #: alpaca_config.cpp:180
 msgid "Verbose logging (all Alpaca devices)"
-msgstr ""
+msgstr "Podrobné protokolování (všechna zařízení Alpaca)"
 
 #: alpaca_config.cpp:182
 msgid ""
@@ -159,18 +161,21 @@ msgid ""
 "for diagnosing slow or unreliable network connections. This is a global "
 "setting -- it applies to every Alpaca camera and mount, not just this device."
 msgstr ""
+"Zaznamenávejte každý požadavek aplikace Alpaca (včetně doby odezvy) do ladicího protokolu. To "
+"je užitečné při diagnostice pomalých nebo nespolehlivých síťových připojení. Jedná se o globální nastavení –"
+"vztahuje se na všechny kamery a držáky Alpaca, nikoli pouze na toto zařízení."
 
 #: alpaca_config.cpp:197 alpaca_config.cpp:261
 msgid "(searching...)"
-msgstr ""
+msgstr "(vyhledávání...)"
 
 #: alpaca_config.cpp:299
 msgid "(no devices found)"
-msgstr ""
+msgstr "(žádná zařízení)"
 
 #: alpaca_config.cpp:299
 msgid "(no IPv4 devices found)"
-msgstr ""
+msgstr "(žádná zařízení s IPv4)"
 
 #: aui_controls.cpp:384 aui_controls.cpp:395 guiding_assistant.cpp:387
 msgid "SNR"
@@ -410,7 +415,7 @@ msgstr "Kalibrační Místo"
 #: calibration_assistant.cpp:189 calibration_assistant.cpp:212
 #: calibration_assistant.cpp:1108
 msgid "Pointing"
-msgstr "Nastavení směru"
+msgstr "Pointace"
 
 #: calibration_assistant.cpp:190 calibration_assistant.cpp:213
 #: calibration_assistant.cpp:1109 calreview_dialog.cpp:305
@@ -499,7 +504,7 @@ msgstr "Obnoví pole 'Kalibrační Místo' a zobrazí doporučenou polohu umíst
 #: calibration_assistant.cpp:247 calibration_assistant.cpp:692
 #: drift_tool.cpp:207 drift_tool.cpp:560
 msgid "Slew"
-msgstr "Přesun"
+msgstr "Přejezd"
 
 #: calibration_assistant.cpp:248
 msgid ""
@@ -681,15 +686,19 @@ msgid ""
 "Could not determine tracking status. Make sure scope is un-parked and ready "
 "to slew"
 msgstr ""
+"Nelze zjistit stav sledování. Ujistěte se, že dalekohled není v parkovací "
+"poloze a je připraven k přejezdu"
 
 #: calibration_assistant.cpp:790
 msgid "Mount tracking enabled"
-msgstr ""
+msgstr "Sledování montáže je zapnuto"
 
 #: calibration_assistant.cpp:794
 msgid ""
 "Could not start tracking. Make sure scope is un-parked and ready to slew"
 msgstr ""
+"Sledování se nepodařilo spustit. Ujistěte se, že dalekohled není v parkovací"
+"poloze a je připraven k přejezdu"
 
 #: calibration_assistant.cpp:817
 msgid "Initial slew to approximate position"
@@ -889,6 +898,9 @@ msgid ""
 "imbalance in Dec or physical resistance to movement because of cables or "
 "over-tight gear mesh."
 msgstr ""
+"Naměřené pohyby v úhlu RA a Dec na snímači kamery se neshodují s očekávaným poměrem"
+"(cos(dec)).  Příčinou může být výrazná nerovnováha hmotnosti v ose Dec nebo fyzický"
+"odpor proti pohybu způsobený kabely či příliš těsným záběrem ozubených kol."
 
 #: calibration_assistant.cpp:1288
 msgid ""
@@ -1148,6 +1160,8 @@ msgid ""
 "Details for this calibration result are no longer available. The calibration "
 "has probably been replaced."
 msgstr ""
+"Podrobnosti k tomuto výsledku kalibrace již nejsou k dispozici. Kalibrace"
+"byla pravděpodobně nahrazena."
 
 #: calreview_dialog.cpp:664
 msgid "Explanation"
@@ -1355,29 +1369,33 @@ msgstr "Velikost pixlu by měla být větší než nula."
 #: cam_alpaca.cpp:279
 msgid "Could not connect to the Alpaca camera. See the debug log for details."
 msgstr ""
+"Nepodařilo se navázat spojení s kamerou Alpaca. Podrobnosti najdete v ladicím protokolu."
 
 #: cam_alpaca.cpp:618
 msgid "The Alpaca camera capture failed. See the debug log for details."
 msgstr ""
+"Snímání kamery Alpaca se nezdařilo. Podrobnosti najdete v ladicím protokolu."
 
 #: cam_alpaca.cpp:728
 msgid "Alpaca camera reported an exposure error."
-msgstr ""
+msgstr "Kamera Alpaca nahlásila chybu expozice."
 
 #: cam_alpaca.cpp:820
 msgid "Alpaca camera returned a frame that does not match the requested size."
-msgstr ""
+msgstr "Kamera Alpaca vrátila snímek, který neodpovídá požadované velikosti."
 
 #: cam_alpaca.cpp:940
 msgid ""
 "Alpaca driver failed checking IsPulseGuiding. See the debug log for more "
 "information."
 msgstr ""
+"Ovladač Alpaca neprošel kontrolou IsPulseGuiding. Další informace najdete v"
+"ladicím protokolu."
 
 #: cam_alpaca.cpp:1015
 #, c-format
 msgid "Alpaca error turning camera cooler %s"
-msgstr ""
+msgstr "Chyba Alpaca při zapínání chladiče kamery %s"
 
 #: cam_alpaca.cpp:1015 cam_ascom.cpp:845
 msgid "on"
@@ -1409,6 +1427,8 @@ msgid ""
 "Discard this many frames when capturing starts. Useful for preventing "
 "initial under-exposed frames interfering with automatic star selection."
 msgstr ""
+"Při zahájení snímání vynechte tento počet snímků. To je vhodné pro zabránění"
+"tomu, aby počáteční podexponované snímky narušovaly automatický výběr hvězd."
 
 #: cam_altair.cpp:331
 msgid "No Altair cameras detected"
@@ -1709,6 +1729,8 @@ msgid ""
 "Disconnect nonresponsive   \n"
 " camera after (seconds)"
 msgstr ""
+"Odpojit nereagující        \n"
+"kameru po (sekundách)"
 
 #: camera.cpp:1062
 #, c-format
