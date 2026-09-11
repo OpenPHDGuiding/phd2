@@ -820,7 +820,7 @@ msgstr ""
 
 #: calibration_assistant.cpp:1113
 msgid "Scope on the west side of pier, pointing east"
-msgstr "Dalekohled na západní straně pilíře, směřující na východ"
+msgstr "Dalekohled na západní straně montáže, směřující na východ"
 
 #: calibration_assistant.cpp:1126
 msgid ""
@@ -3466,7 +3466,7 @@ msgstr ""
 "Pokud k  používáte rozhraní s portem (On-camera nebo GPXXX), můžete  také "
 "využít připojení 'aux' k montáži kompatibilní s %s. Toto připojení slouží k "
 "automatickým úpravám kalibrace na základě deklinace a polohy dalekohledu na "
-"pilíři.  Pokud jste již pro svou 'montáž' vybrali ovladač %s, parametr 'aux' "
+"montáži.  Pokud jste již pro svou 'montáž' vybrali ovladač %s, parametr 'aux' "
 "montáže nebude použita."
 
 #: gear_dialog.cpp:314
@@ -3896,7 +3896,7 @@ msgstr "Doba, sekundy"
 
 #: gear_simulator.cpp:1942
 msgid "Reverse Dec pulse on West side of pier"
-msgstr "Obrácený Dec puls na Západní straně pilíře"
+msgstr "Obrácený Dec puls na Západní straně montáže"
 
 #: gear_simulator.cpp:1943
 msgid ""
@@ -3908,7 +3908,7 @@ msgstr ""
 
 #: gear_simulator.cpp:1945
 msgid "Side of Pier: MMMMM"
-msgstr "Strana Pilíře: MMMMM"
+msgstr "Strana Montáže: MMMMM"
 
 #: gear_simulator.cpp:1947
 msgid "Pier Flip"
@@ -7200,7 +7200,7 @@ msgstr "Hodinový Úhel"
 
 #: pierflip_tool.cpp:108 statswindow.cpp:107
 msgid "Pier Side"
-msgstr "Strana Pilíře"
+msgstr "Strana Montáže"
 
 #: pierflip_tool.cpp:120
 msgid "Start over"
@@ -7220,9 +7220,9 @@ msgstr ""
 "Tento nástroj automaticky určí správnou hodnotu pro nastavení 'Obrátit "
 "výstup DEC po překlopení poledníku'.\n"
 "\n"
-"Postup vyžaduje dvě kalibrace - jednu s dalekohledem na východní straně a "
-"druhou na západní straně pilíře. V případě potřeby vám budou poskytnuty "
-"další pokyny pro přemístění dalekohledu.\n"
+"Postup vyžaduje dvě kalibrace – jednu s dalekohledem na východní straně montáže a"
+"straně montáže a druhou na západní straně montáže. Pokud to bude nutné, budete vyzváni ke změně"
+"vyzváni ke změně polohy dalekohledu a obdržíte další pokyny.\n"
 "\n"
 "Začněte kliknutím na tlačítko Další"
 
@@ -7237,7 +7237,7 @@ msgid ""
 "\n"
 "Click Calibrate when ready."
 msgstr ""
-"Nasměrujte dalekohled ve směru poledníku a nebeského rovníku, přibližně v "
+"Natočte dalekohled ve směru poledníku a nebeského rovníku, přibližně v "
 "blízkosti hodnoty Hodinového Úhlu = 0 a Deklinace = 0.\n"
 "\n"
 "Až budete připraveni, klikněte na tlačítko Kalibrovat."
@@ -7249,7 +7249,7 @@ msgstr "Počkejte na dokončení první kalibrace."
 #: pierflip_tool.cpp:261 pierflip_tool.cpp:275
 #, c-format
 msgid "Calibrating on the %s side of pier"
-msgstr "Kalibrace na straně pilíře %s"
+msgstr "Kalibrace na straně montáže %s"
 
 #: pierflip_tool.cpp:264
 #, c-format
@@ -7258,7 +7258,7 @@ msgid ""
 "%s side of the pier, still pointing near Dec = 0."
 msgstr ""
 "Přeložte dalekohled, abyste vyvolali překlopení poledníku – dalekohled by se "
-"měl přesunout na stranu pilíře směrem %s, přičemž stále bude mířit poblíž "
+"měl přesunout na stranu montáže směrem %s, přičemž stále bude mířit poblíž "
 "Dec = 0."
 
 #: pierflip_tool.cpp:273
