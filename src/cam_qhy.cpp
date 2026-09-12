@@ -82,7 +82,7 @@ class Camera_QHY : public GuideCamera
     double m_usbTrafficStep;
     bool m_hasUsbTraffic;
 
-    char m_camId[32] = "";
+    char m_camId[CAMERA_ID_LENGTH] = "";
     double m_devicePixelSize;
     unsigned char *RawBuffer;
     wxSize m_maxSize;
@@ -395,7 +395,7 @@ void Camera_QHY::ShowPropertyDialog()
         QHYCameraDlg dlg;
         bool reconnect = false;
 
-        char camShortName[32] = "";
+        char camShortName[CAMERA_ID_LENGTH] = "";
         GetQHYCCDModel(m_camId, camShortName);
 
         dlg.SetTitle(wxString::Format("%s Settings", camShortName));
@@ -552,7 +552,7 @@ bool Camera_QHY::EnumCameras(wxArrayString& names, wxArrayString& ids)
     int n = 1;
     for (int i = 0; i < num_cams; i++)
     {
-        char camid[32] = "";
+        char camid[CAMERA_ID_LENGTH] = "";
         GetQHYCCDId(i, camid);
         bool st4 = false;
         qhyccd_handle *h = OpenQHYCCD(camid);
