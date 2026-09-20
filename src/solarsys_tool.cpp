@@ -406,7 +406,7 @@ SolarSysToolWin::SolarSysToolWin()
     // Camera settings group
     wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera settings"));
     wxBoxSizer *pCamSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    m_ExposureCtrl = NewSpinner(this, _T("%5.0f"), 1000, PT_CAMERA_EXPOSURE_MIN, PT_CAMERA_EXPOSURE_MAX, 100);
+    m_ExposureCtrl = NewSpinner(this, _T("%5.0f"), 1000, PT_CAMERA_EXPOSURE_MIN, PT_CAMERA_EXPOSURE_MAX, 20);
     m_GainCtrl = NewSpinner(this, _T("%3.0f"), 0, 0, 100, 1);
     m_CadenceCtrl = NewSpinner(this, _T("%5.0f"), 1000, 500, 20000, 500);
     pCamSizer1->AddSpacer(5);
@@ -1054,6 +1054,7 @@ void SolarSysToolWin::OnClose(wxCloseEvent& evt)
 
     pFrame->StopCapturing();
     // Windows close needs to be done in an orderly sequence, driven through SetSolarSystemMode
+    // to maintain consistentcy between guiding mode and tool window presence
     if (pFrame->GetSolarSystemMode())
     {
         pFrame->SetSolarSystemMode(false);
@@ -1177,10 +1178,12 @@ void SolarSysToolWin::OnResetDetectionStats(wxCommandEvent& event)
     m_solarSystemObj->ResetGuidedDetectionStats();
 }
 
+// Static functions used to update the tool UI, callers don't need to use
+// pointer to the SSG_Tool window
 void SsgTool::UpdateTimingStats(long elapsedTime)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->UpdateTiming(elapsedTime);
@@ -1189,7 +1192,7 @@ void SsgTool::UpdateTimingStats(long elapsedTime)
 void SsgTool::UpdateScoreStats(float score)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->UpdateScore(score);
@@ -1198,7 +1201,7 @@ void SsgTool::UpdateScoreStats(float score)
 void SsgTool::UpdateContourInfoStats(int contCount, int bestSize)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->UpdateContourInfo(contCount, bestSize);
@@ -1207,7 +1210,7 @@ void SsgTool::UpdateContourInfoStats(int contCount, int bestSize)
 void SsgTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->UpdateCentroidInfo(xLoc, yLoc, radius);
@@ -1217,7 +1220,7 @@ void SsgTool::UpdateCentroidInfoStats(float xLoc, float yLoc, float radius)
 void SsgTool::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEvents, int totalEvents)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->UpdateDetectionStats(rsmpCount, rsmpReductions, lostEvents, totalEvents);
@@ -1227,12 +1230,13 @@ void SsgTool::UpdateDetectionStats(int rsmpCount, int rsmpReductions, int lostEv
 void SsgTool::UpdateToolStatus(wxString msg)
 {
     SolarSysToolWin *win;
-    if (pFrame && pFrame->pSolarSysTool)
+    if (pFrame->pSolarSysTool)
     {
         win = static_cast<SolarSysToolWin *>(pFrame->pSolarSysTool);
         win->ShowStatus(msg);
     }
 }
+
 // Used to synch tool camera settings with those of MyFrame
 void SolarSysToolWin::NotifyCameraSettingsChange()
 {

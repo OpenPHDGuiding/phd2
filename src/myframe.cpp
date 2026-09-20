@@ -254,7 +254,7 @@ MyFrame::MyFrame()
 
     LoadProfileSettings();
 
-    // Setup container window for alert message info bar and guider window
+    // Setup container window for alert message info bar and guider windows
     wxWindow *guiderWin = new wxWindow(this, wxID_ANY);
     wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     wxWindow *guiderWinSSO = new wxWindow(this, wxID_ANY);

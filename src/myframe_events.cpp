@@ -955,7 +955,7 @@ void MyFrame::SetSolarSystemMode(bool Enable)
         {
             pSolarSysTool = SsgTool::CreateSolarSysToolWindow();
         }
-        bool dockIt = pConfig->Profile.GetBoolean("/guider/SSG/wasDocked", false);
+        bool dockIt = pConfig->Profile.GetBoolean("/guider/SSG/wasDocked", true);
         if (dockIt)
             m_mgr.GetPane(_T("GuiderSolarSys")).Show().Dock();
         else
