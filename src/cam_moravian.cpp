@@ -143,7 +143,7 @@ struct MCam
         return dflt;
     }
 
-    wxString Serial() { return StrParam(gspCameraSerial, wxString::Format("ID%d", IntParam(gipCameraId, 1))); }
+    wxString Serial() { return StrParam(gsCameraSerial, wxString::Format("ID%d", IntParam(giCameraId, 1))); }
 
     float GetValue(gXusb::CARDINAL idx, float dflt = 0.f)
     {
@@ -266,7 +266,7 @@ struct MCam
         return ok;
     }
 
-    wxSize ChipSize() { return wxSize(IntParam(gipChipW), IntParam(gipChipD)); }
+    wxSize ChipSize() { return wxSize(IntParam(giChipW), IntParam(giChipD)); }
 
     bool CaptureSync(void *buf, unsigned int size, unsigned int duration, wxByte bpp, const wxRect& frame)
     {
@@ -490,13 +490,13 @@ void MoravianCameraDlg::LoadCamInfo()
     int sel_mode = pConfig->Profile.GetInt("/camera/moravian/read_mode", -1);
     if (sel_mode == -1)
     {
-        int dflt_read_mode = cam.IntParam(gipDefaultReadMode);
+        int dflt_read_mode = cam.IntParam(giDefaultReadMode);
         sel_mode = dflt_read_mode;
     }
 
     wxByte bpp = m_bpp8->GetValue() ? 8 : 16;
 
-    unsigned int exp_dur = (cam.IntParam(gipMinimalExposure) + 1000 - 1) / 1000; // ns to ms, rounded up
+    unsigned int exp_dur = (cam.IntParam(giMinimalExposure) + 1000 - 1) / 1000; // ns to ms, rounded up
 
     wxSize chip_size(cam.ChipSize());
 
@@ -532,7 +532,7 @@ void MoravianCameraDlg::LoadCamInfo()
 
     m_modeNames->SetSelection(sel_idx);
 
-    if (cam.BoolParam(gbpFan) && cam.IntParam(gipMaxFan) == 1)
+    if (cam.BoolParam(gbFan) && cam.IntParam(giMaxFan) == 1)
     {
         m_fan->Enable();
         m_fan->SetValue(pConfig->Profile.GetInt("/camera/moravian/fan_speed", 1) ? true : false);
@@ -583,7 +583,7 @@ bool MoravianCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
         if (!cam.Initialize(id))
             continue;
 
-        wxString desc = cam.StrParam(gspCameraDescription, _("unknown")).Trim();
+        wxString desc = cam.StrParam(gsCameraDescription, _("unknown")).Trim();
         wxString serial = cam.Serial();
         wxString name = wxString::Format("%s [%s]", desc, serial);
 
@@ -605,40 +605,40 @@ bool MoravianCamera::Connect(const wxString& camId)
         return CamConnectFailed(err);
     }
 
-    int drv_major = m_cam.IntParam(gipDriverMajor);
-    int drv_minor = m_cam.IntParam(gipDriverMinor);
-    int drv_build = m_cam.IntParam(gipDriverBuild);
+    int drv_major = m_cam.IntParam(giDriverMajor);
+    int drv_minor = m_cam.IntParam(giDriverMinor);
+    int drv_build = m_cam.IntParam(giDriverBuild);
 
-    int fw_major = m_cam.IntParam(gipFirmwareMajor);
-    int fw_minor = m_cam.IntParam(gipFirmwareMinor);
-    int fw_build = m_cam.IntParam(gipFirmwareBuild);
+    int fw_major = m_cam.IntParam(giFirmwareMajor);
+    int fw_minor = m_cam.IntParam(giFirmwareMinor);
+    int fw_build = m_cam.IntParam(giFirmwareBuild);
 
-    int flash_major = m_cam.IntParam(gipFlashMajor);
-    int flash_minor = m_cam.IntParam(gipFlashMinor);
-    int flash_build = m_cam.IntParam(gipFlashBuild);
+    int flash_major = m_cam.IntParam(giFlashMajor);
+    int flash_minor = m_cam.IntParam(giFlashMinor);
+    int flash_build = m_cam.IntParam(giFlashBuild);
 
     Debug.Write(wxString::Format("MVN: Driver %d.%d.%d | Firmware %d.%d.%d | Flash %d.%d.%d\n", drv_major, drv_minor, drv_build,
                                  fw_major, fw_minor, fw_build, flash_major, flash_minor, flash_build));
 
-    Name = m_cam.StrParam(gspCameraDescription, _T("Moravian Camera"));
+    Name = m_cam.StrParam(gsCameraDescription, _T("Moravian Camera"));
 
-    bool connected = m_cam.BoolParam(gbpConnected);
+    bool connected = m_cam.BoolParam(gbConnected);
 
-    HasSubframes = m_cam.BoolParam(gbpSubFrame);
+    HasSubframes = m_cam.BoolParam(gbSubFrame);
 
-    bool has_read_modes = m_cam.BoolParam(gbpReadModes);
+    bool has_read_modes = m_cam.BoolParam(gbReadModes);
 
-    bool has_shutter = m_cam.BoolParam(gbpShutter);
+    bool has_shutter = m_cam.BoolParam(gbShutter);
     HasShutter = false; // TODO: handle camera with shutter
 
-    HasCooler = m_cam.BoolParam(gbpCooler);
-    bool has_fan = m_cam.BoolParam(gbpFan);
+    HasCooler = m_cam.BoolParam(gbCooler);
+    bool has_fan = m_cam.BoolParam(gbFan);
 
     Debug.Write(wxString::Format("MVN: HasShutter: %d HasCooler: %d HasFan: %d\n", has_shutter, HasCooler, has_fan));
 
     if (has_fan)
     {
-        int max_fan = m_cam.IntParam(gipMaxFan);
+        int max_fan = m_cam.IntParam(giMaxFan);
 
         int speed = pConfig->Profile.GetInt("/camera/moravian/fan_speed", 1);
         if (speed > max_fan)
@@ -649,23 +649,23 @@ bool MoravianCamera::Connect(const wxString& camId)
         Debug.Write(wxString::Format("MVN: set fan speed %u / %u\n", speed, max_fan));
     }
 
-    m_hasGuideOutput = m_cam.BoolParam(gbpGuide);
-    m_maxMoveMs = m_hasGuideOutput ? m_cam.IntParam(gipMaximalMoveTime) : 0;
+    m_hasGuideOutput = m_cam.BoolParam(gbGuide);
+    m_maxMoveMs = m_hasGuideOutput ? m_cam.IntParam(giMaximalMoveTime) : 0;
 
     Debug.Write(wxString::Format("MVN: CanPulseGuide: %s MaxMove: %d\n", m_hasGuideOutput ? "yes" : "no", m_maxMoveMs));
 
-    bool rgb = m_cam.BoolParam(gbpRGB);
-    bool cmy = m_cam.BoolParam(gbpCMY);
-    bool cmyg = m_cam.BoolParam(gbpCMYG);
+    bool rgb = m_cam.BoolParam(gbRGB);
+    bool cmy = m_cam.BoolParam(gbCMY);
+    bool cmyg = m_cam.BoolParam(gbCMYG);
     HasBayer = rgb || cmy || cmyg;
     Debug.Write(wxString::Format("MVN: IsColorCam = %d  (rgb:%d cmy:%d cmyg:%d)\n", HasBayer, rgb, cmy, cmyg));
 
-    int pxwidth = m_cam.IntParam(gipPixelW); // nm
-    int pxheight = m_cam.IntParam(gipPixelD); // nm
+    int pxwidth = m_cam.IntParam(giPixelW); // nm
+    int pxheight = m_cam.IntParam(giPixelD); // nm
     m_devicePixelSize = (double) std::min(pxwidth, pxheight) / 1000.; // microns
 
-    int maxbinx = m_cam.IntParam(gipMaxBinningX);
-    int maxbiny = m_cam.IntParam(gipMaxBinningY);
+    int maxbinx = m_cam.IntParam(giMaxBinningX);
+    int maxbiny = m_cam.IntParam(giMaxBinningY);
 
     MaxHwBinning = std::min(maxbinx, maxbiny);
 
@@ -689,16 +689,16 @@ bool MoravianCamera::Connect(const wxString& camId)
     m_buffer_size = m_maxSize.x * m_maxSize.y * 2; // big enough for 16 bpp, even if we only use 8 bpp
     m_buffer = ::malloc(m_buffer_size);
 
-    int max_exp_ms = m_cam.IntParam(gipMaximalExposure);
+    int max_exp_ms = m_cam.IntParam(giMaximalExposure);
 
-    int nr_read_modes = m_cam.IntParam(gipReadModes);
-    int dflt_read_mode = m_cam.IntParam(gipDefaultReadMode);
+    int nr_read_modes = m_cam.IntParam(giReadModes);
+    int dflt_read_mode = m_cam.IntParam(giDefaultReadMode);
 
-    bool can_get_gain = m_cam.BoolParam(gbpGain);
+    bool can_get_gain = m_cam.BoolParam(gbGain);
     if (can_get_gain)
         Debug.Write(wxString::Format("MVN: GetGain: %.3f\n", m_cam.GetValue(gvADCGain)));
 
-    m_maxGain = m_cam.IntParam(gipMaxGain);
+    m_maxGain = m_cam.IntParam(giMaxGain);
     int default_gain = 0; // TODO: ask moravian
     m_defaultGainPct = gain_pct(0, m_maxGain, default_gain);
     Debug.Write(
