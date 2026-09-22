@@ -605,12 +605,11 @@ struct SimCamState
 
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
-    // File-related methods used for SSG
-    bool LoadNonFitsImage(cv::Mat& img, bool preProcess, wxSize& fullSize);
-    bool LoadFitsImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullsize);
-    void PreProcessImage(cv::Mat& img);
     void GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *pGearTime, bool TransformToCameraCoords);
-    bool ApplySimDisplacements(usImage *img, cv::Mat& matImage);
+    // File-related methods used for SSG or other image-file based simulations
+    bool LoadImageFromFile(usImage& img, cv::Mat& matImage, wxSize& fullSize);
+    void PreProcessImage(cv::Mat& img);
+    bool ApplySimDisplacements(usImage *img, const cv::Mat& matImage);
 };
 
 void SimCamState::Initialize()
@@ -1394,7 +1393,7 @@ CameraSimulator::CameraSimulator()
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxHwBinning = 3;
     HasCooler = true;
-    // HasBayer will be set true for bmp files
+    HasBayer = false;
 }
 
 wxByte CameraSimulator::BitsPerPixel()
@@ -1511,10 +1510,11 @@ void SimCamState::PreProcessImage(cv::Mat& matImage)
     }
 }
 
-// Loads a FITs image from disk when simulator mode is 'file', a requirement for
-// simulating solar system guiding.  The image can optionally be pre-processed
-// for gray scale and bit depth.
-bool SimCamState::LoadFitsImage(usImage& img, cv::Mat& matImage, bool preProcess, wxSize& fullSize)
+// Loads an image from disk when simulator mode is 'file', a requirement for
+// simulating solar system guiding.  The image will be pre-processed to create a
+// 16-bit gray-scale version of the original. Acceptable image formats are fits or any of the usual
+// image formats supported by OpenCV (jpg, tif, bmp, png...)
+bool SimCamState::LoadImageFromFile(usImage& img, cv::Mat& matImage, wxSize& fullSize)
 {
     wxFileName wxf = wxFileName(SimCamParams::SimFileTemplate);
     if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
@@ -1528,45 +1528,25 @@ bool SimCamState::LoadFitsImage(usImage& img, cv::Mat& matImage, bool preProcess
         }
         CloseDir();
         matImage = cv::Mat(img.Size.GetHeight(), img.Size.GetWidth(), CV_16UC1, img.ImageData);
-        if (matImage.empty())
-        {
-            pFrame->Alert(_("Cannot load FIT image file"));
-            return true;
-        }
-        if (preProcess)
-        {
-            PreProcessImage(matImage);
-        }
-        fullSize.x = matImage.size().width;
-        fullSize.y = matImage.size().height;
-        return false;
     }
     else
-        return true;
-}
-// Loads a non-FITs image from a file when simulator mode is 'file', a requirement for
-// simulating solar system guiding.  The image will optionally be pre-processed
-// for gray scale and bit depth.  Valid formats are PNG|TIF|BMP|JPG
-bool SimCamState::LoadNonFitsImage(cv::Mat& matImage, bool preProcess, wxSize& fullSize)
-{
-    matImage = cv::imread(SimCamParams::SimFileTemplate.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
-    fullSize.x = matImage.size().width;
-    fullSize.y = matImage.size().height;
+    {
+        matImage = cv::imread(SimCamParams::SimFileTemplate.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
+    }
     if (matImage.empty())
     {
         pFrame->Alert(_("Cannot load image file"));
         return true;
     }
-    if (preProcess)
-    {
-        PreProcessImage(matImage);
-    }
+    fullSize.x = matImage.size().width;
+    fullSize.y = matImage.size().height;
+    PreProcessImage(matImage);
     return false;
 }
 
 // Simulate motion from tracking errors and seeing, convert to camera coordinates.
 // matImage contains gray-scale,16-bit data
-bool SimCamState::ApplySimDisplacements(usImage *img, cv::Mat& matImage)
+bool SimCamState::ApplySimDisplacements(usImage *img, const cv::Mat& matImage)
 {
     double deltaX, deltaY;
     GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
@@ -1655,24 +1635,8 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     case SIMMODE_FILE: // Can be PNG|TIF|BMP|JPG|FIT file
     {
         cv::Mat matImg;
-        wxString filename = wxString::Format(SimCamParams::SimFileTemplate, SimCamParams::SimFileIndex);
-        wxFileName wxf = wxFileName(filename);
-        if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
-        {
-            sim.LoadFitsImage(img, matImg, true, FrameSize);
-        }
-        else
-        {
-            sim.LoadNonFitsImage(matImg, true, FrameSize);
-            if (wxf.GetExt().CmpNoCase("bmp") == 0)
-                HasBayer = true;
-            else
-                HasBayer = false;
-        }
-
-        // Save full frame size
-        FrameSize.x = matImg.size().width;
-        FrameSize.y = matImg.size().height;
+        if (sim.LoadImageFromFile(img, matImg, FrameSize))
+            return true; // Alert already generated
 
         // Simulate motion from tracking errors and seeing
         // matImg will have 16-bit gray-scale data regardless of original image file source
