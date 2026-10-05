@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "event_server.h"
 
 #include <wx/sstream.h>
 #include <wx/sckstrm.h>
@@ -116,10 +117,16 @@ struct JSeq
             close();
         return m_s;
     }
+
+    JSeq& operator<<(JSeq& other) { return *this << other.str(); }
 };
 
-typedef JSeq<'[', ']'> JAry;
-typedef JSeq<'{', '}'> JObj;
+struct JAry : public JSeq<'[', ']'>
+{
+};
+struct JObj : public JSeq<'{', '}'>
+{
+};
 
 static JAry& operator<<(JAry& a, const wxString& str)
 {
@@ -3054,4 +3061,137 @@ void EventServer::NotifyConfigurationChange()
     Ev ev("ConfigurationChange");
     do_notify(m_eventServerClients, ev);
     m_configEventDebouncer->StartOnce(0);
+}
+
+MultiStarReport::Item::Item() : X(0), Y(0), ReferenceX(0), ReferenceY(0), Mass(0), SNR(0), HFD(0), status(0) { }
+
+MultiStarReport::Item MultiStarReport::Item::healthy(const GuideStar& star)
+{
+    return unhealthy(star, MultiStarReport::Item::Healthy);
+}
+
+MultiStarReport::Item MultiStarReport::Item::unused(const GuideStar& star)
+{
+    return unhealthy(star, MultiStarReport::Item::Unused);
+}
+
+MultiStarReport::Item MultiStarReport::Item::unhealthy(const GuideStar& star, uint8_t status)
+{
+    Item ret;
+    ret.X = star.X;
+    ret.Y = star.Y;
+    ret.ReferenceX = star.referencePoint.X;
+    ret.ReferenceY = star.referencePoint.Y;
+    ret.Mass = star.Mass;
+    ret.SNR = star.SNR;
+    ret.HFD = star.HFD;
+    ret.status = status;
+    return ret;
+}
+
+MultiStarReport::MultiStarReport() : refined(false), stabilizing(false) { }
+
+void MultiStarReport::send()
+{
+    EvtServer.NotifyMultiStarStatus(*this);
+}
+
+void MultiStarReport::addStar(MultiStarReport::Item star)
+{
+    stars.push_back(star);
+}
+
+uint8_t MultiStarReport::Item::Missed(uint8_t count)
+{
+    return 40 + count;
+}
+
+void MultiStarReport::setRefined(bool refined)
+{
+    this->refined = refined;
+}
+
+void MultiStarReport::setStabilizing(bool stabilizing)
+{
+    this->stabilizing = stabilizing;
+}
+
+static std::string statusStr(uint8_t status)
+{
+    switch (status)
+    {
+    case MultiStarReport::Item::Unused:
+        return "Unused";
+    case MultiStarReport::Item::Healthy:
+        return "Healthy";
+    case MultiStarReport::Item::ZeroDelta:
+        return "DZ";
+    case MultiStarReport::Item::TooFar:
+        return "F";
+    case MultiStarReport::Item::Reset:
+        return "R";
+    case MultiStarReport::Item::Lost:
+        return "L";
+    case MultiStarReport::Item::InvalidMass:
+        return "M";
+    default:
+        if (status >= 40)
+        {
+            return "M" + std::to_string(status - 40);
+        }
+        return "Unknown(" + std::to_string(status) + ")";
+    }
+}
+
+void MultiStarReport::Item::toJObj(JObj& result) const
+{
+    result << NV("X", this->X);
+    result << NV("Y", this->Y);
+    result << NV("RefX", this->ReferenceX);
+    result << NV("RefY", this->ReferenceY);
+    result << NV("Mass", this->Mass);
+    result << NV("SNR", this->SNR);
+    result << NV("HFD", this->HFD);
+    if (this->status == MultiStarReport::Item::Unused)
+    {
+        result << NV("used", false);
+    }
+    else
+    {
+        result << NV("used", true);
+        if (this->status == MultiStarReport::Item::Healthy)
+        {
+            result << NV("err", NULL_VALUE);
+        }
+        else
+        {
+            result << NV("err", statusStr(this->status));
+        }
+    }
+}
+
+void MultiStarReport::toJObj(JObj& ev) const
+{
+    JAry stars;
+    for (size_t i = 0; i < this->stars.size(); i++)
+    {
+        JObj star;
+        this->stars[i].toJObj(star);
+        stars << star;
+    }
+
+    ev << NV("Stars", stars);
+    ev << NV("Refined", this->refined);
+    ev << NV("Stabilizing", this->stabilizing);
+}
+
+void EventServer::NotifyMultiStarStatus(const MultiStarReport& pos)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("MultiStarReport");
+    pos.toJObj(ev);
+
+    do_notify(m_eventServerClients, ev);
 }

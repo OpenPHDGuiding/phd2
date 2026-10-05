@@ -34,6 +34,7 @@
  */
 #include "phd.h"
 
+#include "event_server.h"
 #include "gear_simulator.h"
 #include "image_math.h"
 #include "socket_server.h"
