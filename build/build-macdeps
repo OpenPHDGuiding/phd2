@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+# build-macdeps - build static libraries for a macOS release
+#
+# PHD2's macOS build links wxWidgets, cfitsio and libnova statically so the app
+# bundle carries no external dylib dependency and runs without Homebrew.
+# To link against dylibs, use -DPHD_MACOS_STATIC_DEPS=OFF.
+#
+# Usage:
+#   build/build-macdeps [PREFIX]        # PREFIX defaults to <repo>/tmp_macdeps
+#
+# then, to build PHD2 against them:
+#   export PATH="$PREFIX/bin:$PATH"          # wx-config -> this static wx
+#   export CMAKE_PREFIX_PATH="$PREFIX"       # cfitsio / libnova / eigen
+#   build/build-mac
+#
+
+set -euo pipefail
+
+if [[ $(uname -s) != Darwin ]]; then
+    echo "build-macdeps: macOS only (builds an osx_cocoa wxWidgets)." >&2
+    exit 1
+fi
+
+# library versions
+WX_VERSION=3.2.11        # >= 3.2.11: earlier bundled libpng has a TARGET_OS_MAC
+CFITSIO_VERSION=4.6.4
+LIBNOVA_VERSION=0.16
+EIGEN_VERSION=3.4.0      # tracks Debian trixie; Homebrew's eigen is 5.x
+DEPLOYMENT_TARGET=14.0   # matches what run_cmake-osx passes on Sonoma and later
+
+# Default prefix is <repo>/tmp_macdeps, resolved from this script's location
+repo_root=$(cd "${BASH_SOURCE%/*}/.." && pwd)
+prefix=${1:-$repo_root/tmp_macdeps}
+mkdir -p "$prefix"
+prefix=$(cd "$prefix" && pwd)         # absolute, for CMAKE_INSTALL_PREFIX
+
+src=$(mktemp -d)
+trap 'rm -rf "$src"' EXIT
+cores=$(sysctl -n hw.logicalcpu)
+
+# Checked per-library rather than up front, so a re-run whose libraries are all
+# present (the common case) needs no build tools installed at all.
+require () {
+    command -v "$1" >/dev/null 2>&1 || {
+        echo "build-macdeps: missing '$1'. Install with: brew install $2" >&2
+        exit 1
+    }
+}
+
+cd "$src"
+
+# wxWidgets
+if [[ ! -x $prefix/bin/wx-config ]]; then
+    curl -fLO "https://github.com/wxWidgets/wxWidgets/releases/download/v$WX_VERSION/wxWidgets-$WX_VERSION.tar.bz2"
+    tar xf "wxWidgets-$WX_VERSION.tar.bz2"
+    cd "wxWidgets-$WX_VERSION"
+    # The image, regex and expat libraries are forced to wx's bundled copies.
+    # zlib stays sys: macOS provides it in /usr/lib, which the bundle check allows.
+    ./configure --prefix="$prefix" --disable-shared --with-osx_cocoa \
+                --with-macosx-version-min="$DEPLOYMENT_TARGET" \
+                --with-libpng=builtin \
+                --with-libjpeg=builtin \
+                --with-libtiff=builtin \
+                --with-regex=builtin \
+                --with-expat=builtin \
+                --disable-tests \
+                --disable-precomp-headers
+    make -j"$cores"
+    make install
+    cd "$src"
+fi
+
+# cfitsio
+if [[ ! -f $prefix/lib/libcfitsio.a ]]; then
+    require cmake "cmake"
+    curl -fLO "https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-$CFITSIO_VERSION.tar.gz"
+    tar xf "cfitsio-$CFITSIO_VERSION.tar.gz"
+    cmake -S "cfitsio-$CFITSIO_VERSION" -B build-cfitsio \
+          -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET="$DEPLOYMENT_TARGET"
+    cmake --build build-cfitsio -j"$cores"
+    cmake --install build-cfitsio
+fi
+
+# libnova
+if [[ ! -f $prefix/lib/libnova.a ]]; then
+    require autoreconf "autoconf automake libtool"
+    require glibtoolize "libtool"
+    curl -fLO "http://deb.debian.org/debian/pool/main/libn/libnova/libnova_$LIBNOVA_VERSION.orig.tar.xz"
+    tar xf "libnova_$LIBNOVA_VERSION.orig.tar.xz"
+    cd libnova
+    # AC_INIT shells out to git-version-gen, which reads .tarball-version when
+    # there is no git checkout to interrogate.
+    echo "$LIBNOVA_VERSION" > .tarball-version
+    PATH="$(brew --prefix libtool)/libexec/gnubin:$PATH" autoreconf -i
+    ./configure --prefix="$prefix" --disable-shared --enable-static \
+                CFLAGS="-mmacosx-version-min=$DEPLOYMENT_TARGET"
+    make -j"$cores"
+    make install
+    cd "$src"
+fi
+
+# eigen
+if [[ ! -d $prefix/include/eigen3/Eigen ]]; then
+    require cmake "cmake"
+    curl -fLO "https://gitlab.com/libeigen/eigen/-/archive/$EIGEN_VERSION/eigen-$EIGEN_VERSION.tar.gz"
+    tar xf "eigen-$EIGEN_VERSION.tar.gz"
+    cmake -S "eigen-$EIGEN_VERSION" -B build-eigen \
+          -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_TESTING=OFF
+    cmake --install build-eigen
+fi
+
+# test static
+test -x "$prefix/bin/wx-config"
+test -f "$prefix/lib/libcfitsio.a"
+test -f "$prefix/lib/libnova.a"
+test -d "$prefix/include/eigen3/Eigen"
+if ls "$prefix"/lib/*.dylib >/dev/null 2>&1; then
+    echo "build-macdeps: a shared library was installed into $prefix/lib" >&2
+    exit 1
+fi
+
+echo "build-macdeps: static dependencies ready in $prefix"
