@@ -846,6 +846,12 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         return true;
     }
 
+    // A ".fits.fz" frame (INDI drivers with compression enabled) is fpack'ed: an empty primary HDU
+    // followed by the tile-compressed image, which CFITSIO reads like an ordinary image HDU
+    bool compressed = strcmp(frame->m_format, ".fits.fz") == 0;
+    if (compressed)
+        fits_movabs_hdu(fptr, 2, nullptr, &status);
+
     int hdutype;
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
     {
@@ -872,7 +878,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         PHD_fits_close_file(fptr);
         return true;
     }
-    if (nhdus != 1 || naxis != 2)
+    if (nhdus != (compressed ? 2 : 1) || naxis != 2)
     {
         pFrame->Alert(_("Unsupported FITS file"));
         PHD_fits_close_file(fptr);
@@ -1119,7 +1125,7 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
         first_frame = false;
 
         // exposure complete, process the file
-        if (strcmp(frame->m_format, ".fits") == 0)
+        if (strcmp(frame->m_format, ".fits") == 0 || strcmp(frame->m_format, ".fits.fz") == 0)
         {
             if (INDIConfig::Verbose())
                 Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
