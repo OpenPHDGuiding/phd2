@@ -48,18 +48,26 @@
 # include <libindi/basedevice.h>
 # include <libindi/indiproperty.h>
 
+enum FrameFormat
+{
+    FRAME_FORMAT_UNKNOWN,
+    FRAME_FORMAT_FITS,
+    FRAME_FORMAT_FITS_FZ_COMPRESSED,
+};
+
 class CapturedFrame
 {
 public:
     void *m_data;
     size_t m_size;
-    char m_format[MAXINDIBLOBFMT];
+    FrameFormat m_format;
+    wxString m_error;
 
     CapturedFrame()
     {
         m_data = nullptr;
         m_size = 0;
-        m_format[0] = 0;
+        m_format = FRAME_FORMAT_UNKNOWN;
     }
 
     ~CapturedFrame()
@@ -71,12 +79,27 @@ public:
 # endif
     }
 
+    inline static FrameFormat get_frame_format(const char *format, size_t len, wxString *error)
+    {
+        *error = wxEmptyString;
+        if (wxStrncmp(format, ".fits", len) == 0)
+            return FRAME_FORMAT_FITS;
+        else if (wxStrncmp(format, ".fits.fz", len) == 0)
+            return FRAME_FORMAT_FITS_FZ_COMPRESSED;
+        else
+        {
+            size_t const ascii_len = wxStrnlen(format, len);
+            *error = wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(format, ascii_len));
+            return FRAME_FORMAT_UNKNOWN;
+        }
+    }
+
     // Take ownership of this blob's data, so INDI won't overwrite/free the memory
     void steal(IBLOB *bp)
     {
         m_data = bp->blob;
         m_size = bp->size;
-        strncpy(m_format, bp->format, MAXINDIBLOBFMT);
+        m_format = get_frame_format(bp->format, sizeof(bp->format), &m_error);
 
         bp->blob = nullptr;
         bp->size = 0;
@@ -848,9 +871,12 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
 
     // A ".fits.fz" frame (INDI drivers with compression enabled) is fpack'ed: an empty primary HDU
     // followed by the tile-compressed image, which CFITSIO reads like an ordinary image HDU
-    bool compressed = strcmp(frame->m_format, ".fits.fz") == 0;
-    if (compressed)
+    int expected_nhdus = 1;
+    if (frame->m_format == FRAME_FORMAT_FITS_FZ_COMPRESSED)
+    {
+        expected_nhdus = 2;
         fits_movabs_hdu(fptr, 2, nullptr, &status);
+    }
 
     int hdutype;
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
@@ -878,7 +904,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         PHD_fits_close_file(fptr);
         return true;
     }
-    if (nhdus != (compressed ? 2 : 1) || naxis != 2)
+    if (nhdus != expected_nhdus || naxis != 2)
     {
         pFrame->Alert(_("Unsupported FITS file"));
         PHD_fits_close_file(fptr);
@@ -1125,31 +1151,32 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
         first_frame = false;
 
         // exposure complete, process the file
-        if (strcmp(frame->m_format, ".fits") == 0 || strcmp(frame->m_format, ".fits.fz") == 0)
-        {
-            if (INDIConfig::Verbose())
-                Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
 
-            // for CCD camera
-            if (!ReadFITS(frame, img, takeSubframe, subframe))
-            {
-                delete frame;
-                if (options & CAPTURE_SUBTRACT_DARK)
-                    SubtractDark(img);
-                if (options & CAPTURE_RECON)
-                {
-                    if (HasBayer && captureParams.CombinedBinning() == 1)
-                        QuickLRecon(img);
-                    if (PixSizeX != PixSizeY)
-                        SquarePixels(img, PixSizeX, PixSizeY);
-                }
-                return false;
-            }
+        if (!frame->m_error.IsEmpty())
+        {
+            pFrame->Alert(frame->m_error);
             delete frame;
             return true;
         }
 
-        pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(frame->m_format)));
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
+
+        // for CCD camera
+        if (!ReadFITS(frame, img, takeSubframe, subframe))
+        {
+            delete frame;
+            if (options & CAPTURE_SUBTRACT_DARK)
+                SubtractDark(img);
+            if (options & CAPTURE_RECON)
+            {
+                if (HasBayer && captureParams.CombinedBinning() == 1)
+                    QuickLRecon(img);
+                if (PixSizeX != PixSizeY)
+                    SquarePixels(img, PixSizeX, PixSizeY);
+            }
+            return false;
+        }
         delete frame;
         return true;
     }
