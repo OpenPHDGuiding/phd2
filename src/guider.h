@@ -105,6 +105,7 @@ struct LockPosShiftParams
 };
 
 class DefectMap;
+class MultiStarReport;
 
 /*
  * The Guider class is responsible for running the state machine
@@ -205,6 +206,7 @@ protected:
     bool PaintHelper(wxAutoBufferedPaintDCBase& dc, wxMemoryDC& memDC);
     void SetState(GUIDER_STATE newState);
     void UpdateCurrentDistance(double distance, double distanceRA);
+    virtual void reportSecondaryStarsAsUnused(MultiStarReport *multiStarReport) = 0;
 
     void ToggleBookmark(const wxRealPoint& pt);
 
@@ -297,7 +299,8 @@ public:
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
 
 private:
-    virtual bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo) = 0;
+    virtual bool UpdateCurrentPosition(const usImage *pImage, GuiderOffset *ofs, FrameDroppedInfo *errorInfo,
+                                       MultiStarReport *multiStarReport) = 0;
     virtual bool SetCurrentPosition(const usImage *pImage, const PHD_Point& position) = 0;
 
 public:
