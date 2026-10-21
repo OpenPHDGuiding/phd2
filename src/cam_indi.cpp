@@ -53,6 +53,7 @@ enum FrameFormat
     FRAME_FORMAT_UNKNOWN,
     FRAME_FORMAT_FITS,
     FRAME_FORMAT_FITS_FZ_COMPRESSED,
+    FRAME_FORMAT_STREAM,
 };
 
 class CapturedFrame
@@ -61,7 +62,7 @@ public:
     void *m_data;
     size_t m_size;
     FrameFormat m_format;
-    wxString m_error;
+    wxString m_unknownFormat;
 
     CapturedFrame()
     {
@@ -79,18 +80,36 @@ public:
 # endif
     }
 
-    inline static FrameFormat get_frame_format(const char *format, size_t len, wxString *error)
+    inline static FrameFormat get_frame_format(const char *format, size_t len, wxString *unknownFormat)
     {
-        *error = wxEmptyString;
+        *unknownFormat = wxEmptyString;
         if (wxStrncmp(format, ".fits", len) == 0)
             return FRAME_FORMAT_FITS;
         else if (wxStrncmp(format, ".fits.fz", len) == 0)
             return FRAME_FORMAT_FITS_FZ_COMPRESSED;
+        else if (wxStrncmp(format, ".stream", len) == 0)
+            return FRAME_FORMAT_STREAM;
         else
         {
             size_t const ascii_len = wxStrnlen(format, len);
-            *error = wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(format, ascii_len));
+            *unknownFormat = wxString::FromAscii(format, ascii_len);
             return FRAME_FORMAT_UNKNOWN;
+        }
+    }
+
+    wxString format_name() const
+    {
+        switch (m_format)
+        {
+        case FRAME_FORMAT_FITS:
+            return wxString(".fits");
+        case FRAME_FORMAT_FITS_FZ_COMPRESSED:
+            return wxString(".fits.fz");
+        case FRAME_FORMAT_STREAM:
+            return wxString(".stream");
+        default:
+        case FRAME_FORMAT_UNKNOWN:
+            return m_unknownFormat;
         }
     }
 
@@ -99,7 +118,7 @@ public:
     {
         m_data = bp->blob;
         m_size = bp->size;
-        m_format = get_frame_format(bp->format, sizeof(bp->format), &m_error);
+        m_format = get_frame_format(bp->format, sizeof(bp->format), &m_unknownFormat);
 
         bp->blob = nullptr;
         bp->size = 0;
@@ -1152,9 +1171,9 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
 
         // exposure complete, process the file
 
-        if (!frame->m_error.IsEmpty())
+        if (frame->m_format != FRAME_FORMAT_FITS && frame->m_format != FRAME_FORMAT_FITS_FZ_COMPRESSED)
         {
-            pFrame->Alert(frame->m_error);
+            pFrame->Alert(wxString::Format(_("Unknown image format: %s"), frame->format_name()));
             delete frame;
             return true;
         }
