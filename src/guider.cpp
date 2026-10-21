@@ -980,6 +980,12 @@ void Guider::SetState(GUIDER_STATE newState)
         case STATE_SELECTED:
             break;
         case STATE_CALIBRATING_PRIMARY:
+            // Anchor the lock on the star at the start of the calibration cycle, so the
+            // calibration crosshair reflects the actual guiding target instead of a stale
+            // value from a previous session. Sticky lock is preserved as before.
+            if (!(m_lockPosition.IsValid() && m_lockPosIsSticky) && CurrentPosition().IsValid())
+                SetLockPosition(CurrentPosition());
+
             if (!pMount->IsCalibrated())
             {
                 pMount->ResetErrorCount();
@@ -1029,14 +1035,12 @@ void Guider::SetState(GUIDER_STATE newState)
 
             pFrame->UpdateStatusBarCalibrationStatus();
 
-            if (m_lockPosition.IsValid() && m_lockPosIsSticky)
-            {
-                Debug.Write("keeping sticky lock position\n");
-            }
-            else
-            {
+            // The lock is already set (at CALIBRATING_PRIMARY entry, or earlier when the
+            // star was selected). Only fall back to CurrentPosition if the lock is somehow
+            // missing - avoids the visible jump from overwriting a valid lock with the
+            // post-calibration star position.
+            if (!m_lockPosition.IsValid())
                 SetLockPosition(CurrentPosition());
-            }
             break;
 
         case STATE_SELECTING:
