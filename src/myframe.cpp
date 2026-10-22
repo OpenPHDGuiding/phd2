@@ -216,6 +216,7 @@ MyFrame::MyFrame()
     m_mgr.SetManagedWindow(this);
 
     m_frameCounter = 0;
+    m_closed = false;
     m_pPrimaryWorkerThread = nullptr;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = nullptr;
@@ -2154,6 +2155,17 @@ double MyFrame::CurrentGuideErrorSmoothed() const
 
 void MyFrame::OnClose(wxCloseEvent& event)
 {
+    // OnClose can be called more than once. On Windows, wxApp::OnQueryEndSession calls Close() on
+    // the top window for every WM_QUERYENDSESSION, and Windows sends that message to each of our
+    // top-level windows, so a logoff or restart arrives here several times. The first call has
+    // already disconnected the gear and freed the help controller, and Destroy() is pending, so
+    // let the close go ahead without repeating the shutdown.
+    if (m_closed)
+    {
+        Debug.Write("MyFrame::OnClose already closed\n");
+        return;
+    }
+
     if (CaptureActive && event.CanVeto())
     {
         bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to exit while capturing is active?"),
@@ -2166,6 +2178,8 @@ void MyFrame::OnClose(wxCloseEvent& event)
     }
 
     Debug.Write("MyFrame::OnClose proceeding\n");
+
+    m_closed = true;
 
     StopCapturing();
 
@@ -2188,10 +2202,13 @@ void MyFrame::OnClose(wxCloseEvent& event)
                                          this->GetSize().y, this->GetScreenPosition().x, this->GetScreenPosition().y);
     pConfig->Global.SetString("/geometry", geometry);
 
-    if (help->GetFrame())
-        help->GetFrame()->Close();
-    delete help;
-    help = 0;
+    if (help)
+    {
+        if (help->GetFrame())
+            help->GetFrame()->Close();
+        delete help;
+        help = nullptr;
+    }
 
     Destroy();
 }
