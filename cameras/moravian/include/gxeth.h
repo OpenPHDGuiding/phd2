@@ -1,4 +1,4 @@
-// gxeth: Gx Camera Ethernet Adapter Driver
+// gxeth: Cx/Gx Camera Ethernet Adapter Driver
 
 # pragma once
 # include "windows.h"
@@ -10,77 +10,81 @@
 #define WM_CAMERA_CONNECT         1034
 #define WM_CAMERA_DISCONNECT      1035
 
-// GetBooleanParameter indexes
-#define gbpConnected                 0
-#define gbpSubFrame                  1
-#define gbpReadModes                 2
-#define gbpShutter                   3
-#define gbpCooler                    4
-#define gbpFan                       5
-#define gbpFilters                   6
-#define gbpGuide                     7
-#define gbpWindowHeating             8
-#define gbpPreflash                  9
-#define gbpAsymmetricBinning        10
-#define gbpMicrometerFilterOffsets  11
-#define gbpPowerUtilization         12
-#define gbpGain                     13
-#define gbpElectronicShutter        14
-#define gbpGPS                      16
-#define gbpContinuousExposures      17
-#define gbpTrigger                  18
-#define gbpConfigured              127
-#define gbpRGB                     128
-#define gbpCMY                     129
-#define gbpCMYG                    130
-#define gbpDebayerXOdd             131
-#define gbpDebayerYOdd             132
-#define gbpInterlaced              256
+// NOTE legacy index prefixes used 3 letters (gbpXXXX, gipXXXX, gspXXXX), following the original function name GetBooleanParameneter, ...
+// cameraGetBoolean() indexes
+#define gbConnected                 0
+#define gbSubFrame                  1
+#define gbReadModes                 2
+#define gbShutter                   3
+#define gbCooler                    4
+#define gbFan                       5
+#define gbFilters                   6
+#define gbGuide                     7
+#define gbWindowHeating             8
+#define gbPreflash                  9
+#define gbAsymmetricBinning        10
+#define gbMicrometerFilterOffsets  11
+#define gbPowerUtilization         12
+#define gbGain                     13
+#define gbElectronicShutter        14
+#define gbGPS                      16
+#define gbContinuousExposures      17
+#define gbTrigger                  18
 
-// GetIntegerParameter indexes
-#define gipCameraId                  0
-#define gipChipW                     1
-#define gipChipD                     2
-#define gipPixelW                    3
-#define gipPixelD                    4
-#define gipMaxBinningX               5
-#define gipMaxBinningY               6
-#define gipReadModes                 7
-#define gipFilters                   8
-#define gipMinimalExposure           9
-#define gipMaximalExposure          10
-#define gipMaximalMoveTime          11
-#define gipDefaultReadMode          12
-#define gipPreviewReadMode          13
-#define gipMaxWindowHeating         14
-#define gipMaxFan                   15
-#define gipMaxGain                  16
-#define gipMaxPossiblePixelValue    17
+#define gbConfigured              127
+#define gbRGB                     128
+#define gbCMY                     129
+#define gbCMYG                    130
+#define gbDebayerXOdd             131
+#define gbDebayerYOdd             132
+#define gbInterlaced              256
 
-#define gipFirmwareMajor           128
-#define gipFirmwareMinor           129
-#define gipFirmwareBuild           130
-#define gipDriverMajor             131
-#define gipDriverMinor             132
-#define gipDriverBuild             133
-#define gipFlashMajor              134
-#define gipFlashMinor              135
-#define gipFlashBuild              136
+// cameraGetInteger() indexes
+#define giCameraId                  0
+#define giChipW                     1
+#define giChipD                     2
+#define giPixelW                    3
+#define giPixelD                    4
+#define giMaxBinningX               5
+#define giMaxBinningY               6
+#define giReadModes                 7
+#define giFilters                   8
+#define giMinimalExposure           9
+#define giMaximalExposure          10
+#define giMaximalMoveTime          11
+#define giDefaultReadMode          12
+#define giPreviewReadMode          13
+#define giMaxWindowHeating         14
+#define giMaxFan                   15
+#define giMaxGain                  16
+#define giMaxPossiblePixelValue    17
+#define giLineTime                 18
+#define giBiasPixelValue           19
 
-// GetStringParameter indexes
-#define gspCameraDescription         0
-#define gspManufacturer              1
-#define gspCameraSerial              2
-#define gspChipDescription           3
+#define giFirmwareMajor           128
+#define giFirmwareMinor           129
+#define giFirmwareBuild           130
+#define giDriverMajor             131
+#define giDriverMinor             132
+#define giDriverBuild             133
+#define giFlashMajor              134
+#define giFlashMinor              135
+#define giFlashBuild              136
 
-// GetValue indexes
-#define gvChipTemperature            0
-#define gvHotTemperature             1
-#define gvCameraTemperature          2
-#define gvEnvironmentTemperature     3
-#define gvSupplyVoltage             10
-#define gvPowerUtilization          11
-#define gvADCGain                   20
+// GetString() indexes
+#define gsCameraDescription         0
+#define gsManufacturer              1
+#define gsCameraSerial              2
+#define gsChipDescription           3
+
+// GetValue() indexes
+#define gvChipTemperature           0
+#define gvHotTemperature            1
+#define gvCameraTemperature         2
+#define gvEnvironmentTemperature    3
+#define gvSupplyVoltage            10
+#define gvPowerUtilization         11
+#define gvADCGain                  20
 
 // CheckVersionMode values
 #define cvNever                      0
@@ -103,7 +107,59 @@ typedef void (__cdecl *TEnumerateCallback)( CARDINAL );
 
 struct CCamera;
 
-extern "C" EXPORT_ void     __cdecl Enumerate( void (__cdecl *CallbackProc)(CARDINAL ));
+// current "camera" prefixed API functions
+
+extern "C" EXPORT_ void     __cdecl cameraEnumerate( void (__cdecl *CallbackProc)( CARDINAL ));
+extern "C" EXPORT_ CCamera *__cdecl cameraInitialize( CARDINAL Id);
+extern "C" EXPORT_ void     __cdecl cameraConfigure( CCamera *PCamera, HWND ParentHWND );
+extern "C" EXPORT_ void     __cdecl cameraConfigure2( CARDINAL IPAddress_HIGH, CHAR *IPAddress, CARDINAL CheckVersionMode );
+extern "C" EXPORT_ void     __cdecl cameraRelease( CCamera *PCamera );
+
+extern "C" EXPORT_ void     __cdecl cameraRegisterNotifyHWND( CCamera *PCamera, HWND NotifyHWND );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetBoolean( CCamera *PCamera, CARDINAL Index, BOOLEAN *Boolean );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetInteger( CCamera *PCamera, CARDINAL Index, CARDINAL *Num );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetString( CCamera *PCamera, CARDINAL Index, CARDINAL String_HIGH, CHAR *String );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetValue( CCamera *PCamera, CARDINAL Index, REAL *Value) ;
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetTemperature( CCamera *PCamera, REAL Temperature );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetTemperatureRamp( CCamera *PCamera, REAL TemperatureRamp );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetBinning( CCamera *PCamera, CARDINAL x, CARDINAL y );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraStartExposure( CCamera *PCamera, LONGREAL ExpTime, BOOLEAN UseShutter, INTEGER x, INTEGER y, INTEGER w, INTEGER d );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraStartExposureTrigger( CCamera *PCamera, LONGREAL ExpTime, BOOLEAN UseShutter, INTEGER x, INTEGER y, INTEGER w, INTEGER d );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraAbortExposure( CCamera *PCamera, BOOLEAN DownloadFlag );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraImageReady( CCamera *PCamera, BOOLEAN *Ready );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraReadImage( CCamera *PCamera, CARDINAL BufferLen, ADDRESS BufferAdr );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraReadImageExposure( CCamera *PCamera, CARDINAL BufferLen, ADDRESS BufferAdr );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraOpen( CCamera *PCamera );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraClose( CCamera *PCamera );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraEnumerateReadModes( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetReadMode( CCamera *PCamera, CARDINAL mode );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetGain( CCamera *PCamera, CARDINAL gain );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraConvertGain( CCamera *PCamera, CARDINAL gain, LONGREAL *dB, LONGREAL *times );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraEnumerateFilters( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description, CARDINAL *Color );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraEnumerateFilters2( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description, CARDINAL *Color, INTEGER *Offset );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetFilter( CCamera *PCamera, CARDINAL index );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraReinitFilterWheel( CCamera *PCamera );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetFan( CCamera *PCamera, CARD8 Speed );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetWindowHeating( CCamera *PCamera, CARD8 Heating );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraSetPreflash( CCamera *PCamera, LONGREAL PreflashTime, CARDINAL ClearNum );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraMoveTelescope( CCamera *PCamera, INT16 RADurationMs, INT16 DecDurationMs );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraMoveInProgress( CCamera *PCamera, BOOLEAN *Moving );
+
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetImageTimeStamp( CCamera PCamera, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetGPSData( CCamera PCamera, LONGREAL *Lat, LONGREAL *Lon, LONGREAL *MSL, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second, CARDINAL *Satellites, BOOLEAN *Fix );
+extern "C" EXPORT_ BOOLEAN  __cdecl cameraGetGPSData2( CCamera PCamera, LONGREAL *Lat, LONGREAL *Lon, LONGREAL *MSL, LONGREAL *GeoidSep, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second, CARDINAL *Satellites, BOOLEAN *Fix );
+
+extern "C" EXPORT_ void     __cdecl cameraGetLastErrorString( CCamera *PCamera, CARDINAL ErrorString_HIGH, CHAR *ErrorString );
+
+// backward-compatible deprecated API functions
+
+extern "C" EXPORT_ void     __cdecl Enumerate( void (__cdecl *CallbackProc)( CARDINAL ));
 extern "C" EXPORT_ CCamera *__cdecl Initialize( CARDINAL Id);
 extern "C" EXPORT_ void     __cdecl Configure( CCamera *PCamera, HWND ParentHWND );
 extern "C" EXPORT_ void     __cdecl Configure2( CARDINAL IPAddress_HIGH, CHAR *IPAddress, CARDINAL CheckVersionMode );
@@ -137,6 +193,7 @@ extern "C" EXPORT_ BOOLEAN  __cdecl ConvertGain( CCamera *PCamera, CARDINAL gain
 extern "C" EXPORT_ BOOLEAN  __cdecl EnumerateFilters( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description, CARDINAL *Color );
 extern "C" EXPORT_ BOOLEAN  __cdecl EnumerateFilters2( CCamera *PCamera, CARDINAL Index, CARDINAL Description_HIGH, CHAR *Description, CARDINAL *Color, INTEGER *Offset );
 extern "C" EXPORT_ BOOLEAN  __cdecl SetFilter( CCamera *PCamera, CARDINAL index );
+extern "C" EXPORT_ BOOLEAN  __cdecl ReinitFilterWheel( CCamera *PCamera );
 extern "C" EXPORT_ BOOLEAN  __cdecl SetFan( CCamera *PCamera, CARD8 Speed );
 extern "C" EXPORT_ BOOLEAN  __cdecl SetWindowHeating( CCamera *PCamera, CARD8 Heating );
 extern "C" EXPORT_ BOOLEAN  __cdecl SetPreflash( CCamera *PCamera, LONGREAL PreflashTime, CARDINAL ClearNum );
@@ -146,6 +203,7 @@ extern "C" EXPORT_ BOOLEAN  __cdecl MoveInProgress( CCamera *PCamera, BOOLEAN *M
 
 extern "C" EXPORT_ BOOLEAN  __cdecl GetImageTimeStamp( CCamera PCamera, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second );
 extern "C" EXPORT_ BOOLEAN  __cdecl GetGPSData( CCamera PCamera, LONGREAL *Lat, LONGREAL *Lon, LONGREAL *MSL, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second, CARDINAL *Satellites, BOOLEAN *Fix );
+extern "C" EXPORT_ BOOLEAN  __cdecl GetGPSData2( CCamera PCamera, LONGREAL *Lat, LONGREAL *Lon, LONGREAL *MSL, LONGREAL *GeoidSep, INTEGER *Year, INTEGER *Month, INTEGER *Day, INTEGER *Hour, INTEGER *Minute, LONGREAL *Second, CARDINAL *Satellites, BOOLEAN *Fix );
 
 extern "C" EXPORT_ void     __cdecl GetLastErrorString( CCamera *PCamera, CARDINAL ErrorString_HIGH, CHAR *ErrorString );
 

@@ -768,10 +768,37 @@ void CalibrationAssistant::OnSlew(wxCommandEvent& evt)
 
     double cur_ra, cur_dec, cur_st;
     ShowStatus("");
-    if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    try
     {
-        Debug.Write("Cal-slew: slew failed to get scope coordinates\n");
-        ShowError("Could not get coordinates from mount", true);
+        // Scope methods return 'true' for errors
+        if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+        {
+            ShowError("Could not get coordinates from mount", true);
+            throw ERROR_INFO("CA: Failed to get scope coordinates for slewing");
+        }
+        bool tracking;
+        if (pPointingSource->GetTracking(&tracking))
+        {
+            ShowError(_("Could not determine tracking status. Make sure scope is un-parked and ready to slew"), false);
+            throw ERROR_INFO("CA: Could not start tracking for slewing");
+        }
+
+        if (!tracking)
+        {
+            if (!pPointingSource->SetTracking(true))
+            {
+                ShowStatus(_("Mount tracking enabled"));
+            }
+            else
+            {
+                ShowError(_("Could not start tracking. Make sure scope is un-parked and ready to slew"), false);
+                throw ERROR_INFO("CA: Could not start tracking for slewing");
+            }
+        }
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
         return;
     }
 

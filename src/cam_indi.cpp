@@ -48,18 +48,27 @@
 # include <libindi/basedevice.h>
 # include <libindi/indiproperty.h>
 
+enum FrameFormat
+{
+    FRAME_FORMAT_UNKNOWN,
+    FRAME_FORMAT_FITS,
+    FRAME_FORMAT_FITS_FZ_COMPRESSED,
+    FRAME_FORMAT_STREAM,
+};
+
 class CapturedFrame
 {
 public:
     void *m_data;
     size_t m_size;
-    char m_format[MAXINDIBLOBFMT];
+    FrameFormat m_format;
+    wxString m_unknownFormat;
 
     CapturedFrame()
     {
         m_data = nullptr;
         m_size = 0;
-        m_format[0] = 0;
+        m_format = FRAME_FORMAT_UNKNOWN;
     }
 
     ~CapturedFrame()
@@ -71,12 +80,45 @@ public:
 # endif
     }
 
+    inline static FrameFormat get_frame_format(const char *format, size_t len, wxString *unknownFormat)
+    {
+        *unknownFormat = wxEmptyString;
+        if (wxStrncmp(format, ".fits", len) == 0)
+            return FRAME_FORMAT_FITS;
+        else if (wxStrncmp(format, ".fits.fz", len) == 0)
+            return FRAME_FORMAT_FITS_FZ_COMPRESSED;
+        else if (wxStrncmp(format, ".stream", len) == 0)
+            return FRAME_FORMAT_STREAM;
+        else
+        {
+            size_t const ascii_len = wxStrnlen(format, len);
+            *unknownFormat = wxString::FromAscii(format, ascii_len);
+            return FRAME_FORMAT_UNKNOWN;
+        }
+    }
+
+    wxString format_name() const
+    {
+        switch (m_format)
+        {
+        case FRAME_FORMAT_FITS:
+            return wxString(".fits");
+        case FRAME_FORMAT_FITS_FZ_COMPRESSED:
+            return wxString(".fits.fz");
+        case FRAME_FORMAT_STREAM:
+            return wxString(".stream");
+        default:
+        case FRAME_FORMAT_UNKNOWN:
+            return m_unknownFormat;
+        }
+    }
+
     // Take ownership of this blob's data, so INDI won't overwrite/free the memory
     void steal(IBLOB *bp)
     {
         m_data = bp->blob;
         m_size = bp->size;
-        strncpy(m_format, bp->format, MAXINDIBLOBFMT);
+        m_format = get_frame_format(bp->format, sizeof(bp->format), &m_unknownFormat);
 
         bp->blob = nullptr;
         bp->size = 0;
@@ -846,6 +888,15 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         return true;
     }
 
+    // A ".fits.fz" frame (INDI drivers with compression enabled) is fpack'ed: an empty primary HDU
+    // followed by the tile-compressed image, which CFITSIO reads like an ordinary image HDU
+    int expected_nhdus = 1;
+    if (frame->m_format == FRAME_FORMAT_FITS_FZ_COMPRESSED)
+    {
+        expected_nhdus = 2;
+        fits_movabs_hdu(fptr, 2, nullptr, &status);
+    }
+
     int hdutype;
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
     {
@@ -872,7 +923,7 @@ bool CameraINDI::ReadFITS(CapturedFrame *frame, usImage& img, bool takeSubframe,
         PHD_fits_close_file(fptr);
         return true;
     }
-    if (nhdus != 1 || naxis != 2)
+    if (nhdus != expected_nhdus || naxis != 2)
     {
         pFrame->Alert(_("Unsupported FITS file"));
         PHD_fits_close_file(fptr);
@@ -1119,31 +1170,32 @@ bool CameraINDI::Capture(usImage& img, const CaptureParams& captureParams)
         first_frame = false;
 
         // exposure complete, process the file
-        if (strcmp(frame->m_format, ".fits") == 0)
-        {
-            if (INDIConfig::Verbose())
-                Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
 
-            // for CCD camera
-            if (!ReadFITS(frame, img, takeSubframe, subframe))
-            {
-                delete frame;
-                if (options & CAPTURE_SUBTRACT_DARK)
-                    SubtractDark(img);
-                if (options & CAPTURE_RECON)
-                {
-                    if (HasBayer && captureParams.CombinedBinning() == 1)
-                        QuickLRecon(img);
-                    if (PixSizeX != PixSizeY)
-                        SquarePixels(img, PixSizeX, PixSizeY);
-                }
-                return false;
-            }
+        if (frame->m_format != FRAME_FORMAT_FITS && frame->m_format != FRAME_FORMAT_FITS_FZ_COMPRESSED)
+        {
+            pFrame->Alert(wxString::Format(_("Unknown image format: %s"), frame->format_name()));
             delete frame;
             return true;
         }
 
-        pFrame->Alert(wxString::Format(_("Unknown image format: %s"), wxString::FromAscii(frame->m_format)));
+        if (INDIConfig::Verbose())
+            Debug.Write(wxString::Format("INDI Camera Processing fits file\n"));
+
+        // for CCD camera
+        if (!ReadFITS(frame, img, takeSubframe, subframe))
+        {
+            delete frame;
+            if (options & CAPTURE_SUBTRACT_DARK)
+                SubtractDark(img);
+            if (options & CAPTURE_RECON)
+            {
+                if (HasBayer && captureParams.CombinedBinning() == 1)
+                    QuickLRecon(img);
+                if (PixSizeX != PixSizeY)
+                    SquarePixels(img, PixSizeX, PixSizeY);
+            }
+            return false;
+        }
         delete frame;
         return true;
     }

@@ -91,6 +91,7 @@ public:
     bool PutProp(OLECHAR *name, OLECHAR *val);
     bool PutProp(DISPID dispid, bool val);
     bool PutProp(DISPID dispid, double val);
+    bool PutProp(DISPID dispid, LONG val);
     bool PutProp(OLECHAR *name, bool val);
     bool InvokeMethod(Variant *res, OLECHAR *name);
     bool InvokeMethod(Variant *res, OLECHAR *name, OLECHAR *arg);

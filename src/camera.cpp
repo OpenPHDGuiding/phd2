@@ -668,7 +668,7 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
 }
 
 // ConnectCamera is the one place where we call camera->Connect(). Any work done here
-// applies to all camera types, regardless of how the various camera sub-ckasses
+// applies to all camera types, regardless of how the various camera sub-classes
 // implement Connect().
 bool GuideCamera::ConnectCamera(GuideCamera *camera, const wxString& cameraId)
 {
