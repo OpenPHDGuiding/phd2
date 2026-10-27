@@ -2474,6 +2474,14 @@ msgstr "拍攝失敗：相機回報有錯誤發生"
 msgid "ToupTek Camera Properties"
 msgstr "ToupTek 相機屬性"
 
+#: cam_touptek.cpp:895
+msgid "Use hardware binning"
+msgstr "使用硬體像素併合"
+
+#: cam_touptek.cpp:897
+msgid "Use camera hardware binning when supported. Rebuild dark frames after changing this setting."
+msgstr "相機支援時使用硬體像素併合。變更此設定後請重新建立暗場。"
+
 #: cam_vfw.cpp:96
 msgid "Select capture device"
 msgstr "選擇拍攝裝置"
