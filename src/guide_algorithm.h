@@ -81,7 +81,7 @@ public:
     virtual GUIDE_ALGORITHM Algorithm() const = 0;
 
     virtual void reset() = 0;
-    virtual double result(double input) = 0;
+    virtual double result(double input, bool bypassMinMove = false) = 0;
     virtual double deduceResult() { return 0.0; }
 
     virtual void GuidingStarted();

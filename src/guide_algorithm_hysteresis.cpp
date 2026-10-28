@@ -72,13 +72,13 @@ void GuideAlgorithmHysteresis::reset(void)
     m_lastMove = 0;
 }
 
-double GuideAlgorithmHysteresis::result(double input)
+double GuideAlgorithmHysteresis::result(double input, bool bypassMinMove)
 {
     double dReturn = (1.0 - m_hysteresis) * input + m_hysteresis * m_lastMove;
 
     dReturn *= m_aggression;
 
-    if (fabs(input) < m_minMove)
+    if (!bypassMinMove && fabs(input) < m_minMove)
     {
         dReturn = 0.0;
     }

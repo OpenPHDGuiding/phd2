@@ -255,6 +255,7 @@ PauseType Guider::SetPaused(PauseType pause)
 {
     Debug.Write(wxString::Format("Guider::SetPaused(%d)\n", pause));
 
+    if (pause != PAUSE_NONE) m_bypassMinMove = false;
     PauseType prev = m_paused;
     m_paused = pause;
 
@@ -763,6 +764,7 @@ bool Guider::SaveCurrentImage(const wxString& fileName)
 
 void Guider::InvalidateLockPosition()
 {
+    m_bypassMinMove = false;
     if (m_lockPosition.IsValid())
         EvtServer.NotifyLockPositionLost();
     m_lockPosition.Invalidate();
@@ -794,6 +796,7 @@ bool Guider::SetLockPosition(const PHD_Point& position)
             throw ERROR_INFO("invalid y value");
         }
 
+        m_bypassMinMove = false;
         if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
         {
             EvtServer.NotifySetLockPosition(position);
@@ -930,6 +933,7 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDeltaArg)
 
 void Guider::SetState(GUIDER_STATE newState)
 {
+    if (newState != STATE_GUIDING) m_bypassMinMove = false;
     try
     {
         Debug.Write(wxString::Format("Changing from state %s to %s\n", StateStr(m_state), StateStr(newState)));
@@ -1260,6 +1264,8 @@ inline static bool IsLoopingState(GUIDER_STATE state)
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 {
+    const bool bypassMinMove = m_bypassMinMove;
+    m_bypassMinMove = false;
     wxString statusMessage;
     bool someException = false;
 
@@ -1516,6 +1522,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             }
             else
             {
+                // The request carries its own one-use override to the worker.
+                ofs.bypassMinMove = bypassMinMove;
                 // ordinary guide step
                 s_deflectionLogger.Log(CurrentPosition());
                 pFrame->SchedulePrimaryMove(pMount, ofs, MOVEOPTS_GUIDE_STEP);
@@ -1583,6 +1591,7 @@ void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool 
 
 void Guider::EnableLockPosShift(bool enable)
 {
+    if (enable) m_bypassMinMove = false;
     if (enable != m_lockPosShift.shiftEnabled)
     {
         Debug.Write(wxString::Format("EnableLockPosShift: enable = %d\n", enable));

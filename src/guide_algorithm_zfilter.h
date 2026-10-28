@@ -97,7 +97,7 @@ public:
     GUIDE_ALGORITHM Algorithm() const override;
 
     void reset() override;
-    double result(double input) override;
+    double result(double input, bool bypassMinMove = false) override;
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) override;
     wxString GetSettingsSummary() const override;

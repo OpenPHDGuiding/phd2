@@ -54,7 +54,7 @@ GUIDE_ALGORITHM GuideAlgorithmIdentity::Algorithm() const
 void GuideAlgorithmIdentity::reset(void) { }
 
 // the default algorithm simply returns its input
-double GuideAlgorithmIdentity::result(double input)
+double GuideAlgorithmIdentity::result(double input, bool bypassMinMove)
 {
     double dReturn = input;
 

@@ -61,7 +61,7 @@ public:
     GUIDE_ALGORITHM Algorithm() const override;
 
     void reset() override;
-    double result(double input) override;
+    double result(double input, bool bypassMinMove = false) override;
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) override;
     wxString GetSettingsSummary() const override { return "\n"; }
     wxString GetGuideAlgorithmClassName() const override { return "Identity"; }

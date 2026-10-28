@@ -216,7 +216,7 @@ public:
      * is calculated to compensate the gear error and 4. the controller is
      * calculated, consisting of feedback and prediction parts.
      */
-    double result(double input, double SNR, double time_step, double prediction_point = -1.0);
+    double result(double input, double SNR, double time_step, double prediction_point = -1.0, bool bypass_min_move = false);
 
     /**
      * This method provides predictive control if no measurement could be made.

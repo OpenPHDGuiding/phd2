@@ -1045,7 +1045,7 @@ static void get_lock_position(JObj& response, const json_value *params)
 // {"method": "set_lock_position", "params": [X, Y, true], "id": 1}
 static void set_lock_position(JObj& response, const json_value *params)
 {
-    Params p("x", "y", "exact", params);
+    Params p("x", "y", "exact", "bypass_min_move", params);
     const json_value *p0 = p.param("x"), *p1 = p.param("y");
     double x, y;
 
@@ -1069,10 +1069,29 @@ static void set_lock_position(JObj& response, const json_value *params)
 
     VERIFY_GUIDER(response);
 
+    bool bypassMinMove = false;
+    const json_value *p3 = p.param("bypass_min_move");
+    if ((p3 && (p3->type != JSON_BOOL || !bool_param(p3, &bypassMinMove))) || (bypassMinMove && !exact))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "bypass_min_move must be boolean and requires exact=true");
+        return;
+    }
+    Guider *guider = pFrame->pGuider;
+    if (bypassMinMove && (!guider->IsGuiding() || guider->IsPaused()))
+    {
+        response << jrpc_error(JSONRPC_INVALID_REQUEST, "bypass_min_move requires active, unpaused guiding");
+        return;
+    }
     bool error;
 
     if (exact)
-        error = pFrame->pGuider->SetLockPosition(PHD_Point(x, y));
+    {
+        const PHD_Point& current = guider->LockPosition();
+        // Repeating the same request only rearms one correction. It must not
+        // restart multistar stabilization or the algorithms' lock-change handling.
+        error = !bypassMinMove || !current.IsValid() || current.X != x || current.Y != y
+            ? guider->SetLockPosition(PHD_Point(x, y)) : false;
+    }
     else
         error = pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x, y));
 
@@ -1082,6 +1101,8 @@ static void set_lock_position(JObj& response, const json_value *params)
         return;
     }
 
+    if (bypassMinMove)
+        guider->BypassMinMoveForNextGuideStep();
     response << jrpc_result(0);
 }
 

@@ -68,7 +68,7 @@ void GuideAlgorithmZFilter::reset()
     m_sumCorr = 0.0;
 }
 
-double GuideAlgorithmZFilter::result(double input)
+double GuideAlgorithmZFilter::result(double input, bool bypassMinMove)
 {
     double dReturn = 0;
 
@@ -92,7 +92,7 @@ double GuideAlgorithmZFilter::result(double input)
     }
     dReturn = m_yv.at(0) - m_sumCorr; // Return the difference from the uncorrected waveform
 
-    if (fabs(dReturn) < m_minMove)
+    if (!bypassMinMove && fabs(dReturn) < m_minMove)
     {
         dReturn = 0.0;
     }

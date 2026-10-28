@@ -953,7 +953,7 @@ GUIDE_ALGORITHM GuideAlgorithmGaussianProcess::Algorithm() const
     return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
 }
 
-double GuideAlgorithmGaussianProcess::result(double input)
+double GuideAlgorithmGaussianProcess::result(double input, bool bypassMinMove)
 {
     if (block_updates_)
         return 0;
@@ -965,7 +965,7 @@ double GuideAlgorithmGaussianProcess::result(double input)
 
     // the third parameter of result() is a floating-point in seconds, while RequestedExposureDuration() returns milliseconds
     const Star& star = pFrame->pGuider->PrimaryStar();
-    double control_signal = GPG->result(input, star.SNR, (double) pFrame->RequestedExposureDuration() / 1000.0);
+    double control_signal = GPG->result(input, star.SNR, (double) pFrame->RequestedExposureDuration() / 1000.0, -1.0, bypassMinMove);
 
     Debug.Write(wxString::Format("PPEC: input: %.2f, control: %.2f, exposure: %d\n", input, control_signal,
                                  pFrame->RequestedExposureDuration()));

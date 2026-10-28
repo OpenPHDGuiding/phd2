@@ -90,7 +90,7 @@ static int sign(double x)
     return iReturn;
 }
 
-double GuideAlgorithmResistSwitch::result(double input)
+double GuideAlgorithmResistSwitch::result(double input, bool bypassMinMove)
 {
     double rslt = input;
 
@@ -99,7 +99,7 @@ double GuideAlgorithmResistSwitch::result(double input)
 
     try
     {
-        if (fabs(input) < m_minMove)
+        if (!bypassMinMove && fabs(input) < m_minMove)
         {
             throw THROW_INFO("input < m_minMove");
         }
@@ -125,7 +125,7 @@ double GuideAlgorithmResistSwitch::result(double input)
 
         for (unsigned int i = 0; i < m_history.GetCount(); i++)
         {
-            if (fabs(m_history[i]) > m_minMove)
+            if (fabs(m_history[i]) > (bypassMinMove ? 0.0 : m_minMove))
             {
                 decHistory += sign(m_history[i]);
             }

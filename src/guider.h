@@ -132,6 +132,7 @@ struct GuiderOffset
 {
     PHD_Point cameraOfs;
     PHD_Point mountOfs;
+    bool bypassMinMove = false;
 };
 
 class Guider : public wxWindow
@@ -144,6 +145,7 @@ class Guider : public wxWindow
     double m_polarAlignCircleCorrection;
     PHD_Point m_polarAlignCircleCenter;
     PauseType m_paused;
+    bool m_bypassMinMove = false; // consumed by the next image update
     ShiftPoint m_lockPosition;
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
@@ -224,6 +226,7 @@ public:
 
     bool MoveLockPosition(const PHD_Point& mountDelta);
     virtual bool SetLockPosition(const PHD_Point& position);
+    void BypassMinMoveForNextGuideStep() { m_bypassMinMove = true; }
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
     bool ShiftLockPosition();
     void EnableLockPosShift(bool enable);

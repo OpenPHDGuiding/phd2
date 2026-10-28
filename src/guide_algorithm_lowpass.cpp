@@ -74,7 +74,7 @@ void GuideAlgorithmLowpass::reset(void)
     }
 }
 
-double GuideAlgorithmLowpass::result(double input)
+double GuideAlgorithmLowpass::result(double input, bool bypassMinMove)
 {
     // Manual trimming of window (instead of auto-size) is done for full backward compatibility with original algo
     m_axisStats.AddGuideInfo(m_timeBase++, input, 0);
@@ -92,7 +92,7 @@ double GuideAlgorithmLowpass::result(double input)
         dReturn = input;
     }
 
-    if (fabs(input) < m_minMove)
+    if (!bypassMinMove && fabs(input) < m_minMove)
     {
         dReturn = 0.0;
     }

@@ -1020,12 +1020,12 @@ Mount::MOVE_RESULT Mount::MoveOffset(GuiderOffset *ofs, unsigned int moveOptions
                 // Feed the raw distances to the guide algorithms
                 if (m_pXGuideAlgorithm)
                 {
-                    xDistance = m_pXGuideAlgorithm->result(xDistance);
+                    xDistance = m_pXGuideAlgorithm->result(xDistance, ofs->bypassMinMove);
                 }
 
                 if (m_pYGuideAlgorithm)
                 {
-                    yDistance = m_pYGuideAlgorithm->result(yDistance);
+                    yDistance = m_pYGuideAlgorithm->result(yDistance, ofs->bypassMinMove);
                 }
             }
         }

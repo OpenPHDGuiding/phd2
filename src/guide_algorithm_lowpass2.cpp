@@ -69,7 +69,7 @@ void GuideAlgorithmLowpass2::reset(void)
     m_rejects = 0;
 }
 
-double GuideAlgorithmLowpass2::result(double input)
+double GuideAlgorithmLowpass2::result(double input, bool bypassMinMove)
 {
     m_axisStats.AddGuideInfo(m_timeBase++, input, 0); // AxisStats instance is auto-windowed
     unsigned int numpts = m_axisStats.GetCount();
@@ -114,7 +114,7 @@ double GuideAlgorithmLowpass2::result(double input)
     else
         m_rejects = 0;
 
-    if (fabs(input) < m_minMove)
+    if (!bypassMinMove && fabs(input) < m_minMove)
         dReturn = 0.0;
 
     Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() returns %.2f from input %.2f, slope = %.2f\n", dReturn,

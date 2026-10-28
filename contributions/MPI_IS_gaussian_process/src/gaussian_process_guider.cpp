@@ -257,7 +257,7 @@ double GaussianProcessGuider::PredictGearError(double prediction_location)
     return p1 - p0;
 }
 
-double GaussianProcessGuider::result(double input, double SNR, double time_step, double prediction_point /*= -1*/)
+double GaussianProcessGuider::result(double input, double SNR, double time_step, double prediction_point /*= -1*/, bool bypass_min_move)
 {
     /*
      * Dithering behaves differently from pausing. During dithering, the mount
@@ -313,12 +313,12 @@ double GaussianProcessGuider::result(double input, double SNR, double time_step,
     hysteresis_control *= parameters.control_gain_;
 
     control_signal_ = parameters.control_gain_ * input; // start with proportional control
-    if (std::abs(input) < parameters.min_move_)
+    if (!bypass_min_move && std::abs(input) < parameters.min_move_)
     {
         control_signal_ = 0.0; // don't make small moves
         hysteresis_control = 0.0;
     }
-    assert(std::abs(control_signal_) == 0.0 || std::abs(input) >= parameters.min_move_);
+    assert(bypass_min_move || std::abs(control_signal_) == 0.0 || std::abs(input) >= parameters.min_move_);
 
     // calculate GP prediction
     if (get_number_of_measurements() > 10)
