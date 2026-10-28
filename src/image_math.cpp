@@ -40,6 +40,7 @@
 #include <wx/tokenzr.h>
 
 #include <algorithm>
+#include <set>
 
 int dbl_sort_func(double *first, double *second)
 {
