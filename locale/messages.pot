@@ -2396,6 +2396,14 @@ msgstr ""
 msgid "ToupTek Camera Properties"
 msgstr ""
 
+#: cam_touptek.cpp:895
+msgid "Use hardware binning"
+msgstr ""
+
+#: cam_touptek.cpp:897
+msgid "Use camera hardware binning when supported. Rebuild dark frames after changing this setting."
+msgstr ""
+
 #: cam_vfw.cpp:96
 msgid "Select capture device"
 msgstr ""

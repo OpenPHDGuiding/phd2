@@ -53,20 +53,31 @@ struct ToupCam
     void *m_tmpbuf;
     wxByte m_bpp; // bits per pixel: 8 or 16
     bool m_isColor;
+    bool m_hasRoi;
+    bool m_hasBinSkip;
     bool m_hasGuideOutput;
     double m_devicePixelSize;
     int m_minGain;
     int m_maxGain;
     int m_defaultGainPct;
     wxSize m_maxSize;
+    wxSize m_roiMaxSize;
+    wxSize m_frameSize;
     wxRect m_roi;
     wxByte m_curBin;
+    unsigned int m_sensorBin;
+    unsigned int m_resolutionIndex;
+    bool m_preferHardware;
     bool m_started;
     unsigned int m_captureResult;
     wxMutex m_lock;
     wxCondition m_cond;
 
-    ToupCam() : m_h(nullptr), m_buffer(nullptr), m_tmpbuf(nullptr), m_started(false), m_cond(m_lock) { }
+    ToupCam()
+        : m_h(nullptr), m_buffer(nullptr), m_tmpbuf(nullptr), m_hasRoi(false), m_hasBinSkip(false), m_curBin(1), m_sensorBin(1),
+          m_resolutionIndex(0), m_preferHardware(false), m_started(false), m_cond(m_lock)
+    {
+    }
 
     ~ToupCam()
     {
@@ -148,18 +159,18 @@ struct ToupCam
 
     bool PullImage(void *buf, wxSize *sz)
     {
-        if (m_curBin == 1 || !SoftwareBinning())
+        if (!SoftwareBinning())
             return _PullImage(buf, sz);
 
         // software binning
         if (!_PullImage(m_tmpbuf, sz))
             return false;
         if (m_bpp == 8)
-            BinPixels8(buf, m_tmpbuf, *sz, m_curBin);
+            BinPixels8(buf, m_tmpbuf, *sz, RoiBinning());
         else
-            BinPixels16(buf, m_tmpbuf, *sz, m_curBin);
-        sz->x /= m_curBin;
-        sz->y /= m_curBin;
+            BinPixels16(buf, m_tmpbuf, *sz, RoiBinning());
+        sz->x /= RoiBinning();
+        sz->y /= RoiBinning();
         return true;
     }
 
@@ -197,20 +208,88 @@ struct ToupCam
         }
     }
 
-    bool SoftwareBinning() const { return m_isColor; }
+    // Hardware binning changes the coordinate system used by the SDK ROI API.
+    unsigned int RoiBinning() const { return m_curBin / m_sensorBin; }
 
-    bool SetHwBinning(unsigned int binning) { return SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)); }
+    bool SoftwareBinning() const { return m_isColor && RoiBinning() > 1; }
 
-    bool SetBinning(unsigned int binning)
+    unsigned int FindResolution(unsigned int binning) const
     {
-        if (!SoftwareBinning() && !SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(binning)))
+        if (!m_preferHardware || binning == 1)
+            return 0;
+
+        int count = Toupcam_get_ResolutionNumber(m_h);
+        for (int i = 1; i < count; i++)
+        {
+            int width, height, num, den;
+            if (FAILED(Toupcam_get_Resolution(m_h, i, &width, &height)) ||
+                FAILED(Toupcam_get_ResolutionRatio(m_h, i, &num, &den)) || num <= 0 || den <= 0)
+                continue;
+            // Require a full-field, symmetric binning mode. SDK versions can
+            // express the resolution ratio in either direction.
+            if ((num == (long long) binning * den || den == (long long) binning * num) &&
+                width == ((m_maxSize.x / (int) binning) & ~1) && height == ((m_maxSize.y / (int) binning) & ~1))
+                return i;
+        }
+        return 0; // retain digital/host binning for unsupported factors
+    }
+
+    bool SetBinning(unsigned int binning, bool initializing = false)
+    {
+        unsigned int index = FindResolution(binning);
+        bool changeResolution = initializing || index != m_resolutionIndex;
+        if (changeResolution)
+            StopCapture(); // resolution changes require a stopped capture session
+        if (!SetRoi(wxRect()) || !SetOption(TOUPCAM_OPTION_BINNING, 1))
             return false;
-        m_curBin = binning;
+
+        if (index && m_hasBinSkip)
+        {
+            int skip;
+            if (FAILED(Toupcam_put_Mode(m_h, 0)) || FAILED(Toupcam_get_Mode(m_h, &skip)) || skip)
+                return false;
+        }
+        if (changeResolution)
+        {
+            if (FAILED(Toupcam_put_eSize(m_h, index)))
+                return false;
+            unsigned int actual;
+            if (FAILED(Toupcam_get_eSize(m_h, &actual)) || actual != index)
+                return false;
+            m_resolutionIndex = index;
+        }
+        m_sensorBin = index ? binning : 1;
+
+        // Query the full hardware-binned size before applying digital binning.
+        // ROI coordinates and the inverted Y offset are relative to this size.
+        if (FAILED(Toupcam_get_FinalSize(m_h, &m_roiMaxSize.x, &m_roiMaxSize.y)))
+            return false;
+        wxSize expected = index ? wxSize((m_maxSize.x / binning) & ~1, (m_maxSize.y / binning) & ~1) : m_maxSize;
+        if (m_roiMaxSize != expected)
+            return false;
+        unsigned int remaining = binning / m_sensorBin;
+        if (!m_isColor && !SetOption(TOUPCAM_OPTION_BINNING, ToupcamBinning(remaining)))
+            return false;
+        if (FAILED(Toupcam_get_FinalSize(m_h, &m_frameSize.x, &m_frameSize.y)))
+            return false;
+        if (m_isColor)
+        {
+            m_frameSize.x /= remaining;
+            m_frameSize.y /= remaining;
+        }
+        if (m_frameSize.x <= 0 || m_frameSize.y <= 0)
+            return false;
+        m_curBin = (wxByte) binning;
+        Debug.Write(wxString::Format("TOUPTEK: binning %u, hardware %u, %s %u, frame %dx%d, source %s\n", binning, m_sensorBin,
+                                     m_isColor ? "software" : "SDK digital", remaining, m_frameSize.x, m_frameSize.y,
+                                     index ? "resolution" : "native"));
         return true;
     }
 
     bool SetRoi(const wxRect& roi)
     {
+        if (!m_hasRoi)
+            return roi.IsEmpty();
         unsigned int x, y, w, h;
 
         if (roi.IsEmpty())
@@ -222,7 +301,7 @@ struct ToupCam
             // Undocumented quirk: Toupcam_putRoi expects the y offset inverted, i.e.,
             // relative to the bottom of the frame
             x = roi.GetLeft();
-            y = m_maxSize.GetHeight() - (roi.GetTop() + roi.GetHeight());
+            y = m_roiMaxSize.GetHeight() - (roi.GetTop() + roi.GetHeight());
             w = roi.GetWidth();
             h = roi.GetHeight();
         }
@@ -352,13 +431,16 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     m_cam.m_started = false;
 
     Name = info->displayname;
-    HasSubframes = (info->model->flag & TOUPCAM_FLAG_ROI_HARDWARE) != 0;
+    HasSubframes = m_cam.m_hasRoi = (info->model->flag & TOUPCAM_FLAG_ROI_HARDWARE) != 0;
+    m_cam.m_hasBinSkip = (info->model->flag & TOUPCAM_FLAG_BINSKIP_SUPPORTED) != 0;
     HasBayer = m_cam.m_isColor = (info->model->flag & TOUPCAM_FLAG_MONO) == 0;
     HasCooler = (info->model->flag & TOUPCAM_FLAG_TEC) != 0;
     m_cam.m_hasGuideOutput = (info->model->flag & TOUPCAM_FLAG_ST4) != 0;
 
     Debug.Write(wxString::Format("TOUPTEK: isColor = %d, hasCooler = %d, hasST4 = %d\n", m_cam.m_isColor, HasCooler,
                                  m_cam.m_hasGuideOutput));
+
+    m_cam.m_preferHardware = pConfig->Profile.GetBoolean("/camera/ToupTek/HardwareBinning", false);
 
     if (FAILED(Toupcam_get_Resolution(m_cam.m_h, 0, &m_cam.m_maxSize.x, &m_cam.m_maxSize.y)))
     {
@@ -367,32 +449,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
         return CamConnectFailed(_("Failed to get camera resolution for ToupTek camera."));
     }
 
-    if (m_cam.SoftwareBinning())
-    {
-        if (!m_cam.SetHwBinning(1))
-        {
-            Disconnect();
-            return CamConnectFailed(_("Failed to initialize camera binning."));
-        }
-        m_cam.SetBinning(HwBinning);
-    }
-    else
-    {
-        // hardware binning
-        if (!m_cam.SetBinning(HwBinning))
-        {
-            HwBinning = 1;
-            if (!m_cam.SetBinning(HwBinning))
-            {
-                Disconnect();
-                return CamConnectFailed(_("Failed to initialize camera binning."));
-            }
-        }
-    }
-
-    FrameSize.x = m_cam.m_maxSize.x / HwBinning;
-    FrameSize.y = m_cam.m_maxSize.y / HwBinning;
-
     size_t buffer_size = m_cam.m_maxSize.x * m_cam.m_maxSize.y;
     if (m_cam.m_bpp != 8)
         buffer_size *= 2;
@@ -400,10 +456,15 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     ::free(m_cam.m_buffer);
     m_cam.m_buffer = ::malloc(buffer_size);
 
-    if (m_cam.SoftwareBinning())
+    if (m_cam.m_isColor)
     {
         ::free(m_cam.m_tmpbuf);
         m_cam.m_tmpbuf = ::malloc(buffer_size);
+    }
+    if (!m_cam.m_buffer || (m_cam.m_isColor && !m_cam.m_tmpbuf))
+    {
+        Disconnect();
+        return CamConnectFailed(_("Memory allocation error"));
     }
 
     float xSize, ySize;
@@ -448,8 +509,6 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     }
 
     m_cam.SetOption(TOUPCAM_OPTION_PROCESSMODE, 0);
-    m_cam.SetOption(TOUPCAM_OPTION_RAW, 1);
-    m_cam.SetOption(TOUPCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1);
     m_cam.SetOption(TOUPCAM_OPTION_LINEAR, 0);
     // m_cam.SetOption(TOUPCAM_OPTION_CURVE, 0); // resetting this one fails on all the cameras I have
     m_cam.SetOption(TOUPCAM_OPTION_COLORMATIX, 0);
@@ -486,6 +545,24 @@ bool CameraToupTek::Connect(const wxString& camIdArg)
     }
     else
         Debug.Write(wxString::Format("TOUPTEK: Toupcam_get_Speed failed with status 0x%x\n", hr));
+
+    // Configure RAW before selecting the requested sensor mode.
+    if (!m_cam.SetOption(TOUPCAM_OPTION_RAW, 1) || !m_cam.SetOption(TOUPCAM_OPTION_BITDEPTH, m_cam.m_bpp == 8 ? 0 : 1))
+    {
+        Disconnect();
+        return CamConnectFailed(_("Failed to initialize camera binning."));
+    }
+    if (!m_cam.SetBinning(HwBinning, true))
+    {
+        if (m_cam.m_preferHardware || !m_cam.SetBinning(1))
+        {
+            Disconnect();
+            return CamConnectFailed(_("Failed to initialize camera binning."));
+        }
+        HwBinning = 1;
+    }
+
+    FrameSize = m_cam.m_frameSize;
 
     unsigned int fourcc, bpp;
     if (SUCCEEDED(hr = Toupcam_get_RawFormat(m_cam.m_h, &fourcc, &bpp)))
@@ -533,12 +610,13 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (HwBinning != m_cam.m_curBin)
     {
-        if (m_cam.SetBinning(HwBinning))
+        if (!m_cam.SetBinning(HwBinning))
         {
-            FrameSize.x = m_cam.m_maxSize.x / HwBinning;
-            FrameSize.y = m_cam.m_maxSize.y / HwBinning;
-            useSubframe = false; // subframe pos is now invalid
+            DisconnectWithAlert(_("Failed to initialize camera binning."), NO_RECONNECT);
+            return true;
         }
+        FrameSize = m_cam.m_frameSize;
+        useSubframe = false; // subframe pos is now invalid
     }
 
     if (img.Init(FrameSize))
@@ -547,7 +625,7 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
         return true;
     }
 
-    unsigned int const binning = m_cam.m_curBin;
+    unsigned int const binning = m_cam.RoiBinning();
 
     wxRect roi; // un-binned coordinates
 
@@ -556,10 +634,10 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
         // ROI x and y offsets must be even
         // ROI width and height must be even and >= 16
 
-        roi.SetLeft(round_down(subframe.GetLeft() * binning, 16));
-        roi.SetRight(round_up((subframe.GetRight() + 1) * binning, 16) - 1);
-        roi.SetTop(round_down(subframe.GetTop() * binning, 16));
-        roi.SetBottom(round_up((subframe.GetBottom() + 1) * binning, 16) - 1);
+        roi.SetLeft(std::min(round_down(subframe.GetLeft() * binning, 16), std::max(0, m_cam.m_roiMaxSize.x - 16)));
+        roi.SetRight(std::min(round_up((subframe.GetRight() + 1) * binning, 16), m_cam.m_roiMaxSize.x) - 1);
+        roi.SetTop(std::min(round_down(subframe.GetTop() * binning, 16), std::max(0, m_cam.m_roiMaxSize.y - 16)));
+        roi.SetBottom(std::min(round_up((subframe.GetBottom() + 1) * binning, 16), m_cam.m_roiMaxSize.y) - 1);
     }
 
     if (roi != m_cam.m_roi)
@@ -649,13 +727,10 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     // Debug.Write("TOUPTEK: capture: image ready\n");
 
-    void *buf;
+    // Use the full-sensor scratch buffer so an unexpected SDK frame size can
+    // be rejected before copying into the smaller guide image.
+    void *buf = m_cam.m_buffer;
     wxSize sz;
-
-    if (useSubframe || m_cam.m_bpp == 8)
-        buf = m_cam.m_buffer;
-    else
-        buf = img.ImageData;
 
     if (!m_cam.PullImage(buf, &sz))
     {
@@ -663,13 +738,21 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
         return true;
     }
 
+    int xofs = useSubframe ? (subframe.GetLeft() * binning - roi.GetLeft()) / binning : 0;
+    int yofs = useSubframe ? (subframe.GetTop() * binning - roi.GetTop()) / binning : 0;
+    if ((!useSubframe && sz != FrameSize) ||
+        (useSubframe && (xofs < 0 || yofs < 0 || xofs + subframe.width > sz.x || yofs + subframe.height > sz.y)))
+    {
+        Debug.Write(wxString::Format("TOUPTEK: unexpected frame size %dx%d, guide frame %dx%d\n", sz.x, sz.y, FrameSize.x,
+                                     FrameSize.y));
+        DisconnectWithAlert(_("Capture failed, unable to pull image data from camera"), NO_RECONNECT);
+        return true;
+    }
+
     if (useSubframe)
     {
         img.Subframe = subframe;
         img.Clear();
-
-        int xofs = (subframe.GetLeft() * binning - roi.GetLeft()) / binning;
-        int yofs = (subframe.GetTop() * binning - roi.GetTop()) / binning;
 
         int dxr = sz.x - subframe.width - xofs;
         if (m_cam.m_bpp == 8)
@@ -709,7 +792,7 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
         }
         else
         {
-            // 16-bit, no subframe: data pulled directly to ImageData
+            memcpy(img.ImageData, buf, img.NPixels * sizeof(unsigned short));
         }
     }
 
@@ -717,7 +800,9 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if ((options & CAPTURE_RECON) && HasBayer && captureParams.CombinedBinning() == 1)
+    // Sensor binning can preserve the Bayer pattern. Software averaging of
+    // adjacent pixels removes it, including any additional PHD2 software bin.
+    if ((options & CAPTURE_RECON) && HasBayer && !m_cam.SoftwareBinning() && captureParams.swBinning == 1)
         QuickLRecon(img);
 
     return false;
@@ -785,6 +870,7 @@ struct ToupTekCameraDlg : public wxDialog
 {
     wxRadioButton *m_bpp8;
     wxRadioButton *m_bpp16;
+    wxCheckBox *m_hardwareBinning;
     ToupTekCameraDlg();
 };
 
@@ -800,6 +886,11 @@ ToupTekCameraDlg::ToupTekCameraDlg() : wxDialog(wxGetApp().GetTopWindow(), wxID_
     sbSizer3->Add(m_bpp8, 0, wxALL, 5);
     sbSizer3->Add(m_bpp16, 0, wxALL, 5);
     bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
+
+    m_hardwareBinning = new wxCheckBox(this, wxID_ANY, _("Use hardware binning"));
+    m_hardwareBinning->SetToolTip(
+        _("Use camera hardware binning when supported. Rebuild dark frames after changing this setting."));
+    bSizer12->Add(m_hardwareBinning, 0, wxALL, 5);
 
     wxStdDialogButtonSizer *sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -824,10 +915,13 @@ void CameraToupTek::ShowPropertyDialog()
         dlg.m_bpp8->SetValue(true);
     else
         dlg.m_bpp16->SetValue(true);
+    dlg.m_hardwareBinning->SetValue(pConfig->Profile.GetBoolean("/camera/ToupTek/HardwareBinning", false));
     if (dlg.ShowModal() == wxID_OK)
     {
         m_cam.m_bpp = dlg.m_bpp8->GetValue() ? 8 : 16;
         pConfig->Profile.SetInt("/camera/ToupTek/bpp", m_cam.m_bpp);
+        m_cam.m_preferHardware = dlg.m_hardwareBinning->GetValue();
+        pConfig->Profile.SetBoolean("/camera/ToupTek/HardwareBinning", m_cam.m_preferHardware);
     }
 }
 
