@@ -564,13 +564,7 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (roi != m_cam.m_roi)
     {
-        // ROI can change between triggers. Keep the capture session running;
-        // stopping and restarting it here can prevent subsequent frames.
-        if (!m_cam.SetRoi(roi))
-        {
-            DisconnectWithAlert(_("Capture failed, unable to pull image data from camera"), NO_RECONNECT);
-            return true;
-        }
+        m_cam.SetRoi(roi);
     }
 
     unsigned int new_exp = duration * 1000U;
