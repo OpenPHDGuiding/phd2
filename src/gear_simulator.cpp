@@ -98,7 +98,7 @@ struct SimCamParams
     static unsigned int frame_download_ms;
 
     static unsigned int SimFileIndex;
-    static wxString SimFileTemplate;
+    static wxString SimImageFileName;
 };
 
 SimMode SimCamParams::SimulatorMode = SIMMODE_GENERATE;
@@ -132,7 +132,7 @@ double SimCamParams::comet_rate_y;
 bool SimCamParams::allow_async_st4 = true;
 unsigned int SimCamParams::frame_download_ms; // frame download time, ms
 unsigned int SimCamParams::SimFileIndex = 1;
-wxString SimCamParams::SimFileTemplate = _("C:\\Temp\\phd2\\sim_image.png");
+wxString SimCamParams::SimImageFileName = wxEmptyString; // Initialized as part of loading config
 
 // Note: these are all in units appropriate for the UI
 # define NR_STARS_DEFAULT 20
@@ -215,8 +215,12 @@ static void load_sim_params()
 
     SimCamParams::SimulatorMode = (SimMode) pConfig->Profile.GetInt("/SimCam/simulator_mode", SIMMODE_GENERATE);
     SimCamParams::SimFileIndex = pConfig->Profile.GetInt("/SimCam/sim_file_index", 1);
-    SimCamParams::SimFileTemplate =
-        pConfig->Profile.GetString("/SimCam/sim_filename", wxFileName(Debug.GetLogDir(), "sim_images").GetFullPath());
+    // Use a default solar disk image
+    wxString dirPath = wxStandardPaths::Get().GetAppDocumentsDir();
+    // Combine directory path and file name in platform-independent way
+    wxFileName fn(dirPath, _("Solar_Disk_5asp.jpg"));
+    wxString defSimFileName = fn.GetFullPath();
+    SimCamParams::SimImageFileName = pConfig->Profile.GetString("/SimCam/sim_filename", defSimFileName);
 }
 
 static void save_sim_params()
@@ -246,7 +250,7 @@ static void save_sim_params()
 
     pConfig->Profile.SetInt("/SimCam/simulator_mode", SimCamParams::SimulatorMode);
     pConfig->Profile.SetInt("/SimCam/sim_file_index", SimCamParams::SimFileIndex);
-    pConfig->Profile.SetString("/SimCam/sim_filename", SimCamParams::SimFileTemplate);
+    pConfig->Profile.SetString("/SimCam/sim_filename", SimCamParams::SimImageFileName);
 }
 
 # ifdef STEPGUIDER_SIMULATOR
@@ -606,16 +610,17 @@ struct SimCamState
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
     void GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *pGearTime, bool TransformToCameraCoords);
-    // File-related methods used for SSG or other image-file based simulations
-    bool LoadImageFromFile(usImage& img, cv::Mat& matImage, wxSize& fullSize);
-    void PreProcessImage(cv::Mat& img);
-    bool ApplySimDisplacements(usImage *img, const cv::Mat& matImage);
+    // File-related method used for SSG or other image-file based simulations
+    bool LoadImageFromFile(usImage *img, wxSize *fullSize);
 };
 
 void SimCamState::Initialize()
 {
     width = SimCamParams::width;
     height = SimCamParams::height;
+# ifdef DEVELOPER_MODE
+    dirStarted = false;
+# endif
     // generate stars at random positions but no closer than 12 pixels from any edge
     unsigned int const nr_stars = SimCamParams::nr_stars;
     stars.resize(nr_stars);
@@ -711,7 +716,7 @@ bool SimCamState::ReadFitImage(usImage& img, wxString& filename, const wxRect& s
     fitsfile *fptr; // FITS file pointer
     int status = 0; // CFITSIO status value MUST be initialized to zero!
 
-    if (PHD_fits_open_diskfile(&fptr, wxFileName(dir.GetName(), filename).GetFullPath(), READONLY, &status))
+    if (PHD_fits_open_diskfile(&fptr, filename, READONLY, &status))
         return true;
 
     int hdutype;
@@ -1495,59 +1500,50 @@ static double calculateBorderAverage(const cv::Mat& image)
     return average;
 }
 
-// Simulated cam images are gray-scale and in 16-bit format
-void SimCamState::PreProcessImage(cv::Mat& matImage)
-{
-    // Convert to gray scale if needed
-    if (matImage.channels() != 1)
-    {
-        cv::cvtColor(matImage, matImage, cv::COLOR_BGR2GRAY);
-    }
-    // Convert to 16-bit if needed
-    if (matImage.depth() != CV_16U)
-    {
-        matImage.convertTo(matImage, CV_16UC1, 65535.0 / 255.0);
-    }
-}
-
 // Loads an image from disk when simulator mode is 'file', a requirement for
 // simulating solar system guiding.  The image will be pre-processed to create a
-// 16-bit gray-scale version of the original. Acceptable image formats are fits or any of the usual
+// 16-bit gray-scale version of the original. It mimics the behavior of FillImage
+// wherein the image is displaced by pseudo-random displacements to simulate the
+// effects of seeing and mount tracking errors. Acceptable image formats are fits or any of the usual
 // image formats supported by OpenCV (jpg, tif, bmp, png...)
-bool SimCamState::LoadImageFromFile(usImage& img, cv::Mat& matImage, wxSize& fullSize)
+bool SimCamState::LoadImageFromFile(usImage *img, wxSize *fullSize)
 {
-    wxFileName wxf = wxFileName(SimCamParams::SimFileTemplate);
+    cv::Mat matImage;
+    wxFileName wxf = wxFileName(SimCamParams::SimImageFileName);
     if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
     {
-        dir.Open(wxf.GetPath());
-        if (ReadFitImage(img, SimCamParams::SimFileTemplate, wxRect()))
+        if (ReadFitImage(*img, SimCamParams::SimImageFileName, wxRect()))
         {
             CloseDir();
             pFrame->Alert(_("Cannot load FIT image file"));
             return true;
         }
-        CloseDir();
-        matImage = cv::Mat(img.Size.GetHeight(), img.Size.GetWidth(), CV_16UC1, img.ImageData);
+        matImage = cv::Mat(img->Size.GetHeight(), img->Size.GetWidth(), CV_16UC1, img->ImageData);
     }
     else
     {
-        matImage = cv::imread(SimCamParams::SimFileTemplate.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
+        matImage = cv::imread(SimCamParams::SimImageFileName.ToStdString(), cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
     }
     if (matImage.empty())
     {
         pFrame->Alert(_("Cannot load image file"));
         return true;
     }
-    fullSize.x = matImage.size().width;
-    fullSize.y = matImage.size().height;
-    PreProcessImage(matImage);
-    return false;
-}
+    fullSize->x = matImage.size().width;
+    fullSize->y = matImage.size().height;
 
-// Simulate motion from tracking errors and seeing, convert to camera coordinates.
-// matImage contains gray-scale,16-bit data
-bool SimCamState::ApplySimDisplacements(usImage *img, const cv::Mat& matImage)
-{
+    //  OpenCV ops will uses 16-bit gray scale
+    if (matImage.channels() != 1)
+    {
+        cv::cvtColor(matImage, matImage, cv::COLOR_BGR2GRAY);
+    }
+    if (matImage.depth() != CV_16U)
+    {
+        matImage.convertTo(matImage, CV_16UC1, 65535.0 / 255.0);
+    }
+
+    // Simulate motion from tracking errors and seeing, convert to camera coordinates.
+    // matImage contains gray-scale,16-bit data
     double deltaX, deltaY;
     GetSimDisplacements(&deltaX, &deltaY, nullptr, true);
 
@@ -1570,6 +1566,7 @@ bool SimCamState::ApplySimDisplacements(usImage *img, const cv::Mat& matImage)
         return true;
     }
     memcpy(img->ImageData, translatedImage.data, dataSize);
+
     return false;
 }
 
@@ -1634,16 +1631,10 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     }
     case SIMMODE_FILE: // Can be PNG|TIF|BMP|JPG|FIT file
     {
-        cv::Mat matImg;
-        if (sim.LoadImageFromFile(img, matImg, FrameSize))
+        if (sim.LoadImageFromFile(&img, &FrameSize))
             return true; // Alert already generated
 
-        // Simulate motion from tracking errors and seeing
-        // matImg will have 16-bit gray-scale data regardless of original image file source
-        if (sim.ApplySimDisplacements(&img, matImg))
-            break;
-
-        // Finally, render clouds
+        // Optionally ender clouds via high noise
         if (SimCamParams::clouds_opacity > 0)
         {
             // Sub-frames not yet supported
@@ -1653,24 +1644,29 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
     }
     case SIMMODE_FITS_DIRECTORY: // Simulate camera image stream from FIT files
     {
-        wxString filename = SimCamParams::SimFileTemplate;
+        wxString terminalName;
+        wxString fileName;
+
         if (!sim.dir.IsOpened())
         {
-            wxFileName wxf = wxFileName(filename);
-            sim.dir.Open(wxf.GetFullPath());
+            // In directory mode, SimImageFile will contain only the folder name
+            sim.dir.Open(SimCamParams::SimImageFileName);
         }
         if (sim.dir.IsOpened())
         {
             if (!sim.dirStarted)
             {
-                sim.dir.GetFirst(&filename, "*.fit", wxDIR_FILES);
+                sim.dir.GetFirst(&terminalName, "*.fit", wxDIR_FILES);
                 sim.dirStarted = true;
             }
             else
             {
-                if (!sim.dir.GetNext(&filename))
-                    sim.dir.GetFirst(&filename, "*.fit", wxDIR_FILES);
+                if (!sim.dir.GetNext(&terminalName))
+                    sim.dir.GetFirst(&terminalName, "*.fit", wxDIR_FILES);
             }
+            // Combine the folder name and the terminal file name in a platform-independent way
+            wxFileName fn(SimCamParams::SimImageFileName, terminalName);
+            fileName = fn.GetFullPath();
         }
         else
         {
@@ -1681,7 +1677,7 @@ bool CameraSimulator::Capture(usImage& img, const CaptureParams& captureParams)
         if (!UseSubframes)
             subframe = wxRect();
 
-        if (sim.ReadFitImage(img, filename, subframe))
+        if (sim.ReadFitImage(img, fileName, subframe))
         {
             pFrame->Alert(_("Cannot find/open FIT file"));
             return true;
@@ -2144,7 +2140,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent) : wxDialog(parent, wxID_ANY, _("Cam
     browseTip += _(" or folder with sequence of FIT files");
 # endif
     fileLabel->SetToolTip(fileLabelTip);
-    pSimFile = new wxTextCtrl(this, wxID_ANY, SimCamParams::SimFileTemplate, wxDefaultPosition, wxSize(350, -1));
+    pSimFile = new wxTextCtrl(this, wxID_ANY, SimCamParams::SimImageFileName, wxDefaultPosition, wxSize(350, -1));
     pSimFile->Bind(wxEVT_TEXT, &SimCamDialog::OnFileTextChange, this);
     pBrowseBtn = new wxButton(this, wxID_ANY, _("..."), wxDefaultPosition, wxSize(60, -1));
     pBrowseBtn->Bind(wxEVT_BUTTON, &SimCamDialog::OnBrowseFileName, this);
@@ -2326,7 +2322,6 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     showComet->SetValue(SHOW_COMET_DEFAULT);
     if (SimCamParams::SimulatorMode == SIMMODE_FITS_DIRECTORY)
     {
-        pSimFile->SetValue(wxFileName(Debug.GetLogDir(), "sim_images").GetFullPath());
         CameraSimulator *simcam = static_cast<CameraSimulator *>(pCamera);
         simcam->sim.CloseDir();
     }
@@ -2365,8 +2360,8 @@ void SimCamDialog::OnBrowseFileName(wxCommandEvent& event)
         wxDirDialog openDirDialog(this, _("Select Folder"), wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
         if (openDirDialog.ShowModal() == wxID_OK)
         {
-            SimCamParams::SimFileTemplate = openDirDialog.GetPath();
-            pSimFile->SetValue(SimCamParams::SimFileTemplate);
+            SimCamParams::SimImageFileName = openDirDialog.GetPath();
+            pSimFile->SetValue(SimCamParams::SimImageFileName);
         }
     }
     else
@@ -2379,8 +2374,8 @@ void SimCamDialog::OnBrowseFileName(wxCommandEvent& event)
             wxFD_OPEN | wxFD_FILE_MUST_EXIST);
         if (openFileDialog.ShowModal() == wxID_OK)
         {
-            SimCamParams::SimFileTemplate = openFileDialog.GetPath();
-            pSimFile->SetValue(SimCamParams::SimFileTemplate);
+            SimCamParams::SimImageFileName = openFileDialog.GetPath();
+            pSimFile->SetValue(SimCamParams::SimImageFileName);
         }
     }
     CameraSimulator *simcam = static_cast<CameraSimulator *>(pCamera);
@@ -2389,7 +2384,7 @@ void SimCamDialog::OnBrowseFileName(wxCommandEvent& event)
 
 void SimCamDialog::OnFileTextChange(wxCommandEvent& event)
 {
-    SimCamParams::SimFileTemplate = pSimFile->GetValue();
+    SimCamParams::SimImageFileName = pSimFile->GetValue();
     CameraSimulator *simcam = static_cast<CameraSimulator *>(pCamera);
     simcam->sim.CloseDir();
 }
