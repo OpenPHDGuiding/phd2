@@ -564,7 +564,6 @@ bool CameraToupTek::Capture(usImage& img, const CaptureParams& captureParams)
 
     if (roi != m_cam.m_roi)
     {
-        m_cam.StopCapture();
         m_cam.SetRoi(roi);
     }
 
