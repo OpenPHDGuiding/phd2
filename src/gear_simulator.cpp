@@ -605,7 +605,7 @@ struct SimCamState
     wxDir dir;
     bool dirStarted;
     void CloseDir();
-    bool ReadFitImage(usImage& img, wxString& filename, const wxRect& subframe);
+    bool ReadFitImage(usImage& img, const wxString& filename, const wxRect& subframe);
 
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
@@ -710,7 +710,7 @@ void SimCamState::CloseDir()
 }
 
 // Load image from FIT file
-bool SimCamState::ReadFitImage(usImage& img, wxString& filename, const wxRect& subframe)
+bool SimCamState::ReadFitImage(usImage& img, const wxString& filename, const wxRect& subframe)
 {
     Debug.Write("Sim file opened: " + filename + "\n");
     fitsfile *fptr; // FITS file pointer
@@ -747,7 +747,6 @@ bool SimCamState::ReadFitImage(usImage& img, wxString& filename, const wxRect& s
         PHD_fits_close_file(fptr);
         return true;
     }
-    int scale_shift = (bitpix == 8) ? 8 : 0;
 
     long fits_size[2];
     fits_get_img_size(fptr, 2, fits_size, &status);
@@ -792,13 +791,13 @@ bool SimCamState::ReadFitImage(usImage& img, wxString& filename, const wxRect& s
         {
             unsigned short *dst = img.ImageData + (y + subframe.y) * xsize + subframe.x;
             for (int x = 0; x < subframe.width; x++, i++)
-                *dst++ = ((unsigned short) buf[i]) << scale_shift;
+                *dst++ = ((unsigned short) buf[i]);
         }
     }
     else
     {
         for (unsigned int i = 0; i < img.NPixels; i++)
-            img.ImageData[i] = (unsigned short) buf[i] << scale_shift;
+            img.ImageData[i] = (unsigned short) buf[i];
     }
 
     delete[] buf;
@@ -1126,10 +1125,10 @@ void SimCamState::GetSimDisplacements(double *pDeltaX, double *pDeltaY, double *
 
     static double s_prev_ra;
     double dra;
-    if (!first_pass)
-        dra = norm(ra - s_prev_ra, -12.0, 12.0);
-    else
+    if (first_pass)
         dra = 0;
+    else
+        dra = norm(ra - s_prev_ra, -12.0, 12.0);
     s_prev_ra = ra;
 
     // convert RA hours to SI seconds
@@ -1248,8 +1247,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     unsigned int const nr_stars = stars.size();
 
 # ifdef SIMDEBUG
-    static int CountUp(0);
-    if (CountUp == 0)
+    static int s_countUp; // Static vars are initialized to zero
+    if (s_countUp == 0)
     {
         // Changes in the setup dialog are hard to track - just make sure we are using the params we think we are
         Debug.AddLine(wxString::Format("SimDebug: img_scale: %.3f, seeing_scale: %.3f", SimCamParams::image_scale,
@@ -1510,7 +1509,8 @@ bool SimCamState::LoadImageFromFile(usImage *img, wxSize *fullSize)
 {
     cv::Mat matImage;
     wxFileName wxf = wxFileName(SimCamParams::SimImageFileName);
-    if ((wxf.GetExt().CmpNoCase("fit") == 0) || (wxf.GetExt().CmpNoCase("fits") == 0))
+    wxString extension = wxf.GetExt();
+    if ((extension.CmpNoCase("fit") == 0) || (extension.CmpNoCase("fits") == 0))
     {
         if (ReadFitImage(*img, SimCamParams::SimImageFileName, wxRect()))
         {
