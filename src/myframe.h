@@ -214,6 +214,7 @@ private:
 
     bool m_continueCapturing; // should another image be captured?
     SingleExposure m_singleExposure;
+    bool m_closed; // OnClose has already shut down the gear and servers
 
 public:
     MyFrame();
