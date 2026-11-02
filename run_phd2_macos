@@ -5,4 +5,4 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # disable AppNap
 /usr/bin/defaults write org.openphdguiding.phd2 NSAppSleepDisabled -bool YES
 
-exec "$HERE"/PHD2
+exec "$HERE"/PHD2 "$@"
