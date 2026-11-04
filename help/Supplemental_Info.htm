@@ -172,6 +172,22 @@ should create a new profile using the new-profile-wizard - that will
 automatically adjust all of the guiding parameters that depend on image
 scale. &nbsp;From a guiding perspective, a change in binning is
 essentially the same as switching to a different camera.<br>
+<p>The native ToupTek/Omegon camera
+properties include a <b>Use hardware binning</b> option. It is disabled by
+default to preserve existing equipment profiles. Enable it, reconnect the
+camera, and select the desired binning factor in PHD2. Hardware binning can
+reduce camera readout or transfer overhead when the camera supports the
+requested mode. Unsupported modes use the available software or SDK
+binning path. The debug log records the active hardware mode.</p>
+<p>This option uses the camera's native resolution modes when their
+dimensions and resolution ratio match the requested binning factor.
+Camera-side subframes remain available. An error while selecting a mode
+stops capture so that guiding cannot continue with incorrect image geometry.</p>
+<p>Hardware binning can change the image response and Bayer pattern even
+when the final frame dimensions stay the same. Use a separate equipment
+profile and rebuild its dark library and bad-pixel map when changing this
+option. Compare guide-frame intervals using the same exposure, bit depth,
+and capture region to measure the effect on a particular camera.</p>
 <h3><a name="Dithering_Ops"></a>Dithering</h3>
 
 <p class="MsoNormal" style="line-height: normal;"><span style="">In order to reduce fixed-pattern noise
