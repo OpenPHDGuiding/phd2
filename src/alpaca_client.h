@@ -168,6 +168,10 @@ std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int ti
                                            const std::vector<std::string>& extraHosts = {}, int mgmtTimeoutMs = 2000,
                                            const std::atomic<bool> *cancel = nullptr);
 
+// logServerIdentity writes the server description, driverinfo and driverversion
+// to the diagnostic sink when verbose logging is on. Called before connecting the device.
+void logServerIdentity(const DeviceAddress& addr, int timeoutMs = 3000);
+
 // Device is the common ASCOM device surface plus typed low-level GET/PUT helpers.
 // One Device owns one reused libcurl handle, serialized by an internal mutex, so it is
 // safe to call from PHD2's capture thread and UI thread concurrently.

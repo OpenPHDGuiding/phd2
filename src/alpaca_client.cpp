@@ -194,6 +194,13 @@ namespace
         return out;
     }
 
+    // alpacaBool returns "True" or "False" to match C#'s bool.ToString()
+    // Some devices do not accept lower case true or false
+    const char *alpacaBool(bool v)
+    {
+        return v ? "True" : "False";
+    }
+
     size_t writeToString(char *ptr, size_t size, size_t nmemb, void *userdata)
     {
         auto *s = static_cast<std::string *>(userdata);
@@ -564,7 +571,7 @@ Error Device::put(const std::string& mbr, const std::map<std::string, std::strin
 
 Error Device::setConnected(bool v)
 {
-    return put("connected", { { "Connected", v ? "true" : "false" } });
+    return put("connected", { { "Connected", alpacaBool(v) } });
 }
 Error Device::name(std::string *out)
 {
@@ -770,7 +777,7 @@ Error Camera::isPulseGuiding(bool *out)
 
 Error Camera::startExposure(double seconds, bool light)
 {
-    return put("startexposure", { { "Duration", std::to_string(seconds) }, { "Light", light ? "true" : "false" } });
+    return put("startexposure", { { "Duration", std::to_string(seconds) }, { "Light", alpacaBool(light) } });
 }
 Error Camera::imageReady(bool *out)
 {
@@ -832,7 +839,7 @@ Error Camera::canSetCCDTemperature(bool *out)
 }
 Error Camera::setCoolerOn(bool v)
 {
-    return put("cooleron", { { "CoolerOn", v ? "true" : "false" } });
+    return put("cooleron", { { "CoolerOn", alpacaBool(v) } });
 }
 Error Camera::coolerOn(bool *out)
 {
@@ -1351,6 +1358,48 @@ std::vector<DeviceAddress> discoverDevices(const std::string& deviceType, int ti
         for (DeviceAddress& d : slot)
             out.push_back(std::move(d));
     return out;
+}
+
+void logServerIdentity(const DeviceAddress& addr, int timeoutMs)
+{
+    if (!verbose())
+        return; // extra round-trips only when user ask for verbose log
+    std::ostringstream root;
+    root << "http://" << urlHost(addr.host) << ":" << addr.port;
+    std::ostringstream dev;
+    dev << "/api/v1/" << addr.deviceType << "/" << addr.deviceNumber << "/";
+    const std::string q = "?ClientID=1&ClientTransactionID=1";
+    const std::string paths[] = { "/management/v1/description", dev.str() + "driverinfo", dev.str() + "driverversion" };
+
+    CURL *curl = curl_easy_init();
+    if (!curl)
+        return;
+    for (const std::string& path : paths)
+    {
+        std::string body;
+        curl_easy_reset(curl);
+        curl_easy_setopt(curl, CURLOPT_URL, (root.str() + path + q).c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, (long) timeoutMs);
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L); // runs on connect worker threads; see httpGet
+        CURLcode rc = curl_easy_perform(curl);
+        long status = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
+        if (body.size() > 300)
+        {
+            size_t n = 300;
+            while (n > 0 && (static_cast<unsigned char>(body[n]) & 0xC0) == 0x80)
+                --n; // no cut mid UTF-8 char
+            body = body.substr(0, n) + "...";
+        }
+        logDiag("server identity: GET " + root.str() + path + " -> " +
+                (rc == CURLE_OK ? std::to_string(status) + " " + (body.empty() ? "(empty body)" : body)
+                                : std::string(curl_easy_strerror(rc))));
+        if (rc != CURLE_OK)
+            break; // unreachable server: one line is enough, don't wait out the timeout twice more
+    }
+    curl_easy_cleanup(curl);
 }
 
 std::vector<ConfiguredDevice> configuredDevices(const std::string& host, int port, int timeoutMs,

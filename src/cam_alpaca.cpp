@@ -280,6 +280,8 @@ bool CameraAlpaca::ConnectInBgEntry(RunInBg *bg, std::shared_ptr<alpaca::Camera>
         return true;
     };
 
+    alpaca::logServerIdentity(addr);
+
     alpaca::Error err;
     if ((err = cam->setConnected(true)))
         return fail("setconnected", err);

@@ -221,6 +221,8 @@ bool ScopeAlpaca::tryConnect(const wxString& host, long port, long devnum, RunIn
     // call is a small control request that should fail fast on a dead server.
     mount->setTimeoutMs(CONTROL_TIMEOUT_MS);
 
+    alpaca::logServerIdentity(addr);
+
     alpaca::Error err;
     if ((err = mount->setConnected(true)))
     {
