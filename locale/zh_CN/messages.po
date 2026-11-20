@@ -2433,6 +2433,14 @@ msgstr ""
 msgid "ToupTek Camera Properties"
 msgstr "ToupTek 相机参数"
 
+#: cam_touptek.cpp:895
+msgid "Use hardware binning"
+msgstr "使用硬件像素合并"
+
+#: cam_touptek.cpp:897
+msgid "Use camera hardware binning when supported. Rebuild dark frames after changing this setting."
+msgstr "相机支持时使用硬件像素合并。更改此设置后请重建暗场。"
+
 #: cam_vfw.cpp:96
 msgid "Select capture device"
 msgstr "选择捕获设备"
