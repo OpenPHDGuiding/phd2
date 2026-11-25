@@ -34,6 +34,7 @@
  */
 
 #include "phd.h"
+#include "event_server.h"
 #include "backlash_comp.h"
 #include "guiding_assistant.h"
 #include "gaussian_process_guider.h"
