@@ -507,14 +507,11 @@ SolarSysToolWin::SolarSysToolWin()
     m_solarSystemObj->ShowFeatures(false);
     m_solarSystemObj->ShowVisualElements(false);
 
-    m_detectionBlob->SetValue(true);
-    m_detectionContours->SetValue(false);
-    wxCommandEvent evt;
-    OnDetectionModeClick(evt);
     m_solarSystemObj->SetBlobInversion(false);
     m_RoiCheckBox->SetValue(false);
     m_PauseCheckBox->SetValue(false);
     m_ResamplingCheckBox->SetValue(true);
+    wxCommandEvent evt;
     OnResamplingClick(evt);
     m_ShowDiameters->SetValue(true); // We start out with no disk found, so show the bounding boxes
     Layout();
@@ -611,7 +608,19 @@ void SolarSysToolWin::RestoreProfileParameters()
     m_windowPosY = pConfig->Profile.GetInt("/PlanetTool/pos.y", -1);
     if (this->IsShown())
         MyFrame::PlaceWindowOnScreen(this, m_windowPosX, m_windowPosY);
-
+    DetectionModes mode = (DetectionModes) pConfig->Profile.GetInt("/PlanetTool/DetectionMode", (int) DetectionModes::modeBlob);
+    if (mode == DetectionModes::modeBlob)
+    {
+        m_detectionBlob->SetValue(true);
+        m_detectionContours->SetValue(false);
+    }
+    else
+    {
+        m_detectionBlob->SetValue(false);
+        m_detectionContours->SetValue(true);
+    }
+    wxCommandEvent cmdEvt;
+    OnDetectionModeClick(cmdEvt);
     RestoreBlobSearchParameters();
     RestoreContourSearchParameters();
     m_ResamplingCheckBox->SetValue(pConfig->Profile.GetBoolean("/PlanetTool/ResampleEnabled", true));
@@ -650,6 +659,7 @@ void SolarSysToolWin::SaveProfileParameters()
     GetPosition(&x, &y);
     pConfig->Profile.SetInt("/PlanetTool/pos.x", x);
     pConfig->Profile.SetInt("/PlanetTool/pos.y", y);
+    pConfig->Profile.SetInt("/PlanetTool/DetectionMode", (int) m_solarSystemObj->GetDetectionMode());
     pConfig->Profile.SetInt("/PlanetTool/MinBlobDiameter", m_solarSystemObj->GetMinBlobDiameter());
     pConfig->Profile.SetInt("/PlanetTool/MaxBlobDiameter", m_solarSystemObj->GetMaxBlobDiameter());
     pConfig->Profile.SetBoolean("/PlanetTool/ResampleEnabled", m_solarSystemObj->GetResamplingEnabled());
