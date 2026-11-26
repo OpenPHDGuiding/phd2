@@ -208,20 +208,19 @@ private:
 
 private:
     double ComputeSobelSharpness(const cv::Mat& img);
-    double CalcSharpness(cv::Mat& FullFrame, cv::Point2f& clickedPoint, bool detectionResult);
+    double CalcSharpness(const cv::Mat& FullFrame, const cv::Point2f& clickedPoint, bool detectionResult);
     void CalcLineParams(CircleDescriptor p1, CircleDescriptor p2);
-    int RefineDiskCenter(float& bestScore, CircleDescriptor& diskCenter, std::vector<cv::Point2f>& diskContour, int minRadius,
-                         int maxRadius, float searchRadius, float resolution = 1.0);
-    float FindContourCenter(CircleDescriptor& diskCenter, CircleDescriptor& smallestCircle,
-                            std::vector<cv::Point2f>& bestContourVector, cv::Moments& mu, int minRadius, int maxRadius);
-    void FindCenters(cv::Mat image, const std::vector<cv::Point>& contour, CircleDescriptor& bestCentroid,
-                     CircleDescriptor& smallestCircle, std::vector<cv::Point2f>& bestContour, cv::Moments& mu, int minRadius,
-                     int maxRadius);
-    bool FindContoursCentroid(cv::Mat img8, bool roiActive, cv::Point2f& clickedPoint, cv::Rect& roiRect, bool activeRoiLimits,
-                              float distanceRoiMax, CentroidResult& rslt);
-    bool FindBlobCentroid(cv::Mat testMat, int roiX, int roiY, CentroidResult& rslt, std::vector<cv::Point>& blobContour);
-    bool RetryBlobDetection(cv::Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
-                            std::vector<cv::Point>& blobContour);
+    int RefineDiskCenter(float *bestScore, CircleDescriptor *diskCenter, const std::vector<cv::Point2f>& diskContour,
+                         int minRadius, int maxRadius, float searchRadius, float resolution = 1.0);
+    float FindContourCenter(CircleDescriptor *diskCenter, CircleDescriptor *smallestCircle,
+                            std::vector<cv::Point2f> *bestContourVector, cv::Moments *mu, int minRadius, int maxRadius);
+    void FindCenters(const std::vector<cv::Point>& contour, CircleDescriptor *bestCentroid, CircleDescriptor *smallestCircle,
+                     std::vector<cv::Point2f> *bestContour, cv::Moments *mu, int minRadius, int maxRadius);
+    bool FindContoursCentroid(const cv::Mat img8, bool roiActive, const cv::Point2f& clickedPoint, const cv::Rect& roiRect,
+                              bool activeRoiLimits, float distanceRoiMax, CentroidResult *rslt);
+    bool FindBlobCentroid(cv::Mat img8, int roiX, int roiY, CentroidResult *rslt, std::vector<cv::Point> *blobContour);
+    bool RetryBlobDetection(cv::Mat img8, int roiX, int roiY, CentroidResult *centroidInfo,
+                            std::vector<cv::Point> *blobContour);
 };
 
 // Inline function definitions for simple ops

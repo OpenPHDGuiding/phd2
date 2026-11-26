@@ -242,7 +242,7 @@ double SolarSystemObject::ComputeSobelSharpness(const Mat& img)
 }
 
 // Calculate focus metrics around the updated tracked position
-double SolarSystemObject::CalcSharpness(Mat& FullFrame, Point2f& clickedPoint, bool detectionResult)
+double SolarSystemObject::CalcSharpness(const Mat& FullFrame, const Point2f& clickedPoint, bool detectionResult)
 {
     double scaleFactor;
     cv::Scalar meanSignal;
@@ -446,7 +446,7 @@ void SolarSystemObject::CalcLineParams(CircleDescriptor p1, CircleDescriptor p2)
 }
 
 // Calculate score for given point
-static float CalcContourScore(float& radius, Point2f pointToMeasure, std::vector<Point2f>& diskContour, int minRadius,
+static float CalcContourScore(float *radius, Point2f pointToMeasure, const std::vector<Point2f>& diskContour, int minRadius,
                               int maxRadius)
 {
     std::vector<float> distances;
@@ -470,7 +470,7 @@ static float CalcContourScore(float& radius, Point2f pointToMeasure, std::vector
     // we are looking for.
     if (distances.size() < 16)
     {
-        radius = 0;
+        *radius = 0;
         return 0;
     }
 
@@ -502,7 +502,7 @@ static float CalcContourScore(float& radius, Point2f pointToMeasure, std::vector
     }
 
     // Normalize score by total number points in the contour
-    radius = peakDistance;
+    *radius = peakDistance;
     return scorePoints / diskContour.size();
 }
 
@@ -518,9 +518,9 @@ public:
     int maxRadius;
 
 public:
-    AsyncCalcScoreThread(float bestScore, std::vector<Point2f>& diskContour, std::vector<Point2f>& workLoad, int min_radius,
-                         int max_radius)
-        : wxThread(wxTHREAD_JOINABLE), threadBestScore(bestScore), contour(diskContour), points(workLoad),
+    AsyncCalcScoreThread(float bestScore, const std::vector<Point2f>& diskContour, std::vector<Point2f> *workLoad,
+                         int min_radius, int max_radius)
+        : wxThread(wxTHREAD_JOINABLE), threadBestScore(bestScore), contour(diskContour), points(*workLoad),
           minRadius(min_radius), maxRadius(max_radius)
     {
         radius = 0;
@@ -530,7 +530,7 @@ public:
     {
         for (const Point2f& point : points)
         {
-            float score = ::CalcContourScore(radius, point, contour, minRadius, maxRadius);
+            float score = ::CalcContourScore(&radius, point, contour, minRadius, maxRadius);
             if (score > threadBestScore)
             {
                 threadBestScore = score;
@@ -544,11 +544,11 @@ public:
 };
 
 /* Find best circle candidate for contour-based detection */
-int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& diskCenter, std::vector<Point2f>& diskContour,
+int SolarSystemObject::RefineDiskCenter(float *bestScore, CircleDescriptor *diskCenter, const std::vector<Point2f>& diskContour,
                                         int minRadius, int maxRadius, float searchRadius, float resolution)
 {
     const int maxWorkloadSize = 256;
-    const Point2f center = { diskCenter.x, diskCenter.y };
+    const Point2f center = { diskCenter->x, diskCenter->y };
     std::vector<AsyncCalcScoreThread *> threads;
 
     // Check all points within small circle for search of higher score
@@ -557,8 +557,8 @@ int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& disk
     int workloadSize = 0;
     std::vector<Point2f> workload;
     workload.reserve(maxWorkloadSize);
-    for (float x = diskCenter.x - searchRadius; x < diskCenter.x + searchRadius; x += resolution)
-        for (float y = diskCenter.y - searchRadius; y < diskCenter.y + searchRadius; y += resolution)
+    for (float x = diskCenter->x - searchRadius; x < diskCenter->x + searchRadius; x += resolution)
+        for (float y = diskCenter->y - searchRadius; y < diskCenter->y + searchRadius; y += resolution)
         {
             Point2f pointToMeasure = { x, y };
             float dist = norm(pointToMeasure - center);
@@ -568,7 +568,8 @@ int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& disk
             // When finished creating a workload, create and run new processing thread
             if (useThreads && (workloadSize++ >= maxWorkloadSize))
             {
-                AsyncCalcScoreThread *thread = new AsyncCalcScoreThread(bestScore, diskContour, workload, minRadius, maxRadius);
+                AsyncCalcScoreThread *thread =
+                    new AsyncCalcScoreThread(*bestScore, diskContour, &workload, minRadius, maxRadius);
                 if ((thread->Create() == wxTHREAD_NO_ERROR) && (thread->Run() == wxTHREAD_NO_ERROR))
                 {
                     threads.push_back(thread);
@@ -589,13 +590,13 @@ int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& disk
     for (const Point2f& point : workload)
     {
         float radius;
-        float score = ::CalcContourScore(radius, point, diskContour, minRadius, maxRadius);
-        if (score > bestScore)
+        float score = ::CalcContourScore(&radius, point, diskContour, minRadius, maxRadius);
+        if (score > *bestScore)
         {
-            bestScore = score;
-            diskCenter.radius = radius;
-            diskCenter.x = point.x;
-            diskCenter.y = point.y;
+            *bestScore = score;
+            diskCenter->radius = radius;
+            diskCenter->x = point.x;
+            diskCenter->y = point.y;
         }
     }
 
@@ -603,12 +604,12 @@ int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& disk
     for (auto thread : threads)
     {
         thread->Wait();
-        if (thread->threadBestScore > bestScore)
+        if (thread->threadBestScore > *bestScore)
         {
-            bestScore = thread->threadBestScore;
-            diskCenter.radius = thread->radius;
-            diskCenter.x = thread->center.x;
-            diskCenter.y = thread->center.y;
+            *bestScore = thread->threadBestScore;
+            diskCenter->radius = thread->radius;
+            diskCenter->x = thread->center.x;
+            diskCenter->y = thread->center.y;
         }
 
         delete thread;
@@ -617,14 +618,14 @@ int SolarSystemObject::RefineDiskCenter(float& bestScore, CircleDescriptor& disk
 }
 
 // An algorithm to find contour center
-float SolarSystemObject::FindContourCenter(CircleDescriptor& diskCenter, CircleDescriptor& circle,
-                                           std::vector<Point2f>& diskContour, Moments& mu, int minRadius, int maxRadius)
+float SolarSystemObject::FindContourCenter(CircleDescriptor *diskCenter, CircleDescriptor *smallestCircle,
+                                           std::vector<Point2f> *diskContour, Moments *mu, int minRadius, int maxRadius)
 {
     float score;
     float maxScore = 0;
     float bestScore = 0;
     float radius = 0;
-    int searchRadius = circle.radius / 2;
+    int searchRadius = smallestCircle->radius / 2;
     Point2f pointToMeasure;
     std::vector<WeightedCircle> WeightedCircles;
     WeightedCircles.reserve(searchRadius * 2);
@@ -633,24 +634,25 @@ float SolarSystemObject::FindContourCenter(CircleDescriptor& diskCenter, CircleD
     // measurement
     if (!m_DiameterLineParameters.valid)
     {
-        pointToMeasure.x = circle.x;
-        pointToMeasure.y = circle.y;
-        score = CalcContourScore(radius, pointToMeasure, diskContour, minRadius, maxRadius);
-        diskCenter = circle;
-        diskCenter.radius = radius;
+        pointToMeasure.x = smallestCircle->x;
+        pointToMeasure.y = smallestCircle->y;
+        score = CalcContourScore(&radius, pointToMeasure, *diskContour, minRadius, maxRadius);
+        *diskCenter = *smallestCircle;
+        diskCenter->radius = radius;
         return score;
     }
 
     if (!m_DiameterLineParameters.vertical && (fabs(m_DiameterLineParameters.slope) <= 1.0))
     {
         // Search along x-axis when line slope is below 45 degrees
-        for (pointToMeasure.x = circle.x - searchRadius; pointToMeasure.x <= circle.x + searchRadius; pointToMeasure.x++)
+        for (pointToMeasure.x = smallestCircle->x - searchRadius; pointToMeasure.x <= smallestCircle->x + searchRadius;
+             pointToMeasure.x++)
         {
             // Count number of points of the contour which are equidistant from
             // pointToMeasure. The point with maximum score is identified as contour
             // center.
             pointToMeasure.y = m_DiameterLineParameters.slope * pointToMeasure.x + m_DiameterLineParameters.b;
-            score = CalcContourScore(radius, pointToMeasure, diskContour, minRadius, maxRadius);
+            score = CalcContourScore(&radius, pointToMeasure, *diskContour, minRadius, maxRadius);
             maxScore = max(score, maxScore);
             WeightedCircle wcircle = { pointToMeasure.x, pointToMeasure.y, radius, score };
             WeightedCircles.push_back(wcircle);
@@ -659,16 +661,17 @@ float SolarSystemObject::FindContourCenter(CircleDescriptor& diskCenter, CircleD
     else
     {
         // Search along y-axis when slope is above 45 degrees
-        for (pointToMeasure.y = circle.y - searchRadius; pointToMeasure.y <= circle.y + searchRadius; pointToMeasure.y++)
+        for (pointToMeasure.y = smallestCircle->y - searchRadius; pointToMeasure.y <= smallestCircle->y + searchRadius;
+             pointToMeasure.y++)
         {
             // Count number of points of the contour which are equidistant from
             // pointToMeasure. The point with maximum score is identified as contour
             // center.
             if (m_DiameterLineParameters.vertical)
-                pointToMeasure.x = circle.x;
+                pointToMeasure.x = smallestCircle->x;
             else
                 pointToMeasure.x = (pointToMeasure.y - m_DiameterLineParameters.b) / m_DiameterLineParameters.slope;
-            score = CalcContourScore(radius, pointToMeasure, diskContour, minRadius, maxRadius);
+            score = CalcContourScore(&radius, pointToMeasure, *diskContour, minRadius, maxRadius);
             maxScore = max(score, maxScore);
             WeightedCircle wcircle = { pointToMeasure.x, pointToMeasure.y, radius, score };
             WeightedCircles.push_back(wcircle);
@@ -679,7 +682,7 @@ float SolarSystemObject::FindContourCenter(CircleDescriptor& diskCenter, CircleD
     // this will help not to select center of the dark disk
     int bestIndex = 0;
     float bestCenterOfMassDistance = 999999;
-    Point2f centroid = { float(mu.m10 / mu.m00), float(mu.m01 / mu.m00) };
+    Point2f centroid = { float(mu->m10 / mu->m00), float(mu->m01 / mu->m00) };
     for (int i = 1; i < WeightedCircles.size() - 1; i++)
     {
         if ((WeightedCircles[i].score > maxScore * 0.65) && (WeightedCircles[i].score > WeightedCircles[i - 1].score) &&
@@ -706,17 +709,16 @@ float SolarSystemObject::FindContourCenter(CircleDescriptor& diskCenter, CircleD
     }
 
     bestScore = WeightedCircles[bestIndex].score;
-    diskCenter.radius = WeightedCircles[bestIndex].r;
-    diskCenter.x = WeightedCircles[bestIndex].x;
-    diskCenter.y = WeightedCircles[bestIndex].y;
+    diskCenter->radius = WeightedCircles[bestIndex].r;
+    diskCenter->x = WeightedCircles[bestIndex].x;
+    diskCenter->y = WeightedCircles[bestIndex].y;
 
     return bestScore;
 }
 
 // Find a minimum enclosing circle of the contour and also its center of mass
-void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour, CircleDescriptor& centroid,
-                                    CircleDescriptor& circle, std::vector<Point2f>& diskContour, Moments& mu, int minRadius,
-                                    int maxRadius)
+void SolarSystemObject::FindCenters(const std::vector<Point>& contour, CircleDescriptor *centroid, CircleDescriptor *minCircle,
+                                    std::vector<Point2f> *diskContour, Moments *mu, int minRadius, int maxRadius)
 {
     const std::vector<Point> *effectiveContour = &contour;
     std::vector<Point> decimatedContour;
@@ -730,9 +732,9 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
 
     m_eccentricity = 0;
     m_angle = 0;
-    circle.radius = 0;
-    centroid.radius = 0;
-    diskContour.clear();
+    minCircle->radius = 0;
+    centroid->radius = 0;
+    diskContour->clear();
 
     // If input contour is too large, decimate it to avoid performance issues
     int decimateRatio = contour.size() > 4096 ? contour.size() / 4096 : 1;
@@ -743,7 +745,7 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
             decimatedContour.push_back(contour[i]);
         effectiveContour = &decimatedContour;
     }
-    diskContour.reserve(effectiveContour->size());
+    diskContour->reserve(effectiveContour->size());
     minEnclosingCircle(*effectiveContour, circleCenter, circle_radius);
 
     if ((circle_radius <= maxRadius) && (circle_radius >= minRadius))
@@ -752,38 +754,38 @@ void SolarSystemObject::FindCenters(Mat image, const std::vector<Point>& contour
         for (int i = 0; i < effectiveContour->size(); i++)
         {
             Point pt = (*effectiveContour)[i];
-            diskContour.push_back(Point2f(pt.x, pt.y));
+            diskContour->push_back(Point2f(pt.x, pt.y));
         }
 
-        circle.x = circleCenter.x;
-        circle.y = circleCenter.y;
-        circle.radius = circle_radius;
+        minCircle->x = circleCenter.x;
+        minCircle->y = circleCenter.y;
+        minCircle->radius = circle_radius;
 
         // Calculate center of mass based on contour points
-        mu = cv::moments(diskContour, false);
-        if (mu.m00 > 0)
+        *mu = cv::moments(*diskContour, false);
+        if (mu->m00 > 0)
         {
-            centroid.x = mu.m10 / mu.m00;
-            centroid.y = mu.m01 / mu.m00;
-            centroid.radius = circle.radius;
+            centroid->x = mu->m10 / mu->m00;
+            centroid->y = mu->m01 / mu->m00;
+            centroid->radius = minCircle->radius;
 
             // Calculate eccentricity
-            double a = mu.mu20 + mu.mu02;
-            double b = sqrt(4 * mu.mu11 * mu.mu11 + (mu.mu20 - mu.mu02) * (mu.mu20 - mu.mu02));
+            double a = mu->mu20 + mu->mu02;
+            double b = sqrt(4 * mu->mu11 * mu->mu11 + (mu->mu20 - mu->mu02) * (mu->mu20 - mu->mu02));
             double major_axis = sqrt(2 * (a + b));
             double minor_axis = sqrt(2 * (a - b));
             m_eccentricity = sqrt(1 - (minor_axis * minor_axis) / (major_axis * major_axis));
 
             // Calculate orientation (theta) in radians and convert to degrees
-            float theta = 0.5 * atan2(2 * mu.mu11, (mu.mu20 - mu.mu02));
+            float theta = 0.5 * atan2(2 * mu->mu11, (mu->mu20 - mu->mu02));
             m_angle = theta * (180.0 / CV_PI);
         }
     }
 }
 
 // Find disk center using circle matching with contours
-bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& clickedPoint, Rect& roiRect,
-                                             bool activeRoiLimits, float distanceRoiMax, CentroidResult& centroidResult)
+bool SolarSystemObject::FindContoursCentroid(const Mat img8, bool roiActive, const Point2f& clickedPoint, const Rect& roiRect,
+                                             bool activeRoiLimits, float distanceRoiMax, CentroidResult *centroidResult)
 {
     int LowThreshold = m_paramLowThreshold;
     int HighThreshold = m_paramHighThreshold;
@@ -844,7 +846,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
         CircleDescriptor circle = { 0 };
         CircleDescriptor centroid = { 0 };
         CircleDescriptor diskCenter = { 0 };
-        FindCenters(img8, contour, centroid, circle, diskContour, mu, minRadius, maxRadius);
+        FindCenters(contour, &centroid, &circle, &diskContour, &mu, minRadius, maxRadius);
 
         // Skip circles not within radius range
         if ((circle.radius == 0) || (diskContour.size() == 0))
@@ -854,7 +856,7 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
         // and center of mass which is equidistant from the outmost edge of the
         // contour. Consider this point as the best match for contour central point.
         CalcLineParams(circle, centroid);
-        float score = FindContourCenter(diskCenter, circle, diskContour, mu, minRadius, maxRadius);
+        float score = FindContourCenter(&diskCenter, &circle, &diskContour, &mu, minRadius, maxRadius);
 
         // When user clicks a point in the main window, discard detected features
         // that are far away from it, similar to manual selection of stars in PHD2.
@@ -866,10 +868,10 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
         if (score > 0.01)
         {
             float searchRadius = 20 * m_eccentricity + 3;
-            int threadCount = RefineDiskCenter(score, diskCenter, diskContour, minRadius, maxRadius, searchRadius);
+            int threadCount = RefineDiskCenter(&score, &diskCenter, diskContour, minRadius, maxRadius, searchRadius);
             maxThreadsCount = max(maxThreadsCount, threadCount);
             if (score > bestScore * 0.8)
-                threadCount = RefineDiskCenter(score, diskCenter, diskContour, minRadius, maxRadius, 0.5, 0.1);
+                threadCount = RefineDiskCenter(&score, &diskCenter, diskContour, minRadius, maxRadius, 0.5, 0.1);
             maxThreadsCount = max(maxThreadsCount, threadCount);
         }
 
@@ -900,10 +902,10 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
 
     if (bestDiskCenter.radius > 0)
     {
-        centroidResult.mode = DetectionModes::modeContours;
-        centroidResult.centroidX = bestDiskCenter.x + roiRect.x;
-        centroidResult.centroidY = bestDiskCenter.y + roiRect.y;
-        centroidResult.objectSize = cvRound(bestDiskCenter.radius);
+        centroidResult->mode = DetectionModes::modeContours;
+        centroidResult->centroidX = bestDiskCenter.x + roiRect.x;
+        centroidResult->centroidY = bestDiskCenter.y + roiRect.y;
+        centroidResult->objectSize = cvRound(bestDiskCenter.radius);
         m_diskContour = bestContour;
         return true;
     }
@@ -914,8 +916,8 @@ bool SolarSystemObject::FindContoursCentroid(Mat img8, bool roiActive, Point2f& 
 // Handle retries for blob-based detection.  If the object isn't found, decrease the MinBlobDiameter property
 // in small steps until the object is found or until 50 attempts have been made.  BlobDiameter steps start at
 // 80% of the MaxBlobDiameter. All attempts are repeated on the same image
-bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
-                                           std::vector<cv::Point>& blobContour)
+bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, CentroidResult *centroidInfo,
+                                           std::vector<cv::Point> *blobContour)
 {
     bool done = false;
     bool found = false;
@@ -978,8 +980,8 @@ bool SolarSystemObject::RetryBlobDetection(Mat img8, int roiX, int roiY, Centroi
 // Find center of object using OpenCV SimpleBlobDetector - no assumptions made about shape but
 // target is assumed to be bright-on-dark (unless inversion is specified in the tool); and must have a size within user-defined
 // limits.
-bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult& centroidInfo,
-                                         std::vector<cv::Point>& blobContour)
+bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidResult *centroidInfo,
+                                         std::vector<cv::Point> *blobContour)
 {
     SimpleBlobDetector::Params params;
     Mat preppedMat;
@@ -1015,14 +1017,14 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
     Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
 
     // Detect blob
-    blobContour.clear();
+    blobContour->clear();
     detector->detect(preppedMat, keypoints);
-    centroidInfo.mode = DetectionModes::modeBlob;
+    centroidInfo->mode = DetectionModes::modeBlob;
     if (keypoints.size() > 0)
     {
-        centroidInfo.centroidX = keypoints[0].pt.x + roiX;
-        centroidInfo.centroidY = keypoints[0].pt.y + roiY;
-        centroidInfo.objectSize = keypoints[0].size;
+        centroidInfo->centroidX = keypoints[0].pt.x + roiX;
+        centroidInfo->centroidY = keypoints[0].pt.y + roiY;
+        centroidInfo->objectSize = keypoints[0].size;
         std::vector<std::vector<cv::Point>> contours;
         contours = detector->getBlobContours();
         // Contours in the collection can include vectors that didn't satisfy the filter criteria.  So find the contour whose
@@ -1039,13 +1041,13 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
                 {
                     int cx = static_cast<int>(moment.m10 / moment.m00);
                     int cy = static_cast<int>(moment.m01 / moment.m00);
-                    int resultX = static_cast<int>(centroidInfo.centroidX - roiX);
-                    int resultY = static_cast<int>(centroidInfo.centroidY - roiY);
-                    blobContour = contours.front(); // Belt and suspenders in case the search fails
+                    int resultX = static_cast<int>(centroidInfo->centroidX - roiX);
+                    int resultY = static_cast<int>(centroidInfo->centroidY - roiY);
+                    *blobContour = contours.front(); // Belt and suspenders in case the search fails
                     if (std::abs(resultX - cx) < 10 && std::abs(resultY - cy) < 10)
                     {
                         Debug.Write(wxString::Format("SSG: Choosing contour# %d of %d\n", contourCounter, contours.size()));
-                        blobContour = contours.at(contourCounter);
+                        *blobContour = contours.at(contourCounter);
                         break;
                     }
                 }
@@ -1053,17 +1055,17 @@ bool SolarSystemObject::FindBlobCentroid(Mat img8, int roiX, int roiY, CentroidR
             }
         }
         else
-            blobContour = contours.front();
-        Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo.centroidX,
-                                     centroidInfo.centroidY, centroidInfo.objectSize));
+            *blobContour = contours.front();
+        Debug.Write(wxString::Format("SSG: Blob find returns X:%.1f, Y:%.1f, Sz:%d\n", centroidInfo->centroidX,
+                                     centroidInfo->centroidY, centroidInfo->objectSize));
     }
     else
     {
-        centroidInfo.centroidX = -1.0;
-        centroidInfo.centroidY = -1.0;
+        centroidInfo->centroidX = -1.0;
+        centroidInfo->centroidY = -1.0;
     }
 
-    return centroidInfo.centroidX != -1.0;
+    return centroidInfo->centroidX != -1.0;
 }
 
 // Find the targeted disk object and populate all the properties needed for
@@ -1398,12 +1400,12 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
                 autoRetry = autoSelect || !m_paramRetryAutofindsOnly;
             }
 
-            detectionResult = FindBlobCentroid(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
+            detectionResult = FindBlobCentroid(img8, roiOffsetX, roiOffsetY, &m_lastCentroidResult, &m_blobContour);
             if (detectionResult)
                 m_lastElapsedTime = m_SolarSystemObjWatchdog.Time();
             else if (autoRetry)
             {
-                detectionResult = RetryBlobDetection(img8, roiOffsetX, roiOffsetY, m_lastCentroidResult, m_blobContour);
+                detectionResult = RetryBlobDetection(img8, roiOffsetX, roiOffsetY, &m_lastCentroidResult, &m_blobContour);
             }
         }
         else
@@ -1412,7 +1414,7 @@ bool SolarSystemObject::FindSolarSystemObject(const usImage *pImage, bool autoSe
             Mat imgFiltered;
             GaussianBlur(img8, imgFiltered, cv::Size(3, 3), 1.5);
             detectionResult = FindContoursCentroid(imgFiltered, roiActive, clickedPoint, roiRect, activeRoiLimits,
-                                                   distanceRoiMax, m_lastCentroidResult);
+                                                   distanceRoiMax, &m_lastCentroidResult);
         }
         if (detectionResult)
         {
